@@ -1,0 +1,36 @@
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/Roboto.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "FZCDXK";
+  src: url("/fonts/FZCDXK.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "OCRB";
+  src: url("/fonts/OCRB.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SimSun";
+  src: url("/fonts/simsun.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Times";
+  src: url("/fonts/times.woff2") format("woff2");
+}

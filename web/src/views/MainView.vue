@@ -1,0 +1,653 @@
+<template>
+  <Teleport to="#home-mobile-navigation" :disabled="!isMobilePreview" defer>
+    <nav class="home-navigation page-header-actions" aria-label="页面导航">
+      <ThemeSelect />
+      <el-button
+        :disabled="isGithubPagesBuild"
+        :title="isGithubPagesBuild ? 'GitHub Pages 无法跨域访问 12306 余票接口' : ''"
+        @click="goToMonitor"
+      >余票监控</el-button>
+      <el-button
+        :disabled="isGithubPagesBuild"
+        :title="isGithubPagesBuild ? 'GitHub Pages 未部署车次查询后端' : ''"
+        @click="goToTrainQuery"
+      >车次查询</el-button>
+      <el-button :disabled="isGithubPagesBuild" @click="goToHistory()">
+        <el-icon><User /></el-icon>历史记录
+      </el-button>
+    </nav>
+  </Teleport>
+  <el-container class="main-layout">
+    <el-aside width="350px" class="main-aside">
+      <h2
+        style="margin-bottom: 20px; font-family: 'Roboto', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+      >Sam-Lab CR Ticket Maker</h2>
+      <el-form
+          :model="ticket"
+          :rules="rules"
+          ref="formRef"
+          label-width="100px"
+          label-position="left"
+      >
+        <el-form-item label="票号" :required="true">
+          <el-input v-model="ticket.number" placeholder="例如：E351822734"></el-input>
+        </el-form-item>
+
+        <el-form-item label="起点" :required="true">
+          <el-autocomplete
+              v-model="ticket.from"
+              :fetch-suggestions="querySearch"
+              placeholder="输入站名或拼音"
+              clearable
+              @select="handleSelect('from', $event)"
+          />
+        </el-form-item>
+
+        <el-form-item label="终点" :required="true">
+          <el-autocomplete
+              v-model="ticket.to"
+              :fetch-suggestions="querySearch"
+              placeholder="输入站名或拼音"
+              clearable
+              @select="handleSelect('to', $event)"
+          />
+        </el-form-item>
+
+        <el-form-item label="车次" prop="trainNo" :required="true">
+          <el-input
+              v-model="ticket.trainNo"
+              placeholder="例如：G25 或 1461"
+          />
+        </el-form-item>
+
+        <el-form-item label="开车日期" :required="true">
+          <el-date-picker
+              v-model="ticket.date"
+              type="date"
+              placeholder="请选择乘车日期"
+              format="YYYY/MM/DD"
+              value-format="YYYY年MM月DD日"
+          />
+        </el-form-item>
+
+        <el-form-item label="开车时间" :required="true">
+          <el-time-picker
+              v-model="ticket.time"
+              placeholder="选择开车时间"
+              format="HH:mm"
+              value-format="HH:mm"
+          />
+        </el-form-item>
+
+        <el-form-item label="票价" :required="true">
+          <el-input-number v-model="ticket.price" placeholder="请输入数字" :min="0" :step="0.5">
+            <template #prefix>
+              <span>￥</span>
+            </template>
+          </el-input-number>
+        </el-form-item>
+
+        <el-form-item label="使用积分">
+          <el-switch
+              v-model="credit"
+              inline-prompt
+              :active-icon="Check"
+              :inactive-icon="Close"
+          />
+        </el-form-item>
+
+        <el-form-item label="席位名称" :required="true">
+          <el-select
+              v-model="ticket.seatType"
+              placeholder="Select"
+          >
+            <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="空调选择">
+          <el-switch
+              v-model="value3"
+              :disabled="airSwitchDisabled"
+              inline-prompt
+              :active-icon="Check"
+              :inactive-icon="Close"
+          />
+        </el-form-item>
+
+        <el-form-item label="座位号" :required="true">
+          <el-input v-model="ticket.seatNo" placeholder="03车12A号"></el-input>
+        </el-form-item>
+
+        <el-form-item label="售票地点" :required="true">
+          <el-input v-model="ticket.sellPlace" placeholder="XX站"></el-input>
+        </el-form-item>
+
+        <el-form-item label="检票/候车">
+          <el-input v-model="ticket.gate" placeholder="检票：1A / 候车：一候"></el-input>
+        </el-form-item>
+
+        <el-form-item label="提示语" :required="true">
+          <el-input
+              v-model="ticket.message"
+              :rows="3"
+              type="textarea"
+              placeholder="输入提示语"
+          />
+        </el-form-item>
+
+        <el-form-item label="选择背景" :required="true">
+          <el-select
+              v-model="ticket.theme"
+              placeholder="请选择主题"
+              style="width: 240px"
+          >
+            <el-option
+                v-for="item in themeOptions"
+                :key="item.id"
+                :label="item.label"
+                :value="item.id"
+                :disabled="item.disabled"
+            />
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <h3 style="font-family: Consolas, 'Courier New', monospace">Version 260930</h3>
+      <h3 style="font-family: Consolas, 'Courier New', monospace">Station Version 10118</h3>
+
+      <div class="home-tools">
+        <div id="home-mobile-navigation" class="home-mobile-navigation"></div>
+        <div class="home-info-actions">
+          <el-button type="primary" @click="note">更新内容</el-button>
+          <el-button color="black" @click="goToGitHub()"><el-icon><Star /></el-icon><span>GitHub</span></el-button>
+        </div>
+      </div>
+
+    </el-aside>
+
+    <el-main class="main-center">
+      <el-card class="ticket-preview" shadow="always">
+        <div ref="previewShell" class="ticket-preview-shell" :style="{ height: `${ticketScaledHeight}px` }">
+          <div class="ticket-preview-scale" :style="{ transform: `scale(${ticketScale})` }">
+            <div ref="ticketRef" class="ticket-container">
+            <div class="ticket-bg" :style="{ backgroundImage: `url(./${ticket.theme})` }">
+              <div class="ticket-number">{{ticket.number}}</div>
+            </div>
+
+            <div class="station-block">
+              <div class="station-left">
+                <div class="station-name">{{ formatStationName(ticket.from) }}<span class="small">站</span></div>
+                <div class="station-en">{{ getStationEnglish(ticket.from) }}</div>
+              </div>
+
+              <div class="station-middle">
+                <div class="train-no">{{ ticket.trainNo }}</div>
+                <div class="arrow">
+                  <span class="line"></span>
+                  <span class="head"></span>
+                </div>
+              </div>
+
+              <div class="station-right">
+                <div class="station-name">{{ formatStationName(ticket.to) }}<span class="small">站</span></div>
+                <div class="station-en">{{ getStationEnglish(ticket.to) }}</div>
+              </div>
+            </div>
+
+            <div class="ticket-gate">{{ticket.gate}}</div>
+
+            <div class="date-time">{{ticket.date}}&nbsp;&nbsp; {{ticket.time}}开</div>
+
+            <div class="price">￥{{ticket.price}}元</div>
+
+            <div class="tip"><strong>限乘当日当次车</strong></div>
+
+            <div class="seat">{{ticket.seatNo}}</div>
+
+            <div class="seat-class">{{finalSeatType}}</div>
+
+            <div class="ticket-message">
+              <p>{{ ticket.message }}</p>
+            </div>
+
+            <div class="ticket-type">{{ specialTicketType }}</div>
+            <div class="credit">{{ useCredit}}</div>
+
+            <div class="ticket-qrcode" v-if="qrCodeUrl">
+              <img :src="qrCodeUrl" alt="QR Code" />
+            </div>
+
+            <div class="sell-place">{{ticket.sellPlace}}售</div>
+          </div>
+
+          </div>
+        </div>
+        <div class="download-buttons">
+          <el-button type="primary" @click="downloadPDF">
+            <el-icon><Document /></el-icon>
+            下载 PDF
+          </el-button>
+
+          <el-button type="success" @click="downloadPNG">
+            <el-icon><Picture /></el-icon>
+            下载 PNG
+          </el-button>
+          <el-button type="success" :disabled="isGithubPagesBuild" @click="openSaveDialog">
+            <el-icon><Checked /></el-icon>
+            {{ deviceMode ? '存储到本机' : '保存车票' }}
+          </el-button>
+          <el-dialog
+              v-model="saveDistance"
+              title="运转里程"
+              width="500"
+              :before-close="handleClose"
+          >
+            <span>请输入本次运转的里程数，单位为km。</span>
+            <el-input-number v-model="distance" :min="0">
+              <template #suffix>
+                <span>km</span>
+              </template>
+            </el-input-number>
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button :disabled="isGithubPagesBuild" @click="openTrainQuery">我不知道里程</el-button>
+                <el-button type="primary" @click="saveTicket">
+                  存储车票
+                </el-button>
+              </div>
+            </template>
+          </el-dialog>
+        </div>
+      </el-card>
+
+    </el-main>
+  </el-container>
+</template>
+
+<script setup>
+import ThemeSelect from '@/components/ThemeSelect.vue'
+import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {ElButton, ElDialog, ElIcon, ElMessage, ElMessageBox, ElNotification} from 'element-plus'
+import QRCode from 'qrcode'
+
+
+import {Check, Checked, Close, Document, Picture, Star, User} from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+import api from '@/api.js'
+import { useUserStore } from '@/stores/user.js'
+import { isGithubPagesBuild } from '@/config/deploy.js'
+import { downloadTicketPNG, renderTicketImage } from '@/utils/ticketExport.js'
+import { native, deviceMode, saveFile } from '@/android/platform.js'
+import {
+  buildTicketPayload,
+  createDefaultTicket,
+  hasRequiredTicketFields,
+  seatOptions,
+  themeOptions,
+  ticketRules,
+  ticketQRCodeOptions,
+} from '@/utils/ticketShared.js'
+import {
+  formatStationName as formatTicketStationName,
+  getStationEnglish as getTicketStationEnglish,
+  handleStationSelect,
+  queryStationSearch,
+  useSeatType,
+} from '@/composables/useTicketShared.js'
+
+const userStore = useUserStore()
+userStore.init()
+
+const ticket = reactive(createDefaultTicket())
+const formRef = ref(null)
+const rules = ticketRules
+const options = seatOptions
+
+const {
+  value3,
+  credit,
+  airSwitchDisabled,
+  finalSeatType,
+  specialTicketType,
+  useCreditLabel,
+} = useSeatType(ticket)
+
+const useCredit = computed(() => useCreditLabel.value)
+const querySearch = queryStationSearch
+const handleSelect = (field, item) => handleStationSelect(ticket, field, item)
+const formatStationName = (name) => formatTicketStationName(name)
+const getStationEnglish = (name) => getTicketStationEnglish(name)
+
+const distance = ref(0)
+
+const qrCodeUrl = ref('')
+
+function generateQRCode(text) {
+  if (!text) {
+    qrCodeUrl.value = ''
+    return
+  }
+  QRCode.toDataURL(text, ticketQRCodeOptions(), (err, url) => {
+    if (!err) {
+      qrCodeUrl.value = url
+    }
+  })
+}
+
+watch(() => ticket.number, (newVal) => {
+  generateQRCode(newVal)
+})
+
+const note = () => {
+  ElNotification({
+    title: '更新车站列表至10118、新增列车时刻表查询与导出。',
+    message: '现在您可以在车次查询页面查询中国铁路车次时刻表与里程，并导出运转表。',
+    type: 'info',
+    position: 'bottom-right'
+  })
+}
+
+const star = () => {
+  ElNotification({
+    title: '我们的项目需要更多星标！',
+    dangerouslyUseHTMLString: true,
+    message: h('div', null, [
+      h('p', { style: 'margin-bottom: 10px;' }, '请点击下面的图标，为我们的项目标一个免费的星星⭐！'),
+      h(
+          ElButton,
+          {
+            color: 'black',
+            onClick: goToGitHub
+          },
+          {
+            default: () => [
+              h(ElIcon, null, { default: () => h(Star) }),
+              h('span', { style: 'margin-left: 4px;' }, 'GitHub')
+            ]
+          }
+      )
+    ]),
+    offset: 30,
+    duration: 0,
+  })
+}
+
+const ticketRef = ref(null)
+const previewShell = ref(null)
+let previewObserver
+
+const TICKET_BASE_WIDTH = 430
+const TICKET_BASE_HEIGHT = Math.round(TICKET_BASE_WIDTH * 54 / 86)
+const ticketScale = ref(1)
+const ticketScaledHeight = computed(() => Math.round(TICKET_BASE_HEIGHT * ticketScale.value))
+
+function updateTicketScale() {
+  const viewportWidth = window.innerWidth || TICKET_BASE_WIDTH
+  const availableWidth = previewShell.value?.clientWidth || viewportWidth - 24
+  const nextScale = Math.min(1, availableWidth / TICKET_BASE_WIDTH)
+  ticketScale.value = Number.isFinite(nextScale) && nextScale > 0 ? nextScale : 1
+}
+
+const isMobilePreview = ref(false)
+
+function updateMobilePreviewFlag() {
+  const viewportWidth = window.innerWidth || 1024
+  isMobilePreview.value = viewportWidth <= 768
+}
+
+onMounted(() => {
+  generateQRCode(ticket.number)
+  updateTicketScale()
+  updateMobilePreviewFlag()
+  previewObserver = new ResizeObserver(updateTicketScale)
+  previewObserver.observe(previewShell.value)
+  window.addEventListener('resize', updateTicketScale, { passive: true })
+  window.addEventListener('resize', updateMobilePreviewFlag, { passive: true })
+  if (!native && !sessionStorage.getItem('notified')) {
+    note()
+    star()
+    sessionStorage.setItem('notified', '1')
+  }
+})
+
+onUnmounted(() => {
+  previewObserver?.disconnect()
+  window.removeEventListener('resize', updateTicketScale)
+  window.removeEventListener('resize', updateMobilePreviewFlag)
+})
+
+const downloadPDF = async () => {
+  if (!hasRequiredTicketFields(ticket)) {
+    ElMessage.warning('请填写所有必填项')
+    return
+  }
+
+  try {
+    const element = ticketRef.value
+    const imgData = await renderTicketImage(element)
+
+    const { default: jsPDF } = await import('jspdf')
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'cm',
+      format: [8.6, 5.4]
+    })
+
+    pdf.addImage(imgData, 'PNG', 0, 0, 8.6, 5.4)
+    await saveFile(pdf.output('blob'), `${ticket.number}.pdf`)
+  } catch (error) {
+    ElMessage.error(error.message || 'PDF导出失败')
+  }
+}
+
+const downloadPNG = async () => {
+  if (!hasRequiredTicketFields(ticket)) {
+    ElMessage.warning('请填写所有必填项')
+    return
+  }
+
+  try {
+    const element = ticketRef.value
+    const imgData = await renderTicketImage(element)
+
+    await downloadTicketPNG(imgData, ticket.number)
+  } catch (error) {
+    ElMessage.error(error.message || 'PNG导出失败')
+  }
+}
+
+const router = useRouter()
+const openTrainQuery = () => {
+  if (isGithubPagesBuild) return
+  window.open(router.resolve('/train').href, '_blank', 'noopener,noreferrer')
+}
+const goToMonitor = () => {
+  if (isGithubPagesBuild) return
+  router.push('/monitor')
+}
+const goToTrainQuery = () => {
+  if (isGithubPagesBuild) return
+  router.push('/train')
+}
+const goToHistory = () => {
+  if (isGithubPagesBuild) return
+  router.push('/history')
+}
+const goToGitHub = () => {
+  ElMessageBox.alert(
+      '<strong>谢谢您为我的项目标星！</strong>' +
+      '<img src="GitHub.gif" alt="GitHub" style="max-width: 100%; height: auto;"/>',
+      '访问本项目源代码',
+      {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: '前往GitHub',
+
+      }
+  )
+      .then(() => {
+        window.open('https://github.com/sam28403/CRTicket', '_blank')
+      })
+}
+
+const saveDistance = ref(false)
+const openSaveDialog = () => {
+  if (isGithubPagesBuild) {
+    ElMessage.warning('GitHub Pages 演示版不支持账号存储/历史记录功能')
+    return
+  }
+  saveDistance.value = true
+}
+
+const handleClose = (done) => {
+  ElMessageBox.confirm('你确定不要存储这张车票？')
+    .then(() => {
+      done()
+    })
+    .catch(() => {
+      // catch error
+    })
+}
+
+const getCurrentUser = () => {
+  return JSON.parse(localStorage.getItem('user'))
+}
+
+const saveTicket = async () => {
+  if (!hasRequiredTicketFields(ticket)) {
+    ElMessage.warning('请填写完整车票信息')
+    return
+  }
+
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    ElMessage.warning('无法读取默认用户资料')
+    return
+  }
+
+  try {
+    const res = await api.post(
+      '/ticket/add',
+      buildTicketPayload(ticket, {
+        userId: currentUser.id,
+        useCredit: credit.value,
+        finalSeatType: finalSeatType.value,
+        hasConditioner: value3.value,
+        distance: distance.value,
+      })
+    )
+
+    if (res.data.success) {
+      ElMessage.success('车票保存成功')
+      saveDistance.value = false
+    } else {
+      ElMessage.error(res.data.message)
+    }
+  } catch (err) {
+    ElMessage.error('保存失败')
+  }
+}
+</script>
+
+<style scoped>
+@import "../assets/styles/App.css";
+
+.home-navigation { position: absolute; top: 1%; right: 1%; display: flex; z-index: 2; }
+.home-mobile-navigation { display: none; }
+.home-info-actions { display: flex; gap: 8px; }
+.home-info-actions .el-button + .el-button { margin-left: 0; }
+@media (max-width: 768px) {
+  .home-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--el-border-color-light);
+  }
+
+  .home-mobile-navigation,
+  .home-navigation,
+  .home-info-actions { display: contents; }
+
+  .home-tools :deep(.theme-select) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .home-tools :deep(.el-select__wrapper) {
+    min-height: 40px;
+    border-radius: 8px;
+  }
+
+  .home-tools .el-button {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .home-tools .el-button .el-icon { margin-right: 4px; }
+}
+
+.main-layout {
+  height: 100vh;
+}
+
+.main-aside {
+  background: var(--app-surface, #f8f9fa);
+  padding: 20px;
+}
+
+.ticket-preview-shell {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.ticket-preview {
+  width: 100%;
+  max-width: 470px;
+  box-sizing: border-box;
+}
+
+.ticket-preview :deep(.el-card__body) {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ticket-preview-scale {
+  width: 430px;
+  flex-shrink: 0;
+  transform-origin: top center;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    height: auto;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  .main-aside {
+    width: 100% !important;
+    padding: 14px 12px;
+  }
+
+  .main-center {
+    padding: 16px 12px;
+  }
+
+  :deep(.el-dialog) {
+    width: 92vw !important;
+    max-width: 520px;
+  }
+}
+</style>

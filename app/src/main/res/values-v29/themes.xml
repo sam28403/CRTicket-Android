@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.CRTicket" parent="Base.CRTicket">
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:isLightTheme">true</item>
+    </style>
+</resources>

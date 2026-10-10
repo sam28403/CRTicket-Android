@@ -1,0 +1,137 @@
+.top-header {
+    display: flex;
+    align-items: center;   /* 垂直居中 */
+    gap: 10px;             /* 头像和文字间距 */
+    background: var(--app-surface, rgb(10 10 0 / 0.1));
+    height: 50px;
+    padding: 5px 15px;
+}
+
+.top-header h2 {
+    margin: 0; /* 很关键！去掉默认外边距 */
+    font-family: "Roboto", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 20px;
+}
+
+.login-container.fade-in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.login-container.fade-in:hover {
+    transform: translateY(0) scale(1.03);  /* 保留Y位置，放大 */
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.input-group input {
+    width: 93%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--app-border, #ccc);
+    background: var(--app-surface, #fff);
+    color: var(--app-text, #000);
+    font-size: 14px;
+}
+
+
+
+.captcha-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.captcha-group img {
+    cursor: pointer;
+    height: 40px;
+    border-radius: 6px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login {
+    background-color: var(--app-login-button, #4CAF50);
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: var(--app-login-hover, #45a049);
+}
+
+.btn-register {
+    background-color: var(--app-register-button, #2196F3);
+    color: white;
+}
+
+.btn-register:hover {
+    background-color: var(--app-register-hover, #1976d2);
+}
+
+/* 登录部分整体包裹器，居中显示 */
+.login-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.user-top-right {
+    position: absolute;
+    top: 1%;
+    right: 1%;
+}
+
+@media (max-width: 768px) {
+    .top-header {
+        position: relative;
+        height: auto;
+        padding: 10px 12px;
+        flex-wrap: wrap;
+    }
+
+    .user-top-right {
+        position: static;
+        margin-left: auto;
+    }
+
+    .login-section {
+        margin-top: 18px;
+        padding: 0 12px;
+    }
+
+    .captcha-group {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}

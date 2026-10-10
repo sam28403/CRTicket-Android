@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">search.12306.cn</domain>
+        <domain includeSubdomains="false">kyfw.12306.cn</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/cfca_ev_root" />
+        </trust-anchors>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">down.lltskb.com</domain>
+        <domain includeSubdomains="false">223.107.87.50</domain>
+    </domain-config>
+</network-security-config>
