@@ -1,8 +1,24 @@
-// The first commit is 0.3.3; each subsequent commit increments the patch version.
-val majorVersion = 0
-val minorVersion = 3
-val firstPatchVersion = 3
-val upstreamDate = "260930"
+// x.y.z is user-managed; only the Git hash and original project's date are automatic.
+val semanticVersion = providers.gradleProperty("crticket.version").orNull
+check(semanticVersion != null && semanticVersion.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))) {
+    "Set crticket.version to x.y.z in gradle.properties."
+}
+val upstreamPath = checkNotNull(providers.gradleProperty("crticket.upstreamMainView").orNull) {
+    "Set crticket.upstreamMainView to the original project's MainView.vue."
+}
+val upstreamSource = checkNotNull(providers.fileContents(
+    rootProject.layout.projectDirectory.file(upstreamPath)
+).asText.orNull) {
+    "Cannot read the original project's MainView.vue: $upstreamPath"
+}
+val dateMatches = Regex(
+    """<h3\b[^>]*>\s*Version\s+([0-9]{6})\s*</h3>""",
+    RegexOption.IGNORE_CASE,
+).findAll(upstreamSource).toList()
+check(dateMatches.size == 1) {
+    "Expected one <h3>Version YYMMDD</h3> in $upstreamPath."
+}
+val upstreamDate = dateMatches.single().groupValues[1]
 val previousAndroidVersionCode = 6
 
 fun gitOutput(vararg arguments: String): String? {
@@ -34,8 +50,7 @@ val commitCount = if (commitHash == null) {
     }
 }
 val buildCount = commitCount.coerceAtLeast(1)
-val patchVersion = firstPatchVersion + buildCount - 1
-val androidVersionName = "$majorVersion.$minorVersion.$patchVersion-" +
+val androidVersionName = "$semanticVersion-" +
     "${commitHash ?: "uncommitted"}-$upstreamDate"
 // Preserve upgrade compatibility with previously distributed versionCode 6.
 val androidVersionCode = previousAndroidVersionCode + buildCount
@@ -46,7 +61,7 @@ version = androidVersionName
 
 tasks.register("printAndroidVersion") {
     group = "help"
-    description = "Print the Android version derived from Git history."
+    description = "Print the manual version, Git hash and original project's version date."
     val report = listOf(
         "versionName=$androidVersionName",
         "versionCode=$androidVersionCode",

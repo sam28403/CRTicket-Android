@@ -32,12 +32,14 @@
 
 ## 构建和检查
 
-版本由 `gradle/versioning.gradle.kts` 在构建时读取 Git 提交记录生成：
-`0.3.<提交次数 + 2>-<当前提交的至少 7 位短哈希>-260930`。
-首个提交为 `0.3.3`，后续每次提交依次为 `0.3.4`、`0.3.5`，日期固定与原项目一致。
-Android `versionCode` 从 7 起随提交次数递增，支持覆盖升级此前的版本。
-尚无提交时版本标记为 `0.3.3-uncommitted-260930`；构建需要完整 Git 历史。
-可运行 `.\gradlew.bat :app:printAndroidVersion` 查看实际版本，同一提交重复构建不会增加版本号。
+版本名称格式为 `<x.y.z>-<当前提交的至少 7 位短哈希>-<原项目版本日期>`。
+`x.y.z` 由你手动修改根目录 `gradle.properties` 中的 `crticket.version`，默认 `0.3.3`，不会随提交自动变化。
+日期在构建时自动读取 `crticket.upstreamMainView` 指向的原项目 `MainView.vue` 中的 `<h3>Version 260930</h3>`。
+默认文件为 `C:/Users/SAM-LAB/WebstormProjects/CRTicket/src/views/MainView.vue`；换电脑时可修改该路径，原文件更新后构建缓存会自动刷新。
+文件缺失或没有唯一的版本日期时构建会报错，不会使用旧日期或本机日期。
+Android 内部 `versionCode` 从 7 起随提交次数递增，支持覆盖升级此前的版本；它不影响手动设置的 `x.y.z`。
+尚无提交时哈希标记为 `uncommitted`；构建需要完整 Git 历史。
+可运行 `.\gradlew.bat :app:printAndroidVersion` 查看实际版本，或运行 `tools/verify-versioning.ps1` 验证版本配置、日期更新和缓存刷新。
 
 网页资源已生成，Android Studio 可直接运行 app。修改网页副本后重新构建：
 
