@@ -80,7 +80,6 @@ html.high-contrast :focus-visible { outline: 2px solid var(--app-link); outline-
   margin-left: auto;
 }
 .page-header-actions > .el-button + .el-button { margin-left: 0; }
-.debug-theme-actions { margin-bottom: 16px; }
 /* Let the existing header wrap instead of covering the page title on small screens. */
 @media (max-width: 800px) {
   #app .top-header { height: auto; min-height: 50px; flex-wrap: wrap; padding: 10px 12px; }

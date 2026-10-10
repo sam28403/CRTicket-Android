@@ -1,1 +1,0 @@
-import{t as e}from"./station_name-9V1S_gNR.js";var t;function n(){return t||(t=e.split(`@`).filter(Boolean).map(e=>{let t=e.split(`|`);return{code:t[0],name:t[1],telecode:t[2],en:t[3],abbr:t[4],city:t[7]}}),t)}export{n as t};

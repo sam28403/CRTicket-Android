@@ -76,6 +76,27 @@ const server = createServer(async (req, res) => {
     await page.getByRole('cell', { name: 'G1', exact: true }).waitFor()
     await page.reload()
     await page.getByRole('cell', { name: 'G1', exact: true }).waitFor()
+    await page.locator('.el-table__row').first().locator('button').nth(1).click()
+    const recordDialog = page.getByRole('dialog', { name: '编辑记录' })
+    await recordDialog.waitFor()
+    const dialogLayout = await recordDialog.evaluate(element => {
+      const bounds = element.getBoundingClientRect()
+      const body = element.querySelector('.el-dialog__body')
+      return {
+        left: bounds.left,
+        right: bounds.right,
+        height: bounds.height,
+        overflow: getComputedStyle(body).overflowY,
+      }
+    })
+    assert.ok(dialogLayout.left >= 0 && dialogLayout.right <= 390)
+    assert.ok(dialogLayout.height <= 844)
+    assert.equal(dialogLayout.overflow, 'auto')
+    await recordDialog.getByRole('spinbutton', { name: /票价/ }).fill('600')
+    await recordDialog.getByRole('button', { name: '保存', exact: true }).click()
+    await recordDialog.waitFor({ state: 'hidden' })
+    await page.reload()
+    await page.getByRole('cell', { name: '600', exact: true }).waitFor()
     await page.screenshot({ path: path.join(output, 'mobile-history.png'), fullPage: true })
     await page.goto(address + '/#/user')
     await page.getByRole('heading', { name: '本机车票数据' }).waitFor()
@@ -98,6 +119,6 @@ const server = createServer(async (req, res) => {
     assert.equal(exports.filter(item => item.filename.endsWith('.json')).length, 1)
     assert.equal(exports.filter(item => item.filename.endsWith('.xlsx')).length, 1)
     assert.equal(errors.length, 0, errors.join('\n'))
-    console.log('PASS: mobile maker, native settings, PNG/PDF exports, persistent device history, backup and Excel exports; no page errors.')
+    console.log('PASS: mobile maker, PNG/PDF exports, scrollable record editor, persistent edits and backup/Excel exports; no page errors.')
   } finally { await browser.close(); server.close() }
 })().catch(error => { console.error(error); server.close(); process.exitCode = 1 })
