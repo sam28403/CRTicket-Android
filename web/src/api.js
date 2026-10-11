@@ -17,7 +17,7 @@ if (native) {
         if (params) path += (path.includes('?') ? '&' : '?') + params;
         let result;
         try {
-            const isRailway = /^\/(train-info|left-ticket|llt-trains)(\/|\?|$)/.test(path);
+            const isRailway = /^\/(train-info|left-ticket|llt-trains|station)(\/|\?|$)/.test(path);
             let data;
             if (isRailway) {
                 const { requestRailway } = await import('./android/railway/api.js');

@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import AppBrand from '@/components/AppBrand.vue'
 import TrainRouteMap from '@/components/TrainRouteMap.vue'
+import StationLink from '@/components/StationLink.vue'
 import TrainTrackingButton from '@/components/TrainTrackingButton.vue'
 import { supportsTrainTracking } from '@/android/trainTracking.js'
 import api from '@/api.js'
@@ -131,9 +132,12 @@ onBeforeUnmount(() => {
     <main class="query-content">
       <div class="page-heading">
         <h1>车次查询</h1>
-        <el-button type="info" @click="$router.push('/list')">
-          车次列表
-        </el-button>
+        <div class="page-header-actions">
+          <el-button @click="$router.push('/station')">车站大屏</el-button>
+          <el-button type="info" @click="$router.push('/list')">
+            车次列表
+          </el-button>
+        </div>
       </div>
       <el-card shadow="never">
         <el-form class="query-form" label-position="top" :disabled="loading" @submit.prevent="query">
@@ -180,7 +184,9 @@ onBeforeUnmount(() => {
         <template v-if="result?.stops.length">
           <div class="result-heading">
             <div class="result-title-row">
-              <strong>{{ result.train }}　{{ result.from }} → {{ result.to }}</strong>
+              <strong>
+                {{ result.train }}　<StationLink :name="result.from" /> → <StationLink :name="result.to" />
+              </strong>
               <TrainTrackingButton
                 :key="`${resultQuerySource}-${resultQueryCode}-${result.date}`"
                 :result="result"
@@ -199,7 +205,9 @@ onBeforeUnmount(() => {
           <el-table class="desktop-stops" :data="result.stops" stripe border style="width: 100%">
             <el-table-column prop="no" label="站序" width="70" align="center" />
             <el-table-column prop="train" label="车次" min-width="100" />
-            <el-table-column prop="station" label="站名" min-width="120" />
+            <el-table-column prop="station" label="站名" min-width="120">
+              <template #default="{ row }"><StationLink :name="row.station" /></template>
+            </el-table-column>
             <el-table-column label="到达时间" min-width="150">
               <template #default="{ row, $index }">
                 {{ $index === 0 ? '始发站' : row.arrival || '—' }}
@@ -228,7 +236,10 @@ onBeforeUnmount(() => {
           <ol class="mobile-stops" aria-label="列车经停信息">
             <li v-for="(stop, index) in result.stops" :key="`${stop.no}-${index}`" class="mobile-stop">
               <div class="stop-heading">
-                <strong><span class="stop-number">{{ stop.no }}</span>{{ stop.station }}</strong>
+                <strong>
+                  <span class="stop-number">{{ stop.no }}</span>
+                  <StationLink :name="stop.station" />
+                </strong>
                 <el-text size="small">{{ stop.train }}</el-text>
               </div>
               <dl class="stop-details">

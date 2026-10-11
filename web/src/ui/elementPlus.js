@@ -4,7 +4,7 @@ import {
     ElContainer, ElDatePicker, ElDialog, ElEmpty, ElForm,
     ElFormItem, ElHeader, ElIcon, ElInput, ElInputNumber,
     ElInputTag, ElMain, ElOption, ElPagination, ElRow,
-    ElSelect, ElSlider, ElSpace, ElSwitch, ElTable,
+    ElSelect, ElSlider, ElSpace, ElSwitch, ElTabs, ElTabPane, ElTable,
     ElTableColumn, ElTableV2, ElTag, ElText, ElTimePicker,
     ElTooltip, ElLoading,
 } from 'element-plus'
@@ -16,7 +16,7 @@ const components = [
     ElContainer, ElDatePicker, ElDialog, ElEmpty, ElForm,
     ElFormItem, ElHeader, ElIcon, ElInput, ElInputNumber,
     ElInputTag, ElMain, ElOption, ElPagination, ElRow,
-    ElSelect, ElSlider, ElSpace, ElSwitch, ElTable,
+    ElSelect, ElSlider, ElSpace, ElSwitch, ElTabs, ElTabPane, ElTable,
     ElTableColumn, ElTableV2, ElTag, ElText, ElTimePicker,
     ElTooltip,
 ]

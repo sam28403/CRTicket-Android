@@ -39,10 +39,12 @@ class PhoneHttp(
                     .header("User-Agent", "Mozilla/5.0 CRTicketAndroid/3.0")
                     .header("Accept", "application/json,text/html,*/*")
                 if (url.host.endsWith("12306.cn")) {
-                    val referer = if (url.encodedPath.startsWith("/otn/leftTicket")) {
-                        "https://kyfw.12306.cn/otn/leftTicket/init"
-                    } else {
-                        "https://kyfw.12306.cn/otn/queryTrainInfo/init"
+                    val referer = when {
+                        url.encodedPath.startsWith("/otn/leftTicket") ->
+                            "https://kyfw.12306.cn/otn/leftTicket/init"
+                        url.encodedPath in setOf("/otn/czxx/init", "/otn/czxx/query") ->
+                            "https://kyfw.12306.cn/otn/czxx/init"
+                        else -> "https://kyfw.12306.cn/otn/queryTrainInfo/init"
                     }
                     builder.header("Referer", referer)
                 }

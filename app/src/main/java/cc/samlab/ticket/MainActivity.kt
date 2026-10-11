@@ -8,6 +8,8 @@ import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
+import cc.samlab.ticket.arrival.StationArrivalBridge
+import cc.samlab.ticket.arrival.ArrivalNotifications
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -40,6 +42,7 @@ class MainActivity : Activity() {
     private val preferences by lazy { getSharedPreferences("android", MODE_PRIVATE) }
     private val notifications by lazy { MonitorNotifications(this, ::callback) }
     private val trainTracking by lazy { TrainTrackingBridge(this, ::callback) }
+    private val stationArrival by lazy { StationArrivalBridge(this, ::callback) }
     private var fileChooser: ValueCallback<Array<Uri>>? = null
     private var pendingSave: File? = null
     private var pendingSaveId: String? = null
@@ -146,9 +149,13 @@ class MainActivity : Activity() {
         pendingSave = savedInstanceState?.getString("saveFile")?.let { name -> File(cacheDir, name).takeIf { it.exists() && it.parentFile == cacheDir } }
         pendingSaveId = savedInstanceState?.getString("saveId")
         saving = pendingSave != null
-        if (savedInstanceState == null || webView.restoreState(savedInstanceState) == null) {
+        if (savedInstanceState == null || intent.hasExtra(ArrivalNotifications.OPEN_STATION) ||
+            webView.restoreState(savedInstanceState) == null) {
             val trackingRoute = intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)
-            val route = if (trackingRoute != null) {
+            val station = intent.getStringExtra(ArrivalNotifications.OPEN_STATION)
+            val route = if (station != null) {
+                "#/station?station=${Uri.encode(station)}"
+            } else if (trackingRoute != null) {
                 "#$trackingRoute"
             } else if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) {
                 "#/monitor"
@@ -156,12 +163,18 @@ class MainActivity : Activity() {
                 ""
             }
             webView.loadUrl("$ORIGIN/index.html$route")
+            intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        intent.getStringExtra(ArrivalNotifications.OPEN_STATION)?.let { station ->
+            val route = "/station?station=${Uri.encode(station)}"
+            webView.evaluateJavascript("window.location.hash = ${JSONObject.quote(route)}", null)
+            intent.removeExtra(ArrivalNotifications.OPEN_STATION)
+        }
         if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) {
             webView.evaluateJavascript("window.location.hash = '/monitor'", null)
         }
@@ -178,6 +191,7 @@ class MainActivity : Activity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         notifications.onRequestPermissionsResult(requestCode, grantResults)
         trainTracking.onRequestPermissionsResult(requestCode, grantResults)
+        stationArrival.onRequestPermissionsResult(requestCode, grantResults)
     }
 
     private fun errorResponse(status: Int, reason: String) = WebResourceResponse("text/plain", "UTF-8", status, reason, emptyMap(), ByteArrayInputStream(reason.toByteArray()))
@@ -222,6 +236,15 @@ class MainActivity : Activity() {
     }
 
     inner class AndroidBridge {
+        @JavascriptInterface fun stationArrivalState(id: String) {
+            runOnUiThread { stationArrival.state(id) }
+        }
+        @JavascriptInterface fun enableStationArrival(id: String) {
+            runOnUiThread { stationArrival.enable(id) }
+        }
+        @JavascriptInterface fun disableStationArrival(id: String) {
+            runOnUiThread { stationArrival.disable(id) }
+        }
         @JavascriptInterface fun requestTrainTrackingPermission(id: String) {
             runOnUiThread { trainTracking.requestPermission(id) }
         }
@@ -304,6 +327,7 @@ class MainActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         notifications.onActivityResult(requestCode)
         trainTracking.onActivityResult(requestCode)
+        stationArrival.onActivityResult(requestCode)
         when (requestCode) {
             FILE_REQUEST -> {
                 val result = if (resultCode == RESULT_OK) data?.clipData?.let { clip -> Array(clip.itemCount) { clip.getItemAt(it).uri } }
@@ -339,6 +363,7 @@ class MainActivity : Activity() {
         super.onResume()
         webView.onResume()
         appearance.updateSystem(resources.configuration)
+        stationArrival.onResume()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

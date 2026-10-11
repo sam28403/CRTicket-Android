@@ -52,6 +52,8 @@
             </el-card>
           </div>
 
+          <StationArrivalCard />
+
           <el-dialog v-model="avatarDialogVisible" title="裁切头像" width="420px" :close-on-click-modal="false">
             <div class="avatar-crop-wrap">
               <div class="avatar-crop-preview">
@@ -156,6 +158,7 @@
 
 <script setup>
 import UserNameCard from '@/components/UserNameCard.vue'
+import StationArrivalCard from '@/components/StationArrivalCard.vue'
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import AppBrand from '@/components/AppBrand.vue'
 import { useRouter } from "vue-router";

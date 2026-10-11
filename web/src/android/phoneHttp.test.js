@@ -37,6 +37,32 @@ test('binary chunks reassemble without corrupting archive bytes', async () => {
     assert.deepEqual(new Uint8Array(await response.arrayBuffer()), new Uint8Array([...first, ...second]))
 })
 
+test('station API dispatches to the phone bridge with station parameters', async () => {
+    const urls = []
+    const date = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10)
+    requestHandler = (id, method, path) => {
+        urls.push(new URL(path))
+        const data = path.includes('/czxx/init') ? {} : {
+            status: true,
+            data: { flag: true, data: [{
+                station_train_code: 'G1', station_name: '北京南',
+                start_station_name: '北京南', end_station_name: '上海',
+                start_time: '08:00', start_train_date: date,
+            }] },
+        }
+        queueMicrotask(() => window.crticketApiResult(id, {
+            status: 200, contentType: 'application/json', body: JSON.stringify(data),
+        }))
+    }
+    const { default: api } = await import('../api.js')
+    const { data } = await api.get('/station', { params: { station: '北京南', date } })
+    assert.equal(data.success, true)
+    assert.equal(data.source, '12306')
+    assert.equal(data.trains[0].departure, '08:00')
+    assert.deepEqual(urls.map(url => url.pathname), ['/otn/czxx/init', '/otn/czxx/query'])
+    assert.equal(urls[1].searchParams.get('train_station_code'), 'VNP')
+})
+
 test('timeout and abort cancel native reads and discard late results', async () => {
     let staleId
     requestHandler = id => { staleId = id }

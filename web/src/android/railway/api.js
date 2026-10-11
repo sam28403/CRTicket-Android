@@ -3,12 +3,14 @@ import { queryTrainInfo, validateTrainQuery } from './trainInfo.js'
 import { loadLltDatabase } from './lltLoader.js'
 import { listLltTrains, validListDate, runsOnDate } from './lltList.js'
 import { queryLeftTicket } from './leftTicket.js'
+import { requestStation } from './station.js'
 
 const summaries = new WeakMap()
 
 export async function requestRailway(path, signal) {
     const url = new URL(path, 'https://phone.invalid')
     const query = Object.fromEntries(url.searchParams)
+    if (url.pathname === '/station') return requestStation(query, signal)
     if (url.pathname === '/left-ticket') return queryLeftTicket(query, nativeFetch, signal)
     if (url.pathname === '/train-info') {
         const train = query.train?.trim().toUpperCase()

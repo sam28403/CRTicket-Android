@@ -17,6 +17,8 @@ object UpstreamPolicy {
                 url.encodedPath in setOf(
                     "/otn/queryTrainInfo/query",
                     "/otn/czxx/queryByTrainNo",
+                    "/otn/czxx/init",
+                    "/otn/czxx/query",
                     "/otn/resources/js/framework/station_name.js",
                     "/otn/leftTicket/init"
                 ) || Regex("^/otn/leftTicket/query[A-Za-z]*$").matches(url.encodedPath)
