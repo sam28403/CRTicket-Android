@@ -5,6 +5,8 @@ import { ElMessage } from 'element-plus'
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import AppBrand from '@/components/AppBrand.vue'
 import TrainRouteMap from '@/components/TrainRouteMap.vue'
+import TrainTrackingButton from '@/components/TrainTrackingButton.vue'
+import { supportsTrainTracking } from '@/android/trainTracking.js'
 import api from '@/api.js'
 import { isTrainQueryDateInRange, trainQueryRange } from '@/utils/trainQueryDate.js'
 import { displayTrainCode, trainInfoForDisplay } from '@/utils/trainDisplay.js'
@@ -18,6 +20,9 @@ const result = ref(null)
 const route = useRoute()
 const offlineMode = computed(() => route.query.source === 'llt')
 const offlineRecord = ref('')
+const resultQueryCode = ref('')
+const resultQuerySource = ref('')
+const trackingSupported = supportsTrainTracking()
 let controller
 let requestId = 0
 
@@ -76,7 +81,11 @@ async function query() {
       signal: controller.signal,
     })
     if (!data.success) throw new Error(data.message || '查询失败')
-    if (id === requestId) result.value = trainInfoForDisplay(data)
+    if (id === requestId) {
+      result.value = trainInfoForDisplay(data)
+      resultQueryCode.value = code
+      resultQuerySource.value = offlineMode.value ? 'llt' : ''
+    }
   } catch (err) {
     if (id === requestId && err.code !== 'ERR_CANCELED') {
       error.value = err.response?.data?.message || (
@@ -170,10 +179,21 @@ onBeforeUnmount(() => {
         />
         <template v-if="result?.stops.length">
           <div class="result-heading">
-            <strong>{{ result.train }}　{{ result.from }} → {{ result.to }}</strong>
+            <div class="result-title-row">
+              <strong>{{ result.train }}　{{ result.from }} → {{ result.to }}</strong>
+              <TrainTrackingButton
+                :key="`${resultQuerySource}-${resultQueryCode}-${result.date}`"
+                :result="result"
+                :query-train="resultQueryCode"
+                :query-source="resultQuerySource"
+              />
+            </div>
             <el-text type="info" size="small">
               查询日期：{{ result.date }}；车站数据：{{ result.source }}；车站数量：{{ result.stops.length }} 站；
               <template v-if="result.mileageVersion"> 里程数据来源：路路通 {{ result.mileageVersion }}</template>
+            </el-text>
+            <el-text v-if="trackingSupported" type="info" size="small" class="tracking-hint">
+              追踪按时刻表推算，不含实时位置与晚点信息；同时追踪一趟列车。
             </el-text>
           </div>
           <el-table class="desktop-stops" :data="result.stops" stripe border style="width: 100%">
@@ -296,6 +316,23 @@ h1 {
   align-items: flex-end;
   gap: 20px;
   flex-wrap: wrap;
+}
+.result-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.result-title-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.result-title-row :deep(.el-button) {
+  flex-shrink: 0;
+}
+.tracking-hint {
+  width: 100%;
 }
 .query-form .el-form-item {
   width: 240px;

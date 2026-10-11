@@ -18,6 +18,12 @@ import org.json.JSONObject
 class MonitorNotifications(
     private val activity: Activity,
     private val callback: (String, String, JSONObject) -> Unit,
+    private val channelId: String = CHANNEL_ID,
+    private val channelName: String = "余票提醒",
+    private val channelDescription: String = "监测发现有票或余票数量变化时提醒",
+    private val channelImportance: Int = NotificationManager.IMPORTANCE_HIGH,
+    private val permissionRequest: Int = PERMISSION_REQUEST,
+    private val settingsRequest: Int = SETTINGS_REQUEST,
 ) {
     companion object {
         private const val CHANNEL_ID = "ticket-availability"
@@ -33,8 +39,8 @@ class MonitorNotifications(
 
     private fun createChannel() {
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "余票提醒", NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "监测发现有票或余票数量变化时提醒"
+            NotificationChannel(channelId, channelName, channelImportance).apply {
+                description = channelDescription
             }
         )
     }
@@ -44,7 +50,7 @@ class MonitorNotifications(
             activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
             PackageManager.PERMISSION_GRANTED
         return permissionGranted && manager.areNotificationsEnabled() &&
-            manager.getNotificationChannel(CHANNEL_ID)?.importance != NotificationManager.IMPORTANCE_NONE
+            manager.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
     }
 
     // Called on the main thread; multiple callers share the same system prompt.
@@ -65,24 +71,24 @@ class MonitorNotifications(
         ) {
             activity.requestPermissions(
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                PERMISSION_REQUEST,
+                permissionRequest,
             )
             return
         }
 
         AlertDialog.Builder(activity)
-            .setTitle("开启余票通知")
-            .setMessage("系统通知已关闭，请在设置中允许 CRTicket 通知并开启“余票提醒”。")
+            .setTitle("开启$channelName")
+            .setMessage("系统通知已关闭，请在设置中允许 CRTicket 通知并开启“$channelName”。")
             .setPositiveButton("去设置") { _, _ ->
                 val channelBlocked = manager.areNotificationsEnabled() &&
-                    manager.getNotificationChannel(CHANNEL_ID)?.importance == NotificationManager.IMPORTANCE_NONE
+                    manager.getNotificationChannel(channelId)?.importance == NotificationManager.IMPORTANCE_NONE
                 val intent = Intent(
                     if (channelBlocked) Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
                     else Settings.ACTION_APP_NOTIFICATION_SETTINGS
                 ).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
-                if (channelBlocked) intent.putExtra(Settings.EXTRA_CHANNEL_ID, CHANNEL_ID)
+                if (channelBlocked) intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
                 try {
-                    activity.startActivityForResult(intent, SETTINGS_REQUEST)
+                    activity.startActivityForResult(intent, settingsRequest)
                 } catch (_: Exception) {
                     finishPermission("无法打开通知设置，请在系统设置中手动开启")
                 }
@@ -93,7 +99,7 @@ class MonitorNotifications(
     }
 
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
-        if (requestCode != PERMISSION_REQUEST) return
+        if (requestCode != permissionRequest) return
         // Dismissing the dialog leaves permission unchanged and allows another request.
         if (grantResults.isNotEmpty()) {
             preferences.edit().putBoolean("requested", true).apply()
@@ -102,7 +108,7 @@ class MonitorNotifications(
     }
 
     fun onActivityResult(requestCode: Int) {
-        if (requestCode == SETTINGS_REQUEST) finishPermission()
+        if (requestCode == settingsRequest) finishPermission()
     }
 
     private fun finishPermission(message: String? = null) {
@@ -110,7 +116,7 @@ class MonitorNotifications(
         val statusMessage = message ?: if (granted) {
             "系统通知已开启"
         } else {
-            "未开启系统通知，将继续使用页面内提醒；可在系统设置中开启"
+            "未开启系统通知，请在系统设置中开启“$channelName”"
         }
         val result = JSONObject()
             .put("granted", granted)

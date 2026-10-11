@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.res.Configuration
 import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.notifications.MonitorNotifications
+import cc.samlab.ticket.tracking.TrainTrackingBridge
+import cc.samlab.ticket.tracking.TrainTrackingNotifications
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -37,6 +39,7 @@ class MainActivity : Activity() {
     }
     private val preferences by lazy { getSharedPreferences("android", MODE_PRIVATE) }
     private val notifications by lazy { MonitorNotifications(this, ::callback) }
+    private val trainTracking by lazy { TrainTrackingBridge(this, ::callback) }
     private var fileChooser: ValueCallback<Array<Uri>>? = null
     private var pendingSave: File? = null
     private var pendingSaveId: String? = null
@@ -144,7 +147,10 @@ class MainActivity : Activity() {
         pendingSaveId = savedInstanceState?.getString("saveId")
         saving = pendingSave != null
         if (savedInstanceState == null || webView.restoreState(savedInstanceState) == null) {
-            val route = if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) {
+            val trackingRoute = intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)
+            val route = if (trackingRoute != null) {
+                "#$trackingRoute"
+            } else if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) {
                 "#/monitor"
             } else {
                 ""
@@ -159,6 +165,9 @@ class MainActivity : Activity() {
         if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) {
             webView.evaluateJavascript("window.location.hash = '/monitor'", null)
         }
+        intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)?.let { route ->
+            webView.evaluateJavascript("window.location.hash = ${JSONObject.quote(route)}", null)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -168,6 +177,7 @@ class MainActivity : Activity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         notifications.onRequestPermissionsResult(requestCode, grantResults)
+        trainTracking.onRequestPermissionsResult(requestCode, grantResults)
     }
 
     private fun errorResponse(status: Int, reason: String) = WebResourceResponse("text/plain", "UTF-8", status, reason, emptyMap(), ByteArrayInputStream(reason.toByteArray()))
@@ -212,6 +222,22 @@ class MainActivity : Activity() {
     }
 
     inner class AndroidBridge {
+        @JavascriptInterface fun requestTrainTrackingPermission(id: String) {
+            runOnUiThread { trainTracking.requestPermission(id) }
+        }
+
+        @JavascriptInterface fun trainTrackingState(id: String) {
+            runOnUiThread { trainTracking.state(id) }
+        }
+
+        @JavascriptInterface fun startTrainTracking(id: String, payload: String) {
+            runOnUiThread { trainTracking.start(id, payload) }
+        }
+
+        @JavascriptInterface fun stopTrainTracking(id: String) {
+            runOnUiThread { trainTracking.stop(id) }
+        }
+
         @JavascriptInterface fun requestNotificationPermission(id: String) {
             runOnUiThread { notifications.requestPermission(id) }
         }
@@ -277,6 +303,7 @@ class MainActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         notifications.onActivityResult(requestCode)
+        trainTracking.onActivityResult(requestCode)
         when (requestCode) {
             FILE_REQUEST -> {
                 val result = if (resultCode == RESULT_OK) data?.clipData?.let { clip -> Array(clip.itemCount) { clip.getItemAt(it).uri } }

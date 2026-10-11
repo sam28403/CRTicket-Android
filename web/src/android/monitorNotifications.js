@@ -4,10 +4,12 @@ if (globalThis.window) {
   window.crticketNotificationResult = (id, result) => pending.get(id)?.(result)
 }
 
-function callNative(method, args, signal) {
+export function callNativeNotification(method, args, signal, timeout = 0) {
   return new Promise((resolve, reject) => {
     const id = crypto.randomUUID()
+    let timer
     const cleanup = () => {
+      clearTimeout(timer)
       pending.delete(id)
       signal?.removeEventListener('abort', abort)
     }
@@ -19,6 +21,12 @@ function callNative(method, args, signal) {
       cleanup()
       resolve(result)
     })
+    if (timeout > 0) {
+      timer = setTimeout(() => {
+        cleanup()
+        reject(new Error('系统通知操作超时，请重试'))
+      }, timeout)
+    }
     signal?.addEventListener('abort', abort, { once: true })
     if (signal?.aborted) {
       abort()
@@ -40,7 +48,7 @@ export async function requestMonitorNotificationPermission(signal) {
       return { granted: false, message: '请更新应用以启用系统通知，将继续使用页面内提醒' }
     }
     try {
-      return await callNative('requestNotificationPermission', [], signal)
+      return await callNativeNotification('requestNotificationPermission', [], signal)
     } catch (error) {
       if (error.code === 'ERR_CANCELED') throw error
       return { granted: false, message: '无法申请系统通知权限，将继续使用页面内提醒' }
@@ -75,7 +83,7 @@ export async function publishMonitorNotification(notices, details, signal) {
   const native = globalThis.window?.CRTicketAndroid
   if (native) {
     if (!native.notifyTicketAvailability) return { success: false }
-    return callNative('notifyTicketAvailability', [title, body], signal)
+    return callNativeNotification('notifyTicketAvailability', [title, body], signal)
   }
 
   const Notification = globalThis.window?.Notification
