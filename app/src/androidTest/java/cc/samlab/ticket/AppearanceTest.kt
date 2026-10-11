@@ -50,7 +50,8 @@ class AppearanceTest {
             Thread.sleep(250)
             val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
             val expected = dark.toString()
-            while (evaluate("document.documentElement.classList.contains('dark')") != expected && System.nanoTime() < deadline) {
+            while (evaluate("document.documentElement.classList.contains('dark')") != expected &&
+                System.nanoTime() < deadline) {
                 Thread.sleep(100)
             }
             assertEquals(expected, evaluate("document.documentElement.classList.contains('dark')"))
@@ -60,12 +61,18 @@ class AppearanceTest {
         waitReady()
         val savedPreference = evaluate("localStorage.getItem('crticket-theme')")
         try {
-            evaluate("window.beforeThemeReload = true;localStorage.setItem('crticket-theme','classic-system');location.reload()")
+            evaluate("""
+                window.beforeThemeReload = true;
+                localStorage.setItem('crticket-theme','classic-system');
+                location.reload();
+            """.trimIndent())
             val reloadDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20)
-            while (evaluate("Boolean(!window.beforeThemeReload && window.crticketBack && document.readyState === 'complete')") != "true" && System.nanoTime() < reloadDeadline) {
+            val ready = "Boolean(!window.beforeThemeReload && window.crticketBack && " +
+                "document.readyState === 'complete')"
+            while (evaluate(ready) != "true" && System.nanoTime() < reloadDeadline) {
                 Thread.sleep(200)
             }
-            assertEquals("true", evaluate("Boolean(!window.beforeThemeReload && window.crticketBack && document.readyState === 'complete')"))
+            assertEquals("true", evaluate(ready))
             waitReady()
             assertEquals("0", evaluate("document.querySelectorAll('.android-toolbar').length"))
             changeSystem(true)

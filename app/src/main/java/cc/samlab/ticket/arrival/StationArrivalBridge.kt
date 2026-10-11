@@ -3,15 +3,19 @@ package cc.samlab.ticket.arrival
 import android.app.Activity
 import android.app.NotificationManager
 import cc.samlab.ticket.notifications.MonitorNotifications
+import cc.samlab.ticket.ui.ExpressiveDialogHost
 import org.json.JSONObject
 
-class StationArrivalBridge(private val activity: Activity,
-    private val callback: (String, String, JSONObject) -> Unit) {
+class StationArrivalBridge(
+    private val activity: Activity,
+    private val callback: (String, String, JSONObject) -> Unit,
+    dialogs: ExpressiveDialogHost,
+) {
     private val store = ArrivalStore(activity)
     private val monitor = StationArrivalMonitor.get(activity)
     private var pending: String? = null
     private var permissionRound = 0
-    private val permissions = ArrivalPermissions(activity) { granted, message ->
+    private val permissions = ArrivalPermissions(activity, dialogs) { granted, message ->
         if (pending != null) {
             if (granted) notifications.requestPermission("arrival-permission:$permissionRound")
             else finish(false, message)
@@ -25,7 +29,7 @@ class StationArrivalBridge(private val activity: Activity,
     }, channelId = ArrivalNotifications.CHANNEL, channelName = "到站提醒",
         channelDescription = "到达附近车站时提醒，可点按打开车站大屏",
         channelImportance = NotificationManager.IMPORTANCE_HIGH,
-        permissionRequest = 53, settingsRequest = 54)
+        permissionRequest = 53, settingsRequest = 54, dialogs = dialogs)
 
     fun state(id: String) = reply(id, status())
 
@@ -70,6 +74,7 @@ class StationArrivalBridge(private val activity: Activity,
     fun disable(id: String) {
         permissionRound++
         permissions.cancel()
+        notifications.cancelPermissionRequest()
         finish(false, "已取消开启到站提醒")
         monitor.stop()
         reply(id, status())

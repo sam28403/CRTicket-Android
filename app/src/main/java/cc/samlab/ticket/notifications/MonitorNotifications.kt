@@ -13,6 +13,7 @@ import android.os.Build
 import android.provider.Settings
 import cc.samlab.ticket.MainActivity
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.ExpressiveDialogHost
 import org.json.JSONObject
 
 class MonitorNotifications(
@@ -24,6 +25,7 @@ class MonitorNotifications(
     private val channelImportance: Int = NotificationManager.IMPORTANCE_HIGH,
     private val permissionRequest: Int = PERMISSION_REQUEST,
     private val settingsRequest: Int = SETTINGS_REQUEST,
+    private val dialogs: ExpressiveDialogHost? = null,
 ) {
     companion object {
         private const val CHANNEL_ID = "ticket-availability"
@@ -45,13 +47,7 @@ class MonitorNotifications(
         )
     }
 
-    fun enabled(): Boolean {
-        val permissionGranted = Build.VERSION.SDK_INT < 33 ||
-            activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-            PackageManager.PERMISSION_GRANTED
-        return permissionGranted && manager.areNotificationsEnabled() &&
-            manager.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
-    }
+    fun enabled(): Boolean = NotificationAccess.enabled(activity, channelId)
 
     // Called on the main thread; multiple callers share the same system prompt.
     fun requestPermission(id: String) {
@@ -76,26 +72,39 @@ class MonitorNotifications(
             return
         }
 
-        AlertDialog.Builder(activity)
-            .setTitle("开启$channelName")
-            .setMessage("系统通知已关闭，请在设置中允许 CRTicket 通知并开启“$channelName”。")
-            .setPositiveButton("去设置") { _, _ ->
-                val channelBlocked = manager.areNotificationsEnabled() &&
-                    manager.getNotificationChannel(channelId)?.importance == NotificationManager.IMPORTANCE_NONE
-                val intent = Intent(
-                    if (channelBlocked) Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
-                    else Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                ).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
-                if (channelBlocked) intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
-                try {
-                    activity.startActivityForResult(intent, settingsRequest)
-                } catch (_: Exception) {
-                    finishPermission("无法打开通知设置，请在系统设置中手动开启")
-                }
+        val openSettings = {
+            val channelBlocked = manager.areNotificationsEnabled() &&
+                manager.getNotificationChannel(channelId)?.importance == NotificationManager.IMPORTANCE_NONE
+            val intent = Intent(
+                if (channelBlocked) Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+                else Settings.ACTION_APP_NOTIFICATION_SETTINGS
+            ).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
+            if (channelBlocked) intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+            try {
+                activity.startActivityForResult(intent, settingsRequest)
+            } catch (_: Exception) {
+                finishPermission("无法打开通知设置，请在系统设置中手动开启")
             }
-            .setNegativeButton("暂不开启") { _, _ -> finishPermission() }
-            .setOnCancelListener { finishPermission() }
-            .show()
+        }
+        val title = "开启$channelName"
+        val message = "系统通知已关闭，请在设置中允许 CRTicket 通知并开启“$channelName”。"
+        if (dialogs != null) {
+            dialogs.show(
+                title = title,
+                message = message,
+                confirmLabel = "去设置",
+                onConfirm = openSettings,
+                onDecline = { finishPermission() },
+            )
+        } else {
+            AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("去设置") { _, _ -> openSettings() }
+                .setNegativeButton("暂不开启") { _, _ -> finishPermission() }
+                .setOnCancelListener { finishPermission() }
+                .show()
+        }
     }
 
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
@@ -105,6 +114,11 @@ class MonitorNotifications(
             preferences.edit().putBoolean("requested", true).apply()
         }
         finishPermission()
+    }
+
+    fun cancelPermissionRequest() {
+        pending.clear()
+        dialogs?.dismiss()
     }
 
     fun onActivityResult(requestCode: Int) {

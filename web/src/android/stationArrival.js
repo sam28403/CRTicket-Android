@@ -1,9 +1,10 @@
-import { callNativeNotification } from './monitorNotifications.js'
+import { callNativeNotification } from './nativeNotifications.js'
+import { supportsNativeMethods } from './nativeCalls.js'
 
 export function supportsStationArrival() {
-  const bridge = globalThis.window?.CRTicketAndroid
-  return ['stationArrivalState', 'enableStationArrival', 'disableStationArrival']
-    .every(method => typeof bridge?.[method] === 'function')
+  return supportsNativeMethods([
+    'stationArrivalState', 'enableStationArrival', 'disableStationArrival',
+  ])
 }
 
 export function getStationArrivalState(signal) {

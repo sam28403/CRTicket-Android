@@ -40,7 +40,8 @@ class TrainTrackingIconSceneTest {
                 val expectedCode = if (phase == "waiting" || phase == "running") "G97" else "G100"
                 assertEquals("$expectedCode · 调试起点→调试终点", entry.notification.extras
                     .getCharSequence(Notification.EXTRA_TITLE).toString())
-                println("Icon scene: $phase icon=${entry.notification.smallIcon.resId} title=$expectedCode flags=${entry.notification.flags}")
+                println("Icon scene: $phase icon=${entry.notification.smallIcon.resId} " +
+                    "title=$expectedCode flags=${entry.notification.flags}")
                 instrumentation.uiAutomation.takeScreenshot()?.let { bitmap ->
                     File(output, "$phase.png").outputStream().use {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)

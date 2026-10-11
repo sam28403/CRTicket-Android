@@ -1,18 +1,17 @@
 package cc.samlab.ticket.tracking
 
-import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import cc.samlab.ticket.MainActivity
+import cc.samlab.ticket.notifications.NotificationAccess
 
 class TrainTrackingNotifications(private val context: Context) {
     companion object {
@@ -34,11 +33,7 @@ class TrainTrackingNotifications(private val context: Context) {
         )
     }
 
-    fun enabled(): Boolean =
-        (Build.VERSION.SDK_INT < 33 ||
-            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-            PackageManager.PERMISSION_GRANTED) && manager.areNotificationsEnabled() &&
-            manager.getNotificationChannel(CHANNEL_ID)?.importance != NotificationManager.IMPORTANCE_NONE
+    fun enabled(): Boolean = NotificationAccess.enabled(context, CHANNEL_ID)
 
     fun isActive(): Boolean = manager.activeNotifications.any {
         it.id == NOTIFICATION_ID && it.notification.flags and Notification.FLAG_ONGOING_EVENT != 0

@@ -46,7 +46,8 @@ class PhoneBackendTest {
         val date = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Shanghai"))
         evaluate("""
             window.phoneProbe = null;
-            import('${MainActivity.ORIGIN}/assets/$module').then(module => module.requestRailway('/llt-trains?date=$date'))
+            import('${MainActivity.ORIGIN}/assets/$module')
+                .then(module => module.requestRailway('/llt-trains?date=$date'))
                 .then(data => window.phoneProbe = { success: data.success, version: data.version, total: data.total })
                 .catch(error => window.phoneProbe = { success: false, error: error.message });
         """.trimIndent())
@@ -68,7 +69,8 @@ class PhoneBackendTest {
                 else previousCallback(id, result);
             };
             CRTicketAndroid.request('phone-search-probe', 'GET',
-                'https://search.12306.cn/search/v1/train/search?keyword=G1&date=${date.toString().replace("-", "")}', '');
+                'https://search.12306.cn/search/v1/train/search?keyword=G1'
+                    + '&date=${date.toString().replace("-", "")}', '');
         """.trimIndent())
         val searchDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(50)
         var search = "null"

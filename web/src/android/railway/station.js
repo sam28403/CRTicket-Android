@@ -4,7 +4,7 @@ import { trainQueryRange } from '../../utils/trainQueryDate.js'
 import { loadLltDatabase } from './lltLoader.js'
 import { query12306Station } from './station12306.js'
 import { listLltStation } from './stationLlt.js'
-import { waitForStation } from './stationRequest.js'
+import { cancelledRequest, waitForRequest } from '../../utils/requests.js'
 
 const stations = new Map(parseStations().map(station => [station.name, station]))
 
@@ -38,7 +38,7 @@ export function createStationQuery(options = {}) {
 
   return async function requestStation(query, signal) {
     if (signal?.aborted) {
-      throw Object.assign(new Error('请求已取消'), { code: 'ERR_CANCELED' })
+      throw cancelledRequest()
     }
     const name = stationQueryName(query.station)
     const station = name ? stations.get(name) || { name, telecode: '' } : null
@@ -72,7 +72,7 @@ export function createStationQuery(options = {}) {
         }).finally(() => pending.delete(key))
         pending.set(key, task)
       }
-      entry = await waitForStation(task, signal)
+      entry = await waitForRequest(task, signal)
     }
     if (date !== trainQueryRange(now()).today) {
       throw new Error('日期已更新，请重新查询当天信息')

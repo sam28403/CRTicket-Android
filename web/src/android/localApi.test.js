@@ -33,7 +33,9 @@ test('device history survives reload, preserves identity on edits and supports d
 test('backup deduplication, validation, statistics and calendar agree with saved records', async () => {
   const { api } = fixture()
   await api.request('POST', '/ticket/add', ticket)
-  const imported = await api.request('POST', '/user/import-backup', { backup: [ticket, { ...ticket, ticket_number: 'E2' }, { ...ticket, distance: -1 }] })
+  const imported = await api.request('POST', '/user/import-backup', {
+    backup: [ticket, { ...ticket, ticket_number: 'E2' }, { ...ticket, distance: -1 }],
+  })
   assert.deepEqual(imported.data, { imported: 1, skipped: 1, invalid: 1, total: 3 })
   const stats = await api.request('GET', '/user/statistics')
   assert.deepEqual(stats.data.departures, [{ station: '北京南', count: 2 }])

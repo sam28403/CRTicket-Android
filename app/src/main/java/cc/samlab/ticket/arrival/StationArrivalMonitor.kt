@@ -3,7 +3,6 @@ package cc.samlab.ticket.arrival
 import android.content.Context
 import android.annotation.SuppressLint
 import android.location.Location
-import android.os.SystemClock
 
 class StationArrivalMonitor private constructor(context: Context) {
     companion object {
@@ -27,7 +26,10 @@ class StationArrivalMonitor private constructor(context: Context) {
     fun start(finished: () -> Unit = {}) {
         check(ArrivalAccess.ready(context)) { "请开启精确定位、始终允许定位和到站通知" }
         store.enabled = true
-        if (running && store.registered) { finished(); return }
+        if (running && store.registered) {
+            finished()
+            return
+        }
         running = true
         val token = ++generation
         store.registered = false
@@ -36,7 +38,10 @@ class StationArrivalMonitor private constructor(context: Context) {
             if (token == generation) store.message = "低功耗定位不可用，请检查系统定位后重新开启"
         }
         fences.current().addOnCompleteListener { task ->
-            if (token != generation || !store.enabled) { finished(); return@addOnCompleteListener }
+            if (token != generation || !store.enabled) {
+                finished()
+                return@addOnCompleteListener
+            }
             val location = if (task.isSuccessful) task.result else null
             if (location != null) update(location, true, finished)
             else {
@@ -47,7 +52,10 @@ class StationArrivalMonitor private constructor(context: Context) {
     }
 
     fun restore(finished: () -> Unit = {}) {
-        if (!store.enabled) { finished(); return }
+        if (!store.enabled) {
+            finished()
+            return
+        }
         if (!ArrivalAccess.ready(context)) {
             suspendMonitoring()
             store.message = "到站提醒已暂停，请检查精确定位、始终允许定位和通知权限"
@@ -77,14 +85,18 @@ class StationArrivalMonitor private constructor(context: Context) {
     }
 
     fun update(location: Location, force: Boolean = false, finished: () -> Unit = {}) {
-        if (!store.enabled || !ArrivalAccess.ready(context)) { finished(); return }
-        val age = (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) / 1_000_000
-        if (age !in 0..300_000 || !location.hasAccuracy() || location.accuracy > 2000) {
-            finished(); return
+        if (!store.enabled || !ArrivalAccess.ready(context)) {
+            finished()
+            return
+        }
+        if (!ArrivalLocations.usable(location, 2000f)) {
+            finished()
+            return
         }
         ArrivalVisits.check(context, location)
         if (!force && center?.distanceTo(location)?.let { it < radius / 2 } == true) {
-            finished(); return
+            finished()
+            return
         }
         completions.add(finished)
         queued = Location(location)
@@ -95,7 +107,10 @@ class StationArrivalMonitor private constructor(context: Context) {
     private fun registerNext() {
         val location = queued ?: return
         queued = null
-        if (!store.enabled || !ArrivalAccess.ready(context)) { finishWaiters(); return }
+        if (!store.enabled || !ArrivalAccess.ready(context)) {
+            finishWaiters()
+            return
+        }
         busy = true
         val token = generation
         val plan = ArrivalPolicy.plan(ArrivalCatalog.stations(context), location.latitude, location.longitude)

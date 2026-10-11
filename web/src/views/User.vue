@@ -574,7 +574,10 @@ async function handleExportToExcel() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "运转数据")
     const fileName = `CRTicket-运转数据-${user.username || "user"}-${getExportFileStamp()}.xlsx`
     const bytes = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
-    if (await saveFile(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), fileName)) {
+    const blob = new Blob([bytes], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    })
+    if (await saveFile(blob, fileName)) {
       ElMessage.success("Excel 导出成功")
     }
   } catch (err) {

@@ -1,9 +1,11 @@
-import { callNativeNotification } from './monitorNotifications.js'
+import { callNativeNotification } from './nativeNotifications.js'
+import { supportsNativeMethods } from './nativeCalls.js'
 
 export function supportsTrainTracking() {
-  const bridge = globalThis.window?.CRTicketAndroid
-  return ['requestTrainTrackingPermission', 'trainTrackingState',
-    'startTrainTracking', 'stopTrainTracking'].every(method => typeof bridge?.[method] === 'function')
+  return supportsNativeMethods([
+    'requestTrainTrackingPermission', 'trainTrackingState',
+    'startTrainTracking', 'stopTrainTracking',
+  ])
 }
 
 export function trackingPayload(result, queryTrain, querySource) {

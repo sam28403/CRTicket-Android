@@ -1,14 +1,15 @@
 package cc.samlab.ticket.arrival
 
-import android.Manifest
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import cc.samlab.ticket.MainActivity
 import cc.samlab.ticket.R
+import cc.samlab.ticket.notifications.NotificationAccess
 
 class ArrivalNotifications(private val context: Context) {
     companion object {
@@ -24,10 +25,7 @@ class ArrivalNotifications(private val context: Context) {
         })
     }
 
-    fun enabled(): Boolean = manager.areNotificationsEnabled() &&
-        (Build.VERSION.SDK_INT < 33 || context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-            == PackageManager.PERMISSION_GRANTED) &&
-        manager.getNotificationChannel(CHANNEL)?.importance != NotificationManager.IMPORTANCE_NONE
+    fun enabled(): Boolean = NotificationAccess.enabled(context, CHANNEL)
 
     fun publish(station: String): Boolean {
         createChannel()

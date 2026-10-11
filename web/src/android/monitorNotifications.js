@@ -1,45 +1,6 @@
-const pending = new Map()
+import { callNativeNotification } from './nativeNotifications.js'
 
-if (globalThis.window) {
-  window.crticketNotificationResult = (id, result) => pending.get(id)?.(result)
-}
-
-export function callNativeNotification(method, args, signal, timeout = 0) {
-  return new Promise((resolve, reject) => {
-    const id = crypto.randomUUID()
-    let timer
-    const cleanup = () => {
-      clearTimeout(timer)
-      pending.delete(id)
-      signal?.removeEventListener('abort', abort)
-    }
-    const abort = () => {
-      cleanup()
-      reject(Object.assign(new Error('请求已取消'), { code: 'ERR_CANCELED' }))
-    }
-    pending.set(id, result => {
-      cleanup()
-      resolve(result)
-    })
-    if (timeout > 0) {
-      timer = setTimeout(() => {
-        cleanup()
-        reject(new Error('系统通知操作超时，请重试'))
-      }, timeout)
-    }
-    signal?.addEventListener('abort', abort, { once: true })
-    if (signal?.aborted) {
-      abort()
-      return
-    }
-    try {
-      window.CRTicketAndroid[method](id, ...args)
-    } catch (error) {
-      cleanup()
-      reject(error)
-    }
-  })
-}
+export { callNativeNotification } from './nativeNotifications.js'
 
 export async function requestMonitorNotificationPermission(signal) {
   const native = globalThis.window?.CRTicketAndroid

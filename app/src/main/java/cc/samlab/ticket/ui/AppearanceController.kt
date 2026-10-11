@@ -11,7 +11,8 @@ import android.webkit.WebView
 class AppearanceController(
     private val activity: Activity,
     private val root: View,
-    private val webView: WebView
+    private val webView: WebView,
+    private val dialogs: ExpressiveDialogHost,
 ) {
     @Volatile
     private var systemDark = isNight(activity.resources.configuration)
@@ -35,6 +36,7 @@ class AppearanceController(
     }
 
     fun apply(dark: Boolean) {
+        dialogs.dark = dark
         val color = if (dark) Color.rgb(10, 10, 10) else Color.WHITE
         root.setBackgroundColor(color)
         webView.setBackgroundColor(color)

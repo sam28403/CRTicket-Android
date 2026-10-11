@@ -44,9 +44,11 @@ class TrainTrackingAodProbeTest {
                 val chip = if (android.os.Build.VERSION.SDK_INT >= 36) {
                     notice!!.notification.shortCriticalText ?: ""
                 } else "legacy"
-                samples.append("${System.currentTimeMillis()},${power.isInteractive},$chip,${notice!!.postTime},${notice.notification.flags}\n")
+                samples.append("${System.currentTimeMillis()},${power.isInteractive},$chip," +
+                    "${notice!!.postTime},${notice.notification.flags}\n")
                 if (chip != previousChip) {
-                    println("AOD probe $label: chip=$chip interactive=${power.isInteractive} flags=${notice.notification.flags}")
+                    println("AOD probe $label: chip=$chip interactive=${power.isInteractive} " +
+                        "flags=${notice.notification.flags}")
                     previousChip = chip
                 }
                 val second = System.currentTimeMillis() / 1000 % 60

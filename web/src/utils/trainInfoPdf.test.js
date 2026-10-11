@@ -45,7 +45,9 @@ test('优先 14 pt，一页放不下改 12 pt，仍放不下再分页且不丢�
   assert.equal(long.pages.length, 2)
   assert.equal(long.pages.flat().length, 60)
   for (const page of long.pages) {
-    assert.ok(page.reduce((height, row) => height + row.height, long.tableTop + long.header.height) <= PageSizes.A4[1] - 72)
+    assert.ok(page.reduce(
+      (height, row) => height + row.height, long.tableTop + long.header.height,
+    ) <= PageSizes.A4[1] - 72)
   }
 })
 

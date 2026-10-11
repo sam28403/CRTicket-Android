@@ -2,13 +2,17 @@ package cc.samlab.ticket.arrival
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import cc.samlab.ticket.ui.ExpressiveDialogHost
 
-class ArrivalPermissions(private val activity: Activity, private val complete: (Boolean, String) -> Unit) {
+class ArrivalPermissions(
+    private val activity: Activity,
+    private val dialogs: ExpressiveDialogHost,
+    private val complete: (Boolean, String) -> Unit,
+) {
     companion object {
         private const val FINE = 51
         private const val BACKGROUND = 52
@@ -19,16 +23,23 @@ class ArrivalPermissions(private val activity: Activity, private val complete: (
 
     fun request() {
         waiting = true
-        AlertDialog.Builder(activity).setTitle("开启到站提醒")
-            .setMessage("CRTicket 会在应用关闭或不使用时获取位置，用于附近车站的到站通知。" +
-                "请允许精确定位、始终允许定位及到站通知。位置仅在手机上匹配车站，不保存出行轨迹。" +
-                "使用低功耗地理围栏，进入约 300 米范围并短暂停留后提醒，可随时关闭。")
-            .setPositiveButton("继续") { _, _ -> foreground() }
-            .setNegativeButton("暂不开启") { _, _ -> finish(false, "尚未开启到站提醒") }
-            .setOnCancelListener { finish(false, "已取消开启到站提醒") }.show()
+        dialogs.show(
+            title = "开启到站提醒",
+            message = "CRTicket 会在应用关闭或不使用时获取位置，用于附近车站的到站通知。\n\n" +
+                "请允许精确定位、始终允许定位及到站通知。位置仅在手机上匹配车站，不保存出行轨迹。\n\n" +
+                "使用低功耗地理围栏，进入车站 300 米范围后提醒，可随时关闭。" +
+                "系统省电策略可能让提醒延迟几分钟。",
+            confirmLabel = "继续",
+            onConfirm = ::foreground,
+            onDecline = { finish(false, "尚未开启到站提醒") },
+            onDismiss = { finish(false, "已取消开启到站提醒") },
+        )
     }
 
-    fun cancel() { waiting = false }
+    fun cancel() {
+        waiting = false
+        dialogs.dismiss()
+    }
 
     private fun foreground() {
         if (!waiting) return
@@ -56,15 +67,26 @@ class ArrivalPermissions(private val activity: Activity, private val complete: (
     }
 
     private fun settings(message: String) {
-        AlertDialog.Builder(activity).setTitle("允许后台定位").setMessage(message)
-            .setPositiveButton("去设置") { _, _ ->
+        dialogs.show(
+            title = "允许后台定位",
+            message = message,
+            confirmLabel = "去设置",
+            onConfirm = {
                 try {
-                    activity.startActivityForResult(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:${activity.packageName}")), SETTINGS)
-                } catch (_: Exception) { finish(false, "无法打开设置，请手动允许始终定位") }
-            }
-            .setNegativeButton("暂不开启") { _, _ -> finish(false, "需要始终允许定位才能提供后台到站提醒") }
-            .setOnCancelListener { finish(false, "已取消开启到站提醒") }.show()
+                    activity.startActivityForResult(
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:${activity.packageName}"),
+                        ),
+                        SETTINGS,
+                    )
+                } catch (_: Exception) {
+                    finish(false, "无法打开设置，请手动允许始终定位")
+                }
+            },
+            onDecline = { finish(false, "需要始终允许定位才能提供后台到站提醒") },
+            onDismiss = { finish(false, "已取消开启到站提醒") },
+        )
     }
 
     fun onRequestPermissionsResult(code: Int) {

@@ -37,7 +37,8 @@ class TrainRailwayCodeProbeTest {
                         try {
                             const data = await module.requestRailway('/train-info?train=' + train + '&date=$date');
                             results.push({ query: train, source: data.source, stops: data.stops.map(stop => ({
-                                station: stop.station, train: stop.train, arrival: stop.arrival, departure: stop.departure,
+                                station: stop.station, train: stop.train,
+                                arrival: stop.arrival, departure: stop.departure,
                             })) });
                         } catch (error) { results.push({ query: train, error: error.message }); }
                     }
