@@ -1,7 +1,8 @@
 import { nativeFetch } from './nativeFetch.js'
 import { queryTrainInfo, validateTrainQuery } from './trainInfo.js'
 import { loadLltDatabase } from './lltLoader.js'
-import { listLltTrains, validListDate, runsOnDate } from './lltList.js'
+import { listLltTrains, validListDate } from './lltList.js'
+import { lltTrainDetail } from './lltDetail.js'
 import { queryLeftTicket } from './leftTicket.js'
 import { requestStation } from './station.js'
 
@@ -25,23 +26,7 @@ export async function requestRailway(path, signal) {
     if (!validListDate(query.date)) throw new Error('请选择有效日期')
     const database = await loadLltDatabase()
     if (url.pathname === '/llt-trains/detail') {
-        const train = query.train
-        if (!/^[A-Z]?\d{1,5}[A-Z]?(?:\/[A-Z]?\d{1,5}[A-Z]?)*$/.test(train) || train.length > 40) {
-            throw new Error('请选择有效车次')
-        }
-        const item = database.trains.get(train)
-        const stops = item && runsOnDate(item.schedule, query.date) ? item.stops : []
-        return {
-            success: true,
-            train,
-            date: query.date,
-            source: '路路通',
-            mileageVersion: database.version,
-            from: stops[0]?.station || '',
-            to: stops.at(-1)?.station || '',
-            stops,
-            warnings: [],
-        }
+        return lltTrainDetail(database, query.train, query.date)
     }
     if (url.pathname !== '/llt-trains') throw new Error('未知的铁路接口')
     let cache = summaries.get(database)

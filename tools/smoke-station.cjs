@@ -64,6 +64,20 @@ async function main() {
             assert.ok(await page.locator('.el-table-v2__row').count() < 60)
         }
         await page.setViewportSize({ width: 390, height: 844 })
+        await page.route('https://a.tile.openstreetmap.fr/**', route => route.fulfill({
+            contentType: 'image/png',
+            body: Buffer.from(
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aX1sAAAAASUVORK5CYII=',
+                'base64',
+            ),
+        }))
+        await page.getByRole('tab', { name: '地图', exact: true }).click()
+        await page.locator('.leaflet-tile-loaded').first().waitFor()
+        assert.equal(await page.locator('.station-location-map iframe').count(), 0)
+        assert.equal(await page.locator('.leaflet-interactive').count(), 0)
+        assert.equal(await page.locator('.leaflet-overlay-pane path').count(), 1)
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
+        await page.screenshot({ path: path.join(output, 'station-map-mobile.png'), fullPage: true })
         await page.getByRole('tab', { name: '出发大屏', exact: true }).click()
         await page.getByText('共 300 趟', { exact: false }).waitFor()
         assert.equal(await page.getByRole('tab', { name: '出发大屏', exact: true })

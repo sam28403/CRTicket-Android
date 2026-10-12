@@ -21,6 +21,7 @@ class LocalAssetClient(
             "default-src 'self' data: blob:",
             "script-src 'self' 'unsafe-inline'",
             "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob: ${MapResourcePolicy.TILE_ORIGIN}",
             "connect-src 'self' blob: data:",
             "frame-src 'none'",
             "object-src 'none'",
@@ -56,7 +57,10 @@ class LocalAssetClient(
     override fun shouldInterceptRequest(
         view: WebView,
         request: WebResourceRequest,
-    ): WebResourceResponse {
+    ): WebResourceResponse? {
+        if (MapResourcePolicy.isTile(request.url.toString()) && !request.isForMainFrame) {
+            return null
+        }
         if (!isLocal(request.url)) return errorResponse(403, "Forbidden")
         val path = request.url.path.orEmpty().removePrefix("/").ifEmpty { "index.html" }
         if (path.split('/').any { it == "." || it == ".." } || path.contains('\\')) {

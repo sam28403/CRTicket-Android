@@ -20,6 +20,20 @@ export function runsOnDate(schedule, date) {
   return Math.floor(schedule.rule.mask / 2 ** (days % schedule.rule.period)) % 2 === 1
 }
 
+export function findLltTrainCandidates(database, train, date) {
+  const exact = database.trains.get(train)
+  if (exact && runsOnDate(exact.schedule, date)) return [exact]
+  // 完整记录号和方案后缀仍须精确匹配，单车次才按沿途车次号查找。
+  if (!/^[A-Z]?\d{1,5}$/.test(train)) return []
+  return [...database.trains.values()].filter(item => {
+    if (!runsOnDate(item.schedule, date)) return false
+    if (!/^[A-Z]?\d+(?:\/[A-Z]?\d+)+$/.test(item.train)) return false
+    const parts = item.train.split('/')
+    const prefix = parts[0].match(/^[A-Z]/)?.[0] || ''
+    return parts.some(part => (/^\d/.test(part) ? `${prefix}${part}` : part) === train)
+  })
+}
+
 function sortKey(train) {
   const first = train.split('/')[0]
   const prefix = first.match(/^[A-Z]/)?.[0]

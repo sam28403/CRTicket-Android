@@ -180,11 +180,11 @@
     "path": "LICENSE"
   },
   {
-    "hash": "2745FDABA2F940C7840E65DD7C03B1F26ABD4EF65B8E9FA71B8D9628DD2DE4F6",
+    "hash": "A5515DDD52C45236A033C9AA1A07695D1AADD519788EC478427242961EB1C653",
     "path": "package-lock.json"
   },
   {
-    "hash": "407B13F5269CE50F8D897307800F66DE1D615D341FDAF4BA7645BF9B5352D394",
+    "hash": "7BD242FB35E0A57907511C546656C34224EB3A318DDC30B14B2E20C3D00F9C97",
     "path": "package.json"
   },
   {
@@ -288,7 +288,7 @@
     "path": "qodana.yaml"
   },
   {
-    "hash": "8B02D9DF85A22CD90D529F96AA5219680717911DBDF5C34913EC78ACA2C44AC4",
+    "hash": "96AE92237C50B69E18F98391EA27B720F97A85C756E42FC61578B6D2C111CDF0",
     "path": "README.md"
   },
   {
@@ -400,11 +400,11 @@
     "path": "server/routes/lltskb.test.js"
   },
   {
-    "hash": "07724AB4E62D349F9F6C17309A563920264EDDA9CB1F2D0F9E958F05108B134F",
+    "hash": "1FA571BE5DC6665929074EC15A8AC1EBDA4979B43A626D27B93F084EA155DDBA",
     "path": "server/routes/lltTrains.js"
   },
   {
-    "hash": "FDB19603FEE2BB0BD74DF17EE494F3FA73B179C08E6860713374F23BF87DB10A",
+    "hash": "7B7896B8E6817F1796113B811E4466777F8436742B15041AD7116955F8272D8F",
     "path": "server/routes/lltTrains.test.js"
   },
   {
@@ -484,7 +484,7 @@
     "path": "src/api.js"
   },
   {
-    "hash": "91B4F39C14A51D5B478A3FF60826CAC4E815EB9C64AC5942309818E57C0CE80D",
+    "hash": "85EDC77D369AFC5639A03503C2D8EA25BA185B649D89EE2309508D531A475421",
     "path": "src/App.vue"
   },
   {
@@ -532,8 +532,16 @@
     "path": "src/components/StationBoardTable.vue"
   },
   {
+    "path": "src/components/StationFallbackMap.vue",
+    "hash": "94EF75ACF9EFFD03E932A04902A2805984AA4B8F71CCDEF4793DA76274E1B70D"
+  },
+  {
     "hash": "435C654351CA1F791E9FA3EE33ECAB0514A79614AAC0F49D5B27AB82FFD29815",
     "path": "src/components/StationLink.vue"
+  },
+  {
+    "path": "src/components/StationLocationMap.vue",
+    "hash": "78B85AD11C9B3F5769EB4E5012847671DE02C04E72DF0BC0FAEFE34F830EB39C"
   },
   {
     "hash": "926C064D8488FDFF2DE5ED4746A88A43258BBB72ED3E44576702F7E0EE7D64BF",
@@ -544,7 +552,7 @@
     "path": "src/components/TicketRecordDialog.vue"
   },
   {
-    "hash": "41A7D0946AF0BE6A861F0B448AF4AD7C47473570D92E825AA068D91ED49F8EFC",
+    "hash": "248B75BC0A5D0CBD49EE65D92B7F7B90B7232DD795AF39FA198C2FDE8AC200C4",
     "path": "src/components/TrainRouteMap.vue"
   },
   {
@@ -608,12 +616,36 @@
     "path": "src/utils/maps/stationCoordinates.test.js"
   },
   {
+    "path": "src/utils/maps/stationLocationMap.js",
+    "hash": "6A156A1F8BBB2FFCE9822036D291AECB4B5FE4ED6D114EC4E5CE2F8505DA1FB2"
+  },
+  {
+    "path": "src/utils/maps/stationLocationMap.test.js",
+    "hash": "E9A620AE7B0AD6C7B6B3E52F2DEA547FC6B08F4970203C7DFEEEEA4B8BA7E173"
+  },
+  {
+    "path": "src/utils/maps/tileLayerHealth.js",
+    "hash": "7F3633879E37A0C389061491AC263DFDAE1E97D5C8E5B8D2125A91F95111EDAF"
+  },
+  {
+    "path": "src/utils/maps/tileLayerHealth.test.js",
+    "hash": "FF910A5D032BCD68E717E64008A168A393973D6178E1784D166520EE97021E9A"
+  },
+  {
     "hash": "159BA871F9F2892D7BFE3F871D12B9B736167EF3D80D7EDEB35EB66208A6F95B",
     "path": "src/utils/maps/trainRouteMap.js"
   },
   {
     "hash": "30C0F55254BE0FC5BAEB7572BAB64BC56838F080CA0878EE9A36D37FF9ED19BA",
     "path": "src/utils/maps/trainRouteMap.test.js"
+  },
+  {
+    "path": "src/utils/maps/transportConnection.js",
+    "hash": "9191A15C095F60CEAC12A155F4A85E1641375ACE12188EBF3148A4545CBA9A41"
+  },
+  {
+    "path": "src/utils/maps/transportConnection.test.js",
+    "hash": "20EEE148243A0411D83FCF32233897034D3887F91C9B4A578156B148A8949729"
   },
   {
     "hash": "283031FF685DB71AAC3B8B3B60F9590EA9B59C0C39EBC82F97023D145C65AA3D",
@@ -680,6 +712,14 @@
     "path": "src/utils/trainQueryDate.js"
   },
   {
+    "path": "src/utils/trainQuerySource.js",
+    "hash": "9F47FA294E59A79C9A480D7BF16A4B74686AFD6B7CB247F8F1CF4BD62AC8BBCE"
+  },
+  {
+    "path": "src/utils/trainQuerySource.test.js",
+    "hash": "93F25370E7348106C8FFD07574E46C815FD8A78A566A225AAF0EFA40FD8FB90F"
+  },
+  {
     "hash": "1897E52D0D5AA5F1C0E43DB50561497B2874042DDF5ABBC4E217D3772C80AABB",
     "path": "src/utils/trainTime.js"
   },
@@ -696,7 +736,7 @@
     "path": "src/views/Login.vue"
   },
   {
-    "hash": "2B12DE2F1D50748539F7B37E60F79BE4983E19F2E45F32427ADFFC7288925BC8",
+    "hash": "AB772DA0F7F90EE12F7EB9E7B302DDFCA3758FD0994B458C107B1B242568FF3E",
     "path": "src/views/MainView.vue"
   },
   {
@@ -708,7 +748,7 @@
     "path": "src/views/Register.vue"
   },
   {
-    "hash": "7AE5FEDBA31BAABC613122438328A647BD2475933FAAE5573702F52D4F8B7420",
+    "hash": "F957573EC848B9E6C3EEAB155DE2D927C4299EA92897719354680CC77F3878A1",
     "path": "src/views/Station.Vue"
   },
   {
@@ -716,7 +756,7 @@
     "path": "src/views/TrainList.vue"
   },
   {
-    "hash": "AF0B0DB1F7EB31ED1BFE018CC2BF30BED128729708C0B4EBCC7E1FD65FB69C7A",
+    "hash": "20920914B062241E64DBFCAF5A78C0EFEA83F67E36E16BD08FDA75590A17AF95",
     "path": "src/views/TrainQuery.vue"
   },
   {
