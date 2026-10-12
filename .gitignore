@@ -1,22 +1,47 @@
+# Local IDE configuration
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
+local.properties
+/.idea/caches/
+/.idea/libraries/
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-/web/node_modules/
-/web/server/db/*.db
-/web/state/
-/app/build/
+/.idea/deploymentTargetSelector.xml
+
+# Android and Gradle build output
+.gradle/
+.kotlin/
+build/
+.externalNativeBuild/
+.cxx/
+/captures/
+/app/release/
+*.apk
+*.aab
+*.apks
+
+# Signing credentials
+*.jks
+*.keystore
+
+# Dependencies and web build output
+node_modules/
+/web/dist/
 /tools/python-packages/
+__pycache__/
+*.py[cod]
+
+# Local runtime data and database sidecars
+/state/
+/web/state/
 /tools/backend-runtime.json
+/web/server/db/*.db
+/web/server/db/*.db-*
 /reference/desktop-server/db/*.db
+/reference/desktop-server/db/*.db-*
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
