@@ -23,6 +23,7 @@ import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
 import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.ui.ExpressiveDialogHost
+import cc.samlab.ticket.ui.ExpressiveRefreshHost
 import cc.samlab.ticket.web.AndroidBridge
 import cc.samlab.ticket.web.LocalAssetClient
 import cc.samlab.ticket.web.WebViewLayout
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
     private val notifications by lazy { MonitorNotifications(this, ::callback) }
     private val trainTracking by lazy { TrainTrackingBridge(this, ::callback) }
     private val dialogs by lazy { ExpressiveDialogHost(this) }
+    private val refresh by lazy { ExpressiveRefreshHost(this, webView) }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
     private lateinit var appearance: AppearanceController
@@ -56,7 +58,8 @@ class MainActivity : ComponentActivity() {
         }
         val container = WebViewLayout.create(this, webView)
         setContentView(container)
-        appearance = AppearanceController(this, container, webView, dialogs)
+        refresh.attach(container)
+        appearance = AppearanceController(this, container, webView, dialogs, refresh)
         appearance.apply(appearance.isSystemDark())
         configureWebView()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -72,6 +75,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun configureWebView() {
+        webView.overScrollMode = android.view.View.OVER_SCROLL_NEVER
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -89,12 +93,16 @@ class MainActivity : ComponentActivity() {
             AndroidBridge(
                 this, phoneHttp, appearance, notifications, trainTracking, stationArrival,
                 files, ::openExternal,
+                refresh,
             ),
             "CRTicketAndroid",
         )
         webView.webViewClient = LocalAssetClient(
             assets,
-            { appearance.updateSystem(resources.configuration) },
+            {
+                appearance.updateSystem(resources.configuration)
+                refresh.finish()
+            },
             ::openExternal,
             ::toast,
         )
@@ -221,6 +229,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        refresh.close()
         files.closeChooser()
         phoneHttp.close()
         worker.shutdownNow()

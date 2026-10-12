@@ -8,6 +8,7 @@ import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.os.ResultReceiver
 import cc.samlab.ticket.tracking.TrainPhase
+import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
 import cc.samlab.ticket.tracking.TrainTrackingService
 import cc.samlab.ticket.tracking.TrainTrackingStore
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit
 class TrainTrackingDeviceFixture(private val instrumentation: Instrumentation) {
     private val context = instrumentation.targetContext
     private val original = TrainTrackingStore.read(context)
+    private val originalSession = TrainTrackingStore.session(context)
     private val wasInteractive = context.getSystemService(android.os.PowerManager::class.java).isInteractive
     private lateinit var activity: MainActivity
 
@@ -71,6 +73,14 @@ class TrainTrackingDeviceFixture(private val instrumentation: Instrumentation) {
         return result
     }
 
+    fun state(): JSONObject {
+        var result = JSONObject()
+        instrumentation.runOnMainSync {
+            TrainTrackingBridge(activity) { _, _, data -> result = data }.state("fixture")
+        }
+        return result
+    }
+
     fun countdownPayload(): String {
         val now = ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).withSecond(0).withNano(0)
         val start = now.minusHours(1)
@@ -100,12 +110,13 @@ class TrainTrackingDeviceFixture(private val instrumentation: Instrumentation) {
             }
         }
         TrainTrackingService.stop(context)
-        if (original != null) {
+        if (original != null && originalSession?.expired(System.currentTimeMillis()) != true) {
             val timeline = TrainTrackingStore.parse(original)
             if (timeline.status(System.currentTimeMillis()).phase == TrainPhase.ARRIVED) {
-                TrainTrackingStore.save(context, original)
+                TrainTrackingStore.save(context, original, originalSession)
                 val notifications = TrainTrackingNotifications(context)
-                notifications.publish(notifications.build(timeline, System.currentTimeMillis()))
+                notifications.publish(notifications.build(timeline, System.currentTimeMillis(),
+                    session = originalSession))
             } else {
                 start(original)
             }

@@ -13,6 +13,7 @@ class AppearanceController(
     private val root: View,
     private val webView: WebView,
     private val dialogs: ExpressiveDialogHost,
+    private val refresh: ExpressiveRefreshHost,
 ) {
     @Volatile
     private var systemDark = isNight(activity.resources.configuration)
@@ -37,6 +38,7 @@ class AppearanceController(
 
     fun apply(dark: Boolean) {
         dialogs.dark = dark
+        refresh.dark = dark
         val color = if (dark) Color.rgb(10, 10, 10) else Color.WHITE
         root.setBackgroundColor(color)
         webView.setBackgroundColor(color)

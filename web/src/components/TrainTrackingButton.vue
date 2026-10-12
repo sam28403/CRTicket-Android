@@ -22,14 +22,26 @@ const ready = ref(false)
 const active = ref(null)
 const controller = new AbortController()
 let timer
+let expiryTimer
 const tracking = computed(() => active.value?.active &&
   active.value.train === props.result.train && active.value.date === props.result.date &&
   active.value.queryTrain === (props.queryTrain || props.result.train))
+
+function scheduleExpiryRefresh() {
+  clearTimeout(expiryTimer)
+  const deadline = active.value?.expiresAt
+  if (active.value?.active && Number.isFinite(deadline)) {
+    expiryTimer = setTimeout(refresh, Math.min(
+      2_147_483_647, Math.max(0, deadline - Date.now()) + 100,
+    ))
+  }
+}
 
 async function refresh() {
   if (!supported || busy.value || document.hidden) return
   try {
     active.value = await getTrainTrackingState(controller.signal)
+    scheduleExpiryRefresh()
     ready.value = true
   } catch (error) {
     if (error.code !== 'ERR_CANCELED') ready.value = false
@@ -55,6 +67,7 @@ async function toggle() {
       : await startTrainTracking(payload, controller.signal)
     if (!result.success) throw new Error(result.message || '列车追踪操作失败')
     active.value = await getTrainTrackingState(controller.signal)
+    scheduleExpiryRefresh()
     ElMessage.success(wasTracking
       ? '已停止列车追踪'
       : result.finished ? '已显示列车终到通知' : '已开启列车追踪')
@@ -75,6 +88,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   controller.abort()
   clearInterval(timer)
+  clearTimeout(expiryTimer)
   document.removeEventListener('visibilitychange', refresh)
   window.removeEventListener('focus', refresh)
 })

@@ -29,6 +29,7 @@ class TrainTrackingService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var notifications: TrainTrackingNotifications
     private var timeline: TrainTimeline? = null
+    private var session: TrainTrackingSession? = null
     private val tick = Runnable { update() }
     private val clockChanges = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -57,12 +58,19 @@ class TrainTrackingService : Service() {
         @Suppress("DEPRECATION")
         val receiver = intent?.getParcelableExtra<ResultReceiver>(RESULT)
         try {
-            val payload = intent?.getStringExtra(PAYLOAD) ?: TrainTrackingStore.read(this)
+            val requested = intent?.getStringExtra(PAYLOAD)
+            val payload = requested ?: TrainTrackingStore.read(this)
             require(payload != null) { "没有正在追踪的列车" }
             val next = TrainTrackingStore.parse(payload)
             require(notifications.enabled()) { "请在系统设置中开启列车追踪通知" }
             val now = System.currentTimeMillis()
-            val notification = notifications.build(next, now)
+            val nextSession = if (requested != null) TrainTrackingSession.start(next.end, now)
+                else TrainTrackingStore.session(this) ?: TrainTrackingSession.restoreLegacy(next.end)
+            if (nextSession.expired(now)) {
+                stop(this)
+                return START_NOT_STICKY
+            }
+            val notification = notifications.build(next, now, session = nextSession)
             if (Build.VERSION.SDK_INT >= 34) {
                 startForeground(
                     TrainTrackingNotifications.NOTIFICATION_ID,
@@ -72,7 +80,8 @@ class TrainTrackingService : Service() {
                 startForeground(TrainTrackingNotifications.NOTIFICATION_ID, notification)
             }
             timeline = next
-            TrainTrackingStore.save(this, payload)
+            session = nextSession
+            TrainTrackingStore.save(this, payload, nextSession)
             update()
             receiver?.send(1, Bundle().apply {
                 putBoolean("finished", next.status(System.currentTimeMillis()).phase == TrainPhase.ARRIVED)
@@ -98,15 +107,22 @@ class TrainTrackingService : Service() {
                 return
             }
             val now = System.currentTimeMillis()
+            val currentSession = session ?: return
+            if (currentSession.expired(now)) {
+                stop(this)
+                return
+            }
             val status = current.status(now)
             if (status.phase == TrainPhase.ARRIVED) {
-                // Keep the terminal chip until stopped; no foreground timer remains.
+                // Retain the terminal chip until the persisted deadline; no foreground timer remains.
                 stopForeground(STOP_FOREGROUND_DETACH)
-                notifications.publish(notifications.build(current, now, quietUpdate = true))
+                notifications.publish(notifications.build(current, now,
+                    quietUpdate = true, session = currentSession))
                 stopSelf()
                 return
             }
-            notifications.publish(notifications.build(current, now, quietUpdate = true))
+            notifications.publish(notifications.build(current, now,
+                quietUpdate = true, session = currentSession))
             val minuteBoundary = 60_000 - now % 60_000
             val eventDelay = (status.nextEvent!! - now).coerceAtLeast(1)
             val chipDelay = if (Build.VERSION.SDK_INT >= 36 &&

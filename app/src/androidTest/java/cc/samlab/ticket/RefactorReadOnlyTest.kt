@@ -73,11 +73,11 @@ class RefactorReadOnlyTest {
             "https://appassets.androidplatform.net:444/index.html",
             "https://appassets.androidplatform.net/../index.html",
         )) {
-            assertEquals(403, client.shouldInterceptRequest(view,
-                Request(url)).statusCode)
+            assertEquals(403, requireNotNull(client.shouldInterceptRequest(view,
+                Request(url))).statusCode)
         }
-        val response = client.shouldInterceptRequest(view,
-            Request("${MainActivity.ORIGIN}/index.html"))
+        val response = requireNotNull(client.shouldInterceptRequest(view,
+            Request("${MainActivity.ORIGIN}/index.html")))
         assertEquals(200, response.statusCode)
         assertEquals("text/html", response.mimeType)
         assertEquals("no-cache", response.responseHeaders["Cache-Control"])

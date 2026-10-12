@@ -1,0 +1,9 @@
+.native-table-scroll .el-table-v2__body > div:first-child {
+  overflow: auto !important;
+  overflow-anchor: none;
+  scrollbar-width: none;
+}
+
+.native-table-scroll .el-table-v2__body > div:first-child::-webkit-scrollbar {
+  display: none;
+}

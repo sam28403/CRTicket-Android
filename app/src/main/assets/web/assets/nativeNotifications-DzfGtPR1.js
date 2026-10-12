@@ -1,1 +1,0 @@
-import{y as e}from"./index-Dc2z5WTy.js";var t=e(`crticketNotificationResult`);function n(e,n,r,i=0){return t.call(t=>window.CRTicketAndroid[e](t,...n),{signal:r,timeout:i,timeoutError:()=>Error(`系统通知操作超时，请重试`)})}export{n as t};

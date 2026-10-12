@@ -5,14 +5,13 @@ import android.graphics.Color
 import android.os.Build
 import android.view.WindowInsets
 import android.webkit.WebView
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 
 object WebViewLayout {
-    fun create(context: Context, webView: WebView): LinearLayout {
-        val container = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
+    fun create(context: Context, webView: WebView): FrameLayout {
+        val container = FrameLayout(context).apply {
             setBackgroundColor(Color.WHITE)
-            addView(webView, LinearLayout.LayoutParams(-1, -1))
+            addView(webView, FrameLayout.LayoutParams(-1, -1))
         }
         container.setOnApplyWindowInsetsListener { view, insets ->
             if (Build.VERSION.SDK_INT >= 30) {

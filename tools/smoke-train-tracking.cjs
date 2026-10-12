@@ -25,6 +25,10 @@ async function main() {
                     reply(id, { granted: window.trackingAllowed, message: '请开启列车追踪通知' })
                 },
                 trainTrackingState(id) {
+                    const state = JSON.parse(sessionStorage.getItem('tracking') || '{"active":false}')
+                    if (state.expiresAt && Date.now() >= state.expiresAt) {
+                        sessionStorage.removeItem('tracking')
+                    }
                     reply(id, JSON.parse(sessionStorage.getItem('tracking') || '{"active":false}'))
                 },
                 startTrainTracking(id, payload) {
@@ -94,6 +98,17 @@ async function main() {
         await stop().waitFor()
         assert.equal(await page.evaluate(() => window.lastSchedule.stops[2].arrivalDay), 1)
         await page.reload()
+        await stop().waitFor()
+        // The visible button refreshes at the native expiry without waiting for the minute poll.
+        await page.evaluate(() => {
+            const state = JSON.parse(sessionStorage.getItem('tracking'))
+            state.expiresAt = Date.now() + 1_000
+            sessionStorage.setItem('tracking', JSON.stringify(state))
+            window.dispatchEvent(new Event('focus'))
+        })
+        await start().waitFor({ timeout: 5_000 })
+        assert.equal(await page.evaluate(() => sessionStorage.getItem('tracking')), null)
+        await start().click()
         await stop().waitFor()
         await stop().click()
         await start().waitFor()

@@ -33,17 +33,32 @@ class TrainTrackingBridge(
     fun onActivityResult(requestCode: Int) = permission.onActivityResult(requestCode)
 
     fun state(id: String) {
-        val current = TrainTrackingStore.read(activity)?.let { payload ->
+        val now = System.currentTimeMillis()
+        val payload = TrainTrackingStore.read(activity)
+        val current = payload?.let {
             runCatching { TrainTrackingStore.parse(payload) }.getOrNull()
         }
-        val active = current != null && notifications.enabled() && notifications.isActive()
+        var session = TrainTrackingStore.session(activity)
+        if (current != null && session == null && notifications.isActive()) {
+            val restored = TrainTrackingSession.restoreLegacy(current.end)
+            session = restored
+            TrainTrackingStore.save(activity, payload, restored)
+            if (!restored.expired(now) && current.status(now).phase == TrainPhase.ARRIVED) {
+                notifications.publish(notifications.build(current, now,
+                    quietUpdate = true, session = restored))
+            }
+        }
+        if (session?.expired(now) == true) TrainTrackingService.stop(activity)
+        val active = current != null && session?.expired(now) != true &&
+            notifications.enabled() && notifications.isActive()
         reply(id, JSONObject().put("success", true).put("active", active).apply {
             if (active) {
                 put("train", current.train)
                 put("date", current.date)
                 put("queryTrain", current.queryTrain)
-                put("currentTrain", current.currentTrain(System.currentTimeMillis()))
-                put("finished", current.status(System.currentTimeMillis()).phase == TrainPhase.ARRIVED)
+                put("currentTrain", current.currentTrain(now))
+                put("finished", current.status(now).phase == TrainPhase.ARRIVED)
+                session?.let { put("expiresAt", it.expiresAt) }
             }
         })
     }

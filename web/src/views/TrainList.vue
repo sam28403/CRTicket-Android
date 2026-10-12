@@ -6,6 +6,7 @@ import AppBrand from '@/components/AppBrand.vue'
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import api from '@/api.js'
 import { trainQueryRange } from '@/utils/trainQueryDate.js'
+import { vNativeTableScroll } from '@/directives/nativeTableScroll.js'
 
 defineOptions({ name: 'TrainList' })
 
@@ -264,6 +265,7 @@ onBeforeUnmount(() => {
         >
           <el-table-v2
             v-if="result?.trains.length && width && height"
+            v-native-table-scroll
             ref="table"
             :class="{
               'compact-table': compactTable,

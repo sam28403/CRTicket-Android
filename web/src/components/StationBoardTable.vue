@@ -8,6 +8,7 @@ import { stationBoardColumns } from '@/utils/stationBoard.js'
 import { currentTrainHighlights } from '@/utils/stationBoardTime.js'
 import { stationTrainLocation } from '@/utils/stationNavigation.js'
 import { displayTrainCode } from '@/utils/trainDisplay.js'
+import { vNativeTableScroll } from '@/directives/nativeTableScroll.js'
 
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -121,6 +122,7 @@ onBeforeUnmount(() => {
   >
     <el-table-v2
       v-if="rows.length && width && height"
+      v-native-table-scroll
       :key="compactTable ? `mobile-${tab}-${width}` : 'desktop'"
       ref="table"
       :columns="columns"

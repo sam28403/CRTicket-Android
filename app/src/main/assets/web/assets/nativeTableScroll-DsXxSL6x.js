@@ -1,0 +1,1 @@
+function e(e){var t,n;(t=(n=e.target).closest)!=null&&t.call(n,`.el-table-v2__body > div:first-child`)&&e.stopPropagation()}var t={mounted(t){t.classList.add(`native-table-scroll`),t.addEventListener(`touchmove`,e,{capture:!0,passive:!0})},beforeUnmount(t){t.removeEventListener(`touchmove`,e,{capture:!0})}};export{t};

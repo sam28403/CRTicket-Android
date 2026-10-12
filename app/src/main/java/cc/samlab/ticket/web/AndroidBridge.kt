@@ -9,6 +9,7 @@ import cc.samlab.ticket.network.PhoneHttp
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.ui.AppearanceController
+import cc.samlab.ticket.ui.ExpressiveRefreshHost
 import org.json.JSONObject
 
 class AndroidBridge(
@@ -20,8 +21,15 @@ class AndroidBridge(
     private val stationArrival: StationArrivalBridge,
     private val files: DocumentFiles,
     private val openExternal: (Uri) -> Unit,
+    private val refresh: ExpressiveRefreshHost,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
+
+    @JavascriptInterface
+    fun setPullRefreshProgress(progress: Double) = onUi { refresh.update(progress.toFloat()) }
+
+    @JavascriptInterface
+    fun refreshPage() = onUi { refresh.refresh() }
 
     @JavascriptInterface
     fun stationArrivalState(id: String) = onUi { stationArrival.state(id) }

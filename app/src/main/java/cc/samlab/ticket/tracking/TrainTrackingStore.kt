@@ -9,12 +9,28 @@ object TrainTrackingStore {
 
     fun read(context: Context): String? = preferences(context).getString("schedule", null)
 
-    fun save(context: Context, payload: String) {
-        preferences(context).edit().putString("schedule", payload).apply()
+    fun session(context: Context): TrainTrackingSession? {
+        val preferences = preferences(context)
+        val id = preferences.getString("session", null) ?: return null
+        if (!preferences.contains("expiresAt")) return null
+        return TrainTrackingSession(id, preferences.getLong("expiresAt", 0))
+    }
+
+    fun save(context: Context, payload: String, session: TrainTrackingSession? = null) {
+        preferences(context).edit().putString("schedule", payload).apply {
+            if (session == null) {
+                remove("session")
+                remove("expiresAt")
+            } else {
+                putString("session", session.id)
+                putLong("expiresAt", session.expiresAt)
+            }
+        }.apply()
     }
 
     fun clear(context: Context) {
-        preferences(context).edit().remove("schedule").apply()
+        preferences(context).edit().remove("schedule")
+            .remove("session").remove("expiresAt").apply()
     }
 
     fun parse(payload: String): TrainTimeline {

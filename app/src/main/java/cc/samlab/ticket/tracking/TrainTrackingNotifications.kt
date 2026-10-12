@@ -19,6 +19,7 @@ class TrainTrackingNotifications(private val context: Context) {
         const val NOTIFICATION_ID = 2
         private const val UPDATE_GROUP = "train-tracking-updates"
         const val OPEN_TRACKING = "openTrainTracking"
+        const val SESSION = "trackingSession"
     }
 
     private val manager = context.getSystemService(NotificationManager::class.java)
@@ -39,7 +40,12 @@ class TrainTrackingNotifications(private val context: Context) {
         it.id == NOTIFICATION_ID && it.notification.flags and Notification.FLAG_ONGOING_EVENT != 0
     }
 
-    fun build(timeline: TrainTimeline, now: Long, quietUpdate: Boolean = false): Notification {
+    fun build(
+        timeline: TrainTimeline,
+        now: Long,
+        quietUpdate: Boolean = false,
+        session: TrainTrackingSession? = null,
+    ): Notification {
         val status = timeline.status(now)
         val stateIcon = Icon.createWithResource(context, TrainTrackingIcons.forPhase(status.phase))
         val content = TrainTrackingText.content(timeline, now)
@@ -57,7 +63,10 @@ class TrainTrackingNotifications(private val context: Context) {
         )
         val stop = PendingIntent.getBroadcast(
             context, NOTIFICATION_ID,
-            Intent(context, StopTrainTrackingReceiver::class.java),
+            Intent(context, StopTrainTrackingReceiver::class.java).apply {
+                putExtra(SESSION, session?.id)
+                session?.let { data = Uri.parse("crticket://tracking/session/${it.id}") }
+            },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val builder = Notification.Builder(context, CHANNEL_ID)
@@ -82,6 +91,10 @@ class TrainTrackingNotifications(private val context: Context) {
             .setStyle(Notification.BigTextStyle()
                 .bigText(TrainNotificationFormatting.prominent(content.text)))
         builder.addAction(Notification.Action.Builder(null, "停止追踪", stop).build())
+        if (status.phase == TrainPhase.ARRIVED && session != null) {
+            // The system removes the detached terminal notification and sends its delete intent.
+            builder.setTimeoutAfter(session.remaining(now).coerceAtLeast(1))
+        }
         if (Build.VERSION.SDK_INT >= 31) {
             // Show the first foreground notice while the user is still in the app.
             // A deferred first delivery can otherwise pulse after entering AOD.

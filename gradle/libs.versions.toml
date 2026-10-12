@@ -8,8 +8,7 @@ kotlinRuntime = "2.4.20"
 playServicesLocation = "21.4.0"
 composeBom = "2026.09.00"
 activityCompose = "1.13.0"
-# Expressive APIs are public in the 1.5 alpha line.
-material3 = "1.5.0-alpha29"
+material3 = "1.5.0-beta01"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinRuntime" }
