@@ -73,9 +73,10 @@ class TrainTrackingDeviceFixture(private val instrumentation: Instrumentation) {
         return result
     }
 
-    fun state(): JSONObject {
+    fun state(prepare: () -> Unit = {}): JSONObject {
         var result = JSONObject()
         instrumentation.runOnMainSync {
+            prepare()
             TrainTrackingBridge(activity) { _, _, data -> result = data }.state("fixture")
         }
         return result

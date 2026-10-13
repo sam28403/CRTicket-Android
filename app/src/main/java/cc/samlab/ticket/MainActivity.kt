@@ -18,6 +18,7 @@ import cc.samlab.ticket.arrival.ArrivalNotifications
 import cc.samlab.ticket.arrival.StationArrivalBridge
 import cc.samlab.ticket.files.DocumentFiles
 import cc.samlab.ticket.network.PhoneHttp
+import cc.samlab.ticket.monitor.TicketMonitorBridge
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
     private val preferences by lazy { getSharedPreferences("android", MODE_PRIVATE) }
     private val notifications by lazy { MonitorNotifications(this, ::callback) }
     private val trainTracking by lazy { TrainTrackingBridge(this, ::callback) }
+    private val ticketMonitor by lazy { TicketMonitorBridge(this, ::callback) }
     private val dialogs by lazy { ExpressiveDialogHost(this) }
     private val refresh by lazy { ExpressiveRefreshHost(this, webView) }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
@@ -94,6 +96,7 @@ class MainActivity : ComponentActivity() {
                 this, phoneHttp, appearance, notifications, trainTracking, stationArrival,
                 files, ::openExternal,
                 refresh,
+                ticketMonitor,
             ),
             "CRTicketAndroid",
         )
@@ -222,6 +225,8 @@ class MainActivity : ComponentActivity() {
         webView.onResume()
         appearance.updateSystem(resources.configuration)
         stationArrival.onResume()
+        trainTracking.restore()
+        ticketMonitor.restore()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

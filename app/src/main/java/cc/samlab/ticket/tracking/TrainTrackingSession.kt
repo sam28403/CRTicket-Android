@@ -19,5 +19,7 @@ data class TrainTrackingSession(val id: String, val expiresAt: Long) {
 
     fun expired(now: Long): Boolean = now >= expiresAt
 
+    fun canResume(arrival: Long, now: Long): Boolean = now < arrival && !expired(now)
+
     fun remaining(now: Long): Long = (expiresAt - now).coerceAtLeast(0)
 }

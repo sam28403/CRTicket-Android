@@ -25,12 +25,12 @@ object TrainTrackingStore {
                 putString("session", session.id)
                 putLong("expiresAt", session.expiresAt)
             }
-        }.apply()
+        }.commit()
     }
 
     fun clear(context: Context) {
         preferences(context).edit().remove("schedule")
-            .remove("session").remove("expiresAt").apply()
+            .remove("session").remove("expiresAt").commit()
     }
 
     fun parse(payload: String): TrainTimeline {

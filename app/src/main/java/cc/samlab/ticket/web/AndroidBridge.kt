@@ -6,6 +6,7 @@ import android.webkit.JavascriptInterface
 import cc.samlab.ticket.arrival.StationArrivalBridge
 import cc.samlab.ticket.files.DocumentFiles
 import cc.samlab.ticket.network.PhoneHttp
+import cc.samlab.ticket.monitor.TicketMonitorBridge
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.ui.AppearanceController
@@ -22,6 +23,7 @@ class AndroidBridge(
     private val files: DocumentFiles,
     private val openExternal: (Uri) -> Unit,
     private val refresh: ExpressiveRefreshHost,
+    private val ticketMonitor: TicketMonitorBridge,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
@@ -51,6 +53,20 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun stopTrainTracking(id: String) = onUi { trainTracking.stop(id) }
+
+    @JavascriptInterface
+    fun ticketMonitorStatus(id: String) = onUi { ticketMonitor.state(id) }
+
+    @JavascriptInterface
+    fun startTicketMonitor(id: String, payload: String) =
+        onUi { ticketMonitor.start(id, payload) }
+
+    @JavascriptInterface
+    fun updateTicketMonitor(id: String, payload: String) =
+        onUi { ticketMonitor.update(id, payload) }
+
+    @JavascriptInterface
+    fun stopTicketMonitor(id: String) = onUi { ticketMonitor.stop(id) }
 
     @JavascriptInterface
     fun requestNotificationPermission(id: String) = onUi { notifications.requestPermission(id) }

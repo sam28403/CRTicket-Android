@@ -15,6 +15,7 @@ class TrainTrackingBridge(
     private val callback: (String, String, JSONObject) -> Unit,
 ) {
     private val notifications = TrainTrackingNotifications(activity)
+    private val recovery = TrainTrackingRecovery(activity, notifications)
     private val permission = MonitorNotifications(
         activity, callback,
         channelId = TrainTrackingNotifications.CHANNEL_ID,
@@ -32,40 +33,32 @@ class TrainTrackingBridge(
 
     fun onActivityResult(requestCode: Int) = permission.onActivityResult(requestCode)
 
+    fun restore() {
+        recovery.restore()
+    }
+
     fun state(id: String) {
+        val resumed = recovery.restore()
         val now = System.currentTimeMillis()
-        val payload = TrainTrackingStore.read(activity)
-        val current = payload?.let {
-            runCatching { TrainTrackingStore.parse(payload) }.getOrNull()
-        }
-        var session = TrainTrackingStore.session(activity)
-        if (current != null && session == null && notifications.isActive()) {
-            val restored = TrainTrackingSession.restoreLegacy(current.end)
-            session = restored
-            TrainTrackingStore.save(activity, payload, restored)
-            if (!restored.expired(now) && current.status(now).phase == TrainPhase.ARRIVED) {
-                notifications.publish(notifications.build(current, now,
-                    quietUpdate = true, session = restored))
-            }
-        }
-        if (session?.expired(now) == true) TrainTrackingService.stop(activity)
-        val active = current != null && session?.expired(now) != true &&
-            notifications.enabled() && notifications.isActive()
+        val saved = recovery.read(now)
+        val active = saved != null && notifications.enabled() &&
+            (resumed || TrainTrackingService.isRunning(saved.session.id) || notifications.isActive())
         reply(id, JSONObject().put("success", true).put("active", active).apply {
-            if (active) {
+            if (active && saved != null) {
+                val current = saved.timeline
                 put("train", current.train)
                 put("date", current.date)
                 put("queryTrain", current.queryTrain)
                 put("currentTrain", current.currentTrain(now))
                 put("finished", current.status(now).phase == TrainPhase.ARRIVED)
-                session?.let { put("expiresAt", it.expiresAt) }
+                put("expiresAt", saved.session.expiresAt)
             }
         })
     }
 
     fun start(id: String, payload: String) {
         try {
-            val timeline = TrainTrackingStore.parse(payload)
+            TrainTrackingStore.parse(payload)
             require(notifications.enabled()) { "请先开启列车追踪通知权限" }
             val receiver = object : ResultReceiver(Handler(Looper.getMainLooper())) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {

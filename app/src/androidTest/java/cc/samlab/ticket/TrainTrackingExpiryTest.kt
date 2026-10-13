@@ -77,14 +77,18 @@ class TrainTrackingExpiryTest {
 
     @Test fun stateReadCleansExpiredMetadataAndDoesNotExtendItsDeadline() =
         withFixture { fixture ->
-            TrainTrackingService.stop(context)
+            stopTrackingAndWait()
             val payload = historicalPayload(fixture)
             val timeline = TrainTrackingStore.parse(payload)
             val session = TrainTrackingSession("expired-fixture", System.currentTimeMillis() - 1)
-            TrainTrackingStore.save(context, payload, session)
             notifications.publish(notifications.build(timeline, System.currentTimeMillis()))
             await { notice() != null }
-            assertFalse(fixture.state().getBoolean("active"))
+            // Publish before writing expired data so an activity resume cannot clear
+            // the setup while NotificationManager is still processing the notice.
+            val state = fixture.state {
+                TrainTrackingStore.save(context, payload, session)
+            }
+            assertFalse(state.getBoolean("active"))
             assertNull(TrainTrackingStore.read(context))
             assertNull(TrainTrackingStore.session(context))
             await { notice() == null }
@@ -92,13 +96,15 @@ class TrainTrackingExpiryTest {
 
     @Test fun legacyTerminalTrackingAlreadyPastThirtyMinutesIsRemovedOnStateRead() =
         withFixture { fixture ->
-            TrainTrackingService.stop(context)
+            stopTrackingAndWait()
             val payload = historicalPayload(fixture)
             val timeline = TrainTrackingStore.parse(payload)
-            TrainTrackingStore.save(context, payload)
             notifications.publish(notifications.build(timeline, System.currentTimeMillis()))
             await { notice() != null }
-            assertFalse(fixture.state().getBoolean("active"))
+            val state = fixture.state {
+                TrainTrackingStore.save(context, payload)
+            }
+            assertFalse(state.getBoolean("active"))
             assertNull(TrainTrackingStore.read(context))
             await { notice() == null }
         }
@@ -112,6 +118,15 @@ class TrainTrackingExpiryTest {
     private fun notice(): Notification? = manager.activeNotifications.firstOrNull {
         it.id == TrainTrackingNotifications.NOTIFICATION_ID
     }?.notification
+
+    private fun stopTrackingAndWait() {
+        val previous = TrainTrackingStore.session(context)
+        instrumentation.runOnMainSync { TrainTrackingService.stop(context) }
+        instrumentation.waitForIdleSync()
+        await {
+            notice() == null && (previous == null || !TrainTrackingService.isRunning(previous.id))
+        }
+    }
 
     private fun await(condition: () -> Boolean) {
         val deadline = SystemClock.elapsedRealtime() + 15_000

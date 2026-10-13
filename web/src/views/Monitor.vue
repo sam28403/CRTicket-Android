@@ -1,333 +1,25 @@
 <script setup>
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import AppBrand from '@/components/AppBrand.vue'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
 import { Refresh } from '@element-plus/icons-vue'
-import api from '@/api.js'
-import { hasAvailableSeat as available } from '@/utils/seatAvailability.js'
-import { matchesDepartureTime } from '@/utils/trainTime.js'
 import LeftTicketCard from '@/components/LeftTicketCard.vue'
-import { queryStationSearch, stations } from '@/composables/useTicketShared.js'
-import {
-  publishMonitorNotification,
-  requestMonitorNotificationPermission,
-} from '@/android/monitorNotifications.js'
+import { queryStationSearch } from '@/composables/useTicketShared.js'
+import { useTicketMonitor } from '@/composables/useTicketMonitor.js'
 
-const today = () => new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10)
+const {
+  from, to, date, interval, monitoring, loading, rows, queriedAt, error,
+  nextAt, events, columns, trainFilters, seatFilters, timeRange,
+  onlyAvailable, highSpeedOnly, ordinaryOnly, selectedDepartureStations,
+  selectedArrivalStations, departureStations, arrivalStations, filtered,
+  ticketCount, nativeMonitoring, restoring, query, stop, disabledDate,
+  swapStations, selectTrainType,
+} = useTicketMonitor()
 
-const from = ref('')
-const to = ref('')
-const selectedDepartureStations = ref([])
-const selectedArrivalStations = ref([])
-const date = ref(today())
-const interval = ref(60)
-const trainFilters = ref([])
-const seatFilters = ref([])
-const timeRange = ref([0, 24])
-const onlyAvailable = ref(false)
-const highSpeedOnly = ref(false)
-const ordinaryOnly = ref(false)
-const monitoring = ref(false)
-const systemNotifications = ref(false)
-const loading = ref(false)
-const rows = ref([])
-const queriedAt = ref('')
-const error = ref('')
-const nextAt = ref('')
-const events = ref([])
-const columns = [
-  ['second', '二等座'],
-  ['first', '一等座'],
-  ['premiumSleeper', '优选一等座'],
-  ['business', '商务座'],
-  ['premium', '特等座'],
-  ['advancedSleeper', '高级软卧'],
-  ['softSleeper', '软卧 / 动卧'],
-  ['hardSleeper', '硬卧'],
-  ['softSeat', '软座'],
-  ['hardSeat', '硬座'],
-  ['standing', '无座'],
-  ['other', '其他'],
-]
-const timeMarks = {
-  0: '0点',
-  6: '6点',
-  12: '12点',
-  18: '18点',
-  24: '24点',
-}
-
-let timer
-let controller
-let generation = 0
-let previous = new Map()
-
-const departureStations = computed(() =>
-  Array.from(new Set(rows.value.map((row) => row.from))).filter(Boolean)
-)
-
-const arrivalStations = computed(() =>
-  Array.from(new Set(rows.value.map((row) => row.to))).filter(Boolean)
-)
-
-function isOrdinaryTrain(trainNo) {
-  const normalized = String(trainNo || '').trim().toUpperCase()
-  if (/^(?:[ZTKLY]\d+|\d+)$/.test(normalized)) return true
-
-  const dTrain = normalized.match(/^D(\d+)$/)
-  if (dTrain) {
-    const number = Number(dTrain[1])
-    return (number >= 1 && number <= 300) || (number >= 701 && number <= 800)
-  }
-
-  const cTrain = normalized.match(/^C(\d+)$/)
-  if (cTrain) {
-    const number = Number(cTrain[1])
-    return (number >= 1 && number <= 999) || (number >= 4001 && number <= 4999)
-  }
-
-  const sTrain = normalized.match(/^S(\d+)$/)
-  if (sTrain) {
-    const number = Number(sTrain[1])
-    return (number >= 101 && number <= 999) || (number >= 1001 && number <= 2999)
-  }
-
-  return false
-}
-
-function matches(row) {
-  const wantedTrains = trainFilters.value.map((value) => value.trim().toUpperCase())
-  const matchesTrainNumber =
-    !wantedTrains.length || wantedTrains.includes(row.train.toUpperCase())
-  const ordinary = isOrdinaryTrain(row.train)
-  const matchesTrainType =
-    (!highSpeedOnly.value && !ordinaryOnly.value) ||
-    (highSpeedOnly.value && !ordinary) ||
-    (ordinaryOnly.value && ordinary)
-  const matchesDeparture =
-    !selectedDepartureStations.value.length ||
-    selectedDepartureStations.value.includes(row.from)
-  const matchesArrival =
-    !selectedArrivalStations.value.length ||
-    selectedArrivalStations.value.includes(row.to)
-  const matchesTime = matchesDepartureTime(row.departure, timeRange.value)
-
-  return (
-    matchesTrainNumber &&
-    matchesTrainType &&
-    matchesDeparture &&
-    matchesArrival &&
-    matchesTime
-  )
-}
-
-const watchedColumns = computed(() =>
-  columns.filter(([key]) => !seatFilters.value.length || seatFilters.value.includes(key))
-)
-
-const hasTicket = (row) =>
-  row.canBuy && watchedColumns.value.some(([key]) => available(row.seats[key]))
-
-const filtered = computed(() =>
-  rows.value.filter((row) => matches(row) && (!onlyAvailable.value || hasTicket(row)))
-)
-
-const ticketCount = computed(
-  () => rows.value.filter((row) => matches(row) && hasTicket(row)).length
-)
-
-const time = (value) =>
-  value
-    ? new Date(value).toLocaleTimeString('zh-CN', { hour12: false })
-    : '—'
-
-function disabledDate(value) {
-  const key = [
-    value.getFullYear(),
-    String(value.getMonth() + 1).padStart(2, '0'),
-    String(value.getDate()).padStart(2, '0'),
-  ].join('-')
-  const end = new Date(Date.now() + 8 * 3600000 + 14 * 86400000)
-    .toISOString()
-    .slice(0, 10)
-  return key < today() || key > end
-}
-
-function selectTrainType(type, enabled) {
-  if (!enabled) return
-  if (type === 'highSpeed') ordinaryOnly.value = false
-  if (type === 'ordinary') highSpeedOnly.value = false
-}
-
-function swapStations() {
-  const oldFrom = from.value
-  from.value = to.value
-  to.value = oldFrom
-}
-
-const formatHour = (value) => `${String(value).padStart(2, '0')}:00`
-
-function stop() {
-  monitoring.value = false
-  clearTimeout(timer)
-  nextAt.value = ''
-  generation++
-  controller?.abort()
-  loading.value = false
-}
-
-function reset() {
-  stop()
-  rows.value = []
-  queriedAt.value = ''
-  error.value = ''
-  events.value = []
-  selectedDepartureStations.value = []
-  selectedArrivalStations.value = []
-  previous = new Map()
-}
-
-watch([from, to, date], reset, { flush: 'sync' })
-watch(
-  [
-    trainFilters,
-    seatFilters,
-    timeRange,
-    highSpeedOnly,
-    ordinaryOnly,
-    selectedDepartureStations,
-    selectedArrivalStations,
-  ],
-  () => {
-    previous = new Map()
-    events.value = []
-  },
-  { deep: true }
-)
-
-function parameters() {
-  const start = stations.find((station) => station.name === from.value.trim())
-  const end = stations.find((station) => station.name === to.value.trim())
-
-  if (!start || !end) throw new Error('请输入并选择有效的出发站和到达站')
-  if (!date.value) throw new Error('请选择出发日期')
-  return {
-    from: start.telecode,
-    to: end.telecode,
-    date: date.value,
-  }
-}
-
-async function query(startMonitor = false) {
-  if (loading.value) return
-
-  let params
-  try {
-    params = parameters()
-  } catch (queryError) {
-    error.value = queryError.message
-    return
-  }
-
-  clearTimeout(timer)
-  const current = ++generation
-  controller = new AbortController()
-  loading.value = true
-  error.value = ''
-  nextAt.value = ''
-
-  try {
-    if (startMonitor) {
-      const permission = await requestMonitorNotificationPermission(controller.signal)
-      if (current !== generation) return
-      systemNotifications.value = permission.granted
-      if (permission.message) {
-        ElMessage[permission.granted ? 'success' : 'warning'](permission.message)
-      }
-      monitoring.value = true
-      previous = new Map()
-    }
-
-    const { data } = await api.get('/left-ticket', {
-      params,
-      timeout: 25000,
-      signal: controller.signal,
-    })
-    if (current !== generation) return
-    if (!data.success || !Array.isArray(data.trains)) {
-      throw new Error('12306 返回的数据格式错误')
-    }
-
-    rows.value = data.trains
-    queriedAt.value = data.queriedAt
-
-    const currentTickets = new Map()
-    const notices = []
-    const noticeDetails = []
-    for (const row of rows.value.filter(matches)) {
-      const signature = JSON.stringify(
-        watchedColumns.value.map(([key]) => [key, row.seats[key]])
-      )
-      if (!hasTicket(row)) continue
-
-      currentTickets.set(row.id, signature)
-      if (monitoring.value && previous.get(row.id) !== signature) {
-        const detail = watchedColumns.value
-          .filter(([key]) => available(row.seats[key]))
-          .map(([key, label]) => `${label}：${row.seats[key]}`)
-          .join('，')
-        const noticeText = `${row.train} ${row.from} → ${row.to}，${detail}`
-        events.value.unshift({
-          at: queriedAt.value,
-          text: noticeText,
-        })
-        notices.push(row.train)
-        noticeDetails.push(noticeText)
-      }
-    }
-
-    events.value = events.value.slice(0, 30)
-    if (notices.length) {
-      const summary = notices.slice(0, 3).join('、')
-      const more = notices.length > 3 ? ` 等 ${notices.length} 趟车` : ''
-      ElMessage.success(`${summary}${more} 有票或余票发生变化，详见有票提醒`)
-      if (systemNotifications.value) {
-        try {
-          const result = await publishMonitorNotification(notices, noticeDetails, controller.signal)
-          if (current !== generation) return
-          if (!result.success) {
-            systemNotifications.value = false
-            ElMessage.warning(result.message || '系统通知发送失败，请查看页面内的有票提醒')
-          }
-        } catch {
-          if (current !== generation) return
-          ElMessage.warning('系统通知发送失败，请查看页面内的有票提醒')
-        }
-      }
-    }
-    previous = currentTickets
-  } catch (queryError) {
-    if (current !== generation) return
-    error.value =
-      queryError.response?.data?.message ||
-      (queryError.code === 'ECONNABORTED'
-        ? '查询超时，请检查手机网络'
-        : queryError.message || '查询失败')
-    monitoring.value = false
-  } finally {
-    if (current === generation) {
-      loading.value = false
-      if (monitoring.value) {
-        const delay = Math.max(10, Number(interval.value) || 60) * 1000
-        nextAt.value = new Date(Date.now() + delay).toISOString()
-        timer = setTimeout(() => query(), delay)
-      }
-    }
-  }
-}
-
-onBeforeUnmount(stop)
+const timeMarks = { 0: '0点', 6: '6点', 12: '12点', 18: '18点', 24: '24点' }
+const formatHour = value => `${String(value).padStart(2, '0')}:00`
+const time = value => value
+  ? new Date(value).toLocaleTimeString('zh-CN', { hour12: false })
+  : '—'
 </script>
 
 <template>
@@ -358,6 +50,7 @@ onBeforeUnmount(stop)
               <el-form-item label="出发站">
                 <el-autocomplete
                   v-model="from"
+                  :disabled="restoring"
                   :fetch-suggestions="queryStationSearch"
                   placeholder="站名 / 拼音 / 首字母"
                   clearable
@@ -365,7 +58,13 @@ onBeforeUnmount(stop)
               </el-form-item>
 
               <div class="swap-stations">
-                <el-button circle title="换向" aria-label="交换出发站和到达站" @click="swapStations">
+                <el-button
+                  circle
+                  title="换向"
+                  aria-label="交换出发站和到达站"
+                  :disabled="restoring"
+                  @click="swapStations"
+                >
                   <el-icon><Refresh /></el-icon>
                 </el-button>
                 <span>换向</span>
@@ -374,6 +73,7 @@ onBeforeUnmount(stop)
               <el-form-item label="到达站">
                 <el-autocomplete
                   v-model="to"
+                  :disabled="restoring"
                   :fetch-suggestions="queryStationSearch"
                   placeholder="站名 / 拼音 / 首字母"
                   clearable
@@ -388,6 +88,7 @@ onBeforeUnmount(stop)
                 value-format="YYYY-MM-DD"
                 :disabled-date="disabledDate"
                 :editable="false"
+                :disabled="restoring"
               />
             </el-form-item>
 
@@ -397,7 +98,7 @@ onBeforeUnmount(stop)
                 :min="10"
                 :max="3600"
                 :step="10"
-                :disabled="monitoring"
+                :disabled="monitoring || restoring"
               />
             </el-form-item>
           </div>
@@ -409,7 +110,7 @@ onBeforeUnmount(stop)
             <el-button type="success" :disabled="loading || monitoring" @click="query(true)">
               开始监控
             </el-button>
-            <el-button :disabled="!monitoring && !loading" @click="stop">停止</el-button>
+            <el-button :disabled="restoring || (!monitoring && !loading)" @click="stop">停止</el-button>
             <span role="status">
               {{ monitoring ? '监控中' : '未监控' }} · 上次成功：{{ time(queriedAt) }}
               <template v-if="nextAt"> · 下次查询：{{ time(nextAt) }}</template>
@@ -418,14 +119,16 @@ onBeforeUnmount(stop)
         </el-form>
 
         <p class="hint">
-          成人票 · 今天起 15 天内 · 最短间隔 10 秒。查询后可按实际出发车站和到达车站筛选；监控仅在此页面打开时运行，手机锁屏或应用进入后台可能延迟。余票以官网实时结果为准。
+          成人票 · 今天起 15 天内 · 最短间隔 10 秒。查询后可按实际出发车站和到达车站筛选；
+          {{ nativeMonitoring ? '应用切换到后台或锁屏后继续监控，再次打开页面会恢复监控状态。' : '浏览器监控在此页面打开时运行，后台标签页可能延迟查询。' }}
+          余票以官网实时结果为准。
         </p>
       </el-card>
 
       <el-alert
         v-if="error"
         :title="error"
-        :description="queriedAt ? '下方保留的是上次成功结果，可能已过期；监控已停止，请手动重试。' : '请检查查询条件、手机网络或官网状态后重试。'"
+        :description="monitoring ? '监控会继续自动重试；下方保留的是上次成功结果，可能已过期。' : queriedAt ? '下方保留的是上次成功结果，可能已过期；请检查网络后重试。' : '请检查查询条件、手机网络或官网状态后重试。'"
         type="error"
         show-icon
         :closable="false"
@@ -582,347 +285,7 @@ onBeforeUnmount(stop)
   </div>
 </template>
 
-<style scoped>
-@font-face {
-  font-family: 'MonitorConsolas';
-  src: url('/consola.ttf') format('truetype');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'MonitorFangzheng';
-  src: url('/fonts/FZCDXK.woff2') format('woff2');
-  font-display: swap;
-}
-
-.monitor-page {
-  min-height: 100vh;
-}
-
-.top-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 50px;
-  padding: 5px 15px;
-  background: var(--app-surface, rgb(10 10 0 / 0.1));
-}
-
-.top-header h2 {
-  margin: 0;
-  font-family: 'Roboto', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-size: 20px;
-}
-
-.monitor-content {
-  max-width: 1500px;
-  margin: 0 auto;
-  padding: 4px 24px;
-  color: var(--app-text, #223249);
-  font-family: 'MonitorFangzheng', serif;
-}
-
-.monitor-content :deep(input),
-.monitor-content :deep(button) {
-  font-family: inherit;
-}
-
-.page-heading,
-.result-header,
-.actions,
-.filters,
-.train-type-switches {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.page-heading,
-.result-header {
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.monitor-navigation {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-  margin-left: auto;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.station-route-fields {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 12px;
-}
-
-.swap-stations {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding-top: 12px;
-  color: var(--app-muted, #68788a);
-  font-size: 12px;
-}
-
-.swap-stations :deep(.el-button) {
-  font-size: 17px;
-}
-
-.station-route-fields .el-form-item {
-  min-width: 0;
-}
-
-.form-grid :deep(.el-autocomplete),
-.form-grid :deep(.el-date-editor),
-.form-grid :deep(.el-input-number) {
-  width: 100%;
-}
-
-.ticket-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
-  gap: 12px;
-}
-
-.results,
-.events {
-  margin-top: 28px;
-}
-
-.station-filters {
-  display: grid;
-  gap: 10px;
-  margin-top: 18px;
-  padding: 14px 18px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  background: var(--app-surface, #fff);
-}
-
-.station-filter-row {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
-  align-items: start;
-  gap: 12px;
-  min-height: 32px;
-}
-
-.station-filter-row strong {
-  padding-top: 5px;
-  color: var(--app-text, #172033);
-  white-space: nowrap;
-}
-
-.station-filter-row :deep(.el-checkbox-group) {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 28px;
-}
-
-.station-filter-row :deep(.el-checkbox) {
-  min-width: 92px;
-  margin-right: 0;
-}
-
-.time-filter-row {
-  display: grid;
-  grid-template-columns: auto 105px minmax(280px, 1fr);
-  align-items: center;
-  gap: 12px;
-  padding: 2px 0 18px;
-}
-
-.time-filter-row strong {
-  color: var(--app-text, #172033);
-  white-space: nowrap;
-}
-
-.time-range-value {
-  color: var(--app-muted, #52749a);
-  font-family: 'MonitorConsolas', monospace;
-  white-space: nowrap;
-}
-
-.time-filter-row :deep(.el-slider) {
-  max-width: 720px;
-  margin: 0 12px;
-}
-
-.all-stations-button {
-  height: 26px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: 3px;
-  background: transparent;
-  color: var(--app-muted, #606266);
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.all-stations-button.active {
-  background: var(--app-primary-button, #91add5);
-  color: #fff;
-}
-
-.events {
-  padding-top: 24px;
-  border-top: 1px solid #e4eaf0;
-}
-
-.el-alert {
-  margin-top: 18px;
-}
-
-.train-filter-input {
-  width: 260px;
-}
-
-.filters .el-select {
-  width: 240px;
-}
-
-.train-type-switches {
-  gap: 8px;
-  color: var(--app-muted, #4d5f72);
-  font-size: 14px;
-}
-
-.seat-plenty {
-  color: var(--app-success, #00b657);
-}
-
-.seat-limited {
-  color: var(--app-warning, #ca590c);
-}
-
-.seat-empty {
-  color: var(--app-danger, #ec0808);
-}
-
-h1 {
-  margin: 12px 0;
-  font-size: 28px;
-}
-
-.monitor-content h2 {
-  margin: 0;
-  font-size: 19px;
-}
-
-.hint,
-.actions span {
-  color: var(--app-muted, #68788a);
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-a {
-  color: var(--app-link, #2575b8);
-}
-
-small {
-  color: var(--app-muted, #68788a);
-  font-size: 12px;
-  font-weight: normal;
-}
-
-ul {
-  padding-left: 20px;
-}
-
-li {
-  padding: 7px 0;
-  font-size: 14px;
-}
-
-time {
-  margin-right: 12px;
-  color: var(--app-muted, #68788a);
-}
-
-@media (max-width: 1150px) {
-  .ticket-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 800px) {
-  .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .station-route-fields {
-    grid-column: 1 / -1;
-  }
-
-  .monitor-content {
-    padding: 24px 14px;
-  }
-}
-
-@media (max-width: 600px) {
-  .top-header {
-    position: relative;
-    height: auto;
-    padding: 10px 12px;
-    flex-wrap: wrap;
-  }
-
-  .ticket-grid {
-    gap: 8px;
-  }
-
-  .station-filter-row {
-    grid-template-columns: auto 1fr;
-  }
-
-  .station-filter-row :deep(.el-checkbox-group) {
-    grid-column: 1 / -1;
-  }
-
-  .time-filter-row {
-    grid-template-columns: auto 1fr;
-  }
-
-  .time-filter-row :deep(.el-slider) {
-    grid-column: 1 / -1;
-    width: calc(100% - 24px);
-  }
-}
-
-@media (max-width: 480px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .station-route-fields {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  }
-
-  h1 {
-    font-size: 23px;
-  }
-
-  .filters,
-  .train-filter-input,
-  .filters .el-select {
-    width: 100%;
-  }
-}
-</style>
+<style scoped src="../assets/styles/ticketMonitor.css"></style>
 
 <style>
 .monitor-seat-options .el-select-dropdown__item {

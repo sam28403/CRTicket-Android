@@ -46,4 +46,18 @@ class TrainTrackingSessionTest {
         assertEquals(arrival + 30 * 60_000, session.expiresAt)
         assertTrue(session.expired(arrival + 31 * 60_000))
     }
+
+    @Test fun onlyJourneysBeforeTheirDestinationCanResumeAfterTheAppReopens() {
+        val original = TrainTrackingSession.start(arrival, arrival - 60_000)
+        val restored = TrainTrackingSession(original.id, original.expiresAt)
+        assertTrue(restored.canResume(arrival, arrival - 1))
+        assertFalse(restored.canResume(arrival, arrival))
+        assertFalse(restored.canResume(arrival, arrival + 60_000))
+        assertEquals(original, restored)
+    }
+
+    @Test fun anExpiredSessionCannotResumeEvenIfTheClockMovesBeforeArrival() {
+        val expired = TrainTrackingSession("expired", arrival - 60_000)
+        assertFalse(expired.canResume(arrival, arrival - 1))
+    }
 }
