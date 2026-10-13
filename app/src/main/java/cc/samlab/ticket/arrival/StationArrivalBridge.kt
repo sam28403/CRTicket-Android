@@ -15,21 +15,29 @@ class StationArrivalBridge(
     private val monitor = StationArrivalMonitor.get(activity)
     private var pending: String? = null
     private var permissionRound = 0
-    private val permissions = ArrivalPermissions(activity, dialogs) { granted, message ->
-        if (pending != null) {
-            if (granted) notifications.requestPermission("arrival-permission:$permissionRound")
+    private var notificationPending = false
+    private var activating = false
+    private val permissions = ArrivalPermissions(
+        activity,
+        dialogs,
+        accepted = { store.enableRequested = true },
+    ) { granted, message ->
+        if (pending != null || store.enableRequested) {
+            if (granted) requestNotifications()
             else finish(false, message)
         }
     }
     private val notifications = MonitorNotifications(activity, { _, id, result ->
-        if (pending != null && id == "arrival-permission:$permissionRound") {
+        if (notificationPending && id == "arrival-permission:$permissionRound") {
+            notificationPending = false
             if (result.optBoolean("granted")) activate()
             else finish(false, "请开启系统通知和“到站提醒”通知渠道")
         }
     }, channelId = ArrivalNotifications.CHANNEL, channelName = "到站提醒",
         channelDescription = "到达附近车站时提醒，可点按打开车站大屏",
         channelImportance = NotificationManager.IMPORTANCE_HIGH,
-        permissionRequest = 53, settingsRequest = 54, dialogs = dialogs)
+        permissionRequest = 53, settingsRequest = 54, dialogs = dialogs,
+        resumeFromSettings = true)
 
     fun state(id: String) = reply(id, status())
 
@@ -49,7 +57,7 @@ class StationArrivalBridge(
             else store.message)
 
     fun enable(id: String) {
-        if (pending != null) {
+        if (pending != null || store.enableRequested || activating) {
             reply(id, JSONObject().put("success", false).put("message", "请先完成当前权限申请"))
             return
         }
@@ -65,14 +73,30 @@ class StationArrivalBridge(
     }
 
     private fun activate() {
+        activating = true
         try {
-            monitor.start()
-            finish(true, store.message)
-        } catch (error: Exception) { finish(false, error.message ?: "无法开启到站提醒") }
+            val round = permissionRound
+            monitor.start {
+                if (round == permissionRound) {
+                    activating = false
+                    finish(store.enabled, store.message)
+                }
+            }
+        } catch (error: Exception) {
+            activating = false
+            finish(false, error.message ?: "无法开启到站提醒")
+        }
+    }
+
+    private fun requestNotifications() {
+        notificationPending = true
+        notifications.requestPermission("arrival-permission:$permissionRound")
     }
 
     fun disable(id: String) {
         permissionRound++
+        notificationPending = false
+        activating = false
         permissions.cancel()
         notifications.cancelPermissionRequest()
         finish(false, "已取消开启到站提醒")
@@ -85,12 +109,38 @@ class StationArrivalBridge(
         notifications.onRequestPermissionsResult(code, results)
     }
     fun onActivityResult(code: Int) {
-        permissions.onActivityResult(code)
         notifications.onActivityResult(code)
     }
-    fun onResume() { monitor.restore() }
+
+    fun onPause() {
+        permissions.onPause()
+        notifications.onPause()
+    }
+
+    fun close() {
+        // 销毁旧 Activity 时丢弃旧回调，保留已经确认的开启意图给新实例。
+        permissionRound++
+        pending = null
+        notificationPending = false
+        permissions.cancel()
+        notifications.cancelPermissionRequest()
+    }
+
+    fun onResume() {
+        permissions.onResume()
+        notifications.onResume()
+        if (permissions.inProgress || notificationPending || activating) return
+        if (store.enableRequested) {
+            // 系统授权导致 Activity / 进程重建后，继续用户已确认的开启流程。
+            permissionRound++
+            permissions.resume()
+        } else {
+            monitor.restore()
+        }
+    }
 
     private fun finish(success: Boolean, message: String) {
+        store.enableRequested = false
         val id = pending ?: return
         pending = null
         reply(id, status().put("success", success).put("message", message))

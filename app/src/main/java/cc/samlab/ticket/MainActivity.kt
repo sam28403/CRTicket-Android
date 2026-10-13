@@ -212,6 +212,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onPause() {
+        stationArrival.onPause()
         webView.onPause()
         super.onPause()
     }
@@ -229,6 +230,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        stationArrival.close()
         refresh.close()
         files.closeChooser()
         phoneHttp.close()

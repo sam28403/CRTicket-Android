@@ -7,6 +7,9 @@ class ArrivalStore(context: Context) {
     var enabled: Boolean
         get() = preferences.getBoolean("enabled", false)
         set(value) { preferences.edit().putBoolean("enabled", value).apply() }
+    var enableRequested: Boolean
+        get() = preferences.getBoolean("enableRequested", false)
+        set(value) { preferences.edit().putBoolean("enableRequested", value).apply() }
     var message: String
         get() = preferences.getString("message", "尚未开启到站提醒").orEmpty()
         set(value) { preferences.edit().putString("message", value).apply() }

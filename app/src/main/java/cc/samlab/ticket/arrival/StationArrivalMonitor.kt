@@ -16,6 +16,7 @@ class StationArrivalMonitor private constructor(context: Context) {
     private val store = ArrivalStore(context)
     private val fences = ArrivalGeofences(context)
     private var running = false
+    private var starting = false
     private var busy = false
     private var generation = 0
     private var queued: Location? = null
@@ -26,27 +27,38 @@ class StationArrivalMonitor private constructor(context: Context) {
     fun start(finished: () -> Unit = {}) {
         check(ArrivalAccess.ready(context)) { "请开启精确定位、始终允许定位和到站通知" }
         store.enabled = true
+        if (starting) {
+            completions.add(finished)
+            return
+        }
         if (running && store.registered) {
             finished()
             return
         }
         running = true
+        starting = true
         val token = ++generation
         store.registered = false
         store.message = "正在获取附近车站，请保持系统定位开启"
-        fences.updates().addOnFailureListener {
-            if (token == generation) store.message = "低功耗定位不可用，请检查系统定位后重新开启"
+        fences.passiveUpdates().addOnFailureListener {
+            // 被动位置只是补充，失败时仍可通过围栏提供提醒。
+            if (token == generation && !store.registered) {
+                store.message = "等待系统围栏获取位置，请保持系统定位开启"
+            }
         }
         fences.current().addOnCompleteListener { task ->
+            if (token == generation) starting = false
             if (token != generation || !store.enabled) {
                 finished()
                 return@addOnCompleteListener
             }
             val location = if (task.isSuccessful) task.result else null
-            if (location != null) update(location, true, finished)
-            else {
-                store.message = "暂未取得位置，获取到位置后将自动监控附近车站"
+            if (location != null && ArrivalLocations.usable(location, 2000f)) {
+                update(location, true, finished)
+            } else {
+                store.message = "暂未取得可用位置，收到系统位置后将自动监控附近车站"
                 finished()
+                if (!busy) finishWaiters()
             }
         }
     }
@@ -77,6 +89,7 @@ class StationArrivalMonitor private constructor(context: Context) {
     private fun suspendMonitoring() {
         generation++
         running = false
+        starting = false
         queued = null
         center = null
         store.registered = false
@@ -134,11 +147,18 @@ class StationArrivalMonitor private constructor(context: Context) {
     }
 
     fun refresh(location: Location?, finished: () -> Unit = {}) {
+        if (!store.enabled || !ArrivalAccess.ready(context)) {
+            finished()
+            return
+        }
         center = null
-        if (location != null) update(location, true, finished)
-        else fences.current().addOnCompleteListener { task ->
-            val current = if (task.isSuccessful) task.result else null
-            if (current != null) update(current, true, finished) else finished()
+        if (location != null && ArrivalLocations.usable(location, 2000f)) {
+            update(location, true, finished)
+        } else {
+            fences.current().addOnCompleteListener { task ->
+                val current = if (task.isSuccessful) task.result else null
+                if (current != null) update(current, true, finished) else finished()
+            }
         }
     }
 
@@ -149,9 +169,7 @@ class StationArrivalMonitor private constructor(context: Context) {
     }
 
     fun unavailable() {
-        store.registered = false
-        running = false
-        center = null
+        suspendMonitoring()
         store.message = "系统地理围栏暂不可用，恢复定位后将重试"
     }
 }

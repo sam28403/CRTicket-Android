@@ -6,11 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import cc.samlab.ticket.permissions.SettingsReturn
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 
 class ArrivalPermissions(
     private val activity: Activity,
     private val dialogs: ExpressiveDialogHost,
+    private val accepted: () -> Unit = {},
     private val complete: (Boolean, String) -> Unit,
 ) {
     companion object {
@@ -19,6 +21,8 @@ class ArrivalPermissions(
         private const val SETTINGS = 55
     }
     private var waiting = false
+    private val settingsReturn = SettingsReturn()
+    val inProgress: Boolean get() = waiting
     private val preferences = activity.getSharedPreferences("arrival-permissions", Activity.MODE_PRIVATE)
 
     fun request() {
@@ -30,7 +34,10 @@ class ArrivalPermissions(
                 "使用低功耗地理围栏，进入车站 300 米范围后提醒，可随时关闭。" +
                 "系统省电策略可能让提醒延迟几分钟。",
             confirmLabel = "继续",
-            onConfirm = ::foreground,
+            onConfirm = {
+                accepted()
+                foreground()
+            },
             onDecline = { finish(false, "尚未开启到站提醒") },
             onDismiss = { finish(false, "已取消开启到站提醒") },
         )
@@ -38,7 +45,15 @@ class ArrivalPermissions(
 
     fun cancel() {
         waiting = false
+        settingsReturn.cancel()
         dialogs.dismiss()
+    }
+
+    // 授权更改可能重建进程，已确认用途的请求无需再次显示开启说明。
+    fun resume() {
+        if (waiting) return
+        waiting = true
+        foreground()
     }
 
     private fun foreground() {
@@ -73,6 +88,7 @@ class ArrivalPermissions(
             confirmLabel = "去设置",
             onConfirm = {
                 try {
+                    settingsReturn.launch()
                     activity.startActivityForResult(
                         Intent(
                             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -94,18 +110,28 @@ class ArrivalPermissions(
         when (code) {
             FINE -> if (ArrivalAccess.fine(activity)) background()
                 else finish(false, "需要精确定位，模糊位置无法识别 300 米到站范围")
-            BACKGROUND -> finish(ArrivalAccess.background(activity), "请允许始终定位后重新开启")
+            BACKGROUND -> finish(
+                ArrivalAccess.background(activity),
+                "需要始终允许定位才能提供后台到站提醒",
+            )
         }
     }
 
-    fun onActivityResult(code: Int) {
-        if (code == SETTINGS && waiting) finish(ArrivalAccess.fine(activity) &&
-            ArrivalAccess.background(activity), "请允许精确定位和始终定位后重新开启")
+    fun onPause() = settingsReturn.onPause()
+
+    fun onResume() {
+        if (settingsReturn.onResume() && waiting) {
+            finish(
+                ArrivalAccess.fine(activity) && ArrivalAccess.background(activity),
+                "需要允许精确定位和始终定位才能提供到站提醒",
+            )
+        }
     }
 
     private fun finish(granted: Boolean, message: String) {
         if (!waiting) return
         waiting = false
+        settingsReturn.cancel()
         complete(granted, message)
     }
 }

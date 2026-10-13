@@ -54,8 +54,9 @@ class ArrivalGeofences(private val context: Context) {
     }
 
     @SuppressLint("MissingPermission")
-    fun updates(): Task<Void> {
-        val request = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 300_000L)
+    fun passiveUpdates(): Task<Void> {
+        // 只接收系统或其他应用已经取得的位置，不主动启动周期定位。
+        val request = LocationRequest.Builder(Priority.PRIORITY_PASSIVE, 300_000L)
             .setMinUpdateIntervalMillis(120_000L)
             .setMinUpdateDistanceMeters(1000f)
             .setMaxUpdateDelayMillis(300_000L).build()

@@ -13,6 +13,7 @@ import android.os.Build
 import android.provider.Settings
 import cc.samlab.ticket.MainActivity
 import cc.samlab.ticket.R
+import cc.samlab.ticket.permissions.SettingsReturn
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 import org.json.JSONObject
 
@@ -26,6 +27,7 @@ class MonitorNotifications(
     private val permissionRequest: Int = PERMISSION_REQUEST,
     private val settingsRequest: Int = SETTINGS_REQUEST,
     private val dialogs: ExpressiveDialogHost? = null,
+    private val resumeFromSettings: Boolean = false,
 ) {
     companion object {
         private const val CHANNEL_ID = "ticket-availability"
@@ -38,6 +40,7 @@ class MonitorNotifications(
     private val manager = activity.getSystemService(NotificationManager::class.java)
     private val preferences = activity.getSharedPreferences("notifications", Activity.MODE_PRIVATE)
     private val pending = mutableListOf<String>()
+    private val settingsReturn = SettingsReturn()
 
     private fun createChannel() {
         manager.createNotificationChannel(
@@ -81,6 +84,7 @@ class MonitorNotifications(
             ).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
             if (channelBlocked) intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
             try {
+                settingsReturn.launch()
                 activity.startActivityForResult(intent, settingsRequest)
             } catch (_: Exception) {
                 finishPermission("无法打开通知设置，请在系统设置中手动开启")
@@ -118,14 +122,22 @@ class MonitorNotifications(
 
     fun cancelPermissionRequest() {
         pending.clear()
+        settingsReturn.cancel()
         dialogs?.dismiss()
     }
 
     fun onActivityResult(requestCode: Int) {
-        if (requestCode == settingsRequest) finishPermission()
+        if (requestCode == settingsRequest && !resumeFromSettings) finishPermission()
+    }
+
+    fun onPause() = settingsReturn.onPause()
+
+    fun onResume() {
+        if (settingsReturn.onResume() && pending.isNotEmpty()) finishPermission()
     }
 
     private fun finishPermission(message: String? = null) {
+        settingsReturn.cancel()
         val granted = enabled()
         val statusMessage = message ?: if (granted) {
             "系统通知已开启"
