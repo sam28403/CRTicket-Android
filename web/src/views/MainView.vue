@@ -4,17 +4,17 @@
       <ThemeSelect />
       <el-button
         :disabled="isGithubPagesBuild"
-        :title="isGithubPagesBuild ? 'GitHub Pages 无法跨域访问 12306 余票接口' : ''"
+        :title="isGithubPagesBuild ? '演示版暂不支持余票监控' : ''"
         @click="goToMonitor"
       >余票监控</el-button>
       <el-button
         :disabled="isGithubPagesBuild"
-        :title="isGithubPagesBuild ? 'GitHub Pages 未部署车次查询后端' : ''"
+        :title="isGithubPagesBuild ? '演示版暂不支持车次查询' : ''"
         @click="goToTrainQuery"
       >车次查询</el-button>
       <el-button
         :disabled="isGithubPagesBuild"
-        :title="isGithubPagesBuild ? 'GitHub Pages 未部署车站查询后端' : ''"
+        :title="isGithubPagesBuild ? '演示版暂不支持车站大屏' : ''"
         @click="goToStation"
       >车站大屏</el-button>
       <el-button :disabled="isGithubPagesBuild" @click="goToHistory()">
@@ -162,6 +162,30 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item
+            label="里程"
+            prop="distance"
+            :required="true"
+            :rules="distanceRules"
+        >
+          <el-tooltip
+              content="点击页面导航中的“车次查询”可获取里程"
+              placement="top"
+          >
+            <el-input-number
+                v-model="ticket.distance"
+                class="mileage-input"
+                :min="0"
+                placeholder="请输入里程"
+                aria-label="运转里程（km）"
+            >
+              <template #suffix>
+                <span>km</span>
+              </template>
+            </el-input-number>
+          </el-tooltip>
+        </el-form-item>
+
       </el-form>
       <h3 style="font-family: Consolas, 'Courier New', monospace">Version 261013</h3>
       <h3 style="font-family: Consolas, 'Courier New', monospace">Station Version 10118</h3>
@@ -243,31 +267,15 @@
             <el-icon><Picture /></el-icon>
             下载 PNG
           </el-button>
-          <el-button type="success" :disabled="isGithubPagesBuild" @click="openSaveDialog">
+          <el-button
+              type="success"
+              :disabled="isGithubPagesBuild"
+              :loading="isSavingTicket"
+              @click="saveTicket"
+          >
             <el-icon><Checked /></el-icon>
             {{ deviceMode ? '存储到本机' : '保存车票' }}
           </el-button>
-          <el-dialog
-              v-model="saveDistance"
-              title="运转里程"
-              width="500"
-              :before-close="handleClose"
-          >
-            <span>请输入本次运转的里程数，单位为km。</span>
-            <el-input-number v-model="distance" :min="0">
-              <template #suffix>
-                <span>km</span>
-              </template>
-            </el-input-number>
-            <template #footer>
-              <div class="dialog-footer">
-                <el-button :disabled="isGithubPagesBuild" @click="openTrainQuery">我不知道里程</el-button>
-                <el-button type="primary" @click="saveTicket">
-                  存储车票
-                </el-button>
-              </div>
-            </template>
-          </el-dialog>
         </div>
       </el-card>
 
@@ -278,7 +286,7 @@
 <script setup>
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {ElButton, ElDialog, ElIcon, ElMessage, ElMessageBox, ElNotification} from 'element-plus'
+import {ElButton, ElIcon, ElMessage, ElMessageBox, ElNotification} from 'element-plus'
 import QRCode from 'qrcode'
 
 
@@ -309,7 +317,10 @@ import {
 const userStore = useUserStore()
 userStore.init()
 
-const ticket = reactive(createDefaultTicket())
+const ticket = reactive({
+  ...createDefaultTicket(),
+  distance: undefined,
+})
 const formRef = ref(null)
 const rules = ticketRules
 const options = seatOptions
@@ -329,7 +340,15 @@ const handleSelect = (field, item) => handleStationSelect(ticket, field, item)
 const formatStationName = (name) => formatTicketStationName(name)
 const getStationEnglish = (name) => getTicketStationEnglish(name)
 
-const distance = ref(0)
+const distanceRules = [
+  {
+    required: true,
+    type: 'number',
+    min: 0,
+    message: '请输入有效的里程（km）',
+    trigger: ['blur', 'change'],
+  },
+]
 
 const qrCodeUrl = ref('')
 
@@ -468,10 +487,6 @@ const downloadPNG = async () => {
 }
 
 const router = useRouter()
-const openTrainQuery = () => {
-  if (isGithubPagesBuild) return
-  window.open(router.resolve('/train').href, '_blank', 'noopener,noreferrer')
-}
 const goToMonitor = () => {
   if (isGithubPagesBuild) return
   router.push('/monitor')
@@ -504,32 +519,16 @@ const goToGitHub = () => {
       })
 }
 
-const saveDistance = ref(false)
-const openSaveDialog = () => {
-  if (isGithubPagesBuild) {
-    ElMessage.warning('GitHub Pages 演示版不支持账号存储/历史记录功能')
-    return
-  }
-  saveDistance.value = true
-}
-
-const handleClose = (done) => {
-  ElMessageBox.confirm('你确定不要存储这张车票？')
-    .then(() => {
-      done()
-    })
-    .catch(() => {
-      // catch error
-    })
-}
+const isSavingTicket = ref(false)
 
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem('user'))
 }
 
 const saveTicket = async () => {
-  if (!hasRequiredTicketFields(ticket)) {
-    ElMessage.warning('请填写完整车票信息')
+  if (isSavingTicket.value) return
+  if (isGithubPagesBuild) {
+    ElMessage.warning('GitHub Pages 演示版不支持账号存储/历史记录功能')
     return
   }
 
@@ -539,6 +538,15 @@ const saveTicket = async () => {
     return
   }
 
+  if (!hasRequiredTicketFields(ticket)) {
+    ElMessage.warning('请填写完整车票信息')
+    return
+  }
+
+  const validDistance = await formRef.value.validateField('distance').catch(() => false)
+  if (!validDistance || isSavingTicket.value) return
+
+  isSavingTicket.value = true
   try {
     const res = await api.post(
       '/ticket/add',
@@ -547,18 +555,19 @@ const saveTicket = async () => {
         useCredit: credit.value,
         finalSeatType: finalSeatType.value,
         hasConditioner: value3.value,
-        distance: distance.value,
+        distance: ticket.distance,
       })
     )
 
     if (res.data.success) {
       ElMessage.success('车票保存成功')
-      saveDistance.value = false
     } else {
       ElMessage.error(res.data.message)
     }
   } catch (err) {
     ElMessage.error('保存失败')
+  } finally {
+    isSavingTicket.value = false
   }
 }
 </script>
@@ -614,6 +623,10 @@ const saveTicket = async () => {
   padding: 20px;
 }
 
+.mileage-input {
+  width: 100%;
+}
+
 .ticket-preview-shell {
   width: 100%;
   display: flex;
@@ -654,9 +667,5 @@ const saveTicket = async () => {
     padding: 16px 12px;
   }
 
-  :deep(.el-dialog) {
-    width: 92vw !important;
-    max-width: 520px;
-  }
 }
 </style>

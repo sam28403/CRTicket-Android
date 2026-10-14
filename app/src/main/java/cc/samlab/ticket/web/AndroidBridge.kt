@@ -24,8 +24,15 @@ class AndroidBridge(
     private val openExternal: (Uri) -> Unit,
     private val refresh: ExpressiveRefreshHost,
     private val ticketMonitor: TicketMonitorBridge,
+    private val showNativePage: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
+
+    @JavascriptInterface
+    fun setHomeVisible(visible: Boolean) = onUi { showNativePage(if (visible) "/home" else "") }
+
+    @JavascriptInterface
+    fun setNativePage(route: String) = onUi { showNativePage(route) }
 
     @JavascriptInterface
     fun setPullRefreshProgress(progress: Double) = onUi { refresh.update(progress.toFloat()) }

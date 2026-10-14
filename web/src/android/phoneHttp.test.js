@@ -76,3 +76,21 @@ test('timeout and abort cancel native reads and discard late results', async () 
     controller.abort()
     await assert.rejects(pending, error => error.code === 'ERR_CANCELED')
 })
+
+test('archive-specific bridge timeout cancels a stalled native request', async () => {
+    let requestId
+    requestHandler = id => { requestId = id }
+    await assert.rejects(nativeFetch('http://down.lltskb.com/an.db', { timeout: 10 }),
+        error => error.code === 'ECONNABORTED')
+    assert.equal(cancellations.at(-1), requestId)
+})
+
+test('download deadline abort is reported as a timeout rather than user cancellation', async () => {
+    let requestId
+    requestHandler = id => { requestId = id }
+    await assert.rejects(nativeFetch('http://down.lltskb.com/an.db', {
+        signal: AbortSignal.timeout(10),
+        timeout: 1000,
+    }), error => error.code === 'ECONNABORTED')
+    assert.equal(cancellations.at(-1), requestId)
+})

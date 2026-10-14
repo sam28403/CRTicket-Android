@@ -59,6 +59,16 @@ export async function saveFile(blob, filename) {
 
 export function initializePlatform(router) {
   if (!native) return
+  const hasNativeHome = typeof native.setHomeVisible === 'function'
+  window.crticketNavigate = route => router.push(route)
+  if (hasNativeHome) {
+    router.afterEach((to, from, failure) => {
+      if (failure) return
+      if (typeof native.setNativePage === 'function') {
+        native.setNativePage(['/home', '/about'].includes(to.path) ? to.path : '')
+      } else native.setHomeVisible(to.path === '/home')
+    })
+  }
   // Route local windows in this WebView and open public links in the system browser.
   window.open = url => {
     const target = new URL(url, location.href)
@@ -75,9 +85,11 @@ export function initializePlatform(router) {
       closeButton.click()
       return true
     }
-    if (router.currentRoute.value.path !== '/') {
+    const path = router.currentRoute.value.path
+    if (hasNativeHome && path === '/home') return false
+    if (hasNativeHome || path !== '/') {
       if (history.state?.back) router.back()
-      else router.replace('/')
+      else router.replace(hasNativeHome ? '/home' : '/')
       return true
     }
     return false

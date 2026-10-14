@@ -13,6 +13,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import cc.samlab.ticket.arrival.ArrivalNotifications
 import cc.samlab.ticket.arrival.StationArrivalBridge
@@ -25,6 +26,7 @@ import cc.samlab.ticket.tracking.TrainTrackingNotifications
 import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 import cc.samlab.ticket.ui.ExpressiveRefreshHost
+import cc.samlab.ticket.ui.home.ExpressiveHomeHost
 import cc.samlab.ticket.web.AndroidBridge
 import cc.samlab.ticket.web.LocalAssetClient
 import cc.samlab.ticket.web.WebViewLayout
@@ -46,9 +48,25 @@ class MainActivity : ComponentActivity() {
     private val ticketMonitor by lazy { TicketMonitorBridge(this, ::callback) }
     private val dialogs by lazy { ExpressiveDialogHost(this) }
     private val refresh by lazy { ExpressiveRefreshHost(this, webView) }
+    private val home by lazy { ExpressiveHomeHost(this) }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
     private lateinit var appearance: AppearanceController
+    private var navigationReady = false
+    private var pendingRoute: String? = null
+    private val navigationBack = object : OnBackPressedCallback(false) {
+        override fun handleOnBackStarted(backEvent: BackEventCompat) {
+            home.startBack(backEvent)
+        }
+
+        override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+            home.progressBack(backEvent)
+        }
+
+        override fun handleOnBackCancelled() = home.cancelBack()
+
+        override fun handleOnBackPressed() = navigateBack()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,19 +79,24 @@ class MainActivity : ComponentActivity() {
         val container = WebViewLayout.create(this, webView)
         setContentView(container)
         refresh.attach(container)
-        appearance = AppearanceController(this, container, webView, dialogs, refresh)
+        home.attach(container, ::navigateTo, ::navigateBack) { openExternal(Uri.parse(it)) }
+        val route = initialNotificationRoute()
+        pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
+        home.setPage(if (route == "#/home") {
+            savedInstanceState?.getString("nativePage") ?: "/home"
+        } else "")
+        webView.visibility = if (home.visible) android.view.View.INVISIBLE else android.view.View.VISIBLE
+        appearance = AppearanceController(this, container, webView, dialogs, refresh, home)
         appearance.apply(appearance.isSystemDark())
         configureWebView()
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = navigateBack()
-        })
+        navigationBack.isEnabled = !home.isHome
+        onBackPressedDispatcher.addCallback(this, navigationBack)
         files.restore(savedInstanceState)
-        if (savedInstanceState == null || intent.hasExtra(ArrivalNotifications.OPEN_STATION) ||
+        if (savedInstanceState == null || route != "#/home" ||
             webView.restoreState(savedInstanceState) == null) {
-            val route = initialNotificationRoute()
             webView.loadUrl("$ORIGIN/index.html$route")
-            intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         }
+        clearNotificationRoute()
     }
 
     private fun configureWebView() {
@@ -97,6 +120,7 @@ class MainActivity : ComponentActivity() {
                 files, ::openExternal,
                 refresh,
                 ticketMonitor,
+                ::setNativePage,
             ),
             "CRTicketAndroid",
         )
@@ -139,14 +163,43 @@ class MainActivity : ComponentActivity() {
             station != null -> "#${stationRoute(station)}"
             tracking != null -> "#$tracking"
             intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false) -> "#/monitor"
-            else -> ""
+            else -> "#/home"
+        }
+    }
+
+    private fun clearNotificationRoute() {
+        intent.removeExtra(ArrivalNotifications.OPEN_STATION)
+        intent.removeExtra(TrainTrackingNotifications.OPEN_TRACKING)
+        intent.removeExtra(MonitorNotifications.OPEN_MONITOR)
+    }
+
+    private fun setNativePage(page: String) {
+        navigationReady = true
+        home.setPage(page)
+        navigationBack.isEnabled = !home.isHome
+        webView.visibility = if (home.visible) android.view.View.INVISIBLE else android.view.View.VISIBLE
+        appearance.apply(home.dark)
+        if (!home.visible) webView.requestFocus()
+        pendingRoute?.let { route ->
+            pendingRoute = null
+            navigateTo(route)
         }
     }
 
     private fun stationRoute(station: String) = "/station?station=${Uri.encode(station)}"
 
     private fun navigateTo(route: String) {
-        webView.evaluateJavascript("window.location.hash = ${JSONObject.quote(route)}", null)
+        // The native home can receive a tap before the WebView router finishes starting.
+        if (!navigationReady) {
+            pendingRoute = route
+            return
+        }
+        webView.evaluateJavascript(
+            "if (window.crticketNavigate) {" +
+                "window.crticketNavigate(${JSONObject.quote(route)})" +
+                "} else { window.location.hash = ${JSONObject.quote(route)} }",
+            null,
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -158,6 +211,7 @@ class MainActivity : ComponentActivity() {
         }
         if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) navigateTo("/monitor")
         intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)?.let(::navigateTo)
+        clearNotificationRoute()
     }
 
     override fun onRequestPermissionsResult(
@@ -172,6 +226,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun navigateBack() {
+        if (home.isHome) {
+            finish()
+            return
+        }
         webView.evaluateJavascript("Boolean(window.crticketBack && window.crticketBack())") { handled ->
             if (handled != "true") {
                 if (webView.canGoBack()) webView.goBack() else finish()
@@ -211,6 +269,8 @@ class MainActivity : ComponentActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         webView.saveState(outState)
+        outState.putString("nativePage", home.route)
+        outState.putString("pendingRoute", pendingRoute)
         files.saveState(outState)
     }
 

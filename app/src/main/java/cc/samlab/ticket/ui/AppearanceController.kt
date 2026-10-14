@@ -7,6 +7,7 @@ import android.os.Build
 import android.view.View
 import android.view.WindowInsetsController
 import android.webkit.WebView
+import cc.samlab.ticket.ui.home.ExpressiveHomeHost
 
 class AppearanceController(
     private val activity: Activity,
@@ -14,6 +15,7 @@ class AppearanceController(
     private val webView: WebView,
     private val dialogs: ExpressiveDialogHost,
     private val refresh: ExpressiveRefreshHost,
+    private val home: ExpressiveHomeHost,
 ) {
     @Volatile
     private var systemDark = isNight(activity.resources.configuration)
@@ -39,8 +41,9 @@ class AppearanceController(
     fun apply(dark: Boolean) {
         dialogs.dark = dark
         refresh.dark = dark
+        home.dark = dark
         val color = if (dark) Color.rgb(10, 10, 10) else Color.WHITE
-        root.setBackgroundColor(color)
+        root.setBackgroundColor(if (home.visible) home.backgroundColor else color)
         webView.setBackgroundColor(color)
         if (Build.VERSION.SDK_INT >= 30) {
             val flags = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or

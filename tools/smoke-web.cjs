@@ -55,6 +55,11 @@ const server = createServer(async (req, res) => {
     await page.getByRole('option', { name: '二等座', exact: true }).click()
     await page.getByPlaceholder('03车12A号').fill('01车01A号')
     await page.getByPlaceholder('XX站').fill('北京南')
+    // Mileage is now required on the maker form and saving has no extra dialog.
+    await page.getByRole('button', { name: '存储到本机' }).click()
+    await page.getByText('请输入有效的里程（km）', { exact: true }).waitFor()
+    assert.equal(await page.getByRole('dialog', { name: '运转里程' }).count(), 0)
+    await page.getByRole('spinbutton', { name: '运转里程（km）' }).fill('1318')
     await page.evaluate(() => document.fonts.ready)
     assert.equal(await page.locator('.ticket-container').first().evaluate(
       element => getComputedStyle(element).width,
@@ -71,7 +76,7 @@ const server = createServer(async (req, res) => {
       await writeFile(path.join(output, item.filename), bytes)
     }
     await page.getByRole('button', { name: '存储到本机' }).click()
-    await page.getByRole('button', { name: '存储车票', exact: true }).click()
+    await page.getByText('车票保存成功', { exact: true }).waitFor()
     await page.getByRole('button', { name: '历史记录', exact: true }).click()
     await page.getByRole('cell', { name: 'G1', exact: true }).waitFor()
     await page.reload()

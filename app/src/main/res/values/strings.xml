@@ -1,0 +1,33 @@
+<resources>
+    <string name="home_title">CRTicket</string>
+    <string name="home_search">搜索</string>
+    <string name="home_ticket">车票生成</string>
+    <string name="home_ticket_description">制作车票、查询车次与余票</string>
+    <string name="home_settings">设置</string>
+    <string name="home_settings_description">本机数据、头像与备份管理</string>
+    <string name="home_about">关于</string>
+    <string name="home_about_description">应用信息与项目主页</string>
+    <string name="home_history">历史记录</string>
+    <string name="home_history_description">查看与管理已保存的车票</string>
+    <string name="home_monitor">余票监控</string>
+    <string name="home_monitor_description">关注余票变化与有票提醒</string>
+    <string name="home_train">车次查询</string>
+    <string name="home_train_description">查询时刻表与列车详情</string>
+    <string name="home_list">车次列表</string>
+    <string name="home_list_description">浏览路路通离线车次</string>
+    <string name="home_station">车站大屏</string>
+    <string name="home_station_description">查看车站到发信息</string>
+    <string name="about_back">返回</string>
+    <string name="about_description">车票制作与铁路出行工具</string>
+    <string name="about_version">版本 %1$s</string>
+    <string name="about_icon">CRTicket 应用图标</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="about_github_url" translatable="false">https://github.com/sam28403/CRTicket</string>
+    <string name="egg_title">隐藏站台 · 纪念车票</string>
+    <string name="egg_train">CR777 · 好心情特别快车</string>
+    <string name="egg_departure">此时此刻</string>
+    <string name="egg_arrival">诗和远方</string>
+    <string name="egg_seat">07 车 07A 号 · 靠窗 · 永久有效</string>
+    <string name="egg_message">你发现了第七次点击后的隐藏站台。\n愿每一次出发都有期待，每一次到达都有人等你。</string>
+    <string name="egg_confirm">带着好心情出发</string>
+</resources>

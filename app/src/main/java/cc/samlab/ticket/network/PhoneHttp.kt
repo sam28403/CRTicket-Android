@@ -22,6 +22,10 @@ class PhoneHttp(
         .followRedirects(false)
         .followSslRedirects(false)
         .build()
+    private val archiveClient = client.newBuilder()
+        .readTimeout(60, TimeUnit.SECONDS)
+        .callTimeout(60, TimeUnit.SECONDS)
+        .build()
     private val calls = ConcurrentHashMap<String, Call>()
     private val active = ConcurrentHashMap.newKeySet<String>()
     private val cancelled = ConcurrentHashMap.newKeySet<String>()
@@ -51,14 +55,15 @@ class PhoneHttp(
                 CookieManager.getInstance().getCookie(url.toString())?.let {
                     builder.header("Cookie", it)
                 }
-                val call = client.newCall(builder.build())
+                val binary = url.encodedPath == "/an.db"
+                val requestClient = if (binary) archiveClient else client
+                val call = requestClient.newCall(builder.build())
                 calls[id] = call
                 if (cancelled.contains(id)) call.cancel()
                 call.execute().use { response ->
                     response.headers.values("Set-Cookie").forEach {
                         CookieManager.getInstance().setCookie(url.toString(), it)
                     }
-                    val binary = url.encodedPath == "/an.db"
                     val maxBytes = if (binary) 16 * 1024 * 1024 else 4 * 1024 * 1024
                     val output = ByteArrayOutputStream()
                     response.body?.byteStream()?.use { input ->

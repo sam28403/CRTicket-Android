@@ -2,6 +2,9 @@ import axios, { AxiosError } from 'axios';
 import { native } from './android/platform.js';
 import { createLocalApi } from './android/localApi.js';
 
+// 时刻表首次下载最多 90 秒，另预留在线查询和数据处理时间。
+export const timetableTimeout = 150000;
+
 const api = axios.create({
     baseURL: import.meta.env?.VITE_API_BASE_URL || '/api',
     headers: { 'X-CRTicket-Request': '1' },

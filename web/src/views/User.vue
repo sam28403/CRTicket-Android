@@ -47,7 +47,6 @@
                     @click="removeAvatar"
                   >清除头像</el-button>
                 </div>
-                <p class="avatar-hint">支持 JPG、PNG、WebP，选择后可调整裁切区域</p>
               </div>
             </el-card>
           </div>
@@ -1253,13 +1252,6 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   gap: 10px;
-}
-
-.avatar-hint {
-  margin: 0;
-  color: var(--app-muted, #909399);
-  font-size: 13px;
-  text-align: center;
 }
 
 .avatar-crop-wrap label {

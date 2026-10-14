@@ -30,8 +30,10 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
     let initialization
     let pending
 
-    async function download(url) {
-        const response = await fetchImpl(url, { signal: AbortSignal.timeout(15000) })
+    async function download(url, loadSignal, timeout) {
+        const signal = AbortSignal.any([loadSignal, AbortSignal.timeout(timeout)])
+        signal.throwIfAborted()
+        const response = await fetchImpl(url, { signal, timeout })
         if (!response.ok) throw new Error('路路通数据下载失败')
         const bytes = new Uint8Array(await response.arrayBuffer())
         if (bytes.length > maxBytes) throw new Error('路路通数据包过大')
@@ -39,9 +41,10 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
     }
 
     async function refresh() {
+        const loadSignal = AbortSignal.timeout(90000)
         let manifest
         try {
-            manifest = new TextDecoder().decode(await download(`${base}/android.ver`))
+            manifest = new TextDecoder().decode(await download(`${base}/android.ver`, loadSignal, 15000))
                 .replace(/^\uFEFF/, '').replace('"name": 应用宝"', '"name": "应用宝"')
         } catch {
             manifest = null
@@ -52,10 +55,14 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
         }
         if (!cached || !version || cached.version !== version) {
             let bytes
-            try {
-                bytes = await download(manifest ? `${base}/an.db` : fallback)
-            } catch {
-                bytes = await download(fallback)
+            if (manifest) {
+                try {
+                    bytes = await download(`${base}/an.db`, loadSignal, 60000)
+                } catch {
+                    bytes = await download(fallback, loadSignal, 60000)
+                }
+            } else {
+                bytes = await download(fallback, loadSignal, 60000)
             }
             const next = await decodeArchive(bytes)
             if (version && next.version !== version) {
@@ -87,6 +94,7 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
         await initialization
         if (cached && Date.now() - checkedAt < 3600000) return cached
         if (!pending) {
+            // Failed refreshes do not advance checkedAt; the next query retries immediately.
             pending = refresh().finally(() => { pending = null })
             if (cached) pending.catch(() => {})
         }

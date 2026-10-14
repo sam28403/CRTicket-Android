@@ -119,16 +119,17 @@ const time = value => value
         </el-form>
 
         <p class="hint">
-          成人票 · 今天起 15 天内 · 最短间隔 10 秒。查询后可按实际出发车站和到达车站筛选；
-          {{ nativeMonitoring ? '应用切换到后台或锁屏后继续监控，再次打开页面会恢复监控状态。' : '浏览器监控在此页面打开时运行，后台标签页可能延迟查询。' }}
-          余票以官网实时结果为准。
+          {{ nativeMonitoring ? '应用切换到后台或锁屏后继续监控。' : '监控需保持页面打开。' }}
+          余票以 12306 实时结果为准。
         </p>
       </el-card>
 
       <el-alert
         v-if="error"
         :title="error"
-        :description="monitoring ? '监控会继续自动重试；下方保留的是上次成功结果，可能已过期。' : queriedAt ? '下方保留的是上次成功结果，可能已过期；请检查网络后重试。' : '请检查查询条件、手机网络或官网状态后重试。'"
+        :description="monitoring
+          ? '监控会自动重试，上次结果可能过期。'
+          : queriedAt ? '上次结果可能过期，请检查网络后重试。' : '请检查查询条件或服务状态后重试。'"
         type="error"
         show-icon
         :closable="false"
@@ -261,18 +262,15 @@ const time = value => value
         <p class="hint">
           <span class="seat-plenty">绿色：大于 20 张</span> ·
           <span class="seat-limited">橙色：1–20 张</span> ·
-          <span class="seat-empty">红色：0 张</span>。有座明细的截断值 21 显示为“&gt;20张”；无座保留实际数量。
+          <span class="seat-empty">红色：0 张</span>
         </p>
       </section>
 
       <section class="events">
         <h2>
           有票提醒
-          <small>最近 30 条</small>
+          <small v-if="events.length">{{ events.length }} 条</small>
         </h2>
-        <p class="hint">
-          开始监控时会申请系统通知权限。首次发现有票或余票数量变化时，会发送系统通知并在页面内提醒；未授权时仅在页面内提醒。只关注所选车站、时间、车次、车种与席别。席别可多选，任一所选席别有票即视为有票；清空选择则关注全部席别。
-        </p>
         <p v-if="!events.length" class="hint">暂无提醒</p>
         <ul v-else>
           <li v-for="(event, index) in events" :key="index">
