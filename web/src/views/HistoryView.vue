@@ -3,15 +3,14 @@
     <el-container class="history-layout">
       <el-header class="top-header">
         <AppBrand />
-        <div class="page-header-actions"><ThemeSelect /></div>
       </el-header>
       <el-container>
         <el-aside width="220px" class="history-sidebar">
           <el-space direction="vertical" fill style="width: 100%">
             <el-button size="large" @click="goHome()">车票生成</el-button>
             <el-button size="large" type="primary">车票历史</el-button>
-            <el-button v-if="userStore.isLogin" size="large" @click="goUser()">数据管理</el-button>
-            <el-button v-else size="large" @click="goLogin()">数据管理</el-button>
+            <el-button v-if="userStore.isLogin" size="large" @click="goUser()">运转数据</el-button>
+            <el-button v-else size="large" @click="goLogin()">运转数据</el-button>
           </el-space>
 
         </el-aside>
@@ -166,7 +165,6 @@
 
 
 <script setup>
-import ThemeSelect from '@/components/ThemeSelect.vue'
 import TicketRecordDialog from '@/components/TicketRecordDialog.vue'
 import AppBrand from '@/components/AppBrand.vue'
 import { computed, onMounted, reactive, ref } from 'vue'

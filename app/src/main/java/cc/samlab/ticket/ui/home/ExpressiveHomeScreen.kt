@@ -29,7 +29,12 @@ import cc.samlab.ticket.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun ExpressiveHomeScreen(dark: Boolean, visible: Boolean, onNavigate: (String) -> Unit) {
+internal fun ExpressiveHomeScreen(
+    dark: Boolean,
+    visible: Boolean,
+    onNavigate: (String) -> Unit,
+    pureBlack: Boolean = false,
+) {
     val homeFocus = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(visible) {
@@ -39,7 +44,7 @@ internal fun ExpressiveHomeScreen(dark: Boolean, visible: Boolean, onNavigate: (
             keyboard?.hide()
         }
     }
-    MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark)) {
+    MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
         Box(
             modifier = Modifier.fillMaxSize().background(colors.surfaceContainer)
@@ -76,7 +81,7 @@ internal fun ExpressiveHomeScreen(dark: Boolean, visible: Boolean, onNavigate: (
                         shape = homeEntryShape(0, 2),
                         iconContainer = homeIconColors(colors, 6).container,
                         iconTint = homeIconColors(colors, 6).foreground,
-                        onClick = { onNavigate("/user") },
+                        onClick = { onNavigate("/settings") },
                     )
                     HomeEntry(
                         title = stringResource(R.string.home_about),

@@ -83,10 +83,8 @@ class ExpressiveHomeTest {
         compose.waitUntil(10_000) { !keyboardVisible() }
 
         compose.onNodeWithText("设置").performScrollTo().performClick()
-        awaitRoute("/user")
-        compose.waitUntil(20_000) {
-            evaluate("Boolean(document.querySelector('.user-page'))") == "true"
-        }
+        awaitRoute("/settings")
+        compose.onNodeWithText("个人资料").assertIsDisplayed()
         pressBack()
         awaitRoute("/home")
         compose.onNodeWithText("关于").performScrollTo().assertIsDisplayed()
@@ -101,7 +99,7 @@ class ExpressiveHomeTest {
             Triple("车次查询", "/train", ".train-query-page"),
             Triple("车次列表", "/list", ".train-list-page"),
             Triple("车站大屏", "/station", ".station-page"),
-            Triple("设置", "/user", ".user-page"),
+            Triple("运转数据", "/user", ".user-page"),
         )
         routes.forEach { (label, route, selector) ->
             compose.onNodeWithText(label).performScrollTo().performClick()
@@ -131,17 +129,19 @@ class ExpressiveHomeTest {
         capture("home-destinations")
     }
 
-    @Test fun aboutLogoUnlocksTicketOnSeventhTapAndDialogBackStaysOnAbout() {
+    @Test fun aboutLogoUnlocksTicketOnEighthTapAndDialogBackStaysOnAbout() {
         compose.onNodeWithText("关于").performScrollTo().performClick()
         awaitRoute("/about")
         val logo = compose.onNodeWithContentDescription("CRTicket 应用图标")
-        repeat(6) { logo.performClick() }
-        compose.onNodeWithText("隐藏站台 · 纪念车票").assertDoesNotExist()
+        repeat(7) { logo.performClick() }
+        compose.onNodeWithText("隐藏站台 · 八方来福纪念票").assertDoesNotExist()
         logo.performClick()
-        compose.onNodeWithText("隐藏站台 · 纪念车票").assertIsDisplayed()
+        compose.onNodeWithText("隐藏站台 · 八方来福纪念票").assertIsDisplayed()
+        compose.onNodeWithText("G8888 · 一路发发特别快车").assertIsDisplayed()
+        compose.onNodeWithText("08 车 08A 号 · 靠窗 · 永久有效").assertIsDisplayed()
         capture("about-hidden-ticket")
         pressBack()
-        compose.onNodeWithText("隐藏站台 · 纪念车票").assertDoesNotExist()
+        compose.onNodeWithText("隐藏站台 · 八方来福纪念票").assertDoesNotExist()
         awaitRoute("/about")
         pressBack()
         awaitRoute("/home")
@@ -158,7 +158,15 @@ class ExpressiveHomeTest {
             val about = activity.findViewById<android.view.View>(R.id.expressive_about_view)
             assertTrue(about.scaleX < 1f)
             assertTrue(about.translationX > 0f)
-            dispatcher.dispatchOnBackCancelled()
+            assertTrue(about.clipToOutline)
+            val home = activity.findViewById<android.view.View>(R.id.expressive_home_view)
+            assertEquals(android.view.View.VISIBLE, home.visibility)
+            assertTrue(home.scaleX < 1f)
+            assertTrue(home.foreground != null)
+        }
+        capture("predictive-return-card")
+        instrumentation.runOnMainSync {
+            activity.onBackPressedDispatcher.dispatchOnBackCancelled()
         }
         compose.waitUntil(5_000) {
             var restored = false
@@ -170,15 +178,26 @@ class ExpressiveHomeTest {
         }
         awaitRoute("/about")
         instrumentation.runOnMainSync {
+            val home = activity.findViewById<android.view.View>(R.id.expressive_home_view)
+            assertEquals(android.view.View.GONE, home.visibility)
+            assertEquals(1f, home.scaleX)
+            assertTrue(home.foreground == null)
             val dispatcher = activity.onBackPressedDispatcher
             dispatcher.dispatchOnBackStarted(BackEventCompat(400f, 300f, 0f, BackEventCompat.EDGE_RIGHT))
             dispatcher.dispatchOnBackProgressed(BackEventCompat(250f, 300f, 0.8f, BackEventCompat.EDGE_RIGHT))
-            assertTrue(activity.findViewById<android.view.View>(R.id.expressive_about_view).translationX < 0f)
+            val about = activity.findViewById<android.view.View>(R.id.expressive_about_view)
+            assertTrue(about.translationX < 0f)
+            val gestureScale = about.scaleX
             dispatcher.onBackPressed()
+            assertEquals(gestureScale, about.scaleX)
+            assertEquals(android.view.View.VISIBLE, about.visibility)
         }
         awaitRoute("/home")
         instrumentation.runOnMainSync {
             assertFalse(activity.onBackPressedDispatcher.hasEnabledCallbacks())
+            val home = activity.findViewById<android.view.View>(R.id.expressive_home_view)
+            assertEquals(1f, home.scaleX)
+            assertTrue(home.foreground == null)
         }
     }
 

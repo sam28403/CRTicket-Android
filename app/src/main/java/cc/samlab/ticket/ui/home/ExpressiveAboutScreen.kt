@@ -38,8 +38,9 @@ internal fun ExpressiveAboutScreen(
     dark: Boolean,
     onBack: () -> Unit,
     onExternal: (String) -> Unit,
+    pureBlack: Boolean = false,
 ) {
-    MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark)) {
+    MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
         Surface(color = colors.surfaceContainer, modifier = Modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {

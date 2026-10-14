@@ -2,7 +2,6 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import ThemeSelect from '@/components/ThemeSelect.vue'
 import AppBrand from '@/components/AppBrand.vue'
 import TrainRouteMap from '@/components/TrainRouteMap.vue'
 import StationLink from '@/components/StationLink.vue'
@@ -168,7 +167,6 @@ onBeforeUnmount(() => {
   <div class="train-query-page">
     <el-header class="top-header">
       <AppBrand />
-      <div class="page-header-actions"><ThemeSelect /></div>
     </el-header>
     <main class="query-content">
       <div class="page-heading">

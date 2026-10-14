@@ -25,6 +25,7 @@ class AndroidBridge(
     private val refresh: ExpressiveRefreshHost,
     private val ticketMonitor: TicketMonitorBridge,
     private val showNativePage: (String) -> Unit,
+    private val receiveSettings: (JSONObject) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
@@ -33,6 +34,13 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun setNativePage(route: String) = onUi { showNativePage(route) }
+
+    @JavascriptInterface
+    fun settingsResult(payload: String) {
+        if (payload.length > 500_000) return
+        val result = runCatching { JSONObject(payload) }.getOrNull() ?: return
+        onUi { receiveSettings(result) }
+    }
 
     @JavascriptInterface
     fun setPullRefreshProgress(progress: Double) = onUi { refresh.update(progress.toFloat()) }
@@ -87,6 +95,9 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun setAppearance(dark: Boolean) = onUi { appearance.apply(dark) }
+
+    @JavascriptInterface
+    fun setThemeAppearance(dark: Boolean, pureBlack: Boolean) = onUi { appearance.apply(dark, pureBlack) }
 
     @JavascriptInterface
     fun configuration(): String = JSONObject().put("backend", "phone").toString()

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 
 class ExpressiveRefreshHost(private val activity: ComponentActivity, private val webView: WebView) {
+    var pureBlack by mutableStateOf(false)
     var dark by mutableStateOf(
         activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
             Configuration.UI_MODE_NIGHT_YES
@@ -34,7 +35,7 @@ class ExpressiveRefreshHost(private val activity: ComponentActivity, private val
             visibility = View.GONE
             addView(ComposeView(activity).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent { ExpressiveRefreshIndicator(progress, refreshing, dark) }
+                setContent { ExpressiveRefreshIndicator(progress, refreshing, dark, pureBlack) }
             })
         }
         container.addView(overlay, FrameLayout.LayoutParams(

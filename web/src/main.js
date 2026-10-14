@@ -11,7 +11,9 @@ import App from './App.vue'
 import router from './router'
 import {createPinia} from "pinia";
 import { initializePlatform } from './android/platform.js';
+import { initializeNativeSettings } from './android/settingsActions.js'
 
 initializePlatform(router)
 
 createApp(App).use(createPinia()).use(router).use(ElementPlus).mount('#app')
+initializeNativeSettings()

@@ -1,5 +1,4 @@
 <script setup>
-import ThemeSelect from '@/components/ThemeSelect.vue'
 import AppBrand from '@/components/AppBrand.vue'
 import { Refresh } from '@element-plus/icons-vue'
 import LeftTicketCard from '@/components/LeftTicketCard.vue'
@@ -26,7 +25,6 @@ const time = value => value
   <div class="monitor-page">
     <el-header class="top-header">
       <AppBrand />
-      <div class="page-header-actions"><ThemeSelect /></div>
       </el-header>
 
     <main class="monitor-content">

@@ -50,7 +50,7 @@ async function main() {
         await visible(true)
 
         await navigate('/user')
-        await page.getByRole('heading', { name: '本机车票数据' }).waitFor()
+        await page.getByRole('heading', { name: '运转数据', exact: true }).waitFor()
         await visible(false)
         assert.equal(await back(), true)
         await waitRoute('/home')
@@ -96,7 +96,7 @@ async function main() {
         await fallback.getByRole('heading', { name: 'CRTicket' }).waitFor()
         for (const width of [320, 390, 840]) {
             await fallback.setViewportSize({ width, height: 844 })
-            assert.equal(await fallback.locator('nav a').count(), 8)
+            assert.equal(await fallback.locator('nav a').count(), 9)
             assert.ok(await fallback.evaluate(() =>
                 document.documentElement.scrollWidth <= innerWidth))
         }

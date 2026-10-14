@@ -65,7 +65,7 @@ export function initializePlatform(router) {
     router.afterEach((to, from, failure) => {
       if (failure) return
       if (typeof native.setNativePage === 'function') {
-        native.setNativePage(['/home', '/about'].includes(to.path) ? to.path : '')
+        native.setNativePage(['/home', '/about', '/settings'].includes(to.path) ? to.path : '')
       } else native.setHomeVisible(to.path === '/home')
     })
   }

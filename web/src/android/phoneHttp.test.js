@@ -3,6 +3,11 @@ import assert from 'node:assert/strict'
 
 let requestHandler
 const cancellations = []
+// The shared API initializes the local owner store, even for railway-only requests.
+globalThis.localStorage = {
+    getItem: () => null,
+    setItem: () => {},
+}
 globalThis.window = {
     CRTicketAndroid: {
         configuration: () => JSON.stringify({ backend: 'phone' }),

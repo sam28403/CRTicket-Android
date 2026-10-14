@@ -1,19 +1,9 @@
 import { computed, ref, watch } from 'vue'
+import { normalizeTheme } from './themePreference.js'
+import { rememberNativePalette, applyNativePalette } from './nativePalette.js'
 
 const key = 'crticket-theme'
-export const themeOptions = [
-  { value: 'classic-system', label: '经典跟随系统' },
-  { value: 'classic-light', label: '经典亮色' },
-  { value: 'classic-dark', label: '经典暗色' },
-  { value: 'contrast-system', label: '高对比度跟随系统' },
-  { value: 'contrast-light', label: '高对比度亮色' },
-  { value: 'contrast-dark', label: '高对比度暗色' },
-]
-const normalize = value => {
-  // Preserve explicit choices made with the previous high-contrast theme.
-  if (['system', 'light', 'dark'].includes(value)) return `contrast-${value}`
-  return themeOptions.some(option => option.value === value) ? value : 'classic-system'
-}
+const normalize = normalizeTheme
 const preference = ref('classic-system')
 const systemDark = ref(false)
 const isDark = computed(() =>
@@ -45,6 +35,10 @@ export function initializeTheme() {
   window.addEventListener('crticket-system-theme', event => {
     if (typeof event.detail?.dark === 'boolean') systemDark.value = event.detail.dark
   })
+  window.addEventListener('crticket-native-palette', event => {
+    rememberNativePalette(event.detail)
+    applyNativePalette(highContrast.value)
+  })
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) refreshSystem()
   })
@@ -60,7 +54,11 @@ export function initializeTheme() {
     document.documentElement.classList.toggle('high-contrast', highContrast.value)
     document.documentElement.classList.toggle('dark', dark)
     document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
-    window.CRTicketAndroid?.setAppearance?.(dark)
+    applyNativePalette(highContrast.value)
+    const native = window.CRTicketAndroid
+    if (typeof native?.setThemeAppearance === 'function') {
+      native.setThemeAppearance(dark, highContrast.value)
+    } else native?.setAppearance?.(dark)
   }, { immediate: true, flush: 'sync' })
 }
 

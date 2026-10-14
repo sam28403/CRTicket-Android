@@ -5,11 +5,12 @@ const nativeHome = typeof window.CRTicketAndroid?.setHomeVisible === 'function'
 const entries = [
   { route: '/', title: '车票生成', description: '制作车票、查询车次与余票' },
   { route: '/history', title: '历史记录', description: '查看与管理已保存的车票' },
+  { route: '/user', title: '运转数据', description: '站点统计、运转日历与出行轨迹' },
   { route: '/monitor', title: '余票监控', description: '关注余票变化与有票提醒' },
   { route: '/train', title: '车次查询', description: '查询时刻表与列车详情' },
   { route: '/list', title: '车次列表', description: '浏览路路通离线车次' },
   { route: '/station', title: '车站大屏', description: '查看车站到发信息' },
-  { route: '/user', title: '设置', description: '本机数据、头像与备份管理' },
+  { route: '/settings', title: '设置', description: '个人资料、到站检测与数据备份' },
   { route: '/about', title: '关于', description: '应用信息与项目主页' },
 ]
 </script>
@@ -59,12 +60,12 @@ nav > :first-child {
   border-radius: 24px 24px 4px 4px;
 }
 
-nav > :nth-child(6) {
+nav > :nth-child(7) {
   border-radius: 4px 4px 24px 24px;
   margin-bottom: 14px;
 }
 
-nav > :nth-child(7) {
+nav > :nth-child(8) {
   border-radius: 24px 24px 4px 4px;
 }
 

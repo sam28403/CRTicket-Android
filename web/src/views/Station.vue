@@ -1,7 +1,6 @@
 <script setup>
 import { computed, defineAsyncComponent, ref } from 'vue'
 import AppBrand from '@/components/AppBrand.vue'
-import ThemeSelect from '@/components/ThemeSelect.vue'
 import StationBoardTable from '@/components/StationBoardTable.vue'
 import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useStationBoard } from '@/composables/useStationBoard.js'
@@ -44,7 +43,6 @@ function queryOnEnter(event) {
   <div class="station-page">
     <el-header class="top-header">
       <AppBrand />
-      <div class="page-header-actions"><ThemeSelect /></div>
     </el-header>
     <main class="station-content">
       <div class="page-heading">

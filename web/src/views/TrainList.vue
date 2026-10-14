@@ -3,7 +3,6 @@ import { computed, h, onActivated, onBeforeUnmount, onDeactivated, ref, shallowR
 import { useElementSize } from '@vueuse/core'
 import { onBeforeRouteLeave, RouterLink } from 'vue-router'
 import AppBrand from '@/components/AppBrand.vue'
-import ThemeSelect from '@/components/ThemeSelect.vue'
 import api, { timetableTimeout } from '@/api.js'
 import { trainQueryRange } from '@/utils/trainQueryDate.js'
 import { vNativeTableScroll } from '@/directives/nativeTableScroll.js'
@@ -217,7 +216,6 @@ onBeforeUnmount(() => {
   <div class="train-list-page">
     <el-header class="top-header">
       <AppBrand />
-      <ThemeSelect />
     </el-header>
     <main class="query-content">
       <div class="page-heading">

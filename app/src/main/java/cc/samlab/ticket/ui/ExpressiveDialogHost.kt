@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 
 /** A Compose dialog layer above the existing WebView, owned by the activity lifecycle. */
 class ExpressiveDialogHost(private val activity: ComponentActivity) {
+    var pureBlack by mutableStateOf(false)
     var dark by mutableStateOf(
         activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
             Configuration.UI_MODE_NIGHT_YES
@@ -37,6 +38,7 @@ class ExpressiveDialogHost(private val activity: ComponentActivity) {
                         ExpressivePermissionDialog(
                             prompt = current,
                             dark = dark,
+                            pureBlack = pureBlack,
                             onConfirm = { respond(current, current.onConfirm) },
                             onDecline = { respond(current, current.onDecline) },
                             onDismiss = { respond(current, current.onDismiss) },

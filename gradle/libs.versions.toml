@@ -17,6 +17,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+compose-material-icons = { module = "androidx.compose.material:material-icons-core", version = "1.7.8" }
 compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

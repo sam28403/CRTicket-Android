@@ -23,6 +23,10 @@ internal val ticketDestinations = listOf(
         R.drawable.ic_home_history, "/history",
     ),
     HomeDestination(
+        R.string.home_data, R.string.home_data_description,
+        R.drawable.ic_home_data, "/user",
+    ),
+    HomeDestination(
         R.string.home_monitor, R.string.home_monitor_description,
         R.drawable.ic_home_monitor, "/monitor",
     ),

@@ -1,4 +1,5 @@
 <resources>
     <item name="expressive_home_view" type="id" />
     <item name="expressive_about_view" type="id" />
+    <item name="expressive_settings_view" type="id" />
 </resources>

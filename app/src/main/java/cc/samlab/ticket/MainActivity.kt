@@ -27,6 +27,7 @@ import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 import cc.samlab.ticket.ui.ExpressiveRefreshHost
 import cc.samlab.ticket.ui.home.ExpressiveHomeHost
+import cc.samlab.ticket.ui.settings.NativeSettingsController
 import cc.samlab.ticket.web.AndroidBridge
 import cc.samlab.ticket.web.LocalAssetClient
 import cc.samlab.ticket.web.WebViewLayout
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
     private val dialogs by lazy { ExpressiveDialogHost(this) }
     private val refresh by lazy { ExpressiveRefreshHost(this, webView) }
     private val home by lazy { ExpressiveHomeHost(this) }
+    private val settings by lazy { NativeSettingsController(this, webView, worker) }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
     private lateinit var appearance: AppearanceController
@@ -79,7 +81,7 @@ class MainActivity : ComponentActivity() {
         val container = WebViewLayout.create(this, webView)
         setContentView(container)
         refresh.attach(container)
-        home.attach(container, ::navigateTo, ::navigateBack) { openExternal(Uri.parse(it)) }
+        home.attach(container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) }, settings)
         val route = initialNotificationRoute()
         pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
         home.setPage(if (route == "#/home") {
@@ -87,7 +89,7 @@ class MainActivity : ComponentActivity() {
         } else "")
         webView.visibility = if (home.visible) android.view.View.INVISIBLE else android.view.View.VISIBLE
         appearance = AppearanceController(this, container, webView, dialogs, refresh, home)
-        appearance.apply(appearance.isSystemDark())
+        appearance.apply(home.dark)
         configureWebView()
         navigationBack.isEnabled = !home.isHome
         onBackPressedDispatcher.addCallback(this, navigationBack)
@@ -121,6 +123,7 @@ class MainActivity : ComponentActivity() {
                 refresh,
                 ticketMonitor,
                 ::setNativePage,
+                { result -> settings.receive(result) },
             ),
             "CRTicketAndroid",
         )
@@ -176,6 +179,7 @@ class MainActivity : ComponentActivity() {
     private fun setNativePage(page: String) {
         navigationReady = true
         home.setPage(page)
+        if (page == "/settings") settings.refresh()
         navigationBack.isEnabled = !home.isHome
         webView.visibility = if (home.visible) android.view.View.INVISIBLE else android.view.View.VISIBLE
         appearance.apply(home.dark)
@@ -226,6 +230,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun navigateBack() {
+        if (home.animateBack(::completeBackNavigation)) return
+        completeBackNavigation()
+    }
+
+    private fun completeBackNavigation() {
         if (home.isHome) {
             finish()
             return
@@ -285,6 +294,7 @@ class MainActivity : ComponentActivity() {
         webView.onResume()
         appearance.updateSystem(resources.configuration)
         stationArrival.onResume()
+        if (home.route == "/settings") settings.refresh()
         trainTracking.restore()
         ticketMonitor.restore()
     }
@@ -295,6 +305,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        home.close()
         stationArrival.close()
         refresh.close()
         files.closeChooser()

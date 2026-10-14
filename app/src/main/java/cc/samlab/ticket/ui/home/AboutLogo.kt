@@ -78,7 +78,7 @@ internal fun AboutLogo() {
             val now = SystemClock.elapsedRealtime()
             taps = if (now - lastTap > 1_500L) 1 else taps + 1
             lastTap = now
-            val unlocked = taps >= 7
+            val unlocked = taps >= 8
             view.performHapticFeedback(
                 if (unlocked) HapticFeedbackConstants.LONG_PRESS
                 else HapticFeedbackConstants.KEYBOARD_TAP,

@@ -1,7 +1,6 @@
 <template>
   <Teleport to="#home-mobile-navigation" :disabled="!isMobilePreview" defer>
     <nav class="home-navigation page-header-actions" aria-label="页面导航">
-      <ThemeSelect />
       <el-button
         :disabled="isGithubPagesBuild"
         :title="isGithubPagesBuild ? '演示版暂不支持余票监控' : ''"
@@ -284,7 +283,6 @@
 </template>
 
 <script setup>
-import ThemeSelect from '@/components/ThemeSelect.vue'
 import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {ElButton, ElIcon, ElMessage, ElMessageBox, ElNotification} from 'element-plus'
 import QRCode from 'qrcode'
