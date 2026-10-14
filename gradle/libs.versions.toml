@@ -8,14 +8,19 @@ kotlinRuntime = "2.4.20"
 playServicesLocation = "21.4.0"
 composeBom = "2026.09.00"
 activityCompose = "1.13.0"
+fragment = "1.9.1"
 material3 = "1.5.0-beta01"
+window = "1.5.1"
 
 [libraries]
+androidx-window = { module = "androidx.window:window", version.ref = "window" }
+androidx-window-testing = { module = "androidx.window:window-testing", version.ref = "window" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinRuntime" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 compose-material-icons = { module = "androidx.compose.material:material-icons-core", version = "1.7.8" }
 compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4" }

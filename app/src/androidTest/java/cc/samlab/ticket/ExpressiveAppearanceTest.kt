@@ -39,6 +39,11 @@ class ExpressiveAppearanceTest {
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         ) as MainActivity
+        instrumentation.runOnMainSync {
+            activity.setShowWhenLocked(true)
+            activity.setTurnScreenOn(true)
+            activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
         compose.waitUntil(20_000) { evaluate("Boolean(window.crticketSettings)") == "true" }
         val original = evaluate("localStorage.getItem('crticket-theme') || 'classic-system'")
         try {

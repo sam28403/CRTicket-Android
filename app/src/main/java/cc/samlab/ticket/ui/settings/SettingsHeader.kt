@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
 
 internal val SettingsCollapsedHeight = 56.dp
 internal val SettingsExpandedHeight = 179.dp
@@ -30,22 +31,28 @@ internal val SettingsExpandedHeight = 179.dp
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun SettingsHeader(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> Unit) {
+internal fun SettingsHeader(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onBack: () -> Unit,
+    embedded: Boolean = false,
+    title: String = "设置",
+) {
     val colors = MaterialTheme.colorScheme
     TwoRowsTopAppBar(
         title = { expanded ->
             Text(
-                "设置",
+                title,
                 modifier = if (expanded) Modifier.padding(start = 8.dp, bottom = 32.dp) else Modifier,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = if (expanded) 36.sp else 20.sp,
                     lineHeight = if (expanded) 44.sp else 28.sp,
+                    fontWeight = FontWeight.Bold,
                 ),
                 maxLines = 1,
             )
         },
         navigationIcon = {
-            FilledTonalIconButton(
+            if (!embedded) FilledTonalIconButton(
                 onClick = onBack,
                 modifier = Modifier.padding(start = 8.dp).size(40.dp),
             ) {

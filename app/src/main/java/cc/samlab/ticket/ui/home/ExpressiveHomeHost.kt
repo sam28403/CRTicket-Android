@@ -7,6 +7,9 @@ import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.BackEventCompat
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.window.layout.FoldingFeature
+import cc.samlab.ticket.ui.window.LocalFoldingFeatures
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,8 +38,18 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private lateinit var homeView: ComposeView
     private lateinit var aboutView: ComposeView
     private lateinit var settingsView: ComposeView
+    private lateinit var settingsController: NativeSettingsController
+    internal var folds by mutableStateOf<List<FoldingFeature>>(emptyList())
+        private set
+    internal var wide by mutableStateOf(activity.resources.configuration.screenWidthDp >= 840)
+        private set
+    private var backProgress by mutableStateOf(0f)
+    private var backDirection by mutableStateOf(1f)
+    private lateinit var container: FrameLayout
     private val motion = ExpressivePageMotion()
     private var previewHome = false
+    private val navigation = HomeNavigationState()
+    private val dataVersions = AboutDataVersions(activity)
 
     val backgroundColor: Int
         get() = homeColorScheme(activity, dark, pureBlack).surfaceContainer.toArgb()
@@ -48,13 +61,21 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         onExternal: (String) -> Unit,
         settings: NativeSettingsController,
     ) {
+        this.container = container
+        settingsController = settings
+        container.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
         homeView = ComposeView(activity).apply {
             id = R.id.expressive_home_view
             visibility = View.GONE
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Box(if (isHome) Modifier else Modifier.clearAndSetSemantics {}) {
-                    ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack)
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (isHome || (wide && visible)) Modifier else Modifier.clearAndSetSemantics {}) {
+                        if (wide) ExpressiveNavigationShell(
+                            route, dark, pureBlack, settings, backProgress, backDirection,
+                            navigation, dataVersions, onNavigate, onBack, onExternal,
+                        ) else ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack, navigation)
+                    }
                 }
             }
         }
@@ -63,8 +84,10 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             visibility = View.GONE
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Box(if (route == "/about") Modifier else Modifier.clearAndSetSemantics {}) {
-                    ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack)
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (route == "/about" && !wide) Modifier else Modifier.clearAndSetSemantics {}) {
+                        ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack, dataVersions = dataVersions)
+                    }
                 }
             }
         }
@@ -73,8 +96,10 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             visibility = View.GONE
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Box(if (route == "/settings") Modifier else Modifier.clearAndSetSemantics {}) {
-                    ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, route == "/settings")
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (route == "/settings" && !wide) Modifier else Modifier.clearAndSetSemantics {}) {
+                        ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, route == "/settings" && !wide)
+                    }
                 }
             }
         }
@@ -90,9 +115,11 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         val completedGesture = motion.returning
         motion.finish()
         route = next
+        if (next != "/settings") settingsController.ui.closePermissions()
         if (!isHome) previewHome = previous == "/home"
         updateVisibility()
-        if (previous != route && visible && !completedGesture) {
+        backProgress = 0f
+        if (previous != route && visible && !completedGesture && !wide) {
             motion.enter(
                 view = currentView(),
                 destination = homeView.takeIf { !isHome && previewHome },
@@ -104,20 +131,66 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
 
     fun startBack(event: BackEventCompat) {
         if (!visible || isHome) return
+        if (hasPermissionsPage()) {
+            settingsController.ui.backProgress = 0f
+            return
+        }
+        if (wide) {
+            backDirection = if (event.swipeEdge == BackEventCompat.EDGE_LEFT) 1f else -1f
+            backProgress = 0f
+            return
+        }
         motion.start(currentView(), homeView.takeIf { previewHome }, event)
     }
 
-    fun progressBack(event: BackEventCompat) = motion.progress(event)
+    fun progressBack(event: BackEventCompat) {
+        if (hasPermissionsPage()) settingsController.ui.backProgress = event.progress
+        else if (wide) backProgress = event.progress else motion.progress(event)
+    }
 
-    fun cancelBack() = motion.cancel(::updateVisibility)
+    fun cancelBack() {
+        if (hasPermissionsPage()) settingsController.ui.backProgress = 0f
+        else if (wide) backProgress = 0f else motion.cancel(::updateVisibility)
+    }
 
     fun animateBack(onEnd: () -> Unit): Boolean {
         if (!visible || isHome) return false
+        if (hasPermissionsPage()) {
+            settingsController.ui.closePermissions()
+            return true
+        }
+        if (wide) {
+            backProgress = 0f
+            return false
+        }
         motion.commit(currentView(), homeView.takeIf { previewHome }, onEnd)
         return true
     }
 
-    fun close() = motion.finish()
+    fun close() {
+        motion.finish()
+        dataVersions.close()
+    }
+
+    internal fun updateFolds(features: List<FoldingFeature>) {
+        folds = features
+        if (::container.isInitialized) updateWindow()
+    }
+
+    private fun hasPermissionsPage() = route == "/settings" && settingsController.ui.permissionsPage
+
+    private fun updateWindow() {
+        val width = (container.width - container.paddingLeft - container.paddingRight) /
+            activity.resources.displayMetrics.density
+        if (width <= 0) return
+        val hasVerticalFold = folds.any { it.orientation == FoldingFeature.Orientation.VERTICAL }
+        val next = width >= 840 || (hasVerticalFold && width >= 640)
+        if (next == wide) return
+        motion.finish()
+        backProgress = 0f
+        wide = next
+        updateVisibility()
+    }
 
     private fun currentView() = when (route) {
         "/settings" -> settingsView
@@ -126,8 +199,9 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     }
 
     private fun updateVisibility() {
-        homeView.visibility = if (isHome) View.VISIBLE else View.GONE
-        aboutView.visibility = if (route == "/about") View.VISIBLE else View.GONE
-        settingsView.visibility = if (route == "/settings") View.VISIBLE else View.GONE
+        if (route == "/about" || (wide && isHome)) dataVersions.refresh()
+        homeView.visibility = if (isHome || (wide && visible)) View.VISIBLE else View.GONE
+        aboutView.visibility = if (route == "/about" && !wide) View.VISIBLE else View.GONE
+        settingsView.visibility = if (route == "/settings" && !wide) View.VISIBLE else View.GONE
     }
 }

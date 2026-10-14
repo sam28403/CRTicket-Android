@@ -28,7 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.ui.window.AdaptivePanes
 import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
 
@@ -39,6 +41,8 @@ internal fun ExpressiveAboutScreen(
     onBack: () -> Unit,
     onExternal: (String) -> Unit,
     pureBlack: Boolean = false,
+    embedded: Boolean = false,
+    dataVersions: AboutDataVersions,
 ) {
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
@@ -49,63 +53,110 @@ internal fun ExpressiveAboutScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    IconButton(onClick = onBack) {
+                    if (!embedded) IconButton(onClick = onBack) {
                         Icon(
                             painterResource(R.drawable.ic_home_back),
                             contentDescription = stringResource(R.string.about_back),
                         )
                     }
-                    Text(stringResource(R.string.home_about), style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        stringResource(R.string.home_about),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
-                BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                    val availableHeight = maxHeight
-                    Column(
-                        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
-                            .heightIn(min = availableHeight)
-                            .padding(horizontal = 24.dp, vertical = 32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceAround,
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                AdaptivePanes(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    single = {
+                        AboutPanel {
                             AboutLogo()
-                            Spacer(Modifier.height(40.dp))
-                            Text(
-                                stringResource(R.string.home_title),
-                                style = MaterialTheme.typography.displaySmall.copy(fontFamily = projectTitleFont),
-                                textAlign = TextAlign.Center,
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Text(stringResource(R.string.about_description), textAlign = TextAlign.Center)
-                            Spacer(Modifier.height(16.dp))
-                            Text(
-                                stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = colors.onSurfaceVariant,
-                                textAlign = TextAlign.Center,
-                            )
+                            AboutDescription(dataVersions)
+                            AboutLinks(onExternal)
                         }
-                        Spacer(Modifier.height(32.dp))
-                        val githubUrl = stringResource(R.string.about_github_url)
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Surface(
-                                onClick = { onExternal(githubUrl) },
-                                shape = CircleShape,
-                                color = colors.primaryContainer,
-                                modifier = Modifier.size(70.dp),
-                            ) {
-                                Icon(
-                                    painterResource(R.drawable.ic_home_github),
-                                    contentDescription = stringResource(R.string.about_github),
-                                    modifier = Modifier.padding(23.dp),
-                                    tint = colors.onPrimaryContainer,
-                                )
-                            }
-                            Spacer(Modifier.height(12.dp))
-                            Text(stringResource(R.string.about_github), style = MaterialTheme.typography.labelLarge)
+                    },
+                    first = { AboutPanel { AboutLogo() } },
+                    second = {
+                        AboutPanel {
+                            AboutDescription(dataVersions)
+                            AboutLinks(onExternal)
                         }
-                    }
-                }
+                    },
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun AboutPanel(content: @Composable () -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val availableHeight = maxHeight
+        Column(
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+                .heightIn(min = availableHeight)
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
+        ) { content() }
+    }
+}
+
+@Composable
+private fun AboutDescription(dataVersions: AboutDataVersions) {
+    val colors = MaterialTheme.colorScheme
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            stringResource(R.string.home_title),
+            style = MaterialTheme.typography.displaySmall.copy(fontFamily = projectTitleFont),
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.about_description), textAlign = TextAlign.Center)
+        Spacer(Modifier.height(16.dp))
+        Text(
+            stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(R.string.about_station_version, BuildConfig.STATION_DATA_VERSION),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        val llt = dataVersions.llt.ifEmpty {
+            stringResource(if (dataVersions.loading) R.string.about_version_loading else R.string.about_version_unavailable)
+        }
+        Text(
+            stringResource(R.string.about_llt_version, llt),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun AboutLinks(onExternal: (String) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val githubUrl = stringResource(R.string.about_github_url)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Surface(
+            onClick = { onExternal(githubUrl) },
+            shape = CircleShape,
+            color = colors.primaryContainer,
+            modifier = Modifier.size(70.dp),
+        ) {
+            Icon(
+                painterResource(R.drawable.ic_home_github),
+                contentDescription = stringResource(R.string.about_github),
+                modifier = Modifier.padding(23.dp),
+                tint = colors.onPrimaryContainer,
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        Text(stringResource(R.string.about_github), style = MaterialTheme.typography.labelLarge)
     }
 }

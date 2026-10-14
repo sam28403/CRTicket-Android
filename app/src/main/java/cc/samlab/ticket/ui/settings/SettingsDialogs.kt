@@ -7,10 +7,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import org.json.JSONObject
@@ -19,7 +15,7 @@ import org.json.JSONObject
 internal fun SettingsDialogs(dialog: String, dismiss: () -> Unit, controller: NativeSettingsController) {
     val keyboard = LocalSoftwareKeyboardController.current
     if (dialog == "name") {
-        var name by remember { mutableStateOf(controller.state.username) }
+        val name = controller.ui.nameDraft ?: controller.state.username
         val valid = name.trim().isNotEmpty() && name.length <= 64 && name.none { it.code < 32 || it.code == 127 }
         AlertDialog(
             onDismissRequest = dismiss,
@@ -27,7 +23,7 @@ internal fun SettingsDialogs(dialog: String, dismiss: () -> Unit, controller: Na
             text = {
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it.take(64) },
+                    onValueChange = { controller.ui.nameDraft = it.take(64) },
                     label = { Text("显示名称") },
                     supportingText = { Text("${name.length}/64") },
                     singleLine = true,

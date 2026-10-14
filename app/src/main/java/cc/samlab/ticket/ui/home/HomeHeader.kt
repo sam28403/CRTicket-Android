@@ -15,10 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,13 +51,12 @@ internal fun HomeHeader() {
 }
 
 @Composable
-internal fun HomeSearchField() {
-    var query by rememberSaveable { mutableStateOf("") }
+internal fun HomeSearchField(query: String, onQueryChange: (String) -> Unit) {
     val focusManager = LocalFocusManager.current
     val searchLabel = stringResource(R.string.home_search)
     TextField(
         value = query,
-        onValueChange = { query = it },
+        onValueChange = onQueryChange,
         modifier = Modifier.fillMaxWidth().semantics { contentDescription = searchLabel },
         placeholder = { Text(searchLabel) },
         leadingIcon = {

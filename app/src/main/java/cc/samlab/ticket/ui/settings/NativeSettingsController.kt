@@ -29,6 +29,8 @@ class NativeSettingsController(
     private val webView: WebView,
     private val worker: ExecutorService,
 ) {
+    internal val ui = SettingsUiState()
+    internal val permissions = PermissionSettingsController(activity)
     var state by mutableStateOf(SettingsState())
         private set
     var busy by mutableStateOf(false)
@@ -71,6 +73,7 @@ class NativeSettingsController(
     }
 
     fun refresh() {
+        permissions.refresh()
         if (!busy && !pickingFile && cropBitmap == null && importText == null) request("snapshot")
     }
 

@@ -46,3 +46,5 @@ __pycache__/
 .DS_Store
 Thumbs.db
 /app/release/
+/app/release
+/app/release

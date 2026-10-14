@@ -23,6 +23,7 @@ import cc.samlab.ticket.monitor.TicketMonitorBridge
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
+import cc.samlab.ticket.ui.window.WindowLayoutObserver
 import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 import cc.samlab.ticket.ui.ExpressiveRefreshHost
@@ -81,7 +82,9 @@ class MainActivity : ComponentActivity() {
         val container = WebViewLayout.create(this, webView)
         setContentView(container)
         refresh.attach(container)
+        settings.ui.restore(savedInstanceState)
         home.attach(container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) }, settings)
+        WindowLayoutObserver(this) { home.updateFolds(it) }
         val route = initialNotificationRoute()
         pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
         home.setPage(if (route == "#/home") {
@@ -280,6 +283,7 @@ class MainActivity : ComponentActivity() {
         webView.saveState(outState)
         outState.putString("nativePage", home.route)
         outState.putString("pendingRoute", pendingRoute)
+        settings.ui.save(outState)
         files.saveState(outState)
     }
 

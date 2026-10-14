@@ -22,6 +22,10 @@
     <string name="about_back">返回</string>
     <string name="about_description">车票制作与铁路出行工具</string>
     <string name="about_version">版本 %1$s</string>
+    <string name="about_station_version">车站版本 %1$s</string>
+    <string name="about_llt_version">路路通版本 %1$s</string>
+    <string name="about_version_loading">正在获取…</string>
+    <string name="about_version_unavailable">暂未获取</string>
     <string name="about_icon">CRTicket 应用图标</string>
     <string name="about_github" translatable="false">GitHub</string>
     <string name="about_github_url" translatable="false">https://github.com/sam28403/CRTicket</string>

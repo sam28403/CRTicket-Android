@@ -6,6 +6,9 @@ plugins {
 apply(from = rootProject.file("gradle/versioning.gradle.kts"))
 val gitVersionCode = extra["androidVersionCode"] as Int
 val gitVersionName = extra["androidVersionName"] as String
+val stationDataVersion = Regex("Station Version (\\d+)")
+    .find(rootProject.file("web/src/views/MainView.vue").readText())
+    ?.groupValues?.get(1) ?: error("Missing bundled station data version")
 
 android {
     namespace = "cc.samlab.ticket"
@@ -16,6 +19,7 @@ android {
         targetSdk = 37
         versionCode = gitVersionCode
         versionName = gitVersionName
+        buildConfigField("String", "STATION_DATA_VERSION", "\"$stationDataVersion\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
@@ -29,11 +33,17 @@ android {
 }
 
 dependencies {
+    constraints {
+        implementation(libs.androidx.fragment) {
+            because("Play services brings Fragment 1.1.0; Activity Result requires 1.3.0 or newer")
+        }
+    }
     implementation(libs.kotlin.stdlib)
     implementation(libs.okhttp)
     implementation(libs.play.services.location)
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.window)
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons)
     testImplementation(libs.junit)
@@ -41,4 +51,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test)
+    androidTestImplementation(libs.androidx.window.testing)
 }
