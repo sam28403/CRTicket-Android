@@ -13,6 +13,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cc.samlab.ticket.R
 
 internal data class PermissionSettingsState(
     val notifications: Boolean,
@@ -53,9 +54,9 @@ internal class PermissionSettingsController(private val activity: ComponentActiv
         )
     }
 
-    fun openAppPermissions() = openPermissions("请进入“权限”，再选择需要管理的权限")
+    fun openAppPermissions() = openPermissions(activity.getString(R.string.permissions_app_path_hint))
 
-    fun openLocationPermissions() = openPermissions("请进入“权限 → 位置信息”，选择允许方式")
+    fun openLocationPermissions() = openPermissions(activity.getString(R.string.permissions_location_path_hint))
 
     private fun openPermissions(pathHint: String) {
         val direct = AppPermissionSettings.intent(activity)
@@ -95,7 +96,7 @@ internal class PermissionSettingsController(private val activity: ComponentActiv
                     Toast.makeText(activity, hint, Toast.LENGTH_LONG).show()
                 }
             }.onFailure {
-                Toast.makeText(activity, "无法打开系统设置，请在系统设置中管理 CRTicket 权限", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, activity.getString(R.string.permissions_settings_failed), Toast.LENGTH_LONG).show()
             }
         }
     }

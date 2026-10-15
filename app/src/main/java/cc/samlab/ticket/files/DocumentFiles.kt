@@ -7,10 +7,11 @@ import android.os.Bundle
 import android.util.Base64
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient.FileChooserParams
-import org.json.JSONObject
+import cc.samlab.ticket.R
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.ExecutorService
+import org.json.JSONObject
 
 class DocumentFiles(
     private val activity: Activity,
@@ -44,22 +45,22 @@ class DocumentFiles(
             activity.startActivityForResult(intent, FILE_REQUEST)
         } catch (_: Exception) {
             closeChooser()
-            toast("无法打开系统文件选择器")
+            toast(activity.getString(R.string.files_picker_failed))
         }
         return true
     }
 
     fun save(id: String, filename: String, mime: String, data: String) {
         if (saving) {
-            reply(id, false, "请先完成当前文件保存")
+            reply(id, false, activity.getString(R.string.files_save_pending))
             return
         }
         saving = true
         worker.execute {
             try {
-                require(data.length <= MAX_FILE_BYTES * 4 / 3 + 4) { "文件不能超过20MB" }
+                require(data.length <= MAX_FILE_BYTES * 4 / 3 + 4) { activity.getString(R.string.files_size_limit) }
                 val bytes = Base64.decode(data, Base64.DEFAULT)
-                require(bytes.size <= MAX_FILE_BYTES) { "文件不能超过20MB" }
+                require(bytes.size <= MAX_FILE_BYTES) { activity.getString(R.string.files_size_limit) }
                 val file = File(activity.cacheDir, "export-${UUID.randomUUID()}.tmp")
                     .apply { writeBytes(bytes) }
                 activity.runOnUiThread {
@@ -75,7 +76,7 @@ class DocumentFiles(
                             .putExtra(Intent.EXTRA_TITLE, safeName)
                         activity.startActivityForResult(intent, SAVE_REQUEST)
                     } catch (error: Exception) {
-                        finishSave(false, error.message ?: "无法打开文件保存器")
+                        finishSave(false, error.message ?: activity.getString(R.string.files_saver_failed))
                     }
                 }
             } catch (error: Exception) {
@@ -103,22 +104,22 @@ class DocumentFiles(
 
     private fun writeDestination(resultCode: Int, destination: Uri?) {
         if (resultCode != Activity.RESULT_OK || destination == null) {
-            finishSave(false, "已取消保存", true)
+            finishSave(false, activity.getString(R.string.settings_file_cancelled), true)
             return
         }
         val file = pendingSave ?: run {
-            finishSave(false, "待保存文件已失效")
+            finishSave(false, activity.getString(R.string.files_save_expired))
             return
         }
         worker.execute {
             try {
                 activity.contentResolver.openOutputStream(destination, "wt").use { output ->
-                    requireNotNull(output) { "无法写入所选位置" }
+                    requireNotNull(output) { activity.getString(R.string.files_destination_unwritable) }
                     file.inputStream().use { it.copyTo(output) }
                 }
-                activity.runOnUiThread { finishSave(true, "文件已保存") }
+                activity.runOnUiThread { finishSave(true, activity.getString(R.string.settings_file_saved)) }
             } catch (error: Exception) {
-                activity.runOnUiThread { finishSave(false, error.message ?: "文件保存失败") }
+                activity.runOnUiThread { finishSave(false, error.message ?: activity.getString(R.string.files_save_failed)) }
             }
         }
     }

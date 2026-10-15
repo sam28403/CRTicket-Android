@@ -17,9 +17,11 @@ import androidx.compose.material3.TwoRowsTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
+import cc.samlab.ticket.R
 
 internal val SettingsCollapsedHeight = 56.dp
 internal val SettingsExpandedHeight = 179.dp
@@ -35,7 +37,7 @@ internal fun SettingsHeader(
     scrollBehavior: TopAppBarScrollBehavior,
     onBack: () -> Unit,
     embedded: Boolean = false,
-    title: String = "设置",
+    title: String = stringResource(R.string.home_settings),
 ) {
     val colors = MaterialTheme.colorScheme
     TwoRowsTopAppBar(
@@ -57,7 +59,7 @@ internal fun SettingsHeader(
                 onClick = onBack,
                 modifier = Modifier.padding(start = 8.dp).size(40.dp),
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", Modifier.size(20.dp))
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.about_back), Modifier.size(20.dp))
             }
         },
         collapsedHeight = SettingsCollapsedHeight,

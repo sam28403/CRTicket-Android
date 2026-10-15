@@ -5,10 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import org.json.JSONObject
+import cc.samlab.ticket.R
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.ExecutorService
+import org.json.JSONObject
 
 internal data class TrainListRow(
     val train: String,
@@ -55,8 +56,13 @@ class NativeTrainListController(
             val value = runCatching { JSONObject(payload) }.getOrNull() ?: return@execute
             val selected = value.optString("date")
             val busy = value.optBoolean("loading")
-            val message = value.optString("error")
+            val message = when (value.optString("errorKey")) {
+                "timeout" -> activity.getString(R.string.train_list_timeout)
+                "network" -> activity.getString(R.string.train_list_network_error)
+                else -> value.optString("error")
+            }
             val data = value.optJSONObject("result")?.optJSONArray("trains")
+            val unavailable = activity.getString(R.string.display_unavailable)
             val parsed = data?.let { List(it.length()) { index ->
                 val row = data.getJSONObject(index)
                 val duration = row.optString("duration")
@@ -65,11 +71,11 @@ class NativeTrainListController(
                 val km = row.optDouble("mileage", Double.NaN)
                 TrainListRow(
                     row.optString("train"), row.optString("from"), row.optString("to"),
-                    duration.takeIf { it.isNotBlank() && it != "null" } ?: "—",
-                    if (row.isNull("stationCount")) "—" else row.optString("stationCount"),
-                    if (km.isNaN()) "—" else row.optString("mileage"),
-                    if (km.isNaN() || minutes <= 0) "—"
-                    else String.format(java.util.Locale.ROOT, "%.1f", km * 60 / minutes),
+                    duration.takeIf { it.isNotBlank() && it != "null" } ?: unavailable,
+                    if (row.isNull("stationCount")) unavailable else row.optString("stationCount"),
+                    if (km.isNaN()) unavailable else row.optString("mileage"),
+                    if (km.isNaN() || minutes <= 0) unavailable
+                    else activity.getString(R.string.display_decimal_one, km * 60 / minutes),
                 )
             } }
             activity.runOnUiThread {

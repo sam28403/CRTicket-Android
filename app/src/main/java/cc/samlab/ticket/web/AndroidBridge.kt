@@ -5,12 +5,13 @@ import android.net.Uri
 import android.webkit.JavascriptInterface
 import cc.samlab.ticket.arrival.StationArrivalBridge
 import cc.samlab.ticket.files.DocumentFiles
-import cc.samlab.ticket.network.PhoneHttp
 import cc.samlab.ticket.monitor.TicketMonitorBridge
+import cc.samlab.ticket.network.PhoneHttp
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.ui.ExpressiveRefreshHost
+import cc.samlab.ticket.ui.settings.settingsTextResources
 import org.json.JSONObject
 
 class AndroidBridge(
@@ -38,6 +39,9 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun trainListResult(payload: String) = receiveTrainList(payload)
+
+    @JavascriptInterface
+    fun settingsStrings(): String = settingsTextResources(activity)
 
     @JavascriptInterface
     fun settingsResult(payload: String) {

@@ -8,17 +8,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cc.samlab.ticket.R
+import java.util.concurrent.ExecutorService
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.concurrent.ExecutorService
 
 data class SettingsState(
-    val username: String = "正在读取…",
+    val username: String = "",
     val avatar: String = "",
     val arrivalEnabled: Boolean = false,
     val arrivalActive: Boolean = false,
     val arrivalSupported: Boolean = false,
-    val arrivalMessage: String = "正在读取到站检测状态…",
+    val arrivalMessage: String = "",
     val loaded: Boolean = false,
     val themeMode: String = "system",
     val pureBlack: Boolean = false,
@@ -31,7 +32,10 @@ class NativeSettingsController(
 ) {
     internal val ui = SettingsUiState()
     internal val permissions = PermissionSettingsController(activity)
-    var state by mutableStateOf(SettingsState())
+    var state by mutableStateOf(SettingsState(
+        username = activity.getString(R.string.status_loading),
+        arrivalMessage = activity.getString(R.string.arrival_loading),
+    ))
         private set
     var busy by mutableStateOf(false)
         private set
@@ -53,7 +57,7 @@ class NativeSettingsController(
         pickingFile = false
         if (uri != null) readFile {
             val bytes = readSettingsFile(activity, uri, 10 * 1024 * 1024)
-            val bitmap = decodeSettingsAvatar(bytes)
+            val bitmap = decodeSettingsAvatar(activity, bytes)
             activity.runOnUiThread { cropBitmap = bitmap }
         }
     }
@@ -63,8 +67,8 @@ class NativeSettingsController(
             val text = readSettingsFile(activity, uri, 20 * 1024 * 1024).toString(Charsets.UTF_8)
             val value = org.json.JSONTokener(text).nextValue()
             val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
-            requireNotNull(records) { "备份文件中没有找到车票数据" }
-            require(records.length() <= 10000) { "一次最多导入 10000 条车票记录" }
+            requireNotNull(records) { activity.getString(R.string.settings_backup_no_tickets) }
+            require(records.length() <= 10000) { activity.getString(R.string.settings_backup_limit) }
             activity.runOnUiThread {
                 importText = text
                 importCount = records.length()
@@ -82,14 +86,15 @@ class NativeSettingsController(
         busy = true
         failed = false
         pendingAction = action
-        if (action != "snapshot") message = "正在处理…"
+        if (action != "snapshot") message = activity.getString(R.string.status_processing)
         val id = (++requestId).toString()
         val quotedId = JSONObject.quote(id)
+        val unavailable = JSONObject.quote(activity.getString(R.string.settings_not_ready))
         webView.evaluateJavascript(
             "if (window.crticketSettings) {" +
                 "window.crticketSettings($quotedId,${JSONObject.quote(action)},$payload)" +
                 "} else { CRTicketAndroid.settingsResult(JSON.stringify({id:$quotedId," +
-                "success:false,message:'设置尚未准备好，请重试'})) }",
+                "success:false,message:$unavailable})) }",
             null,
         )
     }
@@ -99,7 +104,7 @@ class NativeSettingsController(
         result.optJSONObject("state")?.let { value ->
             val arrival = value.optJSONObject("arrival") ?: JSONObject()
             state = SettingsState(
-                username = value.optString("username", "默认用户"),
+                username = value.optString("username", activity.getString(R.string.settings_default_user)),
                 avatar = value.optString("avatar").takeUnless { it == "null" } ?: "",
                 arrivalEnabled = arrival.optBoolean("enabled"),
                 arrivalActive = arrival.optBoolean("active"),
@@ -113,9 +118,10 @@ class NativeSettingsController(
         busy = false
         failed = !result.optBoolean("success")
         message = result.optString("message")
-        val alreadyNotified = pendingAction.startsWith("export") && message == "文件已保存"
+        val alreadyNotified = pendingAction.startsWith("export") &&
+            message == activity.getString(R.string.settings_file_saved)
         if ((pendingAction != "snapshot" || failed) && message.isNotBlank() &&
-            message != "已取消保存" && !alreadyNotified) {
+            message != activity.getString(R.string.settings_file_cancelled) && !alreadyNotified) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
         }
     }
@@ -126,7 +132,7 @@ class NativeSettingsController(
             avatarPicker.launch("image/*")
         } catch (_: Exception) {
             pickingFile = false
-            fail("无法打开图片选择器")
+            fail(activity.getString(R.string.settings_image_picker_failed))
         }
     }
 
@@ -136,7 +142,7 @@ class NativeSettingsController(
             backupPicker.launch("application/json")
         } catch (_: Exception) {
             pickingFile = false
-            fail("无法打开文件选择器")
+            fail(activity.getString(R.string.settings_file_picker_failed))
         }
     }
 
@@ -157,7 +163,7 @@ class NativeSettingsController(
                     }
                 }
             } catch (error: Exception) {
-                activity.runOnUiThread { fail(error.message ?: "头像保存失败") }
+                activity.runOnUiThread { fail(error.message ?: activity.getString(R.string.settings_avatar_save_failed)) }
             }
         }
     }
@@ -175,7 +181,7 @@ class NativeSettingsController(
                 action()
                 activity.runOnUiThread { busy = false }
             } catch (error: Exception) {
-                activity.runOnUiThread { fail(error.message ?: "文件读取失败") }
+                activity.runOnUiThread { fail(error.message ?: activity.getString(R.string.settings_file_read_failed)) }
             }
         }
     }

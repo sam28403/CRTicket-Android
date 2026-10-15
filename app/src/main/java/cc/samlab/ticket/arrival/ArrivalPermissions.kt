@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import cc.samlab.ticket.R
 import cc.samlab.ticket.permissions.SettingsReturn
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 
@@ -28,18 +29,15 @@ class ArrivalPermissions(
     fun request() {
         waiting = true
         dialogs.show(
-            title = "开启到站提醒",
-            message = "CRTicket 会在应用关闭或不使用时获取位置，用于附近车站的到站通知。\n\n" +
-                "请允许精确定位、始终允许定位及到站通知。位置仅在手机上匹配车站，不保存出行轨迹。\n\n" +
-                "使用低功耗地理围栏，进入车站 300 米范围后提醒，可随时关闭。" +
-                "系统省电策略可能让提醒延迟几分钟。",
-            confirmLabel = "继续",
+            title = activity.getString(R.string.arrival_permission_title),
+            message = activity.getString(R.string.arrival_permission_message),
+            confirmLabel = activity.getString(R.string.action_continue),
             onConfirm = {
                 accepted()
                 foreground()
             },
-            onDecline = { finish(false, "尚未开启到站提醒") },
-            onDismiss = { finish(false, "已取消开启到站提醒") },
+            onDecline = { finish(false, activity.getString(R.string.arrival_not_enabled)) },
+            onDismiss = { finish(false, activity.getString(R.string.arrival_cancelled)) },
         )
     }
 
@@ -66,26 +64,26 @@ class ArrivalPermissions(
             activity.requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION), FINE)
         } else {
-            settings("请在“权限 → 位置信息”中允许精确定位，并选择“始终允许”。")
+            settings(activity.getString(R.string.arrival_precise_settings))
         }
     }
 
     private fun background() {
         if (!waiting) return
         if (ArrivalAccess.background(activity)) {
-            finish(true, "定位权限已开启")
+            finish(true, activity.getString(R.string.arrival_location_enabled))
         } else if (Build.VERSION.SDK_INT == 29) {
             activity.requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), BACKGROUND)
         } else {
-            settings("请进入“权限 → 位置信息”，开启精确定位，并选择“始终允许”。返回应用后继续开启到站通知。")
+            settings(activity.getString(R.string.arrival_background_settings))
         }
     }
 
     private fun settings(message: String) {
         dialogs.show(
-            title = "允许后台定位",
+            title = activity.getString(R.string.arrival_background_title),
             message = message,
-            confirmLabel = "去设置",
+            confirmLabel = activity.getString(R.string.action_open_settings),
             onConfirm = {
                 try {
                     settingsReturn.launch()
@@ -97,11 +95,11 @@ class ArrivalPermissions(
                         SETTINGS,
                     )
                 } catch (_: Exception) {
-                    finish(false, "无法打开设置，请手动允许始终定位")
+                    finish(false, activity.getString(R.string.arrival_settings_failed))
                 }
             },
-            onDecline = { finish(false, "需要始终允许定位才能提供后台到站提醒") },
-            onDismiss = { finish(false, "已取消开启到站提醒") },
+            onDecline = { finish(false, activity.getString(R.string.arrival_background_required)) },
+            onDismiss = { finish(false, activity.getString(R.string.arrival_cancelled)) },
         )
     }
 
@@ -109,10 +107,10 @@ class ArrivalPermissions(
         if (!waiting) return
         when (code) {
             FINE -> if (ArrivalAccess.fine(activity)) background()
-                else finish(false, "需要精确定位，模糊位置无法识别 300 米到站范围")
+                else finish(false, activity.getString(R.string.arrival_precise_required))
             BACKGROUND -> finish(
                 ArrivalAccess.background(activity),
-                "需要始终允许定位才能提供后台到站提醒",
+                activity.getString(R.string.arrival_background_required),
             )
         }
     }
@@ -123,7 +121,7 @@ class ArrivalPermissions(
         if (settingsReturn.onResume() && waiting) {
             finish(
                 ArrivalAccess.fine(activity) && ArrivalAccess.background(activity),
-                "需要允许精确定位和始终定位才能提供到站提醒",
+                activity.getString(R.string.arrival_location_required),
             )
         }
     }

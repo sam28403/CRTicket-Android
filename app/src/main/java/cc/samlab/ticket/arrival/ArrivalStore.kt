@@ -1,8 +1,9 @@
 package cc.samlab.ticket.arrival
 
 import android.content.Context
+import cc.samlab.ticket.R
 
-class ArrivalStore(context: Context) {
+class ArrivalStore(private val context: Context) {
     private val preferences = context.getSharedPreferences("station-arrival", Context.MODE_PRIVATE)
     var enabled: Boolean
         get() = preferences.getBoolean("enabled", false)
@@ -11,7 +12,7 @@ class ArrivalStore(context: Context) {
         get() = preferences.getBoolean("enableRequested", false)
         set(value) { preferences.edit().putBoolean("enableRequested", value).apply() }
     var message: String
-        get() = preferences.getString("message", "尚未开启到站提醒").orEmpty()
+        get() = preferences.getString("message", context.getString(R.string.arrival_not_enabled)).orEmpty()
         set(value) { preferences.edit().putString("message", value).apply() }
     var registered: Boolean
         get() = preferences.getBoolean("registered", false)

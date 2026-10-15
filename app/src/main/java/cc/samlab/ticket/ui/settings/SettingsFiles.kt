@@ -11,24 +11,25 @@ import android.graphics.RectF
 import android.net.Uri
 import android.os.Build
 import android.util.Base64
+import cc.samlab.ticket.R
 import java.io.ByteArrayOutputStream
 
 internal fun readSettingsFile(context: Context, uri: Uri, maxBytes: Int): ByteArray {
     return context.contentResolver.openInputStream(uri).use { input ->
-        requireNotNull(input) { "无法读取所选文件" }
+        requireNotNull(input) { context.getString(R.string.settings_file_unreadable) }
         val output = ByteArrayOutputStream()
         val buffer = ByteArray(8192)
         while (true) {
             val count = input.read(buffer)
             if (count < 0) break
-            require(output.size() + count <= maxBytes) { "文件太大，请选择更小的文件" }
+            require(output.size() + count <= maxBytes) { context.getString(R.string.settings_file_too_large) }
             output.write(buffer, 0, count)
         }
         output.toByteArray()
     }
 }
 
-internal fun decodeSettingsAvatar(bytes: ByteArray): Bitmap {
+internal fun decodeSettingsAvatar(context: Context, bytes: ByteArray): Bitmap {
     if (Build.VERSION.SDK_INT >= 28) {
         return ImageDecoder.decodeBitmap(ImageDecoder.createSource(java.nio.ByteBuffer.wrap(bytes))) {
                 decoder, info, _ ->
@@ -46,7 +47,7 @@ internal fun decodeSettingsAvatar(bytes: ByteArray): Bitmap {
         inSampleSize = (maxOf(bounds.outWidth, bounds.outHeight) / 1024).coerceAtLeast(1)
     }
     return requireNotNull(BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)) {
-        "无法读取这张图片"
+        context.getString(R.string.settings_image_unreadable)
     }
 }
 

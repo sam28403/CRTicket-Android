@@ -18,9 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import kotlin.math.roundToInt
 
 @Composable
@@ -31,7 +33,7 @@ internal fun AvatarCropDialog(bitmap: Bitmap, controller: NativeSettingsControll
     val image = remember(bitmap) { bitmap.asImageBitmap() }
     AlertDialog(
         onDismissRequest = { if (!controller.busy) controller.dismissCrop() },
-        title = { Text("裁切头像") },
+        title = { Text(stringResource(R.string.settings_crop_avatar)) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Canvas(Modifier.size(192.dp).clip(CircleShape)) {
@@ -47,21 +49,21 @@ internal fun AvatarCropDialog(bitmap: Bitmap, controller: NativeSettingsControll
                         dstSize = IntSize(width.roundToInt(), height.roundToInt()),
                     )
                 }
-                Text("缩放")
+                Text(stringResource(R.string.settings_crop_zoom))
                 Slider(zoom, { zoom = it }, valueRange = 1f..3f, enabled = !controller.busy)
-                Text("水平位置")
+                Text(stringResource(R.string.settings_crop_horizontal))
                 Slider(x, { x = it }, valueRange = -1f..1f, enabled = !controller.busy)
-                Text("垂直位置")
+                Text(stringResource(R.string.settings_crop_vertical))
                 Slider(y, { y = it }, valueRange = -1f..1f, enabled = !controller.busy)
             }
         },
         confirmButton = {
             TextButton(enabled = !controller.busy, onClick = { controller.saveAvatar(zoom, x, y) }) {
-                Text("保存头像")
+                Text(stringResource(R.string.settings_save_avatar))
             }
         },
         dismissButton = {
-            TextButton(enabled = !controller.busy, onClick = controller::dismissCrop) { Text("取消") }
+            TextButton(enabled = !controller.busy, onClick = controller::dismissCrop) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }

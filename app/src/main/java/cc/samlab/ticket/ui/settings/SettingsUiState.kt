@@ -4,12 +4,13 @@ import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cc.samlab.ticket.R
 
 /** Keep an in-progress edit when the window moves between standalone and embedded settings. */
-internal enum class SettingsPage(val title: String) {
-    MAIN("设置"),
-    PERMISSIONS("权限管理"),
-    ARRIVAL("到站检测"),
+internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) {
+    MAIN(R.string.home_settings),
+    PERMISSIONS(R.string.settings_permissions),
+    ARRIVAL(R.string.settings_arrival),
 }
 
 internal class SettingsUiState {

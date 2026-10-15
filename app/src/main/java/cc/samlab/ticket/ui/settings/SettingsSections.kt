@@ -17,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import org.json.JSONObject
 
 @Composable
@@ -27,31 +29,44 @@ internal fun SettingsProfile(
 ) {
     val state = controller.state
     val enabled = state.loaded && !controller.busy
-    SettingsGroup("个人资料", first = true) {
-        SettingsRow("显示名称", state.username, 0, 2, enabled, { onDialog("name") })
-        SettingsRow("头像", "选择图片，裁切为你的专属头像", 1, 2, enabled,
-            { onDialog("avatar") }) { SettingsAvatar(state.avatar, state.username) }
-    }
-    SettingsGroup("出行提醒") {
+    SettingsGroup(stringResource(R.string.settings_profile), first = true) {
         SettingsRow(
-            "到站检测",
-            "接受到访车站的通知",
+            stringResource(R.string.settings_display_name), state.username,
+            0, 2, enabled, { onDialog("name") },
+        )
+        SettingsRow(
+            stringResource(R.string.settings_avatar),
+            stringResource(R.string.settings_avatar_description),
+            1, 2, enabled, { onDialog("avatar") },
+        ) { SettingsAvatar(state.avatar, state.username) }
+    }
+    SettingsGroup(stringResource(R.string.settings_trip_alerts)) {
+        SettingsRow(
+            stringResource(R.string.settings_arrival),
+            stringResource(R.string.settings_arrival_description),
             0, 1, enabled, controller.ui::openArrival,
         ) {
             SettingsChevron()
             VerticalDivider(Modifier.height(40.dp))
             SettingsSwitch(
-                state.arrivalEnabled, enabled && state.arrivalSupported, "开启到站检测",
+                state.arrivalEnabled,
+                enabled && state.arrivalSupported,
+                stringResource(R.string.settings_arrival_switch),
             ) {
                 controller.request("arrival", JSONObject().put("enabled", it))
             }
         }
     }
-    SettingsGroup("隐私与权限") {
-        SettingsRow("权限管理", "通知、定位和后台运行", 0, 1, true, {
-            controller.permissions.refresh()
-            controller.ui.openPermissions()
-        })
+    SettingsGroup(stringResource(R.string.settings_privacy)) {
+        SettingsRow(
+            stringResource(R.string.settings_permissions),
+            stringResource(R.string.settings_permissions_description),
+            0, 1, true,
+            {
+                controller.permissions.refresh()
+                controller.ui.openPermissions()
+            },
+        )
     }
 }
 
@@ -63,22 +78,29 @@ internal fun SettingsPreferences(
 ) {
     val state = controller.state
     val enabled = state.loaded && !controller.busy
-    SettingsGroup("外观", first = first) {
-        SettingsRow("切换主题", settingsThemeModes.firstOrNull { it.first == state.themeMode }?.second
-            ?: "跟随系统", 0, 2, enabled, { onDialog("theme") })
-        SettingsRow("纯黑背景", "在暗色模式下使用纯黑背景", 1, 2, enabled,
-            { controller.changeTheme(pureBlack = !state.pureBlack) }) {
-            SettingsSwitch(state.pureBlack, enabled, "纯黑背景开关") {
+    SettingsGroup(stringResource(R.string.settings_appearance), first = first) {
+        val themeTitle = settingsThemeModes.firstOrNull { it.first == state.themeMode }?.second
+            ?: R.string.theme_system
+        SettingsRow(
+            stringResource(R.string.settings_theme), stringResource(themeTitle),
+            0, 2, enabled, { onDialog("theme") },
+        )
+        SettingsRow(
+            stringResource(R.string.settings_pure_black),
+            stringResource(R.string.settings_pure_black_description),
+            1, 2, enabled, { controller.changeTheme(pureBlack = !state.pureBlack) },
+        ) {
+            SettingsSwitch(state.pureBlack, enabled, stringResource(R.string.settings_pure_black_switch)) {
                 controller.changeTheme(pureBlack = it)
             }
         }
     }
-    SettingsGroup("数据与备份") {
-        SettingsRow("导出 Excel", "", 0, 3, enabled,
+    SettingsGroup(stringResource(R.string.settings_backup)) {
+        SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,
             { controller.request("exportExcel") })
-        SettingsRow("导出备份", "", 1, 3, enabled,
+        SettingsRow(stringResource(R.string.settings_export_backup), "", 1, 3, enabled,
             { controller.request("exportBackup") })
-        SettingsRow("导入备份", "", 2, 3, enabled,
+        SettingsRow(stringResource(R.string.settings_import_backup), "", 2, 3, enabled,
             controller::chooseBackup)
     }
 }
@@ -92,7 +114,7 @@ private fun SettingsAvatar(data: String, name: String) {
         }.getOrNull()
     }
     Surface(Modifier.size(48.dp), shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
-        if (bitmap != null) Image(bitmap, "当前头像", Modifier.clip(CircleShape))
+        if (bitmap != null) Image(bitmap, stringResource(R.string.settings_current_avatar), Modifier.clip(CircleShape))
         else Box(contentAlignment = Alignment.Center) {
             Text(name.take(1), color = MaterialTheme.colorScheme.onPrimaryContainer)
         }

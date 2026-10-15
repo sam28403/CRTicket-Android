@@ -12,28 +12,28 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.BackEventCompat
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import cc.samlab.ticket.arrival.ArrivalNotifications
 import cc.samlab.ticket.arrival.StationArrivalBridge
 import cc.samlab.ticket.files.DocumentFiles
-import cc.samlab.ticket.network.PhoneHttp
 import cc.samlab.ticket.monitor.TicketMonitorBridge
+import cc.samlab.ticket.network.PhoneHttp
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.tracking.TrainTrackingBridge
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
-import cc.samlab.ticket.ui.window.WindowLayoutObserver
 import cc.samlab.ticket.ui.AppearanceController
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 import cc.samlab.ticket.ui.ExpressiveRefreshHost
 import cc.samlab.ticket.ui.home.ExpressiveHomeHost
 import cc.samlab.ticket.ui.settings.NativeSettingsController
+import cc.samlab.ticket.ui.window.WindowLayoutObserver
 import cc.samlab.ticket.web.AndroidBridge
 import cc.samlab.ticket.web.LocalAssetClient
 import cc.samlab.ticket.web.WebViewLayout
-import org.json.JSONObject
 import java.util.concurrent.Executors
+import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -158,7 +158,7 @@ class MainActivity : ComponentActivity() {
             ): Boolean {
                 AlertDialog.Builder(this@MainActivity)
                     .setMessage(message)
-                    .setPositiveButton("确定") { _, _ -> result.confirm() }
+                    .setPositiveButton(R.string.action_confirm) { _, _ -> result.confirm() }
                     .setOnCancelListener { result.cancel() }
                     .show()
                 return true
@@ -257,7 +257,7 @@ class MainActivity : ComponentActivity() {
         try {
             startActivity(Intent(Intent.ACTION_VIEW, uri))
         } catch (_: Exception) {
-            toast("未找到可打开链接的浏览器")
+            toast(this.getString(R.string.browser_unavailable))
         }
     }
 

@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import cc.samlab.ticket.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -31,9 +33,9 @@ internal fun TrainListDatePicker(date: String, onDismiss: () -> Unit, onSelect: 
                     }
                     onDismiss()
                 },
-            ) { Text("确定") }
+            ) { Text(stringResource(R.string.action_confirm)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     ) {
         DatePicker(state = state, title = null, showModeToggle = false)
     }

@@ -32,7 +32,7 @@ export function nativeRequest(method, path, body, { timeout = 45000, signal } = 
   })
 }
 
-export async function saveFile(blob, filename) {
+export async function saveFile(blob, filename, messages = {}) {
   if (!native) {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -42,11 +42,11 @@ export async function saveFile(blob, filename) {
     setTimeout(() => URL.revokeObjectURL(url), 60000)
     return true
   }
-  if (blob.size > 20 * 1024 * 1024) throw new Error('导出文件不能超过20MB')
+  if (blob.size > 20 * 1024 * 1024) throw new Error(messages.sizeLimit || '导出文件不能超过20MB')
   const data = await new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result.split(',')[1])
-    reader.onerror = () => reject(new Error('无法读取导出文件'))
+    reader.onerror = () => reject(new Error(messages.readFailed || '无法读取导出文件'))
     reader.readAsDataURL(blob)
   })
   const result = await saves.call(id => {
@@ -54,7 +54,7 @@ export async function saveFile(blob, filename) {
   })
   if (result.cancelled) return false
   if (result.success) return true
-  throw new Error(result.message || '文件保存失败')
+  throw new Error(result.message || messages.saveFailed || '文件保存失败')
 }
 
 export function initializePlatform(router) {

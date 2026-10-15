@@ -50,6 +50,11 @@ class ExpressiveSettingsTest {
         }
         compose.waitUntil(20_000) { evaluate("Boolean(window.crticketSettings)") == "true" }
         awaitRoute("/home")
+        compose.waitUntil(10_000) {
+            runCatching {
+                compose.onAllNodesWithText("设置").fetchSemanticsNodes().isNotEmpty()
+            }.getOrDefault(false)
+        }
     }
 
     @After fun close() {

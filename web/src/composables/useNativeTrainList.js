@@ -2,7 +2,7 @@ import { onBeforeUnmount, watch } from 'vue'
 import { native } from '@/android/platform.js'
 
 // Transfer a snapshot only when data changes; scrolling stays entirely in Compose.
-export function useNativeTrainList(date, loading, error, result, query) {
+export function useNativeTrainList(date, loading, error, result, query, errorKey) {
   const enabled = typeof native?.trainListResult === 'function'
   if (!enabled) return false
 
@@ -17,6 +17,7 @@ export function useNativeTrainList(date, loading, error, result, query) {
       date: date.value,
       loading: loading.value,
       error: error.value,
+      errorKey: errorKey?.value || '',
       result: result.value,
     }))
   }, { immediate: true, flush: 'post' })

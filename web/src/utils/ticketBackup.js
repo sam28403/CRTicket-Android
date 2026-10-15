@@ -82,15 +82,15 @@ export const getExportFileStamp = () => {
 }
 
 
-export function parseTicketBackup(text) {
+export function parseTicketBackup(text, messages = {}) {
   const parsed = JSON.parse(text)
   const tickets = Array.isArray(parsed) ? parsed : parsed?.tickets
-  if (!Array.isArray(tickets)) throw new Error('备份文件中没有找到车票数据')
-  if (tickets.length > 10000) throw new Error('一次最多导入 10000 条车票记录')
+  if (!Array.isArray(tickets)) throw new Error(messages.noTickets || '备份文件中没有找到车票数据')
+  if (tickets.length > 10000) throw new Error(messages.limit || '一次最多导入 10000 条车票记录')
   return tickets
 }
 
-export async function importTicketBackup(tickets, currentTickets, user, api) {
+export async function importTicketBackup(tickets, currentTickets, user, api, messages = {}) {
   const existing = new Set(currentTickets.map(buildTicketFingerprint))
   const pending = []
   let imported = 0
@@ -120,10 +120,11 @@ export async function importTicketBackup(tickets, currentTickets, user, api) {
   }
   for (let offset = 0; offset < pending.length; offset += 100) {
     const { data } = await api.post('/user/import-backup', { backup: pending.slice(offset, offset + 100) })
-    if (!data.success) throw new Error(data.message || '导入失败')
+    if (!data.success) throw new Error(data.message || messages.failed || '导入失败')
     imported += data.data.imported
     skipped += data.data.skipped
     invalid += data.data.invalid
   }
-  return `导入完成：新增 ${imported} 条，略过 ${skipped} 条，未处理 ${invalid} 条`
+  return messages.complete?.(imported, skipped, invalid)
+    ?? `导入完成：新增 ${imported} 条，略过 ${skipped} 条，未处理 ${invalid} 条`
 }

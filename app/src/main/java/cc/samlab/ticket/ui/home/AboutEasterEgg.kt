@@ -33,7 +33,7 @@ internal fun AboutEasterEgg(onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(stringResource(R.string.egg_departure))
-                    Text("→", color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.display_arrow), color = MaterialTheme.colorScheme.primary)
                     Text(stringResource(R.string.egg_arrival))
                 }
                 HorizontalDivider()

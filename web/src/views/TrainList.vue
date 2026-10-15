@@ -13,6 +13,7 @@ defineOptions({ name: 'TrainList' })
 const date = ref(trainQueryRange().today)
 const loading = ref(false)
 const error = ref('')
+const errorKey = ref('')
 const result = shallowRef(null)
 const sortBy = ref({ key: 'train', order: 'asc' })
 const rows = computed(() => (result.value?.trains || []).map(row => {
@@ -181,6 +182,7 @@ async function query() {
   const selectedDate = date.value
   loading.value = true
   error.value = ''
+  errorKey.value = ''
   result.value = null
   scrollTop.value = 0
   table.value?.scrollToTop(0)
@@ -194,6 +196,8 @@ async function query() {
     if (id === requestId) result.value = data
   } catch (err) {
     if (id === requestId && err.code !== 'ERR_CANCELED') {
+      errorKey.value = err.response?.data?.message ? ''
+        : err.code === 'ECONNABORTED' ? 'timeout' : 'network'
       error.value = err.response?.data?.message || (
         err.code === 'ECONNABORTED'
           ? '读取超时，请稍后重试'
@@ -205,7 +209,7 @@ async function query() {
   }
 }
 
-const nativeList = useNativeTrainList(date, loading, error, result, query)
+const nativeList = useNativeTrainList(date, loading, error, result, query, errorKey)
 watch(date, query, { immediate: true })
 onBeforeUnmount(() => {
   cancelAnimationFrame(restoreFrame)

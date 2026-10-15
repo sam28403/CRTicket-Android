@@ -19,9 +19,9 @@ class ArrivalNotifications(private val context: Context) {
     private val manager = context.getSystemService(NotificationManager::class.java)
 
     fun createChannel() {
-        manager.createNotificationChannel(NotificationChannel(CHANNEL, "到站提醒",
+        manager.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.arrival_channel),
             NotificationManager.IMPORTANCE_HIGH).apply {
-            description = "到达附近车站时提醒，可点按打开车站大屏"
+            description = context.getString(R.string.arrival_channel_description)
         })
     }
 
@@ -45,8 +45,8 @@ class ArrivalNotifications(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         return Notification.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_notification_ticket)
-            .setContentTitle("欢迎到访${station.removeSuffix("站")}站")
-            .setContentText("点按查看当前车站大屏")
+            .setContentTitle(context.getString(R.string.arrival_notification_title, station.removeSuffix("站")))
+            .setContentText(context.getString(R.string.arrival_notification_body))
             .setContentIntent(pending)
             .setAutoCancel(true)
             .setCategory(Notification.CATEGORY_EVENT)

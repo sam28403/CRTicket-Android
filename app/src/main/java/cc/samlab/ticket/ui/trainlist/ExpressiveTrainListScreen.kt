@@ -14,14 +14,18 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
+import java.text.NumberFormat
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -44,10 +48,10 @@ internal fun ExpressiveTrainListScreen(
         Surface(Modifier.fillMaxSize(), color = colors.surfaceContainer) {
             Column {
                 TopAppBar(
-                    title = { Text("车次列表", fontFamily = projectTitleFont) },
+                    title = { Text(stringResource(R.string.home_list), fontFamily = projectTitleFont) },
                     navigationIcon = {
                         if (!embedded) FilledTonalIconButton(onBack, Modifier.padding(start = 8.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.about_back))
                         }
                     },
                     windowInsets = WindowInsets(0, 0, 0, 0),
@@ -68,10 +72,19 @@ internal fun ExpressiveTrainListScreen(
                         Text(controller.date)
                         Icon(Icons.Default.KeyboardArrowDown, null, Modifier.padding(start = 4.dp))
                     }
+                    val summary = when {
+                        controller.loading && controller.rows.isEmpty() ->
+                            stringResource(R.string.status_loading)
+                        controller.error.isNotEmpty() && controller.rows.isEmpty() ->
+                            stringResource(R.string.train_list_incomplete)
+                        else -> stringResource(
+                            R.string.train_list_total,
+                            NumberFormat.getIntegerInstance(LocalConfiguration.current.locales[0])
+                                .format(controller.rows.size),
+                        )
+                    }
                     Text(
-                        if (controller.loading && controller.rows.isEmpty()) "正在读取…"
-                        else if (controller.error.isNotEmpty() && controller.rows.isEmpty()) "读取未完成"
-                        else "共 ${String.format(java.util.Locale.CHINA, "%,d", controller.rows.size)} 趟",
+                        summary,
                         style = MaterialTheme.typography.labelLarge,
                         color = colors.onSurfaceVariant,
                         modifier = Modifier.testTag("train-list-total"),
@@ -96,12 +109,12 @@ internal fun ExpressiveTrainListScreen(
                         if (controller.error.isNotEmpty()) item(key = "error") {
                             Column(Modifier.fillMaxWidth().padding(20.dp)) {
                                 Text(controller.error, color = colors.error)
-                                TextButton(onClick = { controller.request() }) { Text("重试") }
+                                TextButton(onClick = { controller.request() }) { Text(stringResource(R.string.action_retry)) }
                             }
                         }
                         if (!controller.loading && controller.error.isEmpty() && controller.rows.isEmpty()) {
                             item(key = "empty") {
-                                Text("该日期没有开行的车次", Modifier.padding(24.dp))
+                                Text(stringResource(R.string.train_list_empty), Modifier.padding(24.dp))
                             }
                         }
                         itemsIndexed(

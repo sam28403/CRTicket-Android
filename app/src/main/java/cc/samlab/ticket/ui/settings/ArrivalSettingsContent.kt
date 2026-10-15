@@ -25,7 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import org.json.JSONObject
 
 @Composable
@@ -63,11 +65,11 @@ internal fun ArrivalSettingsContent(controller: NativeSettingsController, visibl
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Text(
-                        "启用到站检测",
+                        stringResource(R.string.arrival_enable),
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge,
                     )
-                    SettingsSwitch(state.arrivalEnabled, enabled, "开启到站检测", onChange)
+                    SettingsSwitch(state.arrivalEnabled, enabled, stringResource(R.string.settings_arrival_switch), onChange)
                 }
             }
             ArrivalInformation(controller)
@@ -88,11 +90,10 @@ private fun ArrivalInformation(controller: NativeSettingsController) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(24.dp),
         )
-        ArrivalInformationText("进入车站约 300 米范围时发送到访通知，点按通知可查看当前车站大屏。")
-        ArrivalInformationText("位置信息只用于本机匹配，不上传到应用服务器，也不保存出行轨迹。")
+        ArrivalInformationText(stringResource(R.string.arrival_range_description))
+        ArrivalInformationText(stringResource(R.string.arrival_privacy_description))
         ArrivalInformationText(
-            "需要精确定位、始终允许定位、通知权限，以及可用的 Google Play 服务。" +
-                "使用低功耗地理围栏，提醒可能受系统省电或定位信号影响而延迟。",
+            stringResource(R.string.arrival_requirements_description),
         )
         if (state.loaded && (!state.arrivalSupported ||
                 (state.arrivalEnabled && !state.arrivalActive))) {
@@ -101,13 +102,13 @@ private fun ArrivalInformation(controller: NativeSettingsController) {
                 TextButton(
                     enabled = !controller.busy,
                     onClick = { controller.request("arrival", JSONObject().put("enabled", true)) },
-                ) { Text("重新开启") }
+                ) { Text(stringResource(R.string.arrival_restart)) }
             }
         }
         TextButton(onClick = {
             controller.permissions.refresh()
             controller.ui.openPermissions()
-        }) { Text("管理相关权限") }
+        }) { Text(stringResource(R.string.arrival_manage_permissions)) }
     }
 }
 

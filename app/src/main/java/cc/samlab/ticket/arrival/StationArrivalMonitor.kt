@@ -1,8 +1,9 @@
 package cc.samlab.ticket.arrival
 
-import android.content.Context
 import android.annotation.SuppressLint
+import android.content.Context
 import android.location.Location
+import cc.samlab.ticket.R
 
 class StationArrivalMonitor private constructor(context: Context) {
     companion object {
@@ -25,7 +26,7 @@ class StationArrivalMonitor private constructor(context: Context) {
     private val completions = mutableListOf<() -> Unit>()
 
     fun start(finished: () -> Unit = {}) {
-        check(ArrivalAccess.ready(context)) { "请开启精确定位、始终允许定位和到站通知" }
+        check(ArrivalAccess.ready(context)) { context.getString(R.string.arrival_permissions_required) }
         store.enabled = true
         if (starting) {
             completions.add(finished)
@@ -39,11 +40,11 @@ class StationArrivalMonitor private constructor(context: Context) {
         starting = true
         val token = ++generation
         store.registered = false
-        store.message = "正在获取附近车站，请保持系统定位开启"
+        store.message = context.getString(R.string.arrival_locating)
         fences.passiveUpdates().addOnFailureListener {
             // 被动位置只是补充，失败时仍可通过围栏提供提醒。
             if (token == generation && !store.registered) {
-                store.message = "等待系统围栏获取位置，请保持系统定位开启"
+                store.message = context.getString(R.string.arrival_waiting_location)
             }
         }
         fences.current().addOnCompleteListener { task ->
@@ -56,7 +57,7 @@ class StationArrivalMonitor private constructor(context: Context) {
             if (location != null && ArrivalLocations.usable(location, 2000f)) {
                 update(location, true, finished)
             } else {
-                store.message = "暂未取得可用位置，收到系统位置后将自动监控附近车站"
+                store.message = context.getString(R.string.arrival_location_unavailable)
                 finished()
                 if (!busy) finishWaiters()
             }
@@ -70,12 +71,12 @@ class StationArrivalMonitor private constructor(context: Context) {
         }
         if (!ArrivalAccess.ready(context)) {
             suspendMonitoring()
-            store.message = "到站提醒已暂停，请检查精确定位、始终允许定位和通知权限"
+            store.message = context.getString(R.string.arrival_permission_paused)
             finished()
             return
         }
         runCatching { start(finished) }.onFailure {
-            store.message = "恢复到站提醒失败，请重新开启"
+            store.message = context.getString(R.string.arrival_restore_failed)
             finished()
         }
     }
@@ -83,7 +84,7 @@ class StationArrivalMonitor private constructor(context: Context) {
     fun stop() {
         store.enabled = false
         suspendMonitoring()
-        store.message = "已关闭到站提醒"
+        store.message = context.getString(R.string.arrival_disabled)
     }
 
     private fun suspendMonitoring() {
@@ -132,8 +133,8 @@ class StationArrivalMonitor private constructor(context: Context) {
                 busy = false
                 if (token == generation && store.enabled) {
                     store.registered = task.isSuccessful
-                    store.message = if (task.isSuccessful) "已开启到站提醒，正在监控附近车站"
-                        else "车站围栏注册失败，请检查系统定位后重新开启"
+                    store.message = if (task.isSuccessful) context.getString(R.string.arrival_active)
+                        else context.getString(R.string.arrival_registration_failed)
                     if (task.isSuccessful) {
                         center = location
                         radius = plan.refreshRadius
@@ -170,6 +171,6 @@ class StationArrivalMonitor private constructor(context: Context) {
 
     fun unavailable() {
         suspendMonitoring()
-        store.message = "系统地理围栏暂不可用，恢复定位后将重试"
+        store.message = context.getString(R.string.arrival_fences_unavailable)
     }
 }

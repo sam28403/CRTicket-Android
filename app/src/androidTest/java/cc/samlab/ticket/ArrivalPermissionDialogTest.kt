@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.WindowManager
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.pressBack
@@ -40,6 +41,11 @@ class ArrivalPermissionDialogTest {
             dialogs = ExpressiveDialogHost(activity)
         }
         instrumentation.waitForIdleSync()
+        compose.waitUntil(10_000) {
+            runCatching {
+                compose.onAllNodesWithText("设置").fetchSemanticsNodes().isNotEmpty()
+            }.getOrDefault(false)
+        }
     }
 
     @After fun close() {

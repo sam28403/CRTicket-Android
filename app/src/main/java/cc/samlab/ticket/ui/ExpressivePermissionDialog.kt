@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
@@ -61,7 +62,7 @@ internal fun ExpressivePermissionDialog(
             },
             dismissButton = {
                 TextButton(onClick = onDecline) {
-                    Text("暂不开启")
+                    Text(stringResource(R.string.action_not_now))
                 }
             },
         )

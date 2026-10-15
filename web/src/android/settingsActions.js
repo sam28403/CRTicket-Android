@@ -8,6 +8,7 @@ import {
   parseTicketBackup, importTicketBackup,
 } from '@/utils/ticketBackup.js'
 import { saveFile, native } from './platform.js'
+import { settingsText } from './settingsStrings.js'
 import {
   supportsStationArrival, getStationArrivalState,
   enableStationArrival, disableStationArrival,
@@ -15,7 +16,7 @@ import {
 
 async function owner() {
   const { data } = await api.get('/user/session')
-  if (!data.success) throw new Error(data.message || '无法读取本机资料')
+  if (!data.success) throw new Error(data.message || settingsText('read_failed'))
   useUserStore().setUser(data.user)
   return data.user
 }
@@ -29,7 +30,7 @@ export async function settingsSnapshot() {
   const user = await owner()
   const arrival = supportsStationArrival()
     ? await getStationArrivalState()
-    : { enabled: false, active: false, supported: false, message: '此设备暂不支持到站检测' }
+    : { enabled: false, active: false, supported: false, message: settingsText('arrival_unsupported') }
   const { preference, highContrast } = useTheme()
   return {
     username: user.username, avatar: user.avatar, arrival,
@@ -48,19 +49,26 @@ export async function performSettingsAction(action, payload = {}) {
       ? { username: normalizeUsername(payload.username) }
       : { avatar: payload.avatar || null }
     const { data } = await api.post(`/user/update-${action}`, body)
-    if (!data.success) throw new Error(data.message || '保存失败')
+    if (!data.success) throw new Error(data.message || settingsText('save_failed'))
     useUserStore().setUser(data.user)
-    return data.message || '已保存'
+    return data.message || settingsText('saved')
   }
   if (action === 'arrival') {
     const state = await (payload.enabled ? enableStationArrival() : disableStationArrival())
-    if (state.success === false) throw new Error(state.message || '未能更改到站检测')
-    return state.message || '已更新到站检测'
+    if (state.success === false) throw new Error(state.message || settingsText('arrival_failed'))
+    return state.message || settingsText('arrival_updated')
   }
   const user = await owner()
   const records = await tickets(user)
   if (action === 'import') {
-    return importTicketBackup(parseTicketBackup(payload.text), records, user, api)
+    const backup = parseTicketBackup(payload.text, {
+      noTickets: settingsText('backup_no_tickets'),
+      limit: settingsText('backup_limit'),
+    })
+    return importTicketBackup(backup, records, user, api, {
+      failed: settingsText('import_failed'),
+      complete: (...counts) => settingsText('import_complete', ...counts),
+    })
   }
   const stamp = getExportFileStamp()
   let blob
@@ -69,22 +77,27 @@ export async function performSettingsAction(action, payload = {}) {
     blob = new Blob([JSON.stringify(buildBackupPayload(records, user), null, 2)], {
       type: 'application/json;charset=utf-8',
     })
-    filename = `CRTicket-backup-${stamp}.json`
+    filename = settingsText('backup_filename', stamp)
   } else if (action === 'exportExcel') {
-    if (!records.length) throw new Error('暂无可导出的运转数据')
+    if (!records.length) throw new Error(settingsText('export_empty'))
     const XLSX = await import('xlsx')
     const sheet = XLSX.utils.json_to_sheet(buildExcelRows(records))
     sheet['!cols'] = Array.from({ length: 17 }, () => ({ wch: 18 }))
     const book = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(book, sheet, '运转数据')
+    XLSX.utils.book_append_sheet(book, sheet, settingsText('export_sheet'))
     blob = new Blob([XLSX.write(book, { bookType: 'xlsx', type: 'array' })], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     })
-    filename = `CRTicket-运转数据-${stamp}.xlsx`
+    filename = settingsText('export_filename', stamp)
   } else {
-    throw new Error('未知设置操作')
+    throw new Error(settingsText('unknown_action'))
   }
-  return await saveFile(blob, filename) ? '文件已保存' : '已取消保存'
+  const saved = await saveFile(blob, filename, {
+    sizeLimit: settingsText('export_size_limit'),
+    readFailed: settingsText('export_read_failed'),
+    saveFailed: settingsText('file_save_failed'),
+  })
+  return settingsText(saved ? 'file_saved' : 'file_cancelled')
 }
 
 export function initializeNativeSettings() {
@@ -95,7 +108,7 @@ export function initializeNativeSettings() {
     try {
       message = await performSettingsAction(action, payload)
     } catch (error) {
-      message = error.response?.data?.message || error.message || '操作失败，请重试'
+      message = error.response?.data?.message || error.message || settingsText('operation_failed')
       success = false
     }
     try {

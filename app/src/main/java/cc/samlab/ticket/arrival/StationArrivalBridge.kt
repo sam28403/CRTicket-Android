@@ -2,6 +2,7 @@ package cc.samlab.ticket.arrival
 
 import android.app.Activity
 import android.app.NotificationManager
+import cc.samlab.ticket.R
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.ui.ExpressiveDialogHost
 import org.json.JSONObject
@@ -31,10 +32,10 @@ class StationArrivalBridge(
         if (notificationPending && id == "arrival-permission:$permissionRound") {
             notificationPending = false
             if (result.optBoolean("granted")) activate()
-            else finish(false, "请开启系统通知和“到站提醒”通知渠道")
+            else finish(false, activity.getString(R.string.arrival_notifications_required))
         }
-    }, channelId = ArrivalNotifications.CHANNEL, channelName = "到站提醒",
-        channelDescription = "到达附近车站时提醒，可点按打开车站大屏",
+    }, channelId = ArrivalNotifications.CHANNEL, channelName = activity.getString(R.string.arrival_channel),
+        channelDescription = activity.getString(R.string.arrival_channel_description),
         channelImportance = NotificationManager.IMPORTANCE_HIGH,
         permissionRequest = 53, settingsRequest = 54, dialogs = dialogs,
         resumeFromSettings = true)
@@ -51,22 +52,22 @@ class StationArrivalBridge(
         .put("notifications", ArrivalNotifications(activity).enabled())
         .put("stations", ArrivalCatalog.stations(activity).size)
         .put("message", if (!ArrivalAccess.supported(activity))
-            "此设备需要可用的 Google Play 服务才能使用低功耗到站提醒"
+            activity.getString(R.string.arrival_services_required)
             else if (store.enabled && !ArrivalAccess.ready(activity))
-                "到站提醒已暂停，请检查系统定位、精确定位、始终允许定位和通知权限"
+                activity.getString(R.string.arrival_access_paused)
             else store.message)
 
     fun enable(id: String) {
         if (pending != null || store.enableRequested || activating) {
-            reply(id, JSONObject().put("success", false).put("message", "请先完成当前权限申请"))
+            reply(id, JSONObject().put("success", false).put("message", activity.getString(R.string.arrival_permission_pending)))
             return
         }
         pending = id
         permissionRound++
         if (!ArrivalAccess.supported(activity)) {
-            finish(false, "此设备需要可用的 Google Play 服务才能使用低功耗到站提醒")
+            finish(false, activity.getString(R.string.arrival_services_required))
         } else if (!ArrivalAccess.locationEnabled(activity)) {
-            finish(false, "请先在手机系统设置中开启定位，再开启到站提醒")
+            finish(false, activity.getString(R.string.arrival_location_disabled))
         } else {
             permissions.request()
         }
@@ -84,7 +85,7 @@ class StationArrivalBridge(
             }
         } catch (error: Exception) {
             activating = false
-            finish(false, error.message ?: "无法开启到站提醒")
+            finish(false, error.message ?: activity.getString(R.string.arrival_enable_failed))
         }
     }
 
@@ -99,7 +100,7 @@ class StationArrivalBridge(
         activating = false
         permissions.cancel()
         notifications.cancelPermissionRequest()
-        finish(false, "已取消开启到站提醒")
+        finish(false, activity.getString(R.string.arrival_cancelled))
         monitor.stop()
         reply(id, status())
     }

@@ -23,13 +23,19 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import org.json.JSONObject
 
-internal val settingsThemeModes = listOf("system" to "跟随系统", "light" to "亮色", "dark" to "暗色")
+internal val settingsThemeModes = listOf(
+    "system" to R.string.theme_system,
+    "light" to R.string.theme_light,
+    "dark" to R.string.theme_dark,
+)
 
 @Composable
 internal fun SettingsSwitch(checked: Boolean, enabled: Boolean, label: String, onChange: (Boolean) -> Unit) {
@@ -65,7 +71,7 @@ internal fun NativeSettingsController.changeTheme(mode: String = state.themeMode
 internal fun SettingsThemeDialog(controller: NativeSettingsController, dismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = dismiss,
-        title = { Text("切换主题") },
+        title = { Text(stringResource(R.string.settings_theme)) },
         text = {
             Column(Modifier.selectableGroup()) {
                 settingsThemeModes.forEach { (mode, title) ->
@@ -80,11 +86,11 @@ internal fun SettingsThemeDialog(controller: NativeSettingsController, dismiss: 
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         RadioButton(selected = selected, onClick = null)
-                        Text(title)
+                        Text(stringResource(title))
                     }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = dismiss) { Text("取消") } },
+        confirmButton = { TextButton(onClick = dismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

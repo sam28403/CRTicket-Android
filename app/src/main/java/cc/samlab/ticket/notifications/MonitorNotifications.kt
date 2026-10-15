@@ -21,8 +21,8 @@ class MonitorNotifications(
     private val activity: Activity,
     private val callback: (String, String, JSONObject) -> Unit,
     private val channelId: String = CHANNEL_ID,
-    private val channelName: String = "余票提醒",
-    private val channelDescription: String = "监测发现有票或余票数量变化时提醒",
+    private val channelName: String = activity.getString(R.string.notifications_ticket_channel),
+    private val channelDescription: String = activity.getString(R.string.notifications_ticket_description),
     private val channelImportance: Int = NotificationManager.IMPORTANCE_HIGH,
     private val permissionRequest: Int = PERMISSION_REQUEST,
     private val settingsRequest: Int = SETTINGS_REQUEST,
@@ -87,16 +87,16 @@ class MonitorNotifications(
                 settingsReturn.launch()
                 activity.startActivityForResult(intent, settingsRequest)
             } catch (_: Exception) {
-                finishPermission("无法打开通知设置，请在系统设置中手动开启")
+                finishPermission(activity.getString(R.string.notifications_settings_failed))
             }
         }
-        val title = "开启$channelName"
-        val message = "系统通知已关闭，请在设置中允许 CRTicket 通知并开启“$channelName”。"
+        val title = activity.getString(R.string.notifications_enable_channel, channelName)
+        val message = activity.getString(R.string.notifications_channel_settings, channelName)
         if (dialogs != null) {
             dialogs.show(
                 title = title,
                 message = message,
-                confirmLabel = "去设置",
+                confirmLabel = activity.getString(R.string.action_open_settings),
                 onConfirm = openSettings,
                 onDecline = { finishPermission() },
             )
@@ -104,8 +104,8 @@ class MonitorNotifications(
             AlertDialog.Builder(activity)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton("去设置") { _, _ -> openSettings() }
-                .setNegativeButton("暂不开启") { _, _ -> finishPermission() }
+                .setPositiveButton(activity.getString(R.string.action_open_settings)) { _, _ -> openSettings() }
+                .setNegativeButton(activity.getString(R.string.action_not_now)) { _, _ -> finishPermission() }
                 .setOnCancelListener { finishPermission() }
                 .show()
         }
@@ -140,9 +140,9 @@ class MonitorNotifications(
         settingsReturn.cancel()
         val granted = enabled()
         val statusMessage = message ?: if (granted) {
-            "系统通知已开启"
+            activity.getString(R.string.notifications_enabled)
         } else {
-            "未开启系统通知，请在系统设置中开启“$channelName”"
+            activity.getString(R.string.notifications_channel_disabled, channelName)
         }
         val result = JSONObject()
             .put("granted", granted)
@@ -181,7 +181,7 @@ class MonitorNotifications(
         callback(
             "crticketNotificationResult", id,
             JSONObject().put("success", success)
-                .put("message", "系统通知未发送，请检查通知权限并查看页面内的有票提醒"),
+                .put("message", activity.getString(R.string.notifications_delivery_failed)),
         )
     }
 }

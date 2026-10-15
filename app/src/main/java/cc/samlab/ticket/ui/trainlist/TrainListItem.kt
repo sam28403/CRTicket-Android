@@ -15,9 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.projectTitleFont
 
 @Composable
@@ -47,7 +49,7 @@ internal fun TrainListItem(row: TrainListRow, onClick: () -> Unit) {
                 )
                 Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
                     Text(
-                        "${row.stations} 站",
+                        stringResource(R.string.train_list_station_count, row.stations),
                         Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = colors.onSecondaryContainer,
@@ -66,7 +68,7 @@ internal fun TrainListItem(row: TrainListRow, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium)
             }
             Text(
-                "历时 ${row.duration}  ·  ${row.mileage} km  ·  ${row.speed} km/h",
+                stringResource(R.string.train_list_metrics, row.duration, row.mileage, row.speed),
                 Modifier.padding(top = 10.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.onSurfaceVariant,

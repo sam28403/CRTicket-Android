@@ -21,9 +21,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -31,6 +33,11 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BoxScope.TrainListRefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
+    val released by remember(state) { derivedStateOf { state.distanceFraction >= 1f } }
+    val refreshDescription = stringResource(
+        if (refreshing) R.string.train_list_refreshing
+        else if (released) R.string.refresh_release else R.string.refresh_pull,
+    )
     val offset = remember { Animatable(0f) }
     val alpha = remember { Animatable(if (refreshing) 1f else 0f) }
     val scale = remember { Animatable(if (refreshing) 1f else 0f) }
@@ -85,8 +92,7 @@ internal fun BoxScope.TrainListRefreshIndicator(state: PullToRefreshState, refre
             .size(48.dp)
             .testTag("train-list-refresh-indicator")
             .semantics {
-                contentDescription = if (refreshing) "正在刷新车次"
-                else if (state.distanceFraction >= 1f) "松开刷新" else "下拉刷新"
+                contentDescription = refreshDescription
             },
         color = MaterialTheme.colorScheme.primaryFixedDim,
         shape = MaterialTheme.shapes.extraLarge,
