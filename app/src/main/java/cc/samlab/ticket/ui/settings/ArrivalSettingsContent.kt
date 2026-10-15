@@ -2,6 +2,7 @@ package cc.samlab.ticket.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,20 +35,20 @@ internal fun ArrivalSettingsContent(controller: NativeSettingsController, visibl
     val onChange: (Boolean) -> Unit = {
         controller.request("arrival", JSONObject().put("enabled", it))
     }
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        val illustrationWidth = ((maxHeight - 160.dp).coerceIn(64.dp, 280.dp) * 1.38f)
         Column(
-            modifier = Modifier.widthIn(max = 640.dp).fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .testTag("arrival-settings-content")
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            Text(
-                "接受到访车站的通知",
-                modifier = Modifier.padding(horizontal = 8.dp),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            ArrivalIllustration(visible)
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(Modifier.widthIn(max = illustrationWidth).fillMaxWidth()) {
+                    ArrivalIllustration(visible)
+                }
+            }
             Surface(
                 onClick = { onChange(!state.arrivalEnabled) },
                 enabled = enabled,
@@ -78,7 +79,7 @@ internal fun ArrivalSettingsContent(controller: NativeSettingsController, visibl
 private fun ArrivalInformation(controller: NativeSettingsController) {
     val state = controller.state
     Column(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Icon(
@@ -114,6 +115,7 @@ private fun ArrivalInformation(controller: NativeSettingsController) {
 private fun ArrivalInformationText(text: String) {
     Text(
         text,
+        modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.bodyLarge,
     )

@@ -37,8 +37,12 @@ internal fun ExpressiveNavigationShell(
     onNavigate: (String) -> Unit,
     onBack: () -> Unit,
     onExternal: (String) -> Unit,
+    trainListContent: (@Composable (Boolean) -> Unit)? = null,
 ) {
-    val detail = if (route == "/settings") "/settings" else "/about"
+    val detail = when (route) {
+        "/settings", "/list" -> route
+        else -> "/about"
+    }
     val foldable = LocalFoldingFeatures.current.any {
         it.orientation == FoldingFeature.Orientation.VERTICAL
     }
@@ -47,7 +51,7 @@ internal fun ExpressiveNavigationShell(
         modifier = Modifier.fillMaxSize().testTag("navigation-shell"),
         firstPaneFraction = if (foldable) 0.5f else 1f / 3f,
         splitAtVerticalFold = true,
-        single = {}, // The host only selects the shell when two usable panes fit.
+        single = { if (detail == "/list") trainListContent?.invoke(false) },
         first = {
             CompositionLocalProvider(LocalSinglePane provides true) {
                 Box(Modifier.fillMaxSize().testTag("navigation-menu")) {
@@ -77,7 +81,8 @@ internal fun ExpressiveNavigationShell(
                         },
                         label = "native-detail",
                     ) { page ->
-                        if (page == "/settings") ExpressiveSettingsScreen(
+                        if (page == "/list") trainListContent?.invoke(true)
+                        else if (page == "/settings") ExpressiveSettingsScreen(
                             dark, settings, onBack, pureBlack, route == "/settings", embedded = true,
                         ) else ExpressiveAboutScreen(
                             dark, onBack, onExternal, pureBlack, embedded = true, dataVersions = dataVersions,

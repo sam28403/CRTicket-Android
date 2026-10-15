@@ -88,8 +88,9 @@ class ExpressiveSettingsTest {
 
     @Test fun settingsDetailsAndPredictiveReturnRestoreHome() {
         openSettings()
+        compose.onNodeWithText("接受到访车站的通知").assertExists()
         compose.onNodeWithText("到站检测", substring = false).performScrollTo().performClick()
-        compose.onNodeWithText("接受到访车站的通知").assertIsDisplayed()
+        compose.onNodeWithText("接受到访车站的通知").assertDoesNotExist()
         compose.onNodeWithText("启用到站检测").assertIsDisplayed()
         capture("arrival-settings")
         compose.onNodeWithText("管理相关权限").performScrollTo().performClick()

@@ -38,6 +38,8 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private lateinit var homeView: ComposeView
     private lateinit var aboutView: ComposeView
     private lateinit var settingsView: ComposeView
+    private lateinit var trainListView: cc.samlab.ticket.ui.trainlist.TrainListScrollView
+    private lateinit var trainListController: cc.samlab.ticket.ui.trainlist.NativeTrainListController
     private lateinit var settingsController: NativeSettingsController
     internal var folds by mutableStateOf<List<FoldingFeature>>(emptyList())
         private set
@@ -60,9 +62,11 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         onBack: () -> Unit,
         onExternal: (String) -> Unit,
         settings: NativeSettingsController,
+        trainList: cc.samlab.ticket.ui.trainlist.NativeTrainListController,
     ) {
         this.container = container
         settingsController = settings
+        trainListController = trainList
         container.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
         homeView = ComposeView(activity).apply {
             id = R.id.expressive_home_view
@@ -71,7 +75,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             setContent {
                 CompositionLocalProvider(LocalFoldingFeatures provides folds) {
                     Box(if (isHome || (wide && visible)) Modifier else Modifier.clearAndSetSemantics {}) {
-                        if (wide) ExpressiveNavigationShell(
+                        if (wide && route != "/list") ExpressiveNavigationShell(
                             route, dark, pureBlack, settings, backProgress, backDirection,
                             navigation, dataVersions, onNavigate, onBack, onExternal,
                         ) else ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack, navigation)
@@ -106,10 +110,33 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         container.addView(homeView, FrameLayout.LayoutParams(-1, -1))
         container.addView(aboutView, FrameLayout.LayoutParams(-1, -1))
         container.addView(settingsView, FrameLayout.LayoutParams(-1, -1))
+        trainListView = cc.samlab.ticket.ui.trainlist.TrainListScrollView(activity).apply {
+            id = R.id.expressive_train_list_view
+            visibility = View.GONE
+            setContent {
+                val list = androidx.compose.foundation.lazy.rememberLazyListState()
+                androidx.compose.runtime.LaunchedEffect(trainList.revision) { list.scrollToItem(0) }
+                val scrollView = this@apply
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (route == "/list") Modifier else Modifier.clearAndSetSemantics {}) {
+                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
+                            cc.samlab.ticket.ui.trainlist.ExpressiveTrainListScreen(
+                                trainList, dark, pureBlack, onBack, onNavigate, scrollView, embedded, list,
+                            )
+                        }
+                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
+                            "/list", dark, pureBlack, settings, backProgress, backDirection,
+                            navigation, dataVersions, onNavigate, onBack, onExternal, content,
+                        ) else content(false)
+                    }
+                }
+            }
+        }
+        container.addView(trainListView, FrameLayout.LayoutParams(-1, -1))
     }
 
     fun setPage(page: String) {
-        val next = if (page in setOf("/home", "/about", "/settings")) page else ""
+        val next = if (page in setOf("/home", "/about", "/settings", "/list")) page else ""
         if (next == route) return
         val previous = route
         val completedGesture = motion.returning
@@ -170,6 +197,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     fun close() {
         motion.finish()
         dataVersions.close()
+        trainListController.close()
     }
 
     internal fun updateFolds(features: List<FoldingFeature>) {
@@ -195,13 +223,15 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private fun currentView() = when (route) {
         "/settings" -> settingsView
         "/about" -> aboutView
+        "/list" -> trainListView
         else -> homeView
     }
 
     private fun updateVisibility() {
         if (route == "/about" || (wide && isHome)) dataVersions.refresh()
-        homeView.visibility = if (isHome || (wide && visible)) View.VISIBLE else View.GONE
+        homeView.visibility = if (isHome || (wide && visible && route != "/list")) View.VISIBLE else View.GONE
         aboutView.visibility = if (route == "/about" && !wide) View.VISIBLE else View.GONE
         settingsView.visibility = if (route == "/settings" && !wide) View.VISIBLE else View.GONE
+        trainListView.visibility = if (route == "/list") View.VISIBLE else View.GONE
     }
 }

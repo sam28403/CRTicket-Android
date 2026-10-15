@@ -52,6 +52,9 @@ class MainActivity : ComponentActivity() {
     private val refresh by lazy { ExpressiveRefreshHost(this, webView) }
     private val home by lazy { ExpressiveHomeHost(this) }
     private val settings by lazy { NativeSettingsController(this, webView, worker) }
+    private val trainList by lazy {
+        cc.samlab.ticket.ui.trainlist.NativeTrainListController(this, webView, worker)
+    }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
     private lateinit var appearance: AppearanceController
@@ -83,7 +86,7 @@ class MainActivity : ComponentActivity() {
         setContentView(container)
         refresh.attach(container)
         settings.ui.restore(savedInstanceState)
-        home.attach(container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) }, settings)
+        home.attach(container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) }, settings, trainList)
         WindowLayoutObserver(this) { home.updateFolds(it) }
         val route = initialNotificationRoute()
         pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
@@ -127,6 +130,7 @@ class MainActivity : ComponentActivity() {
                 ticketMonitor,
                 ::setNativePage,
                 { result -> settings.receive(result) },
+                trainList::receive,
             ),
             "CRTicketAndroid",
         )

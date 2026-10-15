@@ -13,6 +13,7 @@ internal fun HomeDestinations(
     destinations: List<HomeDestination>,
     offset: Int,
     onNavigate: (String) -> Unit,
+    selectedRoute: String = "",
 ) {
     val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -25,6 +26,7 @@ internal fun HomeDestinations(
                 shape = homeEntryShape(index, destinations.size),
                 iconContainer = iconColors.container,
                 iconTint = iconColors.foreground,
+                selected = selectedRoute == destination.route,
                 onClick = { onNavigate(destination.route) },
             )
         }

@@ -65,7 +65,7 @@ internal fun ExpressiveHomeScreen(
             ) {
                 HomeHeader()
                 HomeSearchField(navigation.query) { navigation.query = it }
-                HomeDestinations(ticketDestinations, 0, onNavigate)
+                HomeDestinations(ticketDestinations, 0, onNavigate, selectedRoute)
                 HomeUtilities(onNavigate, selectedRoute)
             }
         }

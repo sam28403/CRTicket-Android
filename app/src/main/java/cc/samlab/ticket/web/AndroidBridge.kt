@@ -26,6 +26,7 @@ class AndroidBridge(
     private val ticketMonitor: TicketMonitorBridge,
     private val showNativePage: (String) -> Unit,
     private val receiveSettings: (JSONObject) -> Unit,
+    private val receiveTrainList: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
@@ -34,6 +35,9 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun setNativePage(route: String) = onUi { showNativePage(route) }
+
+    @JavascriptInterface
+    fun trainListResult(payload: String) = receiveTrainList(payload)
 
     @JavascriptInterface
     fun settingsResult(payload: String) {

@@ -46,6 +46,8 @@ dependencies {
     implementation(libs.androidx.window)
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons)
+    implementation(libs.android.fastscroll)
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

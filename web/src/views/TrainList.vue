@@ -6,6 +6,7 @@ import AppBrand from '@/components/AppBrand.vue'
 import api, { timetableTimeout } from '@/api.js'
 import { trainQueryRange } from '@/utils/trainQueryDate.js'
 import { vNativeTableScroll } from '@/directives/nativeTableScroll.js'
+import { useNativeTrainList } from '@/composables/useNativeTrainList.js'
 
 defineOptions({ name: 'TrainList' })
 
@@ -204,6 +205,7 @@ async function query() {
   }
 }
 
+const nativeList = useNativeTrainList(date, loading, error, result, query)
 watch(date, query, { immediate: true })
 onBeforeUnmount(() => {
   cancelAnimationFrame(restoreFrame)
@@ -213,7 +215,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="train-list-page">
+  <div v-if="!nativeList" class="train-list-page">
     <el-header class="top-header">
       <AppBrand />
     </el-header>
