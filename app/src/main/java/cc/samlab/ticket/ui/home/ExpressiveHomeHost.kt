@@ -115,7 +115,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         val completedGesture = motion.returning
         motion.finish()
         route = next
-        if (next != "/settings") settingsController.ui.closePermissions()
+        if (next != "/settings") settingsController.ui.resetPage()
         if (!isHome) previewHome = previous == "/home"
         updateVisibility()
         backProgress = 0f
@@ -131,7 +131,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
 
     fun startBack(event: BackEventCompat) {
         if (!visible || isHome) return
-        if (hasPermissionsPage()) {
+        if (hasSettingsDetail()) {
             settingsController.ui.backProgress = 0f
             return
         }
@@ -144,19 +144,19 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     }
 
     fun progressBack(event: BackEventCompat) {
-        if (hasPermissionsPage()) settingsController.ui.backProgress = event.progress
+        if (hasSettingsDetail()) settingsController.ui.backProgress = event.progress
         else if (wide) backProgress = event.progress else motion.progress(event)
     }
 
     fun cancelBack() {
-        if (hasPermissionsPage()) settingsController.ui.backProgress = 0f
+        if (hasSettingsDetail()) settingsController.ui.backProgress = 0f
         else if (wide) backProgress = 0f else motion.cancel(::updateVisibility)
     }
 
     fun animateBack(onEnd: () -> Unit): Boolean {
         if (!visible || isHome) return false
-        if (hasPermissionsPage()) {
-            settingsController.ui.closePermissions()
+        if (hasSettingsDetail()) {
+            settingsController.ui.closeDetail()
             return true
         }
         if (wide) {
@@ -177,7 +177,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         if (::container.isInitialized) updateWindow()
     }
 
-    private fun hasPermissionsPage() = route == "/settings" && settingsController.ui.permissionsPage
+    private fun hasSettingsDetail() = route == "/settings" && settingsController.ui.hasDetail
 
     private fun updateWindow() {
         val width = (container.width - container.paddingLeft - container.paddingRight) /

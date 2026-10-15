@@ -35,9 +35,8 @@ internal fun SettingsProfile(
     SettingsGroup("出行提醒") {
         SettingsRow(
             "到站检测",
-            if (state.arrivalActive) "已开启 · 到站时提醒你"
-            else if (state.arrivalEnabled) "等待定位或权限恢复" else "未开启",
-            0, 1, enabled, { onDialog("arrival") },
+            "接受到访车站的通知",
+            0, 1, enabled, controller.ui::openArrival,
         ) {
             SettingsChevron()
             VerticalDivider(Modifier.height(40.dp))
@@ -75,11 +74,11 @@ internal fun SettingsPreferences(
         }
     }
     SettingsGroup("数据与备份") {
-        SettingsRow("导出 Excel", "将车票整理成电子表格", 0, 3, enabled,
+        SettingsRow("导出 Excel", "", 0, 3, enabled,
             { controller.request("exportExcel") })
-        SettingsRow("导出备份", "保存 JSON 备份，便于恢复和迁移", 1, 3, enabled,
+        SettingsRow("导出备份", "", 1, 3, enabled,
             { controller.request("exportBackup") })
-        SettingsRow("导入备份", "从 JSON 恢复车票，相同记录自动略过", 2, 3, enabled,
+        SettingsRow("导入备份", "", 2, 3, enabled,
             controller::chooseBackup)
     }
 }

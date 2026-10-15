@@ -47,7 +47,7 @@ internal fun ExpressiveSettingsScreen(
     visible: Boolean = true,
     embedded: Boolean = false,
 ) {
-    val permissionsPage = controller.ui.permissionsPage
+    val page = controller.ui.page
     val progress = animateFloatAsState(controller.ui.backProgress, tween(120), label = "permission-back").value
     val scroll = rememberScrollState()
     val collapseRange = with(LocalDensity.current) {
@@ -68,7 +68,7 @@ internal fun ExpressiveSettingsScreen(
             appBar.contentOffset = 0f
         }
     }
-    LaunchedEffect(permissionsPage) {
+    LaunchedEffect(page) {
         appBar.heightOffset = appBar.heightOffsetLimit
         appBar.contentOffset = 0f
     }
@@ -85,44 +85,49 @@ internal fun ExpressiveSettingsScreen(
             Column {
                 SettingsHeader(
                     scrollBehavior,
-                    { if (permissionsPage) controller.ui.closePermissions() else onBack() },
-                    embedded && !permissionsPage,
-                    title = if (permissionsPage) "权限管理" else "设置",
+                    { if (controller.ui.hasDetail) controller.ui.closeDetail() else onBack() },
+                    embedded && !controller.ui.hasDetail,
+                    title = page.title,
                 )
                 if (controller.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                 AnimatedContent(
-                    targetState = permissionsPage,
+                    targetState = page,
                     modifier = Modifier.weight(1f),
                     transitionSpec = {
                         (fadeIn(tween(160)) + slideInHorizontally(tween(220)) { it / 20 })
                             .togetherWith(fadeOut(tween(100)))
                     },
                     label = "settings-page",
-                ) { permissions ->
-                    if (permissions) PermissionSettingsContent(controller.permissions, embedded)
-                    else AdaptivePanes(
-                        modifier = Modifier.fillMaxSize(),
-                        single = {
-                            SettingsPanel(scroll, "settings-content", embedded) {
-                                SettingsProfile(controller, controller.ui::open)
-                                SettingsPreferences(controller, controller.ui::open)
-                            }
-                        },
-                        first = {
-                            SettingsPanel(scroll, "settings-content", embedded) {
-                                SettingsProfile(controller, controller.ui::open)
-                            }
-                        },
-                        second = {
-                            SettingsPanel(rememberScrollState(), "settings-secondary", embedded) {
-                                SettingsPreferences(controller, controller.ui::open, first = true)
-                            }
-                        },
-                    )
+                ) { destination ->
+                    when (destination) {
+                        SettingsPage.PERMISSIONS -> PermissionSettingsContent(controller.permissions, embedded)
+                        SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
+                        SettingsPage.MAIN -> AdaptivePanes(
+                            modifier = Modifier.fillMaxSize(),
+                            single = {
+                                SettingsPanel(scroll, "settings-content", embedded) {
+                                    SettingsProfile(controller, controller.ui::open)
+                                    SettingsPreferences(controller, controller.ui::open)
+                                }
+                            },
+                            first = {
+                                SettingsPanel(scroll, "settings-content", embedded) {
+                                    SettingsProfile(controller, controller.ui::open)
+                                }
+                            },
+                            second = {
+                                SettingsPanel(rememberScrollState(), "settings-secondary", embedded) {
+                                    SettingsPreferences(controller, controller.ui::open, first = true)
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }
-        if (visible && !permissionsPage) SettingsDialogs(controller.ui.dialog, controller.ui::dismiss, controller)
+        if (visible && page == SettingsPage.MAIN) {
+            SettingsDialogs(controller.ui.dialog, controller.ui::dismiss, controller)
+        }
     }
 }
 

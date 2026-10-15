@@ -53,7 +53,7 @@ internal fun ExpressiveNavigationShell(
                 Box(Modifier.fillMaxSize().testTag("navigation-menu")) {
                     ExpressiveHomeScreen(dark, true, { destination ->
                         if (destination != detail) onNavigate(destination)
-                        else if (detail == "/settings") settings.ui.closePermissions()
+                        else if (detail == "/settings") settings.ui.resetPage()
                     }, pureBlack, navigation, selectedRoute = detail)
                 }
             }

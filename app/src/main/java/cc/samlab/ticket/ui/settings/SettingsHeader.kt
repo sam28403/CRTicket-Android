@@ -42,7 +42,8 @@ internal fun SettingsHeader(
         title = { expanded ->
             Text(
                 title,
-                modifier = if (expanded) Modifier.padding(start = 8.dp, bottom = 32.dp) else Modifier,
+                modifier = if (expanded) Modifier.padding(start = 8.dp, bottom = 32.dp)
+                    else Modifier.padding(start = if (embedded) 8.dp else 16.dp),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = if (expanded) 36.sp else 20.sp,
                     lineHeight = if (expanded) 44.sp else 28.sp,

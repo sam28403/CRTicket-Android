@@ -57,25 +57,6 @@ internal fun SettingsDialogs(dialog: String, dismiss: () -> Unit, controller: Na
         },
         confirmButton = { TextButton(onClick = dismiss) { Text("取消") } },
     )
-    if (dialog == "arrival") AlertDialog(
-        onDismissRequest = dismiss,
-        title = { Text("到站检测") },
-        text = {
-            Text("进入车站约 300 米范围时发送到站提醒，点按通知可打开车站大屏。\n\n" +
-                "需要精确定位、始终允许定位和通知权限。使用低功耗地理围栏，提醒可能受省电影响而延迟。" +
-                "位置只用于本机匹配，不保存出行轨迹。\n\n" + controller.state.arrivalMessage)
-        },
-        confirmButton = {
-            if (controller.state.arrivalEnabled && !controller.state.arrivalActive) TextButton(
-                enabled = !controller.busy,
-                onClick = {
-                    dismiss()
-                    controller.request("arrival", JSONObject().put("enabled", true))
-                },
-            ) { Text("重新开启") }
-            else TextButton(onClick = dismiss) { Text("知道了") }
-        },
-    )
     if (dialog == "theme") SettingsThemeDialog(controller, dismiss)
     if (controller.importText != null) AlertDialog(
         onDismissRequest = controller::dismissImport,

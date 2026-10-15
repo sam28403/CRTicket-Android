@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -25,14 +24,10 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 internal fun AboutLogo() {
@@ -56,25 +51,10 @@ internal fun AboutLogo() {
         bitmap.asImageBitmap()
     }
     val interactions = remember { MutableInteractionSource() }
-    val pressed by interactions.collectIsPressedAsState()
-    val petals by animateFloatAsState(
-        targetValue = if (pressed) 0f else 1f,
-        animationSpec = tween(220),
-        label = "about-logo-shape",
-    )
-    val shape = GenericShape { size, _ ->
-        val radius = size.minDimension / 2
-        for (step in 0..192) {
-            val angle = 2 * PI * step / 192 - PI / 2
-            val ripple = 1 - petals * 0.04f * (1 - cos(12 * angle).toFloat())
-            val x = size.width / 2 + radius * ripple * cos(angle).toFloat()
-            val y = size.height / 2 + radius * ripple * sin(angle).toFloat()
-            if (step == 0) moveTo(x, y) else lineTo(x, y)
-        }
-        close()
-    }
+    val motion = rememberLogoMotion(interactions)
     Surface(
         onClick = {
+            motion.play()
             val now = SystemClock.elapsedRealtime()
             taps = if (now - lastTap > 1_500L) 1 else taps + 1
             lastTap = now
@@ -90,10 +70,11 @@ internal fun AboutLogo() {
             }
         },
         interactionSource = interactions,
-        shape = shape,
+        shape = motion.shape,
         color = MaterialTheme.colorScheme.primaryContainer,
         shadowElevation = 12.dp,
-        modifier = Modifier.size(224.dp).graphicsLayer { rotationZ = rotation },
+        modifier = Modifier.size(224.dp).graphicsLayer { rotationZ = rotation }
+            .then(motion.modifier),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Image(

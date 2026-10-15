@@ -2,7 +2,7 @@
     <string name="home_title">CRTicket</string>
     <string name="home_search">搜索</string>
     <string name="home_ticket">车票生成</string>
-    <string name="home_ticket_description">制作车票、查询车次与余票</string>
+    <string name="home_ticket_description">制作CR样式车票</string>
     <string name="home_settings">设置</string>
     <string name="home_settings_description">个人资料、到站检测与数据备份</string>
     <string name="home_data">运转数据</string>
@@ -29,11 +29,11 @@
     <string name="about_icon">CRTicket 应用图标</string>
     <string name="about_github" translatable="false">GitHub</string>
     <string name="about_github_url" translatable="false">https://github.com/sam28403/CRTicket</string>
-    <string name="egg_title">隐藏站台 · 八方来福纪念票</string>
+    <string name="egg_title">八方来福纪念票</string>
     <string name="egg_train">G8888 · 一路发发特别快车</string>
     <string name="egg_departure">此时此刻</string>
     <string name="egg_arrival">诗和远方</string>
-    <string name="egg_seat">08 车 08A 号 · 靠窗 · 永久有效</string>
+    <string name="egg_seat">08 车 08A 号 · 永久有效</string>
     <string name="egg_message">第八次点击，八号隐藏站台为你开放。\n愿你八方来福，一路发发，每一程都有好彩头。</string>
     <string name="egg_confirm">带着好心情出发</string>
 </resources>
