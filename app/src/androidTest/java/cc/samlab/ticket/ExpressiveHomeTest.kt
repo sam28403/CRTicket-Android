@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
@@ -104,8 +105,13 @@ class ExpressiveHomeTest {
         routes.forEach { (label, route, selector) ->
             compose.onNodeWithText(label).performScrollTo().performClick()
             awaitRoute(route)
-            compose.waitUntil(20_000) {
-                evaluate("Boolean(document.querySelector('$selector'))") == "true"
+            when (route) {
+                "/history" -> compose.onNodeWithContentDescription("历史记录排序").assertIsDisplayed()
+                "/list" -> compose.onNodeWithTag("train-list-date").assertIsDisplayed()
+                "/station" -> compose.onNodeWithTag("station-screen").assertIsDisplayed()
+                else -> compose.waitUntil(20_000) {
+                    evaluate("Boolean(document.querySelector('$selector'))") == "true"
+                }
             }
             pressBack()
             awaitRoute("/home")
@@ -133,15 +139,16 @@ class ExpressiveHomeTest {
         compose.onNodeWithText("关于").performScrollTo().performClick()
         awaitRoute("/about")
         val logo = compose.onNodeWithContentDescription("CRTicket 应用图标")
+        val title = activity.getString(R.string.egg_title)
         repeat(7) { logo.performClick() }
-        compose.onNodeWithText("隐藏站台 · 八方来福纪念票").assertDoesNotExist()
+        compose.onNodeWithText(title).assertDoesNotExist()
         logo.performClick()
-        compose.onNodeWithText("隐藏站台 · 八方来福纪念票").assertIsDisplayed()
-        compose.onNodeWithText("G8888 · 一路发发特别快车").assertIsDisplayed()
-        compose.onNodeWithText("08 车 08A 号 · 靠窗 · 永久有效").assertIsDisplayed()
+        compose.onNodeWithText(title).assertIsDisplayed()
+        compose.onNodeWithText(activity.getString(R.string.egg_train)).assertIsDisplayed()
+        compose.onNodeWithText(activity.getString(R.string.egg_seat)).assertIsDisplayed()
         capture("about-hidden-ticket")
         pressBack()
-        compose.onNodeWithText("隐藏站台 · 八方来福纪念票").assertDoesNotExist()
+        compose.onNodeWithText(title).assertDoesNotExist()
         awaitRoute("/about")
         pressBack()
         awaitRoute("/home")

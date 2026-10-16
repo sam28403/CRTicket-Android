@@ -1,6 +1,7 @@
 package cc.samlab.ticket.web
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -14,6 +15,7 @@ class LocalAssetClient(
     private val onPageFinished: () -> Unit,
     private val openExternal: (Uri) -> Unit,
     private val toast: (String) -> Unit,
+    private val onDocumentStarted: () -> Unit = {},
 ) : WebViewClient() {
     companion object {
         const val ORIGIN = "https://appassets.androidplatform.net"
@@ -50,6 +52,10 @@ class LocalAssetClient(
             "svg" -> "image/svg+xml"
             else -> "application/octet-stream"
         }
+    }
+
+    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+        onDocumentStarted()
     }
 
     override fun onPageFinished(view: WebView, url: String) = onPageFinished()

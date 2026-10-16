@@ -151,11 +151,12 @@ class MainActivity : ComponentActivity() {
         webView.webViewClient = LocalAssetClient(
             assets,
             {
-                appearance.updateSystem(resources.configuration)
+                appearance.onPageReady(resources.configuration)
                 refresh.finish()
             },
             ::openExternal,
             ::toast,
+            appearance::onDocumentStarted,
         )
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(

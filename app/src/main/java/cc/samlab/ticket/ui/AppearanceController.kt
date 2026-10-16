@@ -10,6 +10,7 @@ import android.webkit.WebView
 import cc.samlab.ticket.ui.home.ExpressiveHomeHost
 import cc.samlab.ticket.ui.home.homeColorScheme
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.material3.ColorScheme
 
 class AppearanceController(
     private val activity: Activity,
@@ -21,6 +22,9 @@ class AppearanceController(
 ) {
     @Volatile
     private var systemDark = isNight(activity.resources.configuration)
+    private var savedAppearance: Pair<Boolean, Boolean>? = null
+    private var webPalette: ColorScheme? = null
+    private var systemBarDark: Boolean? = null
     private val notifySystem = Runnable {
         if (!activity.isDestroyed) {
             webView.evaluateJavascript(
@@ -33,6 +37,15 @@ class AppearanceController(
 
     fun isSystemDark(): Boolean = systemDark
 
+    fun onDocumentStarted() {
+        // Fragment navigation also finishes a page, but only a new document loses its palette.
+        webPalette = null
+    }
+
+    fun onPageReady(configuration: Configuration) {
+        updateSystem(configuration)
+    }
+
     fun updateSystem(configuration: Configuration) {
         systemDark = isNight(configuration)
         apply(home.dark)
@@ -42,8 +55,12 @@ class AppearanceController(
     }
 
     fun apply(dark: Boolean, pureBlack: Boolean = home.pureBlack) {
-        activity.getSharedPreferences("android", Activity.MODE_PRIVATE).edit()
-            .putBoolean("appearanceDark", dark).putBoolean("appearancePureBlack", pureBlack).apply()
+        val appearance = dark to pureBlack
+        if (savedAppearance != appearance) {
+            activity.getSharedPreferences("android", Activity.MODE_PRIVATE).edit()
+                .putBoolean("appearanceDark", dark).putBoolean("appearancePureBlack", pureBlack).apply()
+            savedAppearance = appearance
+        }
         dialogs.dark = dark
         dialogs.pureBlack = pureBlack
         refresh.dark = dark
@@ -52,13 +69,18 @@ class AppearanceController(
         home.pureBlack = pureBlack
         val colors = homeColorScheme(activity, dark, pureBlack)
         val color = if (dark && pureBlack) Color.BLACK else colors.surfaceContainer.toArgb()
-        root.setBackgroundColor(if (home.visible) home.backgroundColor else color)
+        root.setBackgroundColor(color)
         webView.setBackgroundColor(color)
-        webView.evaluateJavascript(
-            "window.dispatchEvent(new CustomEvent('crticket-native-palette'," +
-                "{detail:${nativeThemePalette(colors)}}))",
-            null,
-        )
+        if (webPalette !== colors) {
+            webPalette = colors
+            webView.evaluateJavascript(
+                "window.dispatchEvent(new CustomEvent('crticket-native-palette'," +
+                    "{detail:${nativeThemePalette(colors)}}))",
+                null,
+            )
+        }
+        if (systemBarDark == dark) return
+        systemBarDark = dark
         if (Build.VERSION.SDK_INT >= 30) {
             val flags = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
                 WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS

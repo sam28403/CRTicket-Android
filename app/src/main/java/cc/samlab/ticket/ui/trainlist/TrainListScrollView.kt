@@ -47,6 +47,7 @@ internal class TrainListScrollView(context: Context) : FrameLayout(
     }
 
     fun updateBounds(bounds: Rect) {
+        if (adapter.bounds == bounds) return
         adapter.bounds = bounds
         scroller.setPadding(0, adapter.bounds.top.toInt(), 0, (height - adapter.bounds.bottom.toInt()).coerceAtLeast(0))
         invalidate()

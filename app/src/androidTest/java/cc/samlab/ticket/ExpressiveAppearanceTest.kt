@@ -45,6 +45,12 @@ class ExpressiveAppearanceTest {
             activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         compose.waitUntil(20_000) { evaluate("Boolean(window.crticketSettings)") == "true" }
+        evaluate("window.crticketNavigate('/home')")
+        compose.waitUntil(20_000) {
+            runCatching {
+                compose.onAllNodesWithText("设置").fetchSemanticsNodes().isNotEmpty()
+            }.getOrDefault(false)
+        }
         val original = evaluate("localStorage.getItem('crticket-theme') || 'classic-system'")
         try {
             openSettings()

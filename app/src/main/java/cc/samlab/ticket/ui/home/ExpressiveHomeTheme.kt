@@ -13,6 +13,13 @@ import androidx.compose.ui.graphics.lerp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 internal fun homeColorScheme(context: Context, dark: Boolean, pureBlack: Boolean = false): ColorScheme {
+    return HomeColorSchemeCache.get(context.resources, dark, pureBlack) {
+        buildHomeColorScheme(context, dark, pureBlack)
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+private fun buildHomeColorScheme(context: Context, dark: Boolean, pureBlack: Boolean): ColorScheme {
     val colors = if (Build.VERSION.SDK_INT >= 31) {
         if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
