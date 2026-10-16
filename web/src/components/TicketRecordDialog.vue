@@ -87,6 +87,7 @@
           <el-form-item label="使用积分">
             <el-switch
                 v-model="credit"
+                @change="handleCreditChange"
                 inline-prompt
                 :active-icon="Check"
                 :inactive-icon="Close"
@@ -188,6 +189,7 @@
 
 <script setup>
 import { Check, Close } from '@element-plus/icons-vue'
+import { switchHistoryCreditPrice } from '@/utils/historyCredit.js'
 import {
   seatOptions as options,
   themeOptions,
@@ -211,6 +213,9 @@ const conditioner = defineModel('conditioner', { type: Boolean, default: false }
 defineEmits(['save'])
 
 const handleSelect = (field, item) => handleStationSelect(props.ticket, field, item)
+const handleCreditChange = enabled => {
+  props.ticket.price = switchHistoryCreditPrice(props.ticket.price, enabled)
+}
 </script>
 
 <style src="@/assets/styles/TicketRecordDialog.css"></style>

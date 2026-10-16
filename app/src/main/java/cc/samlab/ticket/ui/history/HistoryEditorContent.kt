@@ -16,8 +16,11 @@ internal fun HistoryEditorContent(controller: NativeHistoryController, draft: Hi
     val enabled = !controller.ui.busy
     BoxWithConstraints(Modifier.fillMaxSize().testTag("history-editor")) {
         val wide = maxWidth >= 720.dp
+        // WebViewLayout already insets the native host above the IME.
+        // Applying imePadding here would subtract the keyboard height a second time.
         Column(
-            Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
+            Modifier.fillMaxSize().testTag("history-editor-scroll")
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -72,7 +75,7 @@ private fun TicketFields(controller: NativeHistoryController, draft: HistoryDraf
             if (selected in controller.airDisabledSeats) draft.conditioner = false
         }
         HistoryTextField(draft, "seatNo", "座位号", "例如：03车12A号", enabled = enabled)
-        HistorySwitch("使用积分", draft.credit, enabled) { draft.credit = it }
+        HistorySwitch("使用积分", draft.credit, enabled, draft::changeCredit)
         HistorySwitch(
             "空调", draft.conditioner,
             enabled && draft.value("seatType") !in controller.airDisabledSeats,

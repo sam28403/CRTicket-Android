@@ -133,6 +133,7 @@ import {
   DEFAULT_TICKET_THEME,
   hasRequiredTicketFields,
   ticketQRCodeOptions,
+  ticketFacePrice,
 } from '@/utils/ticketShared.js'
 import {
   formatStationName as formatTicketStationName,
@@ -348,7 +349,7 @@ const downloadHistoryPNG = async (row) => {
     trainNo: row.trainNo,
     date: row.date,
     time: row.time,
-    price: row.price,
+    price: ticketFacePrice(row.price, Number(row.useCredit) === 1),
     seatType: row.seatType,
     seatNo: row.seatNo,
     sellPlace: row.sellPlace,

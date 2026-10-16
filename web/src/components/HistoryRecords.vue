@@ -59,6 +59,7 @@
 
 <script setup>
 import { MoreFilled, Plus } from '@element-plus/icons-vue'
+import { ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus'
 
 defineProps({
   rows: { type: Array, default: () => [] },

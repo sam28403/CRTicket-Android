@@ -23,6 +23,12 @@ internal class HistoryDraft(val id: String?, value: JSONObject) {
 
     fun value(key: String) = fields[key].orEmpty()
 
+    fun changeCredit(enabled: Boolean) {
+        if (credit == enabled) return
+        fields["price"] = switchHistoryCreditPrice(value("price"), enabled)
+        credit = enabled
+    }
+
     fun json(): JSONObject = JSONObject(fields.toMap())
         .put("useCredit", if (credit) 1 else 0)
         .put("hasConditioner", if (conditioner) 1 else 0)

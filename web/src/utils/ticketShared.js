@@ -1,6 +1,13 @@
 export const DEFAULT_TICKET_MESSAGE = '买票请到12306 发货请到95306\n中国铁路祝您旅途愉快'
 export const DEFAULT_TICKET_THEME = 'EMU_Green.jpg'
 
+// Forms and saved records keep the original points; only the printed fare is in yuan.
+export function ticketFacePrice(price, useCredit = false) {
+  if (!useCredit || price === '' || price == null) return price
+  const points = Number(price)
+  return Number.isFinite(points) ? points / 100 : ''
+}
+
 export function ticketQRCodeOptions() {
   return {
     width: 300,

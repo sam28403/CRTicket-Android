@@ -204,6 +204,24 @@ class HistoryDeviceTest {
         }
     }
 
+    @Test fun creditSwitchConvertsPriceInCreateAndEdit() {
+        for (mode in listOf("create", "edit")) {
+            if (mode == "create") compose.onNodeWithText("补登记录").performClick()
+            else {
+                compose.onAllNodesWithContentDescription("记录操作").onFirst().performClick()
+                compose.onNodeWithText("编辑记录").performClick()
+            }
+            val price = compose.onNodeWithTag("history-field-price")
+            val credit = compose.onNodeWithTag("history-switch-使用积分")
+            price.performScrollTo().assertTextContains("553")
+            credit.performScrollTo().performClick()
+            price.performScrollTo().assertTextContains("55300")
+            credit.performScrollTo().performClick()
+            price.performScrollTo().assertTextContains("553")
+            compose.onNodeWithContentDescription("返回").performClick()
+        }
+    }
+
     private fun choose(label: String) {
         compose.onNodeWithContentDescription("历史记录排序").performClick()
         compose.onNodeWithText(label).performClick()
