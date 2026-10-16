@@ -32,11 +32,14 @@ import kotlinx.coroutines.flow.map
 /** Read's article refresh motion, adapted to the official pull-to-refresh state. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun BoxScope.TrainListRefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
+internal fun BoxScope.TrainListRefreshIndicator(
+    state: PullToRefreshState,
+    refreshing: Boolean,
+    refreshingDescription: String = stringResource(R.string.train_list_refreshing),
+) {
     val released by remember(state) { derivedStateOf { state.distanceFraction >= 1f } }
-    val refreshDescription = stringResource(
-        if (refreshing) R.string.train_list_refreshing
-        else if (released) R.string.refresh_release else R.string.refresh_pull,
+    val refreshDescription = if (refreshing) refreshingDescription else stringResource(
+        if (released) R.string.refresh_release else R.string.refresh_pull,
     )
     val offset = remember { Animatable(0f) }
     val alpha = remember { Animatable(if (refreshing) 1f else 0f) }

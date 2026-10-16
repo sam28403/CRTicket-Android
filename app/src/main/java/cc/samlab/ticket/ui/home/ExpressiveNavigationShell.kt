@@ -23,7 +23,7 @@ import cc.samlab.ticket.ui.window.AdaptivePanes
 import cc.samlab.ticket.ui.window.LocalFoldingFeatures
 import cc.samlab.ticket.ui.window.LocalSinglePane
 
-/** The Web router still owns history; only native routes share this wide-window shell. */
+/** Native routes share the adaptive navigation shell; the Web router owns navigation. */
 @Composable
 internal fun ExpressiveNavigationShell(
     route: String,
@@ -38,9 +38,10 @@ internal fun ExpressiveNavigationShell(
     onBack: () -> Unit,
     onExternal: (String) -> Unit,
     trainListContent: (@Composable (Boolean) -> Unit)? = null,
+    historyContent: (@Composable (Boolean) -> Unit)? = null,
 ) {
     val detail = when (route) {
-        "/settings", "/list" -> route
+        "/settings", "/list", "/history" -> route
         else -> "/about"
     }
     val foldable = LocalFoldingFeatures.current.any {
@@ -51,7 +52,10 @@ internal fun ExpressiveNavigationShell(
         modifier = Modifier.fillMaxSize().testTag("navigation-shell"),
         firstPaneFraction = if (foldable) 0.5f else 1f / 3f,
         splitAtVerticalFold = true,
-        single = { if (detail == "/list") trainListContent?.invoke(false) },
+        single = {
+            if (detail == "/list") trainListContent?.invoke(false)
+            if (detail == "/history") historyContent?.invoke(false)
+        },
         first = {
             CompositionLocalProvider(LocalSinglePane provides true) {
                 Box(Modifier.fillMaxSize().testTag("navigation-menu")) {
@@ -82,6 +86,7 @@ internal fun ExpressiveNavigationShell(
                         label = "native-detail",
                     ) { page ->
                         if (page == "/list") trainListContent?.invoke(true)
+                        else if (page == "/history") historyContent?.invoke(true)
                         else if (page == "/settings") ExpressiveSettingsScreen(
                             dark, settings, onBack, pureBlack, route == "/settings", embedded = true,
                         ) else ExpressiveAboutScreen(

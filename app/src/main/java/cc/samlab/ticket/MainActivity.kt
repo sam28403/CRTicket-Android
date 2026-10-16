@@ -56,6 +56,9 @@ class MainActivity : ComponentActivity() {
         cc.samlab.ticket.ui.trainlist.NativeTrainListController(this, webView, worker)
     }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
+    private val history by lazy {
+        cc.samlab.ticket.ui.history.NativeHistoryController(this, webView, worker)
+    }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
     private lateinit var appearance: AppearanceController
     private var navigationReady = false
@@ -86,7 +89,11 @@ class MainActivity : ComponentActivity() {
         setContentView(container)
         refresh.attach(container)
         settings.ui.restore(savedInstanceState)
-        home.attach(container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) }, settings, trainList)
+        history.restore(savedInstanceState)
+        home.attach(
+            container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) },
+            settings, trainList, history,
+        )
         WindowLayoutObserver(this) { home.updateFolds(it) }
         val route = initialNotificationRoute()
         pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
@@ -131,6 +138,8 @@ class MainActivity : ComponentActivity() {
                 ::setNativePage,
                 { result -> settings.receive(result) },
                 trainList::receive,
+                history::receive,
+                history::receiveOperation,
             ),
             "CRTicketAndroid",
         )
@@ -288,6 +297,7 @@ class MainActivity : ComponentActivity() {
         outState.putString("nativePage", home.route)
         outState.putString("pendingRoute", pendingRoute)
         settings.ui.save(outState)
+        history.save(outState)
         files.saveState(outState)
     }
 

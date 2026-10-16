@@ -11,16 +11,6 @@ import java.time.ZoneId
 import java.util.concurrent.ExecutorService
 import org.json.JSONObject
 
-internal data class TrainListRow(
-    val train: String,
-    val from: String,
-    val to: String,
-    val duration: String,
-    val stations: String,
-    val mileage: String,
-    val speed: String,
-)
-
 class NativeTrainListController(
     private val activity: ComponentActivity,
     private val webView: WebView,
@@ -34,6 +24,13 @@ class NativeTrainListController(
         private set
     internal var rows by mutableStateOf<List<TrainListRow>>(emptyList())
         private set
+    internal var sort by mutableStateOf(TrainListSort.TRAIN)
+        private set
+    internal var descending by mutableStateOf(false)
+        private set
+    private var sourceRows: List<TrainListRow> = emptyList()
+    private var resetAfterSort = false
+    private var sortGeneration = 0
     var revision by mutableStateOf(0)
         private set
     private val generation = java.util.concurrent.atomic.AtomicInteger()
@@ -69,25 +66,67 @@ class NativeTrainListController(
                 val parts = duration.split(":").mapNotNull { it.toIntOrNull() }
                 val minutes = if (parts.size == 2) parts[0] * 60 + parts[1] else 0
                 val km = row.optDouble("mileage", Double.NaN)
+                val distance = km.takeIf { it.isFinite() && it >= 0 }
+                val speed = distance?.takeIf { minutes > 0 }?.let { it * 60 / minutes }
                 TrainListRow(
                     row.optString("train"), row.optString("from"), row.optString("to"),
                     duration.takeIf { it.isNotBlank() && it != "null" } ?: unavailable,
                     if (row.isNull("stationCount")) unavailable else row.optString("stationCount"),
-                    if (km.isNaN()) unavailable else row.optString("mileage"),
-                    if (km.isNaN() || minutes <= 0) unavailable
-                    else activity.getString(R.string.display_decimal_one, km * 60 / minutes),
+                    if (distance == null) unavailable else row.optString("mileage"),
+                    if (speed == null) unavailable
+                    else activity.getString(R.string.display_decimal_one, speed),
+                    sourceIndex = index,
+                    distanceKm = distance,
+                    speedKmh = speed,
+                    stationCount = row.optDouble("stationCount", Double.NaN)
+                        .takeIf { it.isFinite() && it >= 0 },
                 )
             } }
             activity.runOnUiThread {
                 if (!closed && token == generation.get()) {
                     if (date != selected) {
                         rows = emptyList()
+                        sourceRows = emptyList()
+                        sortGeneration++
                         revision++
                     }
                     date = selected
                     loading = busy
                     error = message
-                    if (parsed != null) rows = parsed
+                    if (parsed != null) {
+                        sourceRows = parsed
+                        publishSortedRows()
+                    }
+                }
+            }
+        }
+    }
+
+    internal fun changeSort(
+        sort: TrainListSort = this.sort,
+        descending: Boolean = if (sort != this.sort) sort != TrainListSort.TRAIN else this.descending,
+    ) {
+        if (this.sort == sort && this.descending == descending) return
+        this.sort = sort
+        this.descending = descending
+        resetAfterSort = true
+        publishSortedRows()
+    }
+
+    private fun publishSortedRows() {
+        val token = ++sortGeneration
+        val source = sourceRows
+        val selectedSort = sort
+        val selectedDescending = descending
+        worker.execute {
+            val sorted = sortTrainList(source, selectedSort, selectedDescending)
+            activity.runOnUiThread {
+                if (!closed && token == sortGeneration) {
+                    rows = sorted
+                    if (resetAfterSort) {
+                        revision++
+                        resetAfterSort = false
+                    }
                 }
             }
         }

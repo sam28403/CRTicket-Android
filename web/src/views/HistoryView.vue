@@ -1,11 +1,11 @@
 <template>
   <div class="history-page">
     <el-container class="history-layout">
-      <el-header class="top-header">
+      <el-header v-if="!nativeHistory" class="top-header">
         <AppBrand />
       </el-header>
       <el-container>
-        <el-aside width="220px" class="history-sidebar">
+        <el-aside v-if="!nativeHistory" width="220px" class="history-sidebar">
           <el-space direction="vertical" fill style="width: 100%">
             <el-button size="large" @click="goHome()">车票生成</el-button>
             <el-button size="large" type="primary">车票历史</el-button>
@@ -25,77 +25,24 @@
             @save="saveTicket"
           />
           <div v-if="userStore.isLogin">
-            <el-backtop :right="20" :bottom="20" />
-            <el-card class="user-card">
-              <div class="card-container">
-                <el-button type="success" size="large" class="supplement-bottom-right" @click="openCreateDialog()">
-                  <el-icon><DocumentAdd /></el-icon>补登记录
-                </el-button>
-
-                <el-avatar :size="120" :src="avatarUrl" :icon="UserFilled" />
-
-                <div class="card-content">
-                  <h1>Hi, {{ username }}</h1>
-                  <p>
-                    你已经运转了
-                    <span class="highlight">{{ Math.floor(tripsVal) }}</span> 次，
-                    <span class="highlight">{{ Math.floor(distanceVal) }}</span> 公里，
-                    共消费
-                    <span class="highlight">{{ formatMoney(moneyVal) }}</span> 元！
-                  </p>
-                </div>
-              </div>
-            </el-card>
-
-            <div class="table-shell">
-              <el-table
-                  v-loading="pageLoading"
-                  :data="pagedTableData"
-                  :default-sort="{ prop: 'date', order: 'descending' }"
-                  @sort-change="handleSortChange"
-                  class="table"
-              >
-                <el-table-column prop="date" label="日期" width="160" sortable/>
-                <el-table-column prop="trainNo" label="车次" width="80" />
-                <el-table-column prop="price" label="票价" width="80" sortable/>
-                <el-table-column prop="from" label="起点" width="120" />
-                <el-table-column prop="to" label="终点" width="120" />
-                <el-table-column prop="seatType" label="席位" width="120" />
-                <el-table-column prop="seatNo" label="座位" width="150" />
-                <el-table-column prop="number" label="票号/订单号" width="135" />
-                <el-table-column label="操作" width="200">
-                  <template #default="scope">
-                    <el-tooltip
-                        content="下载车票"
-                        placement="bottom"
-                    >
-                      <el-button type="success" @click="downloadHistoryPNG(scope.row)">
-                        <el-icon><Download /></el-icon>
-                      </el-button>
-                    </el-tooltip>
-                    <el-tooltip
-                        content="编辑记录"
-                        placement="bottom"
-                    >
-                      <el-button @click="openEditDialog(scope.row)">
-                        <el-icon><Edit /></el-icon>
-                      </el-button>
-                    </el-tooltip>
-                    <el-tooltip
-                        content="删除记录"
-                        placement="bottom"
-                    >
-                      <el-button type="danger" @click="deleteHistory(scope.row)">
-                        <el-icon><Delete /></el-icon>
-                      </el-button>
-                    </el-tooltip>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-
-            <el-pagination
-                size="large"
+            <template v-if="!nativeHistory">
+              <HistoryRecords
+                :rows="pagedTableData"
+                :trips="Math.floor(tripsVal)"
+                :distance="Math.floor(distanceVal)"
+                :money="formatMoney(moneyVal)"
+                :sort="sortState"
+                :loading="pageLoading"
+                :error="loadError"
+                @create="openCreateDialog"
+                @download="downloadHistoryPNG"
+                @edit="openEditDialog"
+                @delete="deleteHistory"
+                @sort="handleSortChange"
+                @refresh="loadTickets"
+              />
+              <el-pagination
+                v-if="tableData.length > pageSize"
                 background
                 layout="prev, pager, next"
                 class="history-pagination"
@@ -103,7 +50,8 @@
                 :page-size="pageSize"
                 :total="tableData.length"
                 @current-change="handlePageChange"
-            />
+              />
+            </template>
 
             <div class="history-download-render">
               <div ref="historyTicketRef" class="ticket-container">
@@ -167,17 +115,16 @@
 <script setup>
 import TicketRecordDialog from '@/components/TicketRecordDialog.vue'
 import AppBrand from '@/components/AppBrand.vue'
+import HistoryRecords from '@/components/HistoryRecords.vue'
+import { useNativeHistory } from '@/composables/useNativeHistory.js'
+import { saveHistoryTicket, removeHistoryTicket } from '@/utils/historyMutations.js'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useTransition } from '@vueuse/core'
-import {
-  CloseBold, Delete, DocumentAdd, Download, Edit, User, UserFilled,
-} from '@element-plus/icons-vue'
 import QRCode from 'qrcode'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.js'
 import api from '@/api.js'
-import { deviceMode } from '@/android/platform.js'
 import { downloadTicketPNG, renderTicketImage } from '@/utils/ticketExport.js'
 import {
   buildTicketPayload,
@@ -275,7 +222,8 @@ const tableData = computed(() =>
 
 const pageSize = 10
 const currentPage = ref(1)
-const pageLoading = ref(false)
+const pageLoading = ref(true)
+const loadError = ref('')
 const sortState = ref({
   prop: 'date',
   order: 'descending',
@@ -456,19 +404,7 @@ const deleteHistory = async (row) => {
   }
 }
 
-const username = ref('')
-const avatarUrl = ref('')
-
-onMounted(() => {
-  const user = JSON.parse(localStorage.getItem('user'))
-
-  if (user) {
-    username.value = user.username
-    avatarUrl.value = user.avatar || ''
-  }
-
-  loadTickets()
-})
+onMounted(() => { loadTickets() })
 
 const saveDistance = ref(false)
 const saveTicket = async () => {
@@ -512,7 +448,12 @@ const saveTicket = async () => {
 
 const loadTickets = async () => {
   const currentUser = getCurrentUser()
-  if (!currentUser) return
+  if (!currentUser) {
+    pageLoading.value = false
+    return
+  }
+  pageLoading.value = true
+  loadError.value = ''
 
   try {
     const res = await api.get(`/ticket/list/${currentUser.id}`)
@@ -524,20 +465,42 @@ const loadTickets = async () => {
 
     trips.value = tickets.value.length
     distance.value = tickets.value.reduce(
-      (sum, ticket) => sum + (ticket.distance || 0),
+      (sum, ticket) => sum + (Number(ticket.distance) || 0),
       0
     )
     money.value = tickets.value
-      .filter(ticket => ticket.use_credit === 0)
+      .filter(ticket => Number(ticket.use_credit || 0) === 0)
       .reduce(
-        (sum, ticket) => sum + (ticket.price || 0),
+        (sum, ticket) => sum + (Number(ticket.price) || 0),
         0
       )
   } catch (err) {
     console.log(err)
-    ElMessage.error('读取车票失败')
+    loadError.value = '读取车票失败'
+    ElMessage.error(loadError.value)
+  } finally {
+    pageLoading.value = false
   }
 }
+
+const nativeHistory = useNativeHistory({
+  rows: tableData, loading: pageLoading, error: loadError, distance, money,
+  dialog: dialogFormVisible1,
+  actions: {
+    create: openCreateDialog, edit: openEditDialog, delete: deleteHistory,
+    download: downloadHistoryPNG, refresh: loadTickets,
+    save: async detail => {
+      const result = await saveHistoryTicket(detail, getCurrentUser())
+      if (result.success) await loadTickets()
+      return result
+    },
+    remove: async detail => {
+      const result = await removeHistoryTicket(detail.id)
+      if (result.success) await loadTickets()
+      return result
+    },
+  },
+})
 </script>
 
 <style>
@@ -568,24 +531,6 @@ html, body {
 
 .history-layout {
   min-height: 100vh;
-}
-
-.table-shell :deep(.el-table) {
-  --el-table-header-bg-color: var(--app-surface, rgba(227, 236, 251, 0.9));
-  --el-table-tr-bg-color: transparent;
-  --el-table-row-hover-bg-color: var(--app-hover, rgba(176, 214, 255, 0.35));
-  --el-table-border-color: var(--app-border, rgba(131, 152, 176, 0.28));
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.table-shell :deep(.el-table th.el-table__cell) {
-  color: var(--app-text, #1f3e5a);
-  font-weight: 700;
-}
-
-.table-shell :deep(.el-table td.el-table__cell) {
-  border-bottom: 1px solid var(--app-border, rgba(131, 152, 176, 0.2));
 }
 
 @media (max-width: 768px) {
@@ -619,10 +564,6 @@ html, body {
 
   .history-sidebar :deep(.el-button) {
     width: 100%;
-  }
-
-  .table-shell {
-    padding: 10px;
   }
 
 }

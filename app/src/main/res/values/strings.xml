@@ -204,4 +204,11 @@
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
     <string name="settings_export_size_limit">导出文件不能超过20MB</string>
     <string name="settings_export_read_failed">无法读取导出文件</string>
+    <string name="train_list_sort">列表排序</string>
+    <string name="train_list_sort_train">按车次</string>
+    <string name="train_list_sort_mileage">按里程</string>
+    <string name="train_list_sort_speed">按均速</string>
+    <string name="train_list_sort_stations">按站数</string>
+    <string name="train_list_sort_ascending">升序</string>
+    <string name="train_list_sort_descending">降序</string>
 </resources>

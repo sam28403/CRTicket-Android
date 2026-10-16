@@ -28,6 +28,8 @@ class AndroidBridge(
     private val showNativePage: (String) -> Unit,
     private val receiveSettings: (JSONObject) -> Unit,
     private val receiveTrainList: (String) -> Unit,
+    private val receiveHistory: (String) -> Unit,
+    private val receiveHistoryOperation: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
@@ -39,6 +41,14 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun trainListResult(payload: String) = receiveTrainList(payload)
+
+    @JavascriptInterface
+    fun historyResult(payload: String) = receiveHistory(payload)
+
+    @JavascriptInterface
+    fun historyOperationResult(payload: String) {
+        if (payload.length <= 64_000) receiveHistoryOperation(payload)
+    }
 
     @JavascriptInterface
     fun settingsStrings(): String = settingsTextResources(activity)

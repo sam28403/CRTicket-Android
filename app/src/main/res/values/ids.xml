@@ -3,4 +3,5 @@
     <item name="expressive_about_view" type="id" />
     <item name="expressive_settings_view" type="id" />
     <item name="expressive_train_list_view" type="id" />
+    <item name="expressive_history_view" type="id" />
 </resources>

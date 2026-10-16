@@ -54,6 +54,7 @@ internal fun ExpressiveTrainListScreen(
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.about_back))
                         }
                     },
+                    actions = { TrainListSortMenu(controller) },
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.surfaceContainer),
                 )
@@ -119,7 +120,7 @@ internal fun ExpressiveTrainListScreen(
                         }
                         itemsIndexed(
                             controller.rows,
-                            key = { index, row -> "$index:${row.train}" },
+                            key = { _, row -> "${row.sourceIndex}:${row.train}" },
                             contentType = { _, _ -> "train" },
                         ) { _, row ->
                             TrainListItem(row) { controller.open(row, onNavigate) }
