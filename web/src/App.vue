@@ -5,7 +5,7 @@ import PullToRefresh from '@/components/PullToRefresh.vue'
 <template>
   <PullToRefresh />
   <router-view v-slot="{ Component }">
-    <KeepAlive include="TrainList,TrainQuery">
+    <KeepAlive include="TrainList,TrainQuery,StationBoard">
       <component :is="Component" />
     </KeepAlive>
   </router-view>

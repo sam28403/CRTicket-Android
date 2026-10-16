@@ -8,11 +8,13 @@ async function main() {
     const browser = await getPlaywright().chromium.launch({ channel: 'chrome', headless: true })
     const output = path.resolve(__dirname, '../build/verification')
     await mkdir(output, { recursive: true })
+    const { stationArchive } = await import('../web/src/android/railway/fixtures/stationArchive.js')
+    const archive = Buffer.from(stationArchive({ count: 300 })).toString('base64')
     try {
         const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
         const errors = []
         page.on('pageerror', error => errors.push(error.message))
-        await page.addInitScript(() => {
+        await page.addInitScript(archive => {
             const date = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10)
             window.stationRequests = 0
             window.CRTicketAndroid = {
@@ -44,7 +46,16 @@ async function main() {
                             { station_name: '上海', arrive_time: '12:00', station_no: '02' },
                         ] } }
                     } else if (url.host.includes('lltskb') || url.host === '223.107.87.50') {
-                        queueMicrotask(() => window.crticketApiResult(id, { error: '测试未提供离线数据' }))
+                        queueMicrotask(() => {
+                            if (url.pathname === '/android.ver') window.crticketApiResult(id, {
+                                status: 200, body: '{"version":{"data":"20261016"}}',
+                            })
+                            else {
+                                window.stationRequests++
+                                window.crticketBinaryChunk(id, { chunk: archive })
+                                window.crticketApiResult(id, { status: 200, binary: true, body: '' })
+                            }
+                        })
                         return
                     }
                     queueMicrotask(() => window.crticketApiResult(id, {
@@ -52,7 +63,16 @@ async function main() {
                     }))
                 },
             }
-        })
+            if (localStorage.getItem('native-station-test')) {
+                window.stationSnapshots = []
+                window.CRTicketAndroid.stationBoardResult = payload => {
+                    window.stationSnapshots.push(JSON.parse(payload))
+                }
+                window.CRTicketAndroid.setHomeVisible = () => {}
+                window.CRTicketAndroid.setNativePage = route => { window.nativePage = route }
+                window.CRTicketAndroid.setNativeBackTarget = route => { window.nativeBackTarget = route }
+            }
+        }, archive)
         await page.clock.setFixedTime(new Date('2026-10-11T12:00:00+08:00'))
         await page.goto(`${address}/#/station?station=${encodeURIComponent('北京南')}`)
         await page.getByText('共 300 趟', { exact: false }).waitFor()
@@ -96,8 +116,46 @@ async function main() {
         await page.goto(`${address}/#/`)
         await page.getByRole('button', { name: '车站大屏', exact: true }).click()
         await page.getByRole('heading', { name: '车站大屏', exact: true }).waitFor()
+        await page.evaluate(() => localStorage.setItem('native-station-test', 'true'))
+        await page.goto(`${address}/#/station?station=${encodeURIComponent('北京南')}`)
+        await page.reload()
+        await page.waitForFunction(() => window.stationSnapshots?.some(value => value.tabs?.all?.length === 300))
+        const board = await page.evaluate(() => window.stationSnapshots.find(value => value.tabs?.all?.length === 300))
+        assert.equal(board.tabs.departure.length, 300)
+        assert.equal(board.tabs.arrival.length, 0)
+        assert.ok(board.tabs.all.every(row => row.route.includes('source=llt')))
+        assert.equal(await page.locator('.station-page').count(), 0)
+        assert.equal(await page.evaluate(() => window.nativePage), '/station')
+        await page.evaluate(() => window.crticketNavigate('/station?station=' + encodeURIComponent('上海')))
+        await page.waitForFunction(() => window.stationSnapshots.findLast(value => value.kind === 'board')
+            ?.resultStation === '上海')
+        assert.equal(await page.evaluate(() => decodeURIComponent(window.nativeBackTarget)), '/station?station=北京南')
+        await page.evaluate(() => window.crticketBack())
+        await page.waitForFunction(() => window.stationSnapshots.findLast(value => value.kind === 'board')
+            ?.resultStation === '北京南')
+        await page.evaluate(() => window.crticketNavigate('/train?train=G1&date=2026-10-11&source=llt'))
+        await page.getByText('车站数量：2 站', { exact: false }).waitFor()
+        assert.equal(await page.evaluate(() => window.stationSnapshots.findLast(value => value.kind === 'board')
+            ?.resultStation), '北京南')
+        await page.evaluate(() => window.crticketBack())
+        await page.waitForFunction(() => window.nativePage === '/station')
+        assert.equal(await page.evaluate(() => new URLSearchParams(location.hash.split('?')[1]).get('station')), '北京南')
+        await page.evaluate(() => window.dispatchEvent(new CustomEvent('crticket-station-request', {
+            detail: { action: 'suggest', station: 'beijingnan' },
+        })))
+        await page.waitForFunction(() => window.stationSnapshots.some(value =>
+            value.kind === 'suggestions' && value.suggestions.some(item => item.value === '北京南')))
+        await page.evaluate(() => window.dispatchEvent(new CustomEvent('crticket-station-request', {
+            detail: { action: 'query', station: '不存在的车站' },
+        })))
+        await page.waitForFunction(() => window.stationSnapshots.some(value =>
+            value.resultStation === '不存在的车站' && value.tabs?.all?.length === 0))
+        await page.goto(`${address}/#/station-map?station=${encodeURIComponent('北京南')}&dark=true`)
+        await page.locator('.leaflet-tile-loaded').first().waitFor()
+        assert.equal(await page.locator('html.dark').count(), 1)
+        assert.equal(await page.locator('.native-station-map').count(), 1)
         assert.deepEqual(errors, [])
-        console.log('Station smoke passed: phone dispatch, tabs, virtual rows, 320–1200px, navigation and cache.')
+        console.log('Station smoke passed: LLT only, native snapshots, search, map, tabs, 320–1200px and navigation.')
     } finally {
         await browser.close()
         await new Promise(resolve => server.close(resolve))

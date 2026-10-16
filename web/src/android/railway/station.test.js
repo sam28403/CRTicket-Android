@@ -121,25 +121,25 @@ test('路路通按本站到发日反推始发日，保留同站重复停靠并�
   assert.deepEqual(listLltStation(database, '不存在的站', date), [])
 })
 
-test('优先返回官方数据；官方失败或空结果后才尝试路路通', async () => {
+test('手机端直接查询路路通，不调用在线车站服务', async () => {
   const order = []
   const database = databaseFor([{ train: 'G1', schedule, stops: [
     { station: '北京南', departure: '08:00', departureDay: 0 },
     { station: '上海', arrival: '15:00', arrivalDay: 0 },
   ] }])
   const loadDatabase = async () => { order.push('llt'); return database }
-  const online = await queryStation(station, date, {
+  const result = await queryStation(station, date, {
     queryOnline: async () => { order.push('12306'); return [onlineRow] }, loadDatabase,
   })
-  assert.equal(online.source, '12306')
-  assert.deepEqual(order, ['12306'])
-  for (const queryOnline of [async () => [], async () => { throw new Error('offline') }]) {
-    const result = await queryStation(station, date, { queryOnline, loadDatabase })
-    assert.equal(result.source, '路路通')
-    assert.equal(result.trains.length, 1)
-    assert.equal(result.version, database.version)
-    assert.equal(result.trains[0].ticketGate, null)
-    assert.equal(result.warnings.length, 2)
-  }
+  assert.equal(result.source, '路路通')
+  assert.deepEqual(order, ['llt'])
+  assert.equal(result.trains.length, 1)
+  assert.equal(result.version, database.version)
+  assert.equal(result.trains[0].ticketGate, null)
+  assert.deepEqual(result.warnings, [])
+  await assert.rejects(queryStation(station, date, {
+    queryOnline: async () => { throw new Error('不应调用在线服务') },
+    loadDatabase: async () => { throw new Error('数据库不可用') },
+  }), /数据库不可用/)
 })
 

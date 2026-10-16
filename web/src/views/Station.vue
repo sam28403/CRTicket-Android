@@ -5,9 +5,13 @@ import StationBoardTable from '@/components/StationBoardTable.vue'
 import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useStationBoard } from '@/composables/useStationBoard.js'
 import { boardTabs, stationBoardRows } from '@/utils/stationBoard.js'
+import { useNativeStationBoard } from '@/composables/useNativeStationBoard.js'
 
 const StationLocationMap = defineAsyncComponent(() => import('@/components/StationLocationMap.vue'))
-const { station, clock, loading, result, error, query } = useStationBoard()
+defineOptions({ name: 'StationBoard' })
+const board = useStationBoard()
+const { station, clock, loading, result, error, query } = board
+const nativeBoard = useNativeStationBoard(board)
 const activeTab = ref('all')
 const follow = ref(true)
 const table = ref(null)
@@ -40,7 +44,7 @@ function queryOnEnter(event) {
 </script>
 
 <template>
-  <div class="station-page">
+  <div v-if="!nativeBoard" class="station-page">
     <el-header class="top-header">
       <AppBrand />
     </el-header>

@@ -7,21 +7,31 @@ const noon = Date.parse(`${date}T12:00:00+08:00`)
 const params = { station: '北京南', date }
 const row = { train: 'G1', departure: '08:00' }
 
+function database(names = ['北京南']) {
+  return {
+    version: '20261011',
+    trains: new Map(names.map(name => [name, {
+      train: 'G1', schedule: { startDate: '2026-10-01', endDate: '2026-10-31' },
+      stops: [{ station: name, departure: '08:00', departureDay: 0 }],
+    }])),
+  }
+}
+
 test('列表外的香港及老挝站点可查询，各自保留独立缓存', async () => {
   const called = []
   const request = createStationQuery({
     now: () => noon,
-    queryOnline: async station => {
-      called.push(station.name)
-      return [{ train: station.name }]
+    loadDatabase: async () => {
+      called.push('llt')
+      return database(['万象', '琅勃拉邦', '香港西九龙'])
     },
   })
   for (const station of ['万象', '琅勃拉邦', '香港西九龙', '万象']) {
     const result = await request({ station })
     assert.equal(result.station, station)
-    assert.equal(result.trains[0].train, station)
+    assert.equal(result.trains[0].train, 'G1')
   }
-  assert.deepEqual(called, ['万象', '琅勃拉邦', '香港西九龙'])
+  assert.deepEqual(called, ['llt', 'llt', 'llt'])
   await assert.rejects(request({ station: '坏\n站名' }), /车站名称/)
   await assert.rejects(request({ station: '站'.repeat(31) }), /车站名称/)
 })
@@ -31,10 +41,10 @@ test('本机车站查询限制有效站名和北京时间当天，合并并发�
   let calls = 0
   const request = createStationQuery({
     now: () => time,
-    queryOnline: async () => {
+    loadDatabase: async () => {
       calls++
       await new Promise(resolve => setTimeout(resolve, 5))
-      return [row]
+      return database()
     },
   })
   await assert.rejects(request({ station: '' }), /车站名称/)
@@ -46,7 +56,8 @@ test('本机车站查询限制有效站名和北京时间当天，合并并发�
     assert.equal(result.station, params.station)
     assert.equal(result.date, date)
     assert.equal(result.total, 1)
-    assert.deepEqual(result.trains, [row])
+    assert.equal(result.trains[0].train, row.train)
+    assert.equal(result.trains[0].departure, row.departure)
   }
   await request(params)
   assert.equal(calls, 1)
@@ -63,9 +74,9 @@ test('午夜前开始、午夜后返回的查询不能展示前一天数据', as
   let time = noon
   const request = createStationQuery({
     now: () => time,
-    queryOnline: async () => {
+    loadDatabase: async () => {
       time = Date.parse('2026-10-12T00:00:00+08:00')
-      return [row]
+      return database()
     },
   })
   await assert.rejects(request(params), /日期已更新/)
@@ -76,7 +87,7 @@ test('取消一个等待者不会影响共享查询，已取消请求不访问�
   let calls = 0
   const request = createStationQuery({
     now: () => noon,
-    queryOnline: () => {
+    loadDatabase: () => {
       calls++
       return new Promise(resolve => { finish = resolve })
     },
@@ -86,24 +97,23 @@ test('取消一个等待者不会影响共享查询，已取消请求不访问�
   const other = request(params)
   controller.abort()
   await assert.rejects(cancelled, error => error.code === 'ERR_CANCELED')
-  finish([row])
+  finish(database())
   assert.equal((await other).total, 1)
   await assert.rejects(request(params, controller.signal), error => error.code === 'ERR_CANCELED')
   assert.equal(calls, 1)
 })
 
-test('上游双重失败时显示查询错误，失败结果不缓存且后续可重试', async () => {
+test('路路通失败时显示查询错误，失败结果不缓存且后续可重试', async () => {
   let calls = 0
   const request = createStationQuery({
     now: () => noon,
-    queryOnline: async () => {
+    loadDatabase: async () => {
       calls++
-      if (calls > 1) return [row]
-      throw new Error('online')
+      if (calls > 1) return database()
+      throw new Error('offline')
     },
-    loadDatabase: async () => { throw new Error('offline') },
   })
-  await assert.rejects(request(params), /12306 和路路通均未能提供/)
-  assert.equal((await request(params)).source, '12306')
+  await assert.rejects(request(params), /路路通车站数据暂不可用/)
+  assert.equal((await request(params)).source, '路路通')
   assert.equal(calls, 2)
 })

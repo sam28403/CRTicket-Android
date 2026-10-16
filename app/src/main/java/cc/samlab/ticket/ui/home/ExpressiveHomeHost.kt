@@ -42,6 +42,8 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private lateinit var trainListController: cc.samlab.ticket.ui.trainlist.NativeTrainListController
     private lateinit var historyView: ComposeView
     private lateinit var historyController: cc.samlab.ticket.ui.history.NativeHistoryController
+    private lateinit var stationView: ComposeView
+    private lateinit var stationController: cc.samlab.ticket.ui.station.NativeStationBoardController
     private lateinit var settingsController: NativeSettingsController
     internal var folds by mutableStateOf<List<FoldingFeature>>(emptyList())
         private set
@@ -52,6 +54,9 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private lateinit var container: FrameLayout
     private val motion = ExpressivePageMotion()
     private var previewHome = false
+    private var backTargetPath = ""
+    private val reusesBackSurface: Boolean
+        get() = route == "/station" && route == backTargetPath
     private val navigation = HomeNavigationState()
     private val dataVersions = AboutDataVersions(activity)
 
@@ -66,11 +71,13 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         settings: NativeSettingsController,
         trainList: cc.samlab.ticket.ui.trainlist.NativeTrainListController,
         history: cc.samlab.ticket.ui.history.NativeHistoryController,
+        station: cc.samlab.ticket.ui.station.NativeStationBoardController,
     ) {
         this.container = container
         settingsController = settings
         trainListController = trainList
         historyController = history
+        stationController = station
         container.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
         homeView = ComposeView(activity).apply {
             id = R.id.expressive_home_view
@@ -79,7 +86,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             setContent {
                 CompositionLocalProvider(LocalFoldingFeatures provides folds) {
                     Box(if (isHome || (wide && visible)) Modifier else Modifier.clearAndSetSemantics {}) {
-                        if (wide && route !in setOf("/list", "/history")) ExpressiveNavigationShell(
+                        if (wide && route !in setOf("/list", "/history", "/station")) ExpressiveNavigationShell(
                             route, dark, pureBlack, settings, backProgress, backDirection,
                             navigation, dataVersions, onNavigate, onBack, onExternal,
                         ) else ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack, navigation)
@@ -159,11 +166,41 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             }
         }
         container.addView(historyView, FrameLayout.LayoutParams(-1, -1))
+        stationView = ComposeView(activity).apply {
+            id = R.id.expressive_station_view
+            visibility = View.GONE
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (route == "/station") Modifier else Modifier.clearAndSetSemantics {}) {
+                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
+                            cc.samlab.ticket.ui.station.ExpressiveStationBoardScreen(
+                                station, dark, pureBlack, onBack, onNavigate,
+                                active = route == "/station", embedded = embedded,
+                            )
+                        }
+                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
+                            "/station", dark, pureBlack, settings, backProgress, backDirection,
+                            navigation, dataVersions, onNavigate, onBack, onExternal,
+                            stationContent = content,
+                        ) else content(false)
+                    }
+                }
+            }
+        }
+        container.addView(stationView, FrameLayout.LayoutParams(-1, -1))
     }
 
     fun setPage(page: String) {
-        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history")) page else ""
-        if (next == route) return
+        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history", "/station")) page else ""
+        if (next == route) {
+            // A station-to-station back navigation reuses this native view. Finish the
+            // outgoing animation even though the Web router's path stays /station.
+            motion.finish()
+            backProgress = 0f
+            updateVisibility()
+            return
+        }
         val previous = route
         val completedGesture = motion.returning
         motion.finish()
@@ -182,8 +219,13 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         }
     }
 
+    fun setBackTarget(target: String) {
+        backTargetPath = android.net.Uri.parse(target).path.orEmpty()
+    }
+
     fun startBack(event: BackEventCompat) {
         if (!visible || isHome) return
+        if (reusesBackSurface) return
         if (hasSettingsDetail()) {
             settingsController.ui.backProgress = 0f
             return
@@ -201,12 +243,14 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     }
 
     fun progressBack(event: BackEventCompat) {
+        if (reusesBackSurface) return
         if (hasSettingsDetail()) settingsController.ui.backProgress = event.progress
         else if (hasHistoryDetail()) historyController.ui.backProgress = event.progress
         else if (wide) backProgress = event.progress else motion.progress(event)
     }
 
     fun cancelBack() {
+        if (reusesBackSurface) return
         if (hasSettingsDetail()) settingsController.ui.backProgress = 0f
         else if (hasHistoryDetail()) historyController.ui.backProgress = 0f
         else if (wide) backProgress = 0f else motion.cancel(::updateVisibility)
@@ -222,6 +266,12 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             historyController.ui.closeDetail()
             return true
         }
+        // The previous station is drawn by this same ComposeView. Fading it out
+        // exposes the empty host before the router can restore the prior station.
+        if (reusesBackSurface) {
+            motion.finish()
+            return false
+        }
         if (wide) {
             backProgress = 0f
             return false
@@ -235,6 +285,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         dataVersions.close()
         trainListController.close()
         historyController.close()
+        stationController.close()
     }
 
     internal fun updateFolds(features: List<FoldingFeature>) {
@@ -264,17 +315,19 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         "/about" -> aboutView
         "/list" -> trainListView
         "/history" -> historyView
+        "/station" -> stationView
         else -> homeView
     }
 
     private fun updateVisibility() {
         if (route == "/about" || (wide && isHome)) dataVersions.refresh()
-        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history"))) {
+        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history", "/station"))) {
             View.VISIBLE
         } else View.GONE
         aboutView.visibility = if (route == "/about" && !wide) View.VISIBLE else View.GONE
         settingsView.visibility = if (route == "/settings" && !wide) View.VISIBLE else View.GONE
         trainListView.visibility = if (route == "/list") View.VISIBLE else View.GONE
         historyView.visibility = if (route == "/history") View.VISIBLE else View.GONE
+        stationView.visibility = if (route == "/station") View.VISIBLE else View.GONE
     }
 }

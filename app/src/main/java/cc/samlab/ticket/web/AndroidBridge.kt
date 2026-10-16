@@ -30,6 +30,8 @@ class AndroidBridge(
     private val receiveTrainList: (String) -> Unit,
     private val receiveHistory: (String) -> Unit,
     private val receiveHistoryOperation: (String) -> Unit,
+    private val receiveStationBoard: (String) -> Unit,
+    private val updateBackTarget: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
@@ -40,7 +42,13 @@ class AndroidBridge(
     fun setNativePage(route: String) = onUi { showNativePage(route) }
 
     @JavascriptInterface
+    fun setNativeBackTarget(route: String) = onUi { updateBackTarget(route) }
+
+    @JavascriptInterface
     fun trainListResult(payload: String) = receiveTrainList(payload)
+
+    @JavascriptInterface
+    fun stationBoardResult(payload: String) = receiveStationBoard(payload)
 
     @JavascriptInterface
     fun historyResult(payload: String) = receiveHistory(payload)

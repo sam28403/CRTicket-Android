@@ -29,7 +29,8 @@ class RefactorReadOnlyTest {
             Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
         ) as MainActivity
         try {
-            await { evaluate(activity, "Boolean(document.querySelector('#app')?.children.length)") == "true" }
+            await { evaluate(activity,
+                "Boolean(window.crticketNavigate && document.querySelector('#app')?.__vue_app__)") == "true" }
             val dataBefore = records(activity)
             val preferencesBefore = context.getSharedPreferences("android", 0).all.toMap()
             assertEquals("\"phone\"", evaluate(activity,
@@ -47,7 +48,14 @@ class RefactorReadOnlyTest {
             open(activity, Intent().putExtra(ArrivalNotifications.OPEN_STATION, "香港西九龙"))
             await { evaluate(activity, "decodeURIComponent(location.hash)") ==
                 "\"#/station?station=香港西九龙\"" }
-            await { evaluate(activity, "document.querySelector('h1')?.textContent") == "\"车站大屏\"" }
+            await {
+                var visible = false
+                instrumentation.runOnMainSync {
+                    visible = activity.findViewById<android.view.View>(R.id.expressive_station_view)
+                        ?.visibility == android.view.View.VISIBLE
+                }
+                visible
+            }
             open(activity, Intent().putExtra(MonitorNotifications.OPEN_MONITOR, true))
             await { evaluate(activity, "location.hash") == "\"#/monitor\"" }
             open(activity, Intent().putExtra(TrainTrackingNotifications.OPEN_TRACKING, "/train"))

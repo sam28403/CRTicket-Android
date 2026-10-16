@@ -1,5 +1,4 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import api, { timetableTimeout } from '@/api.js'
 import { stationQueryName } from '@/utils/stationName.js'
@@ -17,12 +16,13 @@ export function useStationBoard() {
   const error = ref('')
   let controller
   let requestId = 0
+  const snapshots = new Map()
   const timer = setInterval(() => { now.value = Date.now() }, 1000)
 
   async function query(name = station.value) {
     const selected = stationQueryName(name)
     if (!selected) {
-      ElMessage.warning('请输入车站名称（不超过 30 个字）')
+      error.value = '请输入车站名称（不超过 30 个字）'
       return
     }
     if (route.query.station !== selected) {
@@ -52,11 +52,10 @@ export function useStationBoard() {
         query(selected)
         return
       }
-      if (!data.trains?.length) {
-        ElMessage.warning('未查询到该车站当天的车次，请确认站名是否正确')
-        return
-      }
       result.value = data
+      snapshots.delete(selected)
+      snapshots.set(selected, data)
+      if (snapshots.size > 12) snapshots.delete(snapshots.keys().next().value)
     } catch (err) {
       if (id === requestId && err.code !== 'ERR_CANCELED') {
         error.value = err.response?.data?.message || (
@@ -72,17 +71,26 @@ export function useStationBoard() {
     }
   }
 
-  watch(() => route.query.station, name => {
+  watch(() => [route.path, route.query.station], ([path, name]) => {
+    if (path !== '/station') return
+    const selected = typeof name === 'string' ? stationLocation(name).query.station : ''
+    if (result.value?.station === selected && result.value.date === clock.value.date) return
     controller?.abort()
     requestId++
     loading.value = false
     result.value = null
     error.value = ''
-    station.value = typeof name === 'string' ? stationLocation(name).query.station : ''
+    station.value = selected
+    const previous = snapshots.get(selected)
+    if (previous?.date === clock.value.date) {
+      result.value = previous
+      return
+    }
     if (station.value) query()
   }, { immediate: true })
 
   watch(() => clock.value.date, () => {
+    if (route.path !== '/station') return
     const selected = result.value?.station || station.value
     result.value = null
     controller?.abort()
