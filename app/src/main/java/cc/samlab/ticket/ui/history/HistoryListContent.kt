@@ -13,10 +13,13 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.ui.trainlist.TrainListRefreshIndicator
+import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.ExpressiveEmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,6 +27,7 @@ internal fun HistoryListContent(
     controller: NativeHistoryController,
     list: LazyListState,
     rows: List<HistoryRecord>,
+    visible: Boolean,
 ) {
     val colors = MaterialTheme.colorScheme
     val pull = rememberPullToRefreshState()
@@ -68,9 +72,12 @@ internal fun HistoryListContent(
                 }
             }
             if (!controller.loading && controller.error.isEmpty() && rows.isEmpty()) item(key = "empty") {
-                Text(
-                    "还没有运转记录，补登一段旅程吧。",
-                    Modifier.padding(24.dp), color = colors.onSurfaceVariant,
+                ExpressiveEmptyState(
+                    message = stringResource(R.string.history_empty),
+                    visible = visible,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 320.dp)
+                        .testTag("history-empty"),
+                    artworkModifier = Modifier.testTag("history-empty-artwork"),
                 )
             }
             itemsIndexed(rows, key = { index, row -> "${row.id}:$index" }) { _, row ->

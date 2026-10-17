@@ -92,6 +92,52 @@ class ExpressiveHomeTest {
         capture("home-returned")
     }
 
+    @Test fun statisticsSharesWebViewAndRestoresItForOtherPages() {
+        val originalParent = activity.webView.parent
+        repeat(2) {
+            evaluate("window.crticketNavigate('/user')")
+            awaitRoute("/user")
+            compose.waitUntil(10_000) {
+                var visible = false
+                instrumentation.runOnMainSync {
+                    val screen = activity.findViewById<android.view.View>(R.id.expressive_statistics_view)
+                    visible = screen.isShown && screen.width > 0 && screen.height > 0
+                }
+                visible
+            }
+            compose.onNodeWithTag("statistics-screen").assertIsDisplayed()
+            compose.waitUntil(20_000) {
+                evaluate("Boolean(document.querySelector('.user-main'))") == "true"
+            }
+            assertEquals("false", evaluate("Boolean(document.querySelector('.operations-toolbar'))"))
+            instrumentation.runOnMainSync {
+                assertTrue(activity.webView.isShown)
+                assertTrue(activity.webView.width > 0 && activity.webView.height > 0)
+                assertTrue(activity.webView.parent !== originalParent)
+            }
+            evaluate("window.CRTicketAndroid.setPullRefreshProgress(0.5)")
+            instrumentation.runOnMainSync {
+                val root = activity.findViewById<android.view.ViewGroup>(android.R.id.content)
+                    .getChildAt(0) as android.view.ViewGroup
+                val refresh = root.findViewWithTag<android.view.View>("expressive-pull-refresh")
+                assertEquals(android.view.View.GONE, refresh.visibility)
+            }
+            evaluate("window.CRTicketAndroid.setPullRefreshProgress(0)")
+            if (it == 0) capture("statistics")
+            pressBack()
+            awaitRoute("/home")
+            instrumentation.runOnMainSync { assertTrue(activity.webView.parent === originalParent) }
+            evaluate("window.crticketNavigate('/')")
+            awaitRoute("/")
+            compose.waitUntil(20_000) {
+                evaluate("Boolean(document.querySelector('.main-layout'))") == "true"
+            }
+            instrumentation.runOnMainSync { assertTrue(activity.webView.isShown) }
+            pressBack()
+            awaitRoute("/home")
+        }
+    }
+
     @Test fun everyHomeDestinationAndAboutReturnToHome() {
         val routes = listOf(
             Triple("车票生成", "/", ".main-layout"),

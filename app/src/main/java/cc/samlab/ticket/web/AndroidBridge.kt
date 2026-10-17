@@ -32,6 +32,8 @@ class AndroidBridge(
     private val receiveHistoryOperation: (String) -> Unit,
     private val receiveStationBoard: (String) -> Unit,
     private val receiveTrainQuery: (String) -> Unit,
+    private val receiveStatisticsState: (Boolean, Boolean) -> Unit,
+    private val chooseStatisticsMonth: (String) -> Unit,
     private val updateBackTarget: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
@@ -44,6 +46,19 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun setNativeBackTarget(route: String) = onUi { updateBackTarget(route) }
+
+    @JavascriptInterface
+    fun supportsStatisticsPage(): Boolean = true
+
+    @JavascriptInterface
+    fun statisticsState(empty: Boolean, loading: Boolean) = onUi {
+        receiveStatisticsState(empty, loading)
+    }
+
+    @JavascriptInterface
+    fun chooseStatisticsMonth(month: String) = onUi {
+        chooseStatisticsMonth.invoke(month)
+    }
 
     @JavascriptInterface
     fun trainListResult(payload: String) = receiveTrainList(payload)

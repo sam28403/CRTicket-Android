@@ -28,6 +28,7 @@ internal fun ExpressiveHistoryScreen(
     pureBlack: Boolean,
     onBack: () -> Unit,
     embedded: Boolean = false,
+    visible: Boolean = true,
 ) {
     val list = rememberLazyListState()
     var sorting by remember { mutableStateOf(false) }
@@ -106,7 +107,7 @@ internal fun ExpressiveHistoryScreen(
                     },
                     label = "history-page",
                 ) { editor ->
-                    if (editor == null) HistoryListContent(controller, list, rows)
+                    if (editor == null) HistoryListContent(controller, list, rows, visible && draft == null)
                     else HistoryEditorContent(controller, editor)
                 }
             }

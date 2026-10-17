@@ -108,6 +108,27 @@ class HistoryDeviceTest {
         instrumentation.runOnMainSync { activity.finish() }
     }
 
+    @Test fun emptyHistoryUsesExpressiveArtworkAndOriginalPrompt() {
+        evaluate("""
+            CRTicketAndroid.historyResult(JSON.stringify({
+                loading: false, error: '', distance: 0, money: 0, rows: []
+            }));
+        """.trimIndent())
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithTag("history-empty").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithTag("history-empty").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("history-empty-artwork").assertIsDisplayed()
+        compose.onNodeWithText("还没有运转记录，补登一段旅程吧。").assertIsDisplayed()
+        compose.onNodeWithText("暂无运转数据").assertDoesNotExist()
+        capture("history-empty")
+        compose.onNodeWithText("补登记录").performScrollTo().performClick()
+        compose.onNodeWithTag("history-editor").assertExists()
+        compose.onNodeWithTag("history-empty").assertDoesNotExist()
+        androidx.test.espresso.Espresso.pressBack()
+        compose.onNodeWithTag("history-empty").performScrollTo().assertIsDisplayed()
+    }
+
     @Test fun cardsFitWithoutHorizontalScrollAndAllSortDirectionsWork() {
         val list = compose.onNodeWithTag("history-list")
         assertFalse(list.fetchSemanticsNode().config.contains(SemanticsProperties.HorizontalScrollAxisRange))
@@ -218,6 +239,47 @@ class HistoryDeviceTest {
             price.performScrollTo().assertTextContains("55300")
             credit.performScrollTo().performClick()
             price.performScrollTo().assertTextContains("553")
+            compose.onNodeWithContentDescription("返回").performClick()
+        }
+    }
+
+    @Test fun dateAndTimePickersWorkInCreateAndEdit() {
+        for (mode in listOf("create", "edit")) {
+            if (mode == "create") {
+                compose.onNodeWithText("补登记录").performClick()
+            } else {
+                compose.onAllNodesWithContentDescription("记录操作").onFirst().performClick()
+                compose.onNodeWithText("编辑记录").performClick()
+            }
+            val date = compose.onNodeWithTag("history-field-date")
+            date.performScrollTo().assertTextContains("2026.10.16")
+            date.performClick()
+            compose.onNode(hasText("17") and hasAnyAncestor(isDialog())).performClick()
+            compose.onNodeWithText("确定").performClick()
+            date.assertTextContains("2026.10.17")
+            date.performClick()
+            compose.onNodeWithText("确定").performClick()
+            date.assertTextContains("2026.10.17")
+
+            val time = compose.onNodeWithTag("history-field-time")
+            time.performScrollTo().performClick()
+            compose.onNodeWithTag("history-time-clock").assertExists()
+            compose.onNodeWithTag("history-time-mode-toggle").performClick()
+            compose.onNodeWithTag("history-time-input").assertExists()
+            val inputs = compose.onAllNodes(hasSetTextAction() and hasAnyAncestor(isDialog()))
+            inputs[0].performTextReplacement("23")
+            inputs[1].performTextReplacement("45")
+            compose.onNodeWithText("确定").performClick()
+            time.assertTextContains("23:45")
+
+            time.performClick()
+            compose.onNodeWithTag("history-time-clock").assertExists()
+            compose.onNodeWithTag("history-time-mode-toggle").performClick()
+            compose.onNodeWithTag("history-time-mode-toggle").performClick()
+            compose.onNodeWithTag("history-time-clock").assertExists()
+            compose.onNode(hasText("取消") and hasAnyAncestor(isDialog())).performClick()
+            time.assertTextContains("23:45")
+            capture("history-$mode-date-time")
             compose.onNodeWithContentDescription("返回").performClick()
         }
     }

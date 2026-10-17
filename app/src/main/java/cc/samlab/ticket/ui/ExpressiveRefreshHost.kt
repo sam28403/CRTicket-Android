@@ -15,6 +15,16 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 
 class ExpressiveRefreshHost(private val activity: ComponentActivity, private val webView: WebView) {
+    var enabled = true
+        set(value) {
+            field = value
+            if (!value) {
+                webView.removeCallbacks(reload)
+                finish()
+                progress = 0f
+                if (::overlay.isInitialized) overlay.visibility = View.GONE
+            }
+        }
     var pureBlack by mutableStateOf(false)
     var dark by mutableStateOf(
         activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
@@ -45,16 +55,18 @@ class ExpressiveRefreshHost(private val activity: ComponentActivity, private val
     }
 
     fun update(value: Float) {
-        if (refreshing || !value.isFinite()) return
+        if (!enabled || refreshing || !value.isFinite()) return
         progress = value.coerceIn(0f, 1.4f)
         overlay.visibility = if (progress > 0f) View.VISIBLE else View.GONE
+        if (progress > 0f) overlay.bringToFront()
     }
 
     fun refresh() {
-        if (refreshing || activity.isDestroyed) return
+        if (!enabled || refreshing || activity.isDestroyed) return
         refreshing = true
         progress = 1f
         overlay.visibility = View.VISIBLE
+        overlay.bringToFront()
         webView.postDelayed(reload, 160)
         webView.postDelayed(timeout, 15_000)
     }

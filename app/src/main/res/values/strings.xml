@@ -211,4 +211,6 @@
     <string name="train_list_sort_stations">按站数</string>
     <string name="train_list_sort_ascending">升序</string>
     <string name="train_list_sort_descending">降序</string>
+    <string name="statistics_empty">暂无运转数据</string>
+    <string name="history_empty">还没有运转记录，补登一段旅程吧。</string>
 </resources>

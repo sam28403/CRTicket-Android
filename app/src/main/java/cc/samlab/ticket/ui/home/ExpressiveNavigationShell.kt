@@ -40,10 +40,11 @@ internal fun ExpressiveNavigationShell(
     trainListContent: (@Composable (Boolean) -> Unit)? = null,
     historyContent: (@Composable (Boolean) -> Unit)? = null,
     trainQueryContent: (@Composable (Boolean) -> Unit)? = null,
+    statisticsContent: (@Composable (Boolean) -> Unit)? = null,
     stationContent: (@Composable (Boolean) -> Unit)? = null,
 ) {
     val detail = when (route) {
-        "/settings", "/list", "/history", "/station", "/train" -> route
+        "/settings", "/list", "/history", "/station", "/train", "/user" -> route
         else -> "/about"
     }
     val foldable = LocalFoldingFeatures.current.any {
@@ -55,6 +56,7 @@ internal fun ExpressiveNavigationShell(
         firstPaneFraction = if (foldable) 0.5f else 1f / 3f,
         splitAtVerticalFold = true,
         single = {
+            if (detail == "/user") statisticsContent?.invoke(false)
             if (detail == "/list") trainListContent?.invoke(false)
             if (detail == "/history") historyContent?.invoke(false)
             if (detail == "/train") trainQueryContent?.invoke(false)
@@ -91,6 +93,7 @@ internal fun ExpressiveNavigationShell(
                     ) { page ->
                         if (page == "/list") trainListContent?.invoke(true)
                         else if (page == "/train") trainQueryContent?.invoke(true)
+                        else if (page == "/user") statisticsContent?.invoke(true)
                         else if (page == "/station") stationContent?.invoke(true)
                         else if (page == "/history") historyContent?.invoke(true)
                         else if (page == "/settings") ExpressiveSettingsScreen(

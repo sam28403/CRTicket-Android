@@ -67,6 +67,7 @@ export function initializePlatform(router) {
       native.setNativeBackTarget?.(window.history.state?.back || '')
       if (typeof native.setNativePage === 'function') {
         const pages = ['/home', '/about', '/settings']
+        if (typeof native.supportsStatisticsPage === 'function') pages.push('/user')
         if (typeof native.trainListResult === 'function') pages.push('/list')
         if (typeof native.historyResult === 'function') pages.push('/history')
         if (typeof native.stationBoardResult === 'function') pages.push('/station')

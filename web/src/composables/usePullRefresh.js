@@ -33,7 +33,7 @@ export function usePullRefresh() {
   function start(event) {
     consumedDrag = false
     suppressClickUntil = 0
-    if (refreshing.value || event.touches.length !== 1) return cancel()
+    if (route.path === '/user' || refreshing.value || event.touches.length !== 1) return cancel()
     const point = event.touches[0]
     startTarget = event.target
     gesture.begin(point.clientX, point.clientY,

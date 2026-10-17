@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
         history.restore(savedInstanceState)
         home.attach(
             container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) },
-            settings, trainList, history, stationBoard, trainQuery,
+            settings, trainList, history, stationBoard, trainQuery, webView,
         )
         WindowLayoutObserver(this) { home.updateFolds(it) }
         val route = initialNotificationRoute()
@@ -106,7 +106,8 @@ class MainActivity : ComponentActivity() {
         home.setPage(if (route == "#/home") {
             savedInstanceState?.getString("nativePage") ?: "/home"
         } else "")
-        webView.visibility = if (home.visible) android.view.View.INVISIBLE else android.view.View.VISIBLE
+        refresh.enabled = !home.usesWebContent
+        webView.visibility = if (home.visible && !home.usesWebContent) android.view.View.INVISIBLE else android.view.View.VISIBLE
         appearance = AppearanceController(this, container, webView, dialogs, refresh, home)
         appearance.apply(home.dark)
         configureWebView()
@@ -148,6 +149,8 @@ class MainActivity : ComponentActivity() {
                 history::receiveOperation,
                 stationBoard::receive,
                 trainQuery::receive,
+                home::updateStatisticsState,
+                home::openStatisticsMonthPicker,
                 home::setBackTarget,
             ),
             "CRTicketAndroid",
@@ -205,9 +208,10 @@ class MainActivity : ComponentActivity() {
     private fun setNativePage(page: String) {
         navigationReady = true
         home.setPage(page)
+        refresh.enabled = page != "/user"
         if (page == "/settings") settings.refresh()
         navigationBack.isEnabled = !home.isHome
-        webView.visibility = if (home.visible) android.view.View.INVISIBLE else android.view.View.VISIBLE
+        webView.visibility = if (home.visible && !home.usesWebContent) android.view.View.INVISIBLE else android.view.View.VISIBLE
         appearance.apply(home.dark)
         if (!home.visible) webView.requestFocus()
         pendingRoute?.let { route ->

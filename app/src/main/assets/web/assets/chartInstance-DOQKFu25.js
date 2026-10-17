@@ -1,0 +1,1 @@
+import{n as e,r as t}from"./echarts-Di6OHuVB.js";function n(n,r){return e(n)||t(n,r?`dark`:void 0,{renderer:`canvas`,useDirtyRect:!0,devicePixelRatio:Math.min(window.devicePixelRatio||1,2)})}export{n as t};

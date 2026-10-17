@@ -33,6 +33,12 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         get() = route.isNotEmpty()
     val isHome: Boolean
         get() = route == "/home"
+    val usesWebContent: Boolean
+        get() = route == "/user"
+    private lateinit var statisticsView: ComposeView
+    private lateinit var statisticsBody: cc.samlab.ticket.ui.statistics.StatisticsBodyLayout
+    private val statisticsState = cc.samlab.ticket.ui.statistics.StatisticsUiState()
+    private lateinit var chartsWebView: android.webkit.WebView
     private lateinit var homeView: ComposeView
     private lateinit var aboutView: ComposeView
     private lateinit var settingsView: ComposeView
@@ -73,8 +79,11 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         history: cc.samlab.ticket.ui.history.NativeHistoryController,
         station: cc.samlab.ticket.ui.station.NativeStationBoardController,
         trainQuery: cc.samlab.ticket.ui.trainquery.NativeTrainQueryController,
+        webView: android.webkit.WebView,
     ) {
         this.container = container
+        chartsWebView = webView
+        statisticsBody = cc.samlab.ticket.ui.statistics.StatisticsBodyLayout(activity)
         settingsController = settings
         trainListController = trainList
         historyController = history
@@ -88,7 +97,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             setContent {
                 CompositionLocalProvider(LocalFoldingFeatures provides folds) {
                     Box(if (isHome || (wide && visible)) Modifier else Modifier.clearAndSetSemantics {}) {
-                        if (wide && route !in setOf("/list", "/history", "/station", "/train")) ExpressiveNavigationShell(
+                        if (wide && route !in setOf("/list", "/history", "/station", "/train", "/user")) ExpressiveNavigationShell(
                             route, dark, pureBlack, settings, backProgress, backDirection,
                             navigation, dataVersions, onNavigate, onBack, onExternal,
                         ) else ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack, navigation)
@@ -156,6 +165,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
                         val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
                             cc.samlab.ticket.ui.history.ExpressiveHistoryScreen(
                                 history, dark, pureBlack, onBack, embedded,
+                                visible = route == "/history",
                             )
                         }
                         if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
@@ -214,10 +224,52 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             }
         }
         container.addView(trainQueryView, FrameLayout.LayoutParams(-1, -1))
+        statisticsView = ComposeView(activity).apply {
+            id = R.id.expressive_statistics_view
+            visibility = View.GONE
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (route == "/user") Modifier else Modifier.clearAndSetSemantics {}) {
+                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
+                            cc.samlab.ticket.ui.statistics.ExpressiveStatisticsScreen(
+                                statisticsBody, statisticsState, dark, pureBlack, onBack, embedded,
+                                visible = route == "/user",
+                                onMonthSelected = ::selectStatisticsMonth,
+                            )
+                        }
+                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
+                            "/user", dark, pureBlack, settings, backProgress, backDirection,
+                            navigation, dataVersions, onNavigate, onBack, onExternal,
+                            statisticsContent = content,
+                        ) else content(false)
+                    }
+                }
+            }
+        }
+        container.addView(statisticsView, FrameLayout.LayoutParams(-1, -1))
+    }
+
+    fun updateStatisticsState(empty: Boolean, loading: Boolean) {
+        statisticsState.update(empty, loading)
+    }
+
+    fun openStatisticsMonthPicker(month: String) {
+        if (usesWebContent) statisticsState.chooseMonth(month.take(7))
+    }
+
+    private fun selectStatisticsMonth(month: String) {
+        statisticsState.dismissMonth()
+        if (!usesWebContent) return
+        chartsWebView.evaluateJavascript(
+            "window.dispatchEvent(new CustomEvent('crticket-statistics-month'," +
+                "{detail:${org.json.JSONObject.quote(month)}}))",
+            null,
+        )
     }
 
     fun setPage(page: String) {
-        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history", "/station", "/train")) page else ""
+        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history", "/station", "/train", "/user")) page else ""
         if (next == route) {
             // A station-to-station back navigation reuses this native view. Finish the
             // outgoing animation even though the Web router's path stays /station.
@@ -230,6 +282,12 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         val completedGesture = motion.returning
         motion.finish()
         route = next
+        if (!usesWebContent) statisticsState.dismissMonth()
+        val webParent = if (usesWebContent) statisticsBody else container
+        if (chartsWebView.parent !== webParent) {
+            (chartsWebView.parent as? android.view.ViewGroup)?.removeView(chartsWebView)
+            webParent.addView(chartsWebView, 0, FrameLayout.LayoutParams(-1, -1))
+        }
         if (next != "/settings") settingsController.ui.resetPage()
         if (!isHome) previewHome = previous == "/home"
         updateVisibility()
@@ -343,12 +401,13 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         "/history" -> historyView
         "/station" -> stationView
         "/train" -> trainQueryView
+        "/user" -> statisticsView
         else -> homeView
     }
 
     private fun updateVisibility() {
         if (route == "/about" || (wide && isHome)) dataVersions.refresh()
-        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history", "/station", "/train"))) {
+        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history", "/station", "/train", "/user"))) {
             View.VISIBLE
         } else View.GONE
         aboutView.visibility = if (route == "/about" && !wide) View.VISIBLE else View.GONE
@@ -356,6 +415,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         trainListView.visibility = if (route == "/list") View.VISIBLE else View.GONE
         historyView.visibility = if (route == "/history") View.VISIBLE else View.GONE
         trainQueryView.visibility = if (route == "/train") View.VISIBLE else View.GONE
+        statisticsView.visibility = if (usesWebContent) View.VISIBLE else View.GONE
         stationView.visibility = if (route == "/station") View.VISIBLE else View.GONE
     }
 }
