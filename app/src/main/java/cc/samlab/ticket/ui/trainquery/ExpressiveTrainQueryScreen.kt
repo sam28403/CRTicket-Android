@@ -23,12 +23,14 @@ internal fun ExpressiveTrainQueryScreen(
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     embedded: Boolean = false,
+    active: Boolean = true,
 ) {
     val state = controller.state
     val loading = state.optBoolean("loading")
     val result = state.optJSONObject("result")
     val stops = result?.optJSONArray("stops")
     val count = stops?.length() ?: 0
+    val timing by rememberQueryTiming(result, active)
     var datePicker by remember { mutableStateOf(false) }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
@@ -58,11 +60,18 @@ internal fun ExpressiveTrainQueryScreen(
                     }
                     if (count > 0) {
                         item {
-                            Column(Modifier.padding(horizontal = 4.dp, vertical = 8.dp)) {
-                                Text(result!!.optString("train"), style = MaterialTheme.typography.titleLarge, fontFamily = projectTitleFont)
-                                Text("${result.optString("from")} → ${result.optString("to")}", style = MaterialTheme.typography.titleMedium)
-                                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                    Text("追踪", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                            Row(
+                                Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)
+                                    .testTag("train-query-summary"),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(result!!.optString("train"), style = MaterialTheme.typography.titleLarge, fontFamily = projectTitleFont)
+                                    Text("${result.optString("from")} → ${result.optString("to")}", style = MaterialTheme.typography.titleMedium)
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text("追踪", style = MaterialTheme.typography.labelMedium)
                                     Switch(
                                         checked = state.optBoolean("tracking"),
                                         onCheckedChange = { controller.dispatch("tracking") },
@@ -73,7 +82,10 @@ internal fun ExpressiveTrainQueryScreen(
                             }
                         }
                         items(count, key = { it }) { index ->
-                            TrainQueryStopCard(stops!!.getJSONObject(index), index, count, onNavigate)
+                            TrainQueryStopCard(
+                                stops!!.getJSONObject(index), index, count,
+                                timing.highlight(index), dark, onNavigate,
+                            )
                         }
                         item {
                             TextButton(

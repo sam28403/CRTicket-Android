@@ -201,6 +201,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
                         val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
                             cc.samlab.ticket.ui.trainquery.ExpressiveTrainQueryScreen(
                                 trainQuery, dark, pureBlack, onBack, onNavigate, embedded,
+                                active = route == "/train",
                             )
                         }
                         if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
