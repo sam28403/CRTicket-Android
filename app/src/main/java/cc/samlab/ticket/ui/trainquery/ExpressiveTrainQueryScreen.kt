@@ -1,7 +1,9 @@
 package cc.samlab.ticket.ui.trainquery
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -47,19 +49,21 @@ internal fun ExpressiveTrainQueryScreen(
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.surfaceContainer),
                 )
                 TrainQueryControls(controller, onDate = { datePicker = true })
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 320.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 28.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize().testTag("train-query-content"),
                 ) {
-                    if (loading) item {
+                    if (loading) item(span = { GridItemSpan(maxLineSpan) }) {
                         LinearWavyProgressIndicator(Modifier.fillMaxWidth().padding(16.dp))
                     }
-                    if (state.optString("error").isNotEmpty()) item {
+                    if (state.optString("error").isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(state.optString("error"), Modifier.padding(16.dp), color = colors.error)
                     }
                     if (count > 0) {
-                        item {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
                             Row(
                                 Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)
                                     .testTag("train-query-summary"),
@@ -87,17 +91,19 @@ internal fun ExpressiveTrainQueryScreen(
                                 timing.highlight(index), dark, onNavigate,
                             )
                         }
-                        item {
-                            TextButton(
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Button(
                                 onClick = { controller.dispatch("export") },
+                                shapes = ButtonDefaults.shapes(),
                                 enabled = !state.optBoolean("exporting"),
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                                    .testTag("train-query-export"),
                             ) { Text("导出数据") }
                         }
                         state.optJSONObject("route")?.let { route ->
-                            item { TrainQueryRouteMap(route, result!!.optString("train")) }
+                            item(span = { GridItemSpan(maxLineSpan) }) { TrainQueryRouteMap(route, result!!.optString("train")) }
                         }
-                    } else if (!loading) item {
+                    } else if (!loading) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(
                             if (result != null) "该日期未查询到此车次" else "输入车次和始发日期查询时刻表",
                             Modifier.padding(24.dp), color = colors.onSurfaceVariant,

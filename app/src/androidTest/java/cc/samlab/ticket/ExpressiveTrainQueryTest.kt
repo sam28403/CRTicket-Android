@@ -84,6 +84,14 @@ class ExpressiveTrainQueryTest {
             compose.waitUntil(10_000) {
                 runCatching { compose.onNodeWithTag("train-query-tracking").assertIsEnabled(); true }.getOrDefault(false)
             }
+            val firstCard = compose.onNodeWithTag("train-query-stop-0").fetchSemanticsNode().boundsInWindow
+            val secondCard = compose.onNodeWithTag("train-query-stop-1").fetchSemanticsNode().boundsInWindow
+            val grid = compose.onNodeWithTag("train-query-content").fetchSemanticsNode().boundsInWindow
+            val density = activity.resources.displayMetrics.density
+            if (grid.width / density >= 680f) {
+                assertEquals(firstCard.top, secondCard.top, 2f)
+                assertTrue(secondCard.left > firstCard.right)
+            } else assertTrue(secondCard.top >= firstCard.bottom)
             capture("train-query-form")
             compose.onNodeWithTag("train-query-date").performClick()
             compose.onNodeWithText("取消").performClick()
@@ -96,6 +104,9 @@ class ExpressiveTrainQueryTest {
             compose.onNodeWithText("连线表示站序，不代表实际铁路走向。").assertIsDisplayed()
             compose.onNodeWithText("报告错误").assertDoesNotExist()
             capture("train-query-map")
+            compose.onNodeWithTag("train-query-content").performScrollToNode(hasTestTag("train-query-export"))
+            compose.onNodeWithTag("train-query-export").assertIsDisplayed()
+            capture("train-query-export")
             verifyNativeRouteIslands(instrumentation.targetContext)
             val fixture = currentTrainQueryFixture()
             evaluate("window.queryDynamicFixture = $fixture")
