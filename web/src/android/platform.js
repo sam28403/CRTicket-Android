@@ -70,6 +70,7 @@ export function initializePlatform(router) {
         if (typeof native.trainListResult === 'function') pages.push('/list')
         if (typeof native.historyResult === 'function') pages.push('/history')
         if (typeof native.stationBoardResult === 'function') pages.push('/station')
+        if (typeof native.trainQueryResult === 'function') pages.push('/train')
         native.setNativePage(pages.includes(to.path) ? to.path : '')
       } else native.setHomeVisible(to.path === '/home')
     })

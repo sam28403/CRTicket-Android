@@ -6,7 +6,7 @@ export function trainQueryRange(now = Date.now()) {
   return {
     today,
     min: new Date(midnight - 2 * dayMs).toISOString().slice(0, 10),
-    max: new Date(midnight + 15 * dayMs).toISOString().slice(0, 10),
+    max: new Date(midnight + 14 * dayMs).toISOString().slice(0, 10),
   }
 }
 

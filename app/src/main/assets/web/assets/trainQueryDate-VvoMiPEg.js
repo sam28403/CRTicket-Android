@@ -1,1 +1,0 @@
-var e=864e5;function t(t=Date.now()){let n=new Date(t+288e5).toISOString().slice(0,10),r=Date.parse(`${n}T00:00:00Z`);return{today:n,min:new Date(r-2*e).toISOString().slice(0,10),max:new Date(r+15*e).toISOString().slice(0,10)}}function n(e,n=Date.now()){let{min:r,max:i}=t(n);return typeof e==`string`&&e>=r&&e<=i}export{t as n,n as t};

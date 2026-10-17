@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { trainQueryToast } from '@/composables/useNativeTrainQuery.js'
 import { ElMessage } from 'element-plus'
 import {
   getTrainTrackingState,
@@ -11,10 +12,15 @@ import {
 } from '@/android/trainTracking.js'
 
 const props = defineProps({
+  nativeOnly: { type: Boolean, default: false },
   result: { type: Object, required: true },
   queryTrain: { type: String, default: '' },
   querySource: { type: String, default: '' },
 })
+
+function toast(message) {
+  if (!props.nativeOnly || !trainQueryToast(message)) ElMessage.info(message)
+}
 
 const supported = supportsTrainTracking()
 const busy = ref(false)
@@ -38,7 +44,7 @@ function scheduleExpiryRefresh() {
 }
 
 async function refresh() {
-  if (!supported || busy.value || document.hidden) return
+  if (!supported || busy.value || (!props.nativeOnly && document.hidden)) return
   try {
     active.value = await getTrainTrackingState(controller.signal)
     scheduleExpiryRefresh()
@@ -58,7 +64,7 @@ async function toggle() {
     if (!wasTracking) {
       const permission = await requestTrainTrackingPermission(controller.signal)
       if (!permission.granted) {
-        ElMessage.warning(permission.message || '请开启列车追踪通知权限')
+        toast(permission.message || '请开启列车追踪通知权限')
         return
       }
     }
@@ -68,11 +74,11 @@ async function toggle() {
     if (!result.success) throw new Error(result.message || '列车追踪操作失败')
     active.value = await getTrainTrackingState(controller.signal)
     scheduleExpiryRefresh()
-    ElMessage.success(wasTracking
+    toast(wasTracking
       ? '已停止列车追踪'
       : result.finished ? '已显示列车终到通知' : '已开启列车追踪')
   } catch (error) {
-    if (error.code !== 'ERR_CANCELED') ElMessage.error(error.message || '列车追踪操作失败')
+    if (error.code !== 'ERR_CANCELED') toast(error.message || '列车追踪操作失败')
   } finally {
     busy.value = false
   }
@@ -92,11 +98,12 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', refresh)
   window.removeEventListener('focus', refresh)
 })
+defineExpose({ toggle, tracking, busy, ready })
 </script>
 
 <template>
   <el-button
-    v-if="supported"
+    v-if="supported && !nativeOnly"
     type="primary"
     size="small"
     :loading="busy"

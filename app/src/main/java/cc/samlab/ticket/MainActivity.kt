@@ -55,6 +55,9 @@ class MainActivity : ComponentActivity() {
     private val trainList by lazy {
         cc.samlab.ticket.ui.trainlist.NativeTrainListController(this, webView, worker)
     }
+    private val trainQuery by lazy {
+        cc.samlab.ticket.ui.trainquery.NativeTrainQueryController(this, webView)
+    }
     private val stationBoard by lazy {
         cc.samlab.ticket.ui.station.NativeStationBoardController(this, webView, worker)
     }
@@ -95,7 +98,7 @@ class MainActivity : ComponentActivity() {
         history.restore(savedInstanceState)
         home.attach(
             container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) },
-            settings, trainList, history, stationBoard,
+            settings, trainList, history, stationBoard, trainQuery,
         )
         WindowLayoutObserver(this) { home.updateFolds(it) }
         val route = initialNotificationRoute()
@@ -144,6 +147,7 @@ class MainActivity : ComponentActivity() {
                 history::receive,
                 history::receiveOperation,
                 stationBoard::receive,
+                trainQuery::receive,
                 home::setBackTarget,
             ),
             "CRTicketAndroid",

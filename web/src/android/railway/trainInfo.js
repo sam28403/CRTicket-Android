@@ -15,7 +15,7 @@ export function validateTrainQuery({ train, date }, now = Date.now()) {
   if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return '请选择始发日期'
   const parsed = new Date(`${date}T00:00:00Z`)
   if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return '始发日期无效'
-  if (!isTrainQueryDateInRange(date, now)) return '请选择今天前 2 天至后 15 天内的始发日期'
+  if (!isTrainQueryDateInRange(date, now)) return '请选择今天前 2 天至后 14 天内的始发日期'
   return ''
 }
 

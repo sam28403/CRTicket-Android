@@ -13,7 +13,7 @@ import { useTheme } from '@/composables/useTheme'
 import { loadChinaMap } from '@/utils/maps/stationCoordinates.js'
 import { createRailwayGeo } from '@/utils/maps/railwayMap.js'
 import { buildTrainRouteData, trainRouteViewport } from '@/utils/maps/trainRouteMap.js'
-import {Warning} from "@element-plus/icons-vue";
+import { InfoFilled } from "@element-plus/icons-vue";
 
 const props = defineProps({
   train: { type: String, default: '' },
@@ -24,9 +24,6 @@ const mapRef = ref(null)
 const loading = ref(false)
 const error = ref('')
 const routeData = computed(() => buildTrainRouteData(props.stops))
-const report = () => {
-  window.open('https://github.com/sam28403/CRTicket/issues', '_blank')
-}
 let chart
 let observer
 let renderId = 0
@@ -198,25 +195,7 @@ onBeforeUnmount(deactivateMap)
         </el-empty>
       </div>
     </div>
-    <p class="map-caption">连线表示站序，不代表实际铁路走向。</p>
-
-    <el-tooltip
-        effect="dark"
-        content="提交时请注明车次和站点。"
-        placement="bottom"
-        :popper-options="{
-          modifiers: [
-            { name: 'flip', enabled: false }
-          ]
-        }"
-    >
-      <el-button type="danger" @click="report()" style="margin-top: 8px">
-        <el-icon>
-          <Warning />
-        </el-icon>
-        <span>报告错误</span>
-      </el-button>
-    </el-tooltip>
+    <p class="map-caption"><el-icon><InfoFilled /></el-icon> 连线表示站序，不代表实际铁路走向。</p>
   </el-card>
 </template>
 

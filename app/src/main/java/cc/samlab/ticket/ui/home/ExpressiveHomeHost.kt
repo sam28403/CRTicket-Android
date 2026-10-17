@@ -40,6 +40,8 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private lateinit var trainListController: cc.samlab.ticket.ui.trainlist.NativeTrainListController
     private lateinit var historyView: ComposeView
     private lateinit var historyController: cc.samlab.ticket.ui.history.NativeHistoryController
+    private lateinit var trainQueryView: ComposeView
+    private lateinit var trainQueryController: cc.samlab.ticket.ui.trainquery.NativeTrainQueryController
     private lateinit var stationView: ComposeView
     private lateinit var stationController: cc.samlab.ticket.ui.station.NativeStationBoardController
     private lateinit var settingsController: NativeSettingsController
@@ -54,7 +56,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private var previewHome = false
     private var backTargetPath = ""
     private val reusesBackSurface: Boolean
-        get() = route == "/station" && route == backTargetPath
+        get() = route in setOf("/station", "/train") && route == backTargetPath
     private val navigation = HomeNavigationState()
     private val dataVersions = AboutDataVersions(activity)
 
@@ -70,12 +72,14 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         trainList: cc.samlab.ticket.ui.trainlist.NativeTrainListController,
         history: cc.samlab.ticket.ui.history.NativeHistoryController,
         station: cc.samlab.ticket.ui.station.NativeStationBoardController,
+        trainQuery: cc.samlab.ticket.ui.trainquery.NativeTrainQueryController,
     ) {
         this.container = container
         settingsController = settings
         trainListController = trainList
         historyController = history
         stationController = station
+        trainQueryController = trainQuery
         container.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
         homeView = ComposeView(activity).apply {
             id = R.id.expressive_home_view
@@ -84,7 +88,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             setContent {
                 CompositionLocalProvider(LocalFoldingFeatures provides folds) {
                     Box(if (isHome || (wide && visible)) Modifier else Modifier.clearAndSetSemantics {}) {
-                        if (wide && route !in setOf("/list", "/history", "/station")) ExpressiveNavigationShell(
+                        if (wide && route !in setOf("/list", "/history", "/station", "/train")) ExpressiveNavigationShell(
                             route, dark, pureBlack, settings, backProgress, backDirection,
                             navigation, dataVersions, onNavigate, onBack, onExternal,
                         ) else ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack, navigation)
@@ -187,10 +191,32 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             }
         }
         container.addView(stationView, FrameLayout.LayoutParams(-1, -1))
+        trainQueryView = ComposeView(activity).apply {
+            id = R.id.expressive_train_query_view
+            visibility = View.GONE
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
+                    Box(if (route == "/train") Modifier else Modifier.clearAndSetSemantics {}) {
+                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
+                            cc.samlab.ticket.ui.trainquery.ExpressiveTrainQueryScreen(
+                                trainQuery, dark, pureBlack, onBack, onNavigate, embedded,
+                            )
+                        }
+                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
+                            "/train", dark, pureBlack, settings, backProgress, backDirection,
+                            navigation, dataVersions, onNavigate, onBack, onExternal,
+                            trainQueryContent = content,
+                        ) else content(false)
+                    }
+                }
+            }
+        }
+        container.addView(trainQueryView, FrameLayout.LayoutParams(-1, -1))
     }
 
     fun setPage(page: String) {
-        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history", "/station")) page else ""
+        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history", "/station", "/train")) page else ""
         if (next == route) {
             // A station-to-station back navigation reuses this native view. Finish the
             // outgoing animation even though the Web router's path stays /station.
@@ -284,6 +310,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         trainListController.close()
         historyController.close()
         stationController.close()
+        trainQueryController.close()
     }
 
     internal fun updateFolds(features: List<FoldingFeature>) {
@@ -314,18 +341,20 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         "/list" -> trainListView
         "/history" -> historyView
         "/station" -> stationView
+        "/train" -> trainQueryView
         else -> homeView
     }
 
     private fun updateVisibility() {
         if (route == "/about" || (wide && isHome)) dataVersions.refresh()
-        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history", "/station"))) {
+        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history", "/station", "/train"))) {
             View.VISIBLE
         } else View.GONE
         aboutView.visibility = if (route == "/about" && !wide) View.VISIBLE else View.GONE
         settingsView.visibility = if (route == "/settings" && !wide) View.VISIBLE else View.GONE
         trainListView.visibility = if (route == "/list") View.VISIBLE else View.GONE
         historyView.visibility = if (route == "/history") View.VISIBLE else View.GONE
+        trainQueryView.visibility = if (route == "/train") View.VISIBLE else View.GONE
         stationView.visibility = if (route == "/station") View.VISIBLE else View.GONE
     }
 }

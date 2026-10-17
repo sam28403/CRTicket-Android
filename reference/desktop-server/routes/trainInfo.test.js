@@ -26,18 +26,18 @@ test('校验真实日期及完整车次，双车次精确匹配', () => {
   assert.equal(matchesTrain('D3068/3065', 'D3065'), true)
 })
 
-test('北京时间 T-2 至 T+15 包含边界，跨月跨年及午夜一致', () => {
-  assert.deepEqual(trainQueryRange(now), { today: '2026-09-28', min: '2026-09-26', max: '2026-10-13' })
-  for (const date of ['2026-09-26', '2026-10-13']) {
+test('北京时间 T-2 至 T+14 包含边界，跨月跨年及午夜一致', () => {
+  assert.deepEqual(trainQueryRange(now), { today: '2026-09-28', min: '2026-09-26', max: '2026-10-12' })
+  for (const date of ['2026-09-26', '2026-10-12']) {
     assert.equal(validateTrainQuery({ train: 'G1', date }, now), '')
     assert.equal(isTrainQueryDateInRange(date, now), true)
   }
-  for (const date of ['2026-09-25', '2026-10-14']) {
+  for (const date of ['2026-09-25', '2026-10-13']) {
     assert.ok(validateTrainQuery({ train: 'G1', date }, now))
     assert.equal(isTrainQueryDateInRange(date, now), false)
   }
   assert.deepEqual(trainQueryRange(Date.parse('2026-12-31T16:00:00Z')),
-    { today: '2027-01-01', min: '2026-12-30', max: '2027-01-16' })
+    { today: '2027-01-01', min: '2026-12-30', max: '2027-01-15' })
   assert.equal(trainQueryRange(Date.parse('2026-12-31T15:59:59Z')).today, '2026-12-31')
 })
 

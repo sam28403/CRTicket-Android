@@ -2,11 +2,11 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useNativeTrainQuery, trainQueryToast } from '@/composables/useNativeTrainQuery.js'
 import AppBrand from '@/components/AppBrand.vue'
 import TrainRouteMap from '@/components/TrainRouteMap.vue'
 import StationLink from '@/components/StationLink.vue'
 import TrainTrackingButton from '@/components/TrainTrackingButton.vue'
-import { supportsTrainTracking } from '@/android/trainTracking.js'
 import api, { timetableTimeout } from '@/api.js'
 import { isTrainQueryDateInRange, trainQueryRange } from '@/utils/trainQueryDate.js'
 import { displayTrainCode, trainInfoForDisplay } from '@/utils/trainDisplay.js'
@@ -27,7 +27,14 @@ const offlineMode = computed(() => route.query.source === 'llt')
 const offlineRecord = ref('')
 const resultQueryCode = ref('')
 const resultQuerySource = ref('')
-const trackingSupported = supportsTrainTracking()
+const trackingButton = ref(null)
+const nativeQuery = useNativeTrainQuery({
+  train, date, loading, error, result, offlineMode, trackingButton, exporting,
+  query, switchSource, exportData,
+})
+function toast(message) {
+  if (!trainQueryToast(message)) ElMessage.info(message)
+}
 let controller
 let requestId = 0
 let previousRouteQuery
@@ -41,7 +48,7 @@ async function switchSource() {
     offlineRecord: offlineRecord.value,
   })
   if (location.query.date !== date.value) {
-    ElMessage.info('所选日期超出在线查询范围，已切换到今天')
+    toast('所选日期超出在线查询范围，已切换到今天')
   }
   switchingSource.value = true
   try {
@@ -59,14 +66,13 @@ async function exportData() {
     const { downloadTrainInfoPdf } = await import('@/utils/trainInfoPdf.js')
     await downloadTrainInfoPdf(snapshot)
   } catch (err) {
-    ElMessage.error(err.message || '导出失败，请稍后重试')
+    toast(err.message || '导出失败，请稍后重试')
   } finally {
     exporting.value = false
   }
 }
 
 function disabledDate(value) {
-  if (offlineMode.value) return false
   const localDate = [
     value.getFullYear(),
     String(value.getMonth() + 1).padStart(2, '0'),
@@ -85,11 +91,11 @@ async function query() {
     ? /^[A-Z]?\d{1,5}[A-Z]?(?:\/[A-Z]?\d{1,5}[A-Z]?)*$/.test(code) && code.length <= 40
     : /^[A-Z]?\d{1,5}$/.test(code)
   if (!validCode || !date.value) {
-    ElMessage.warning('请输入完整车次并选择始发日期')
+    toast('请输入完整车次并选择始发日期')
     return
   }
-  if (!offlineMode.value && !isTrainQueryDateInRange(date.value)) {
-    ElMessage.warning('请选择今天前 2 天至后 15 天内的始发日期')
+  if (!isTrainQueryDateInRange(date.value)) {
+    toast('请选择今天前 2 天至后 14 天内的始发日期')
     return
   }
   if (offlineMode.value) offlineRecord.value = code
@@ -118,10 +124,17 @@ async function query() {
     if (id === requestId) {
       result.value = trainInfoForDisplay(data)
       resultQueryCode.value = code
-      resultQuerySource.value = offlineMode.value ? 'llt' : ''
+      resultQuerySource.value = source === 'llt' ? 'llt' : ''
+      toast(`数据来源：${source === 'llt' ? '路路通' : '12306'}`)
     }
   } catch (err) {
     if (id === requestId && err.code !== 'ERR_CANCELED') {
+      if (source !== 'llt') {
+        toast('在线查询不可用，已切换为路路通离线查询')
+        loading.value = false
+        await switchSource()
+        return
+      }
       error.value = err.response?.data?.message || (
         err.code === 'ECONNABORTED'
           ? '查询超时，请稍后重试'
@@ -164,7 +177,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="train-query-page">
+  <div v-if="!nativeQuery" class="train-query-page">
     <el-header class="top-header">
       <AppBrand />
     </el-header>
@@ -229,19 +242,13 @@ onBeforeUnmount(() => {
                 {{ result.train }}　<StationLink :name="result.from" /> → <StationLink :name="result.to" />
               </strong>
               <TrainTrackingButton
+                ref="trackingButton"
                 :key="`${resultQuerySource}-${resultQueryCode}-${result.date}`"
                 :result="result"
                 :query-train="resultQueryCode"
                 :query-source="resultQuerySource"
               />
             </div>
-            <el-text type="info" size="small">
-              查询日期：{{ result.date }}；车站数据：{{ result.source }}；车站数量：{{ result.stops.length }} 站；
-              <template v-if="result.mileageVersion"> 里程数据来源：路路通 {{ result.mileageVersion }}。</template>
-            </el-text>
-            <el-text v-if="trackingSupported" type="info" size="small" class="tracking-hint">
-              追踪按时刻表推算，不含实时位置与晚点信息；同时追踪一趟列车。
-            </el-text>
           </div>
           <el-table class="desktop-stops" :data="result.stops" stripe border style="width: 100%">
             <el-table-column prop="no" label="站序" width="70" align="center" />
@@ -322,6 +329,15 @@ onBeforeUnmount(() => {
       <TrainRouteMap v-if="result?.stops.length" :train="result.train" :stops="result.stops" />
     </main>
   </div>
+  <TrainTrackingButton
+    v-else-if="result?.stops.length"
+    ref="trackingButton"
+    :key="`${resultQuerySource}-${resultQueryCode}-${result.date}`"
+    :result="result"
+    :query-train="resultQueryCode"
+    :query-source="resultQuerySource"
+    native-only
+  />
 </template>
 
 <style scoped>

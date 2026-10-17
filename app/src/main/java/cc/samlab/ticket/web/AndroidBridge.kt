@@ -31,6 +31,7 @@ class AndroidBridge(
     private val receiveHistory: (String) -> Unit,
     private val receiveHistoryOperation: (String) -> Unit,
     private val receiveStationBoard: (String) -> Unit,
+    private val receiveTrainQuery: (String) -> Unit,
     private val updateBackTarget: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
@@ -49,6 +50,14 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun stationBoardResult(payload: String) = receiveStationBoard(payload)
+
+    @JavascriptInterface
+    fun trainQueryResult(payload: String) = receiveTrainQuery(payload)
+
+    @JavascriptInterface
+    fun trainQueryToast(message: String) = onUi {
+        android.widget.Toast.makeText(activity, message.take(500), android.widget.Toast.LENGTH_SHORT).show()
+    }
 
     @JavascriptInterface
     fun historyResult(payload: String) = receiveHistory(payload)
