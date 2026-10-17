@@ -91,9 +91,13 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
         return result
     }
 
-    fun predictiveBack(progress: Float?, cancel: Boolean = false) = onMain {
+    fun predictiveBack(
+        progress: Float?,
+        cancel: Boolean = false,
+        edge: Int = androidx.activity.BackEventCompat.EDGE_LEFT,
+    ) = onMain {
         val dispatcher = requireNotNull(activity).onBackPressedDispatcher
-        val event = androidx.activity.BackEventCompat(0f, 300f, progress ?: 0f, androidx.activity.BackEventCompat.EDGE_LEFT)
+        val event = androidx.activity.BackEventCompat(0f, 300f, progress ?: 0f, edge)
         if (cancel) dispatcher.dispatchOnBackCancelled()
         else if (progress == null) dispatcher.dispatchOnBackStarted(event)
         else dispatcher.dispatchOnBackProgressed(event)

@@ -59,7 +59,7 @@ class ExpressiveNavigationTest {
         awaitRoute("/home")
     }
 
-    @Test fun predictiveBackUsesTheSameTransitionAndCancelsOnEveryNativePage() = fixture.withSnapshot {
+    @Test fun predictiveBackKeepsAPageSizedPreviewAndCancelsOnEveryNativePage() = fixture.withSnapshot {
         listOf("/about", "/settings", "/history", "/train", "/monitor").forEach { route ->
             println("PREDICTIVE_ROUTE=$route")
             navigate(route)
@@ -72,6 +72,10 @@ class ExpressiveNavigationTest {
                 compose.mainClock.advanceTimeBy(160)
                 org.junit.Assert.assertTrue("$route did not follow predictive progress",
                     page.fetchSemanticsNode().boundsInRoot.width < width - 1f)
+                fixture.predictiveBack(0.98f)
+                compose.mainClock.advanceTimeBy(160)
+                org.junit.Assert.assertTrue("$route shrank beyond the system preview size",
+                    page.fetchSemanticsNode().boundsInRoot.width > width * 0.89f)
                 compose.onNodeWithTag("navigation-page:/home").assertExists()
                 fixture.predictiveBack(null, cancel = true)
                 compose.mainClock.advanceTimeBy(1_000)
@@ -88,6 +92,75 @@ class ExpressiveNavigationTest {
             }
             awaitRoute("/home")
         }
+    }
+
+    @Test fun predictiveBackUsesTheGestureEdgeAndRestoresGeometryOnCancellation() = fixture.withSnapshot {
+        navigate("/about")
+        val page = compose.onNodeWithTag("navigation-page:/about")
+        val original = page.fetchSemanticsNode().boundsInRoot
+        compose.mainClock.autoAdvance = false
+        try {
+            listOf(androidx.activity.BackEventCompat.EDGE_LEFT, androidx.activity.BackEventCompat.EDGE_RIGHT)
+                .forEach { edge ->
+                    fixture.predictiveBack(null, edge = edge)
+                    fixture.predictiveBack(0.8f, edge = edge)
+                    compose.mainClock.advanceTimeBy(160)
+                    val preview = page.fetchSemanticsNode().boundsInRoot
+                    if (edge == androidx.activity.BackEventCompat.EDGE_LEFT) {
+                        org.junit.Assert.assertTrue("Left-edge preview did not move right",
+                            preview.center.x > original.center.x + 1f)
+                    } else {
+                        assertEquals("Right-edge preview must stay centered",
+                            original.center.x, preview.center.x, 1f)
+                    }
+                    fixture.predictiveBack(null, cancel = true, edge = edge)
+                    compose.mainClock.advanceTimeBy(1_000)
+                    val restored = page.fetchSemanticsNode().boundsInRoot
+                    assertEquals(original.width, restored.width, 1f)
+                    assertEquals(original.center.x, restored.center.x, 1f)
+                    assertEquals("true", fixture.evaluate("location.hash === '#/about'"))
+                }
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
+    }
+
+    @Test fun predictiveReleaseGetsAFullSystemDurationAtDifferentGestureProgress() = fixture.withSnapshot {
+        listOf(0.2f, 0.8f).forEach { progress ->
+            navigate("/about")
+            compose.mainClock.autoAdvance = false
+            try {
+                fixture.predictiveBack(null)
+                fixture.predictiveBack(progress)
+                compose.mainClock.advanceTimeBy(64)
+                fixture.commitBack()
+                compose.mainClock.advanceTimeBy(416)
+                compose.onNodeWithTag("navigation-page:/about").assertExists()
+                assertEquals("Release was shortened by gesture progress $progress", "true",
+                    fixture.evaluate("location.hash === '#/about'"))
+                compose.mainClock.advanceTimeBy(128)
+                compose.onNodeWithTag("navigation-page:/about").assertDoesNotExist()
+            } finally {
+                compose.mainClock.autoAdvance = true
+            }
+            awaitRoute("/home")
+        }
+    }
+
+    @Test fun backDuringAnUnfinishedEntryRetainsTheOutgoingPageOwners() = fixture.withSnapshot {
+        navigate("/settings")
+        compose.mainClock.autoAdvance = false
+        try {
+            navigate("/about")
+            compose.mainClock.advanceTimeBy(32)
+            fixture.commitBack()
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.onNodeWithTag("navigation-page:/settings").assertExists()
+            compose.onNodeWithTag("navigation-page:/about").assertDoesNotExist()
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
+        awaitRoute("/settings")
     }
 
     private fun navigate(route: String) {

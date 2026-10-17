@@ -1,23 +1,34 @@
 package cc.samlab.ticket.ui.navigation
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavType
+import androidx.navigation.createGraph
 import androidx.navigation.navArgument
-import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.LocalOwnersProvider
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
-/** Real outgoing and incoming destinations remain drawn together throughout a return. */
+/** Uses Navigation's stack and saved-state owners, with separate gesture and release clocks. */
 @Composable
 internal fun ExpressiveNavHost(
     navigator: ExpressiveNavigator,
@@ -25,53 +36,91 @@ internal fun ExpressiveNavHost(
     content: @Composable (String, Boolean) -> Unit,
 ) {
     val nav = rememberNavController()
-    val current by nav.currentBackStackEntryAsState()
+    val lifecycle = LocalLifecycleOwner.current
+    val viewModels = checkNotNull(LocalViewModelStoreOwner.current)
+    nav.setViewModelStore(viewModels.viewModelStore)
+    val graph = remember(nav) {
+        nav.createGraph(startDestination = "/home?location={location}") {
+            (ExpressiveRoutes.pages + "/web").forEach { page ->
+                composable(
+                    route = "$page?location={location}",
+                    arguments = listOf(navArgument("location") {
+                        type = NavType.StringType
+                        defaultValue = page
+                    }),
+                ) { }
+            }
+        }
+    }
+    nav.graph = graph
+    val composeNavigator = remember(nav) {
+        nav.navigatorProvider.getNavigator<ComposeNavigator>("composable")
+    }
+    val stack by composeNavigator.backStack.collectAsState()
+    val current = stack.lastOrNull()
+    val motion = remember(nav) { ExpressiveNavigationMotion(nav, composeNavigator) }
+    val savedState = rememberSaveableStateHolder()
     val callback by rememberUpdatedState(onDestination)
     val latestContent by rememberUpdatedState(content)
-    val enter = ExpressiveRouteMotion.EnterDuration
-    val back = ExpressiveRouteMotion.ReturnDuration
-    val easing = ExpressiveRouteMotion.Easing
+    val context = LocalContext.current
+    val density = LocalDensity.current
+    var size by remember { mutableStateOf(IntSize(1, 1)) }
+    val system = remember(context, density, size) {
+        SystemRouteAnimations(context, size.width, size.height)
+    }
+    val scrim = if (androidx.compose.foundation.isSystemInDarkTheme()) 0.8f else 0.2f
+    SideEffect {
+        motion.size = size
+        motion.density = density.density
+        motion.scrim = scrim
+    }
+    DisposableEffect(nav, lifecycle) {
+        nav.setLifecycleOwner(lifecycle)
+        onDispose { }
+    }
     DisposableEffect(nav, navigator) {
         navigator.attach(nav) { location, popped, mirror -> callback(location, popped, mirror) }
         onDispose { navigator.detach() }
     }
-    NavHost(
-        navController = nav,
-        startDestination = "/home?location={location}",
-        modifier = Modifier.fillMaxSize().testTag("expressive-navigation"),
-        enterTransition = {
-            fadeIn(tween(enter, easing = easing)) +
-                scaleIn(tween(enter, easing = easing), initialScale = ExpressiveRouteMotion.BackgroundScale)
-        },
-        exitTransition = {
-            fadeOut(tween(ExpressiveRouteMotion.FadeDuration, easing = easing), targetAlpha = 0.7f) +
-                scaleOut(tween(enter, easing = easing), targetScale = ExpressiveRouteMotion.BackgroundScale)
-        },
-        popEnterTransition = {
-            fadeIn(tween(ExpressiveRouteMotion.FadeDuration, easing = easing), initialAlpha = 0.7f) +
-                scaleIn(tween(back, easing = easing), initialScale = ExpressiveRouteMotion.BackgroundScale)
-        },
-        popExitTransition = {
-            fadeOut(tween(back, easing = easing)) +
-                scaleOut(tween(back, easing = easing), targetScale = ExpressiveRouteMotion.ReturnScale)
-        },
+    LaunchedEffect(current?.id) { motion.navigate(stack, system) }
+    PredictiveBackHandler(enabled = stack.size > 1) { events ->
+        motion.back { onProgress -> events.collect { onProgress(it) } }
+    }
+    Box(
+        Modifier.fillMaxSize().clipToBounds()
+            .testTag("expressive-navigation")
+            .onSizeChanged { size = it },
     ) {
-        (ExpressiveRoutes.pages + "/web").forEach { page ->
-            composable(
-                route = "$page?location={location}",
-                arguments = listOf(navArgument("location") {
-                    type = NavType.StringType
-                    defaultValue = page
-                }),
-            ) { entry ->
+        val scene = motion.scene
+        val entries = if (scene == null) {
+            listOfNotNull(current).map { it to RouteFrame() }
+        } else if (scene.back) {
+            listOf(scene.incoming to scene.entering, scene.outgoing to scene.closing)
+        } else {
+            listOf(scene.outgoing to scene.closing, scene.incoming to scene.entering)
+        }
+        entries.forEach { (entry, frame) ->
+            key(entry.id) {
                 val location = ExpressiveRoutes.location(entry)
                 Box(
-                    Modifier.fillMaxSize().testTag("navigation-page:$location").graphicsLayer {
+                    Modifier.fillMaxSize().graphicsLayer {
+                        transformOrigin = TransformOrigin(0f, 0f)
+                        translationX = frame.x
+                        translationY = frame.y
+                        scaleX = frame.scale
+                        scaleY = frame.scale
+                        alpha = frame.alpha
                         shape = RoundedCornerShape(28.dp)
-                        clip = transition.currentState != EnterExitState.Visible ||
-                            transition.targetState != EnterExitState.Visible
+                        clip = scene?.predictive == true
+                    }.testTag("navigation-page:$location").drawWithContent {
+                        drawContent()
+                        if (frame.dim > 0f) drawRect(Color.Black.copy(alpha = frame.dim))
                     },
-                ) { latestContent(location, current?.id == entry.id) }
+                ) {
+                    entry.LocalOwnersProvider(savedState) {
+                        latestContent(location, current?.id == entry.id)
+                    }
+                }
             }
         }
     }
