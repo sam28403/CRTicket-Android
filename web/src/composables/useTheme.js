@@ -48,7 +48,8 @@ export function initializeTheme() {
   })
   watch(preference, value => {
     try { localStorage.setItem(key, value) } catch { /* 存储不可用时保留内存设置。 */ }
-  }, { flush: 'sync' })
+    window.CRTicketAndroid?.setThemePreference?.(value)
+  }, { immediate: true, flush: 'sync' })
   watch(resolvedTheme, () => {
     const dark = isDark.value
     document.documentElement.classList.toggle('high-contrast', highContrast.value)

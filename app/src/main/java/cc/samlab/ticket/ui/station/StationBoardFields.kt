@@ -10,16 +10,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun StationTrainCode(code: String, color: Color, onClick: () -> Unit) {
+internal fun StationTrainCode(
+    code: String,
+    color: Color,
+    onClick: () -> Unit,
+    fontFamily: FontFamily? = null,
+) {
     Text(
         code,
         Modifier.heightIn(min = 36.dp).clickable(onClick = onClick).wrapContentHeight()
             .testTag("station-train-code"),
         color = color, style = MaterialTheme.typography.titleLarge,
+        fontFamily = fontFamily,
     )
 }
 

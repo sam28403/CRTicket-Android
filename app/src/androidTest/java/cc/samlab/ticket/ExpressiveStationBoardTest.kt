@@ -85,13 +85,24 @@ class ExpressiveStationBoardTest {
         compose.waitForIdle()
         capture("station-map")
         compose.onNodeWithTag("station-tab-all").performClick()
+        compose.waitForIdle()
         val list = compose.onNodeWithTag("station-board")
         assertTrue(list.onChildren().fetchSemanticsNodes().size < 30)
-        val train = compose.onAllNodes(hasClickAction() and SemanticsMatcher("train code") { node ->
-            node.config.getOrElse(SemanticsProperties.Text) { emptyList() }
-                .any { Regex("^[A-Z]?\\d+.*").matches(it.text) }
+        val viewport = list.fetchSemanticsNode().boundsInRoot
+        val train = compose.onAllNodes(
+            hasTestTag("station-train-code") and
+                hasAnyAncestor(hasTestTag("station-board")) and
+                SemanticsMatcher("fully visible train code") {
+                    it.positionInRoot.y >= viewport.top &&
+                        it.positionInRoot.y + it.size.height <= viewport.bottom
+                },
+            useUnmergedTree = true,
+        ).onFirst()
+        train.assertIsDisplayed().performClick()
+        Thread.sleep(200)
+        instrumentation.sendStatus(2, android.os.Bundle().apply {
+            putString("stream", "Train code tap destination: ${evaluate("location.hash")}\n")
         })
-        train.onFirst().performClick()
         compose.waitUntil(10_000) { evaluate("location.hash.startsWith('#/train?')") == "true" }
         assertEquals("true", evaluate("location.hash.includes('source=llt')"))
     }
@@ -123,7 +134,13 @@ class ExpressiveStationBoardTest {
         compose.waitForIdle()
         val position = list.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
         assertTrue(position > 25f)
-        val card = list.onChildren()[1]
+        val viewport = list.fetchSemanticsNode().boundsInRoot
+        val cardTag = list.onChildren().fetchSemanticsNodes().first {
+            it.config.getOrElse(SemanticsProperties.TestTag) { "" }.startsWith("station-card-") &&
+                it.positionInRoot.y >= viewport.top &&
+                it.positionInRoot.y + it.size.height <= viewport.bottom
+        }.config[SemanticsProperties.TestTag]
+        val card = compose.onNodeWithTag(cardTag)
         card.performTouchInput { click(androidx.compose.ui.geometry.Offset(width - 8f, height / 2f)) }
         compose.waitUntil(10_000) { evaluate("location.hash.startsWith('#/train?')") == "true" }
         pressBack()
@@ -131,7 +148,6 @@ class ExpressiveStationBoardTest {
         compose.onNodeWithTag("station-tab-departure").assertIsSelected()
         assertEquals(position, list.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value(), 0.001f)
 
-        val cardTag = list.onChildren()[1].fetchSemanticsNode().config[SemanticsProperties.TestTag]
         compose.onNode(
             hasTestTag("station-train-code") and hasAnyAncestor(hasTestTag(cardTag)),
             useUnmergedTree = true,

@@ -2,7 +2,6 @@ package cc.samlab.ticket.ui.home
 
 import android.view.View
 import android.content.Context
-import android.content.res.Configuration
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.BackEventCompat
@@ -19,15 +18,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.ThemePreference
 import cc.samlab.ticket.ui.settings.NativeSettingsController
 import cc.samlab.ticket.ui.settings.ExpressiveSettingsScreen
 
 /** Native home content; the WebView router owns navigation and restoration. */
 class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private val preferences = activity.getSharedPreferences("android", Context.MODE_PRIVATE)
-    var dark by mutableStateOf(preferences.getBoolean("appearanceDark",
-        activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-            Configuration.UI_MODE_NIGHT_YES))
+    var dark by mutableStateOf(ThemePreference.isDark(activity))
     var pureBlack by mutableStateOf(preferences.getBoolean("appearancePureBlack", false))
     var route by mutableStateOf("")
         private set

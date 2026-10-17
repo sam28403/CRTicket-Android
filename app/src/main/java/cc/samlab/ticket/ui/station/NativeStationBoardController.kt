@@ -34,8 +34,8 @@ class NativeStationBoardController(
     internal var follow: Boolean
         get() = presentation.follow
         set(value) { presentation.follow = value }
-    internal val listState
-        get() = presentation.lists.getValue(selectedTab)
+    internal val gridState
+        get() = presentation.grids.getValue(selectedTab)
     internal var suggestions by mutableStateOf<List<String>>(emptyList())
         private set
     var revision by mutableStateOf(0)

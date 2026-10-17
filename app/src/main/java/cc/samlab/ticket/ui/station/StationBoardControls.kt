@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun StationBoardSearch(controller: NativeStationBoardController) {
+internal fun StationBoardSearch(
+    controller: NativeStationBoardController,
+    modifier: Modifier = Modifier,
+) {
     var expanded by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submit = {
@@ -32,9 +35,9 @@ internal fun StationBoardSearch(controller: NativeStationBoardController) {
         controller.request()
     }
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
+        modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ExposedDropdownMenuBox(
             expanded && controller.suggestions.isNotEmpty(),
@@ -67,45 +70,21 @@ internal fun StationBoardSearch(controller: NativeStationBoardController) {
             onClick = { submit() },
             enabled = !controller.loading,
             shapes = ButtonDefaults.shapes(),
-            modifier = Modifier.height(56.dp).testTag("station-submit"),
+            modifier = Modifier.height(48.dp).testTag("station-submit"),
         ) { Text("查询") }
-    }
-}
-
-@Composable
-internal fun StationBoardActions(
-    total: Int,
-    follow: Boolean,
-    onFollow: (Boolean) -> Unit,
-    onLocate: () -> Unit,
-    map: Boolean,
-) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text("共 $total 趟", style = MaterialTheme.typography.titleMedium)
-            if (!map) FilledTonalButton(onClick = onLocate) { Text("定位到当前时间") }
-        }
-        if (!map) Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text("跟随当前时间", style = MaterialTheme.typography.labelLarge)
-            Switch(checked = follow, onCheckedChange = onFollow, Modifier.testTag("station-follow"))
-        }
     }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun StationBoardTabs(selected: StationTab, onSelect: (StationTab) -> Unit) {
+internal fun StationBoardTabs(
+    selected: StationTab,
+    modifier: Modifier = Modifier,
+    onSelect: (StationTab) -> Unit,
+) {
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
-            .horizontalScroll(rememberScrollState()).height(48.dp),
+        modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            .horizontalScroll(rememberScrollState()).height(44.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

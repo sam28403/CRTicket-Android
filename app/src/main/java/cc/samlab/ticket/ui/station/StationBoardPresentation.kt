@@ -1,6 +1,6 @@
 package cc.samlab.ticket.ui.station
 
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,5 +9,5 @@ import androidx.compose.runtime.setValue
 internal class StationBoardPresentation {
     var selectedTab by mutableStateOf(StationTab.ALL)
     var follow by mutableStateOf(true)
-    val lists = StationTab.entries.associateWith { LazyListState() }
+    val grids = StationTab.entries.associateWith { LazyGridState() }
 }

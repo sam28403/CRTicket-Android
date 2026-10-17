@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.ui.home.projectTitleFont
 
 @Composable
 internal fun StationBoardItem(
@@ -38,7 +39,12 @@ internal fun StationBoardItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                StationTrainCode(row.train, accent, onTrain)
+                StationTrainCode(
+                    row.train,
+                    accent,
+                    onTrain,
+                    fontFamily = projectTitleFont,
+                )
                 StationStatus(row, highlight, accent)
             }
             StationRoute(row.from, row.to, onStation)

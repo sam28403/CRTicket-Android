@@ -120,6 +120,9 @@ class AndroidBridge(
     fun systemDarkMode(): Boolean = appearance.isSystemDark()
 
     @JavascriptInterface
+    fun setThemePreference(preference: String) = onUi { appearance.setThemePreference(preference) }
+
+    @JavascriptInterface
     fun setAppearance(dark: Boolean) = onUi { appearance.apply(dark) }
 
     @JavascriptInterface

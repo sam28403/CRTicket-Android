@@ -48,10 +48,22 @@ class AppearanceController(
 
     fun updateSystem(configuration: Configuration) {
         systemDark = isNight(configuration)
-        apply(home.dark)
+        val preferences = activity.getSharedPreferences("android", Activity.MODE_PRIVATE)
+        apply(ThemePreference.resolveDark(preferences.getString("themePreference", null), systemDark))
         // Let WebView finish applying the native configuration before notifying its page.
         webView.removeCallbacks(notifySystem)
         webView.postDelayed(notifySystem, 100)
+    }
+
+    fun setThemePreference(preference: String) {
+        if (!preference.matches(Regex("^(classic|contrast)-(system|light|dark)$"))) return
+        activity.getSharedPreferences("android", Activity.MODE_PRIVATE).edit()
+            .putString("themePreference", preference)
+            .apply()
+        apply(
+            ThemePreference.resolveDark(preference, systemDark),
+            preference.startsWith("contrast-"),
+        )
     }
 
     fun apply(dark: Boolean, pureBlack: Boolean = home.pureBlack) {
