@@ -43,3 +43,9 @@ export const stopTicketMonitor = signal =>
 
 export const updateTicketMonitor = (payload, signal) =>
   callMonitor('updateTicketMonitor', payload, signal)
+
+export const refreshTicketMonitor = signal =>
+  callMonitor('refreshTicketMonitor', undefined, signal)
+
+export const resetTicketMonitor = signal =>
+  callMonitor('resetTicketMonitor', undefined, signal)

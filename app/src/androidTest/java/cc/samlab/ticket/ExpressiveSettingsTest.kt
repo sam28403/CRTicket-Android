@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
@@ -40,6 +41,9 @@ class ExpressiveSettingsTest {
     private lateinit var activity: MainActivity
 
     @Before fun launch() {
+        android.os.ParcelFileDescriptor.AutoCloseInputStream(
+            instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_WAKEUP")
+        ).use { it.readBytes() }
         activity = instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -105,19 +109,20 @@ class ExpressiveSettingsTest {
         pressBack()
         awaitRoute("/settings")
         compose.onNodeWithText("导入备份", substring = false).performScrollTo().assertIsDisplayed()
+        val width = compose.onNodeWithTag("navigation-page:/settings").fetchSemanticsNode().boundsInRoot.width
         instrumentation.runOnMainSync {
             val dispatcher = activity.onBackPressedDispatcher
             dispatcher.dispatchOnBackStarted(BackEventCompat(0f, 300f, 0f, BackEventCompat.EDGE_LEFT))
             dispatcher.dispatchOnBackProgressed(BackEventCompat(140f, 300f, 0.7f, BackEventCompat.EDGE_LEFT))
-            assertTrue(activity.findViewById<android.view.View>(R.id.expressive_settings_view).scaleX < 1f)
-            dispatcher.onBackPressed()
         }
+        compose.waitUntil(5_000) {
+            compose.onNodeWithTag("navigation-page:/settings").fetchSemanticsNode().boundsInRoot.width < width - 1f
+        }
+        instrumentation.runOnMainSync { activity.onBackPressedDispatcher.onBackPressed() }
         awaitRoute("/home")
         compose.onNodeWithText("运转数据").performScrollTo().performClick()
         awaitRoute("/user")
-        compose.waitUntil(20_000) {
-            evaluate("Boolean(document.querySelector('.statistics-card'))") == "true"
-        }
+        compose.onNodeWithTag("statistics-screen").assertIsDisplayed()
         assertEquals("0", evaluate("document.querySelectorAll('.avatar-card,.arrival-card,.backup-file-input').length"))
         pressBack()
         awaitRoute("/home")
@@ -193,7 +198,7 @@ class ExpressiveSettingsTest {
         compose.waitUntil(5_000) {
             var settled = false
             instrumentation.runOnMainSync {
-                val view = activity.findViewById<android.view.View>(R.id.expressive_settings_view)
+                val view = activity.findViewById<android.view.View>(R.id.expressive_navigation_view)
                 settled = view.alpha == 1f && view.translationX == 0f
             }
             settled

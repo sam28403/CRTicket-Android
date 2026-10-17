@@ -42,6 +42,15 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
             activity?.setTurnScreenOn(true)
         }
         instrumentation.waitForIdleSync()
+        await("Activity did not regain foreground focus after wake-up", timeout = 20_000) {
+            var ready = false
+            onMain {
+                val current = requireNotNull(activity)
+                ready = current.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED) &&
+                    current.window.decorView.hasWindowFocus()
+            }
+            ready
+        }
     }
 
     fun finish() {
@@ -58,6 +67,17 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
 
     fun onMain(action: () -> Unit) = instrumentation.runOnMainSync(action)
 
+    fun navigationViewAlpha(): Float {
+        var alpha = 1f
+        onMain {
+            alpha = requireNotNull(activity)
+                .findViewById<android.view.View>(R.id.expressive_navigation_view).alpha
+        }
+        return alpha
+    }
+
+    fun commitBack() = onMain { requireNotNull(activity).onBackPressedDispatcher.onBackPressed() }
+
     fun evaluate(script: String): String {
         val completed = CountDownLatch(1)
         var result = "null"
@@ -69,6 +89,14 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
         }
         check(completed.await(10, TimeUnit.SECONDS)) { "WebView script callback timed out" }
         return result
+    }
+
+    fun predictiveBack(progress: Float?, cancel: Boolean = false) = onMain {
+        val dispatcher = requireNotNull(activity).onBackPressedDispatcher
+        val event = androidx.activity.BackEventCompat(0f, 300f, progress ?: 0f, androidx.activity.BackEventCompat.EDGE_LEFT)
+        if (cancel) dispatcher.dispatchOnBackCancelled()
+        else if (progress == null) dispatcher.dispatchOnBackStarted(event)
+        else dispatcher.dispatchOnBackProgressed(event)
     }
 
     fun reload() = onMain { requireNotNull(activity).webView.reload() }
@@ -116,7 +144,9 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
     }
 
     fun restore(snapshot: JSONObject) {
-        open()
+        // Reuse the foreground activity when possible; relaunching while an IME or
+        // dialog is closing can time out on large-screen devices.
+        if (activity == null || activity?.isDestroyed == true) open()
         onMain {
             TicketMonitorService.stop(context)
             TrainTrackingService.stop(context)

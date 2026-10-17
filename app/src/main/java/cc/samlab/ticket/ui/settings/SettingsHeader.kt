@@ -38,6 +38,7 @@ internal fun SettingsHeader(
     onBack: () -> Unit,
     embedded: Boolean = false,
     title: String = stringResource(R.string.home_settings),
+    actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     TwoRowsTopAppBar(
@@ -62,6 +63,7 @@ internal fun SettingsHeader(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.about_back), Modifier.size(20.dp))
             }
         },
+        actions = actions,
         collapsedHeight = SettingsCollapsedHeight,
         expandedHeight = SettingsExpandedHeight,
         // The Activity already applies status bar and display cutout insets to the container.

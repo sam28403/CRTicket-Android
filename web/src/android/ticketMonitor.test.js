@@ -6,6 +6,7 @@ const {
   supportsTicketMonitoring,
   startTicketMonitor,
   getTicketMonitorStatus,
+  refreshTicketMonitor,
   stopTicketMonitor,
   updateTicketMonitor,
 } = await import('./ticketMonitor.js')
@@ -93,4 +94,22 @@ test('bridge errors remain actionable and overlapping calls use their own callba
   window.crticketTicketMonitorResult(ids[0], { success: false, message: '后台服务启动失败' })
   assert.equal((await second).active, true)
   await assert.rejects(first, /后台服务启动失败/)
+})
+
+
+test('manual refresh preserves monitor configuration and reminder history', async () => {
+  const status = {
+    success: true, active: true, config: payload,
+    events: [{ text: 'G1 有票', at: '2026-10-13T01:00:00Z' }],
+  }
+  window.CRTicketAndroid = {
+    refreshTicketMonitor(id) {
+      window.crticketTicketMonitorResult(id, { ...status, loading: true })
+    },
+  }
+  const result = await refreshTicketMonitor()
+  assert.equal(result.active, true)
+  assert.equal(result.loading, true)
+  assert.deepEqual(result.config, payload)
+  assert.deepEqual(result.events, status.events)
 })

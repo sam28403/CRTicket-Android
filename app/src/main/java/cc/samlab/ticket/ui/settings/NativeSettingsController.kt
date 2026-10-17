@@ -30,6 +30,10 @@ class NativeSettingsController(
     private val webView: WebView,
     private val worker: ExecutorService,
 ) {
+    internal var onMonitorSettings: () -> Unit = {}
+
+    fun openMonitorSettings() = onMonitorSettings()
+
     internal val ui = SettingsUiState()
     internal val permissions = PermissionSettingsController(activity)
     var state by mutableStateOf(SettingsState(

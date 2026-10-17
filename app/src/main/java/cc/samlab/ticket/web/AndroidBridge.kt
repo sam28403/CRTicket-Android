@@ -31,6 +31,7 @@ class AndroidBridge(
     private val receiveHistory: (String) -> Unit,
     private val receiveHistoryOperation: (String) -> Unit,
     private val receiveStationBoard: (String) -> Unit,
+    private val receiveTicketMonitorPage: (String) -> Unit,
     private val receiveTrainQuery: (String) -> Unit,
     private val receiveStatisticsState: (Boolean, Boolean) -> Unit,
     private val chooseStatisticsMonth: (String) -> Unit,
@@ -65,6 +66,15 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun stationBoardResult(payload: String) = receiveStationBoard(payload)
+
+    @JavascriptInterface
+    fun ticketMonitorPageResult(payload: String) = receiveTicketMonitorPage(payload)
+
+    @JavascriptInterface
+    fun resetTicketMonitor(id: String) = onUi { ticketMonitor.reset(id) }
+
+    @JavascriptInterface
+    fun refreshTicketMonitor(id: String) = onUi { ticketMonitor.refresh(id) }
 
     @JavascriptInterface
     fun trainQueryResult(payload: String) = receiveTrainQuery(payload)

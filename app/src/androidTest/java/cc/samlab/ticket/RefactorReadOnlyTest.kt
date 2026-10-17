@@ -51,7 +51,7 @@ class RefactorReadOnlyTest {
             await {
                 var visible = false
                 instrumentation.runOnMainSync {
-                    visible = activity.findViewById<android.view.View>(R.id.expressive_station_view)
+                    visible = activity.findViewById<android.view.View>(R.id.expressive_navigation_view)
                         ?.visibility == android.view.View.VISIBLE
                 }
                 visible

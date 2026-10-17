@@ -37,6 +37,7 @@ internal class TrainListScrollView(context: Context) : FrameLayout(
     init { addView(content, LayoutParams(-1, -1)) }
 
     fun setContent(block: @Composable () -> Unit) = content.setContent(content = block)
+    fun disposeContent() = content.disposeComposition()
 
     fun updateColor(primary: Int, onSurface: Int) {
         if (tint == primary) return

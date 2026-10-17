@@ -16,6 +16,7 @@ const router = createRouter({
         { path: '/station', component: () => import('@/views/Station.vue') },
         { path: '/station-map', component: () => import('@/views/StationMap.vue') },
         { path: '/list', component: () => import('@/views/TrainList.vue') },
+        { path: '/monitor/settings', component: () => import('@/views/Monitor.vue') },
         { path: '/monitor', component: () => import('@/views/Monitor.vue') },
         { path: '/login', redirect: '/' },
         { path: '/register', redirect: '/' },

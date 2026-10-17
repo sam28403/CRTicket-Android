@@ -1,12 +1,5 @@
 package cc.samlab.ticket.ui.settings
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -25,10 +17,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -48,9 +38,8 @@ internal fun ExpressiveSettingsScreen(
     pureBlack: Boolean = false,
     visible: Boolean = true,
     embedded: Boolean = false,
+    page: SettingsPage = controller.ui.page,
 ) {
-    val page = controller.ui.page
-    val progress = animateFloatAsState(controller.ui.backProgress, tween(120), label = "permission-back").value
     val scroll = rememberScrollState()
     val collapseRange = with(LocalDensity.current) {
         (SettingsExpandedHeight - SettingsCollapsedHeight).toPx()
@@ -63,45 +52,21 @@ internal fun ExpressiveSettingsScreen(
         state = appBar,
         canScroll = { visible },
     )
-    LaunchedEffect(visible) {
-        if (visible) {
-            scroll.scrollTo(0)
-            appBar.heightOffset = appBar.heightOffsetLimit
-            appBar.contentOffset = 0f
-        }
-    }
-    LaunchedEffect(page) {
-        appBar.heightOffset = appBar.heightOffsetLimit
-        appBar.contentOffset = 0f
-    }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         Surface(
-            Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection).graphicsLayer {
-                scaleX = 1f - progress * 0.05f
-                scaleY = 1f - progress * 0.05f
-                shape = RoundedCornerShape(24.dp)
-                clip = progress > 0f
-            },
+            Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column {
                 SettingsHeader(
                     scrollBehavior,
-                    { if (controller.ui.hasDetail) controller.ui.closeDetail() else onBack() },
-                    embedded && !controller.ui.hasDetail,
+                    onBack,
+                    embedded && page == SettingsPage.MAIN,
                     title = stringResource(page.title),
                 )
                 if (controller.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-                AnimatedContent(
-                    targetState = page,
-                    modifier = Modifier.weight(1f),
-                    transitionSpec = {
-                        (fadeIn(tween(160)) + slideInHorizontally(tween(220)) { it / 20 })
-                            .togetherWith(fadeOut(tween(100)))
-                    },
-                    label = "settings-page",
-                ) { destination ->
-                    when (destination) {
+                Box(Modifier.weight(1f)) {
+                    when (page) {
                         SettingsPage.PERMISSIONS -> PermissionSettingsContent(controller.permissions, embedded)
                         SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
                         SettingsPage.MAIN -> AdaptivePanes(
@@ -134,7 +99,7 @@ internal fun ExpressiveSettingsScreen(
 }
 
 @Composable
-private fun SettingsPanel(
+internal fun SettingsPanel(
     scroll: androidx.compose.foundation.ScrollState,
     tag: String,
     fullWidth: Boolean = false,

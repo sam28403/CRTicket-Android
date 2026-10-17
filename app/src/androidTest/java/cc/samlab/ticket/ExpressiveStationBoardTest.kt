@@ -167,7 +167,7 @@ class ExpressiveStationBoardTest {
         compose.waitUntil(120_000) {
             compose.onAllNodesWithTag("station-tab-all").fetchSemanticsNodes().isNotEmpty()
         }
-        val probe = StationSurfaceProbe(activity.findViewById(R.id.expressive_station_view))
+        val probe = StationSurfaceProbe(activity.findViewById(R.id.expressive_navigation_view))
         probe.start()
         try {
             pressBack()
@@ -190,7 +190,7 @@ class ExpressiveStationBoardTest {
         compose.waitUntil(20_000) {
             var visible = false
             instrumentation.runOnMainSync {
-                val view = activity.findViewById<android.view.View>(R.id.expressive_station_view)
+                val view = activity.findViewById<android.view.View>(R.id.expressive_navigation_view)
                 visible = view.visibility == android.view.View.VISIBLE && view.alpha == 1f && view.translationX == 0f
             }
             visible && evaluate("new URLSearchParams(location.hash.split('?')[1]).get('station')") == org.json.JSONObject.quote(name) &&

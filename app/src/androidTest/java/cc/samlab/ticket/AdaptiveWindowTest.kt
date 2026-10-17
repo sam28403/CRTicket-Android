@@ -29,6 +29,7 @@ class AdaptiveWindowTest {
     private lateinit var activity: MainActivity
 
     @Test fun wideMenuDefaultsToAboutAndWebDestinationsUseFullWindow() {
+        if (instrumentation.targetContext.resources.configuration.smallestScreenWidthDp < 600) return
         launch()
         try {
             compose.onNodeWithTag("navigation-shell").assertExists()
@@ -68,6 +69,7 @@ class AdaptiveWindowTest {
     }
 
     @Test fun compactAndWideWindowsKeepSettingsDraftAndNavigation() {
+        if (instrumentation.targetContext.resources.configuration.smallestScreenWidthDp < 600) return
         launch()
         val rotation = shell("settings get system user_rotation").trim()
         val automatic = shell("settings get system accelerometer_rotation").trim() == "1"
@@ -159,6 +161,7 @@ class AdaptiveWindowTest {
     }
 
     private fun launch() {
+        shell("input keyevent KEYCODE_WAKEUP")
         activity = instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -167,6 +170,14 @@ class AdaptiveWindowTest {
             activity.setShowWhenLocked(true)
             activity.setTurnScreenOn(true)
             activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+        compose.waitUntil(20_000) {
+            var focused = false
+            instrumentation.runOnMainSync {
+                focused = activity.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED) &&
+                    activity.window.decorView.hasWindowFocus()
+            }
+            focused
         }
         compose.waitUntil(20_000) { evaluate("Boolean(window.crticketSettings)") == "true" }
     }

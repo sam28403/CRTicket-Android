@@ -187,7 +187,7 @@ class StatisticsDeviceTest {
         compose.waitUntil(20_000) {
             var shown = false
             instrumentation.runOnMainSync {
-                val view = activity.findViewById<View>(R.id.expressive_statistics_view)
+                val view = activity.findViewById<View>(R.id.expressive_navigation_view)
                 shown = view.isShown && view.height > 0 && view.alpha == 1f
             }
             shown && evaluate("Boolean(document.querySelector('.user-main'))") == "true"

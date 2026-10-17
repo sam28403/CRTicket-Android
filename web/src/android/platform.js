@@ -1,4 +1,5 @@
 import { createNativeCalls } from './nativeCalls.js'
+import { createNativeRouteSync } from './nativeRouteSync.js'
 
 export const native = globalThis.window?.CRTicketAndroid
 export const configuration = native ? JSON.parse(native.configuration()) : { backend: 'phone' }
@@ -61,18 +62,17 @@ export function initializePlatform(router) {
   if (!native) return
   const hasNativeHome = typeof native.setHomeVisible === 'function'
   window.crticketNavigate = route => router.push(route)
+  window.crticketSyncNativeRoute = createNativeRouteSync({
+    router,
+    acknowledge: route => native.setNativePage(route),
+  })
   if (hasNativeHome) {
     router.afterEach((to, from, failure) => {
       if (failure) return
       native.setNativeBackTarget?.(window.history.state?.back || '')
       if (typeof native.setNativePage === 'function') {
-        const pages = ['/home', '/about', '/settings']
-        if (typeof native.supportsStatisticsPage === 'function') pages.push('/user')
-        if (typeof native.trainListResult === 'function') pages.push('/list')
-        if (typeof native.historyResult === 'function') pages.push('/history')
-        if (typeof native.stationBoardResult === 'function') pages.push('/station')
-        if (typeof native.trainQueryResult === 'function') pages.push('/train')
-        native.setNativePage(pages.includes(to.path) ? to.path : '')
+        // Preserve query arguments so native station/train entries have distinct identities.
+        native.setNativePage(to.fullPath)
       } else native.setHomeVisible(to.path === '/home')
     })
   }

@@ -122,7 +122,7 @@ class ExpressiveAppearanceTest {
     private fun rootColor(): Int {
         var color = 0
         instrumentation.runOnMainSync {
-            val page = activity.findViewById<View>(R.id.expressive_settings_view)
+            val page = activity.findViewById<View>(R.id.expressive_navigation_view)
             color = ((page.parent as View).background as ColorDrawable).color
         }
         return color

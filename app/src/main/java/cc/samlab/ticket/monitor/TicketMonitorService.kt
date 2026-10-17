@@ -39,6 +39,11 @@ class TicketMonitorService : Service() {
             context.startForegroundService(Intent(context, TicketMonitorService::class.java))
         }
 
+        fun refresh(context: Context) {
+            if (!TicketMonitorStore.read(context).optBoolean("active")) return
+            context.startForegroundService(Intent(context, TicketMonitorService::class.java))
+        }
+
         fun restore(context: Context) {
             val state = TicketMonitorStore.read(context)
             if (!state.optBoolean("active")) return

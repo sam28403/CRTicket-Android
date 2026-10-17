@@ -1,73 +1,53 @@
 package cc.samlab.ticket.ui.home
 
-import android.view.View
 import android.content.Context
+import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
-import androidx.activity.BackEventCompat
-import androidx.compose.foundation.layout.Box
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.window.layout.FoldingFeature
-import cc.samlab.ticket.ui.window.LocalFoldingFeatures
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.window.layout.FoldingFeature
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.ThemePreference
+import cc.samlab.ticket.ui.history.NativeHistoryController
+import cc.samlab.ticket.ui.monitor.NativeTicketMonitorController
+import cc.samlab.ticket.ui.navigation.ExpressiveNavigator
+import cc.samlab.ticket.ui.navigation.ExpressiveRoutes
 import cc.samlab.ticket.ui.settings.NativeSettingsController
-import cc.samlab.ticket.ui.settings.ExpressiveSettingsScreen
+import cc.samlab.ticket.ui.settings.SettingsPage
+import cc.samlab.ticket.ui.station.NativeStationBoardController
+import cc.samlab.ticket.ui.trainlist.NativeTrainListController
+import cc.samlab.ticket.ui.trainquery.NativeTrainQueryController
 
-/** Native home content; the WebView router owns navigation and restoration. */
+/** All Expressive destinations share one ComposeView and one Navigation back stack. */
 class ExpressiveHomeHost(private val activity: ComponentActivity) {
     private val preferences = activity.getSharedPreferences("android", Context.MODE_PRIVATE)
     var dark by mutableStateOf(ThemePreference.isDark(activity))
     var pureBlack by mutableStateOf(preferences.getBoolean("appearancePureBlack", false))
-    var route by mutableStateOf("")
+    var location by mutableStateOf("/home")
         private set
-    val visible: Boolean
-        get() = route.isNotEmpty()
-    val isHome: Boolean
-        get() = route == "/home"
-    val usesWebContent: Boolean
-        get() = route == "/user"
-    private lateinit var statisticsView: ComposeView
-    private lateinit var statisticsBody: cc.samlab.ticket.ui.statistics.StatisticsBodyLayout
-    private val statisticsState = cc.samlab.ticket.ui.statistics.StatisticsUiState()
-    private lateinit var chartsWebView: android.webkit.WebView
-    private lateinit var homeView: ComposeView
-    private lateinit var aboutView: ComposeView
-    private lateinit var settingsView: ComposeView
-    private lateinit var trainListView: cc.samlab.ticket.ui.trainlist.TrainListScrollView
-    private lateinit var trainListController: cc.samlab.ticket.ui.trainlist.NativeTrainListController
-    private lateinit var historyView: ComposeView
-    private lateinit var historyController: cc.samlab.ticket.ui.history.NativeHistoryController
-    private lateinit var trainQueryView: ComposeView
-    private lateinit var trainQueryController: cc.samlab.ticket.ui.trainquery.NativeTrainQueryController
-    private lateinit var stationView: ComposeView
-    private lateinit var stationController: cc.samlab.ticket.ui.station.NativeStationBoardController
-    private lateinit var settingsController: NativeSettingsController
+    val route: String
+        get() = when (val path = ExpressiveRoutes.path(location)) {
+            "/settings/arrival", "/settings/permissions" -> "/settings"
+            "/history/editor" -> "/history"
+            else -> path.takeIf { ExpressiveRoutes.isNative(location) }.orEmpty()
+        }
+    val visible get() = route.isNotEmpty()
+    val isHome get() = route == "/home"
+    val usesWebContent get() = route == "/user"
+    val backgroundColor get() = homeColorScheme(activity, dark, pureBlack).surfaceContainer.toArgb()
     internal var folds by mutableStateOf<List<FoldingFeature>>(emptyList())
         private set
     internal var wide by mutableStateOf(activity.resources.configuration.screenWidthDp >= 840)
         private set
-    private var backProgress by mutableStateOf(0f)
-    private var backDirection by mutableStateOf(1f)
-    private lateinit var container: FrameLayout
-    private val motion = ExpressivePageMotion()
-    private var previewHome = false
-    private var backTargetPath = ""
-    private val reusesBackSurface: Boolean
-        get() = route in setOf("/station", "/train") && route == backTargetPath
+    private val navigator = ExpressiveNavigator()
     private val navigation = HomeNavigationState()
-    private val dataVersions = AboutDataVersions(activity)
-
-    val backgroundColor: Int
-        get() = homeColorScheme(activity, dark, pureBlack).surfaceContainer.toArgb()
+    private lateinit var pages: ExpressivePageContent
+    private lateinit var settings: NativeSettingsController
+    private lateinit var history: NativeHistoryController
+    private lateinit var container: FrameLayout
 
     fun attach(
         container: FrameLayout,
@@ -75,347 +55,99 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         onBack: () -> Unit,
         onExternal: (String) -> Unit,
         settings: NativeSettingsController,
-        trainList: cc.samlab.ticket.ui.trainlist.NativeTrainListController,
-        history: cc.samlab.ticket.ui.history.NativeHistoryController,
-        station: cc.samlab.ticket.ui.station.NativeStationBoardController,
-        trainQuery: cc.samlab.ticket.ui.trainquery.NativeTrainQueryController,
-        webView: android.webkit.WebView,
+        trainList: NativeTrainListController,
+        history: NativeHistoryController,
+        station: NativeStationBoardController,
+        trainQuery: NativeTrainQueryController,
+        monitor: NativeTicketMonitorController,
+        webView: WebView,
+        onNativeRoute: (String, Boolean, Boolean) -> Unit,
     ) {
         this.container = container
-        chartsWebView = webView
-        statisticsBody = cc.samlab.ticket.ui.statistics.StatisticsBodyLayout(activity)
-        settingsController = settings
-        trainListController = trainList
-        historyController = history
-        stationController = station
-        trainQueryController = trainQuery
-        container.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
-        homeView = ComposeView(activity).apply {
-            id = R.id.expressive_home_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (isHome || (wide && visible)) Modifier else Modifier.clearAndSetSemantics {}) {
-                        if (wide && route !in setOf("/list", "/history", "/station", "/train", "/user")) ExpressiveNavigationShell(
-                            route, dark, pureBlack, settings, backProgress, backDirection,
-                            navigation, dataVersions, onNavigate, onBack, onExternal,
-                        ) else ExpressiveHomeScreen(dark, isHome, onNavigate, pureBlack, navigation)
-                    }
-                }
-            }
-        }
-        aboutView = ComposeView(activity).apply {
-            id = R.id.expressive_about_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/about" && !wide) Modifier else Modifier.clearAndSetSemantics {}) {
-                        ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack, dataVersions = dataVersions)
-                    }
-                }
-            }
-        }
-        settingsView = ComposeView(activity).apply {
-            id = R.id.expressive_settings_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/settings" && !wide) Modifier else Modifier.clearAndSetSemantics {}) {
-                        ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, route == "/settings" && !wide)
-                    }
-                }
-            }
-        }
-        container.addView(homeView, FrameLayout.LayoutParams(-1, -1))
-        container.addView(aboutView, FrameLayout.LayoutParams(-1, -1))
-        container.addView(settingsView, FrameLayout.LayoutParams(-1, -1))
-        trainListView = cc.samlab.ticket.ui.trainlist.TrainListScrollView(activity).apply {
-            id = R.id.expressive_train_list_view
-            visibility = View.GONE
-            setContent {
-                val list = androidx.compose.foundation.lazy.rememberLazyListState()
-                androidx.compose.runtime.LaunchedEffect(trainList.revision) { list.scrollToItem(0) }
-                val scrollView = this@apply
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/list") Modifier else Modifier.clearAndSetSemantics {}) {
-                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
-                            cc.samlab.ticket.ui.trainlist.ExpressiveTrainListScreen(
-                                trainList, dark, pureBlack, onBack, onNavigate, scrollView, embedded, list,
-                            )
-                        }
-                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
-                            "/list", dark, pureBlack, settings, backProgress, backDirection,
-                            navigation, dataVersions, onNavigate, onBack, onExternal, content,
-                        ) else content(false)
-                    }
-                }
-            }
-        }
-        container.addView(trainListView, FrameLayout.LayoutParams(-1, -1))
-        historyView = ComposeView(activity).apply {
-            id = R.id.expressive_history_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/history") Modifier else Modifier.clearAndSetSemantics {}) {
-                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
-                            cc.samlab.ticket.ui.history.ExpressiveHistoryScreen(
-                                history, dark, pureBlack, onBack, embedded,
-                                visible = route == "/history",
-                            )
-                        }
-                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
-                            "/history", dark, pureBlack, settings, backProgress, backDirection,
-                            navigation, dataVersions, onNavigate, onBack, onExternal,
-                            historyContent = content,
-                        ) else content(false)
-                    }
-                }
-            }
-        }
-        container.addView(historyView, FrameLayout.LayoutParams(-1, -1))
-        stationView = ComposeView(activity).apply {
-            id = R.id.expressive_station_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/station") Modifier else Modifier.clearAndSetSemantics {}) {
-                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
-                            cc.samlab.ticket.ui.station.ExpressiveStationBoardScreen(
-                                station, dark, pureBlack, onBack, onNavigate,
-                                active = route == "/station", embedded = embedded,
-                            )
-                        }
-                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
-                            "/station", dark, pureBlack, settings, backProgress, backDirection,
-                            navigation, dataVersions, onNavigate, onBack, onExternal,
-                            stationContent = content,
-                        ) else content(false)
-                    }
-                }
-            }
-        }
-        container.addView(stationView, FrameLayout.LayoutParams(-1, -1))
-        trainQueryView = ComposeView(activity).apply {
-            id = R.id.expressive_train_query_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/train") Modifier else Modifier.clearAndSetSemantics {}) {
-                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
-                            cc.samlab.ticket.ui.trainquery.ExpressiveTrainQueryScreen(
-                                trainQuery, dark, pureBlack, onBack, onNavigate, embedded,
-                                active = route == "/train",
-                            )
-                        }
-                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
-                            "/train", dark, pureBlack, settings, backProgress, backDirection,
-                            navigation, dataVersions, onNavigate, onBack, onExternal,
-                            trainQueryContent = content,
-                        ) else content(false)
-                    }
-                }
-            }
-        }
-        container.addView(trainQueryView, FrameLayout.LayoutParams(-1, -1))
-        statisticsView = ComposeView(activity).apply {
-            id = R.id.expressive_statistics_view
-            visibility = View.GONE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                CompositionLocalProvider(LocalFoldingFeatures provides folds) {
-                    Box(if (route == "/user") Modifier else Modifier.clearAndSetSemantics {}) {
-                        val content: @androidx.compose.runtime.Composable (Boolean) -> Unit = { embedded ->
-                            cc.samlab.ticket.ui.statistics.ExpressiveStatisticsScreen(
-                                statisticsBody, statisticsState, dark, pureBlack, onBack, embedded,
-                                visible = route == "/user",
-                                onMonthSelected = ::selectStatisticsMonth,
-                            )
-                        }
-                        if (wide || folds.any { it.isSeparating }) ExpressiveNavigationShell(
-                            "/user", dark, pureBlack, settings, backProgress, backDirection,
-                            navigation, dataVersions, onNavigate, onBack, onExternal,
-                            statisticsContent = content,
-                        ) else content(false)
-                    }
-                }
-            }
-        }
-        container.addView(statisticsView, FrameLayout.LayoutParams(-1, -1))
-    }
-
-    fun updateStatisticsState(empty: Boolean, loading: Boolean) {
-        statisticsState.update(empty, loading)
-    }
-
-    fun openStatisticsMonthPicker(month: String) {
-        if (usesWebContent) statisticsState.chooseMonth(month.take(7))
-    }
-
-    private fun selectStatisticsMonth(month: String) {
-        statisticsState.dismissMonth()
-        if (!usesWebContent) return
-        chartsWebView.evaluateJavascript(
-            "window.dispatchEvent(new CustomEvent('crticket-statistics-month'," +
-                "{detail:${org.json.JSONObject.quote(month)}}))",
-            null,
+        this.settings = settings
+        this.history = history
+        pages = ExpressivePageContent(
+            activity, settings, trainList, history, station, trainQuery, monitor,
+            webView, navigation, onNavigate, onBack, onExternal,
         )
+        settings.onMonitorSettings = { onNavigate("/monitor/settings") }
+        settings.ui.onPageChanged = { page, back ->
+            if (back) navigator.pop()
+            else navigator.navigate(when (page) {
+                SettingsPage.ARRIVAL -> "/settings/arrival"
+                SettingsPage.PERMISSIONS -> "/settings/permissions"
+                SettingsPage.MAIN -> "/settings"
+            })
+        }
+        history.ui.onDetailChanged = { opened ->
+            if (opened) navigator.navigate("/history/editor")
+            else if (location == "/history/editor") navigator.pop()
+        }
+        container.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
+        val root = ComposeView(activity).apply {
+            id = R.id.expressive_navigation_view
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ExpressiveAppLayout(
+                    location, dark, pureBlack, folds, navigation, navigator,
+                    onNavigate = onNavigate,
+                    onDestination = { destination, back, mirror ->
+                        applyLocation(destination)
+                        onNativeRoute(destination, back, mirror)
+                    },
+                ) { destination, active, embedded ->
+                    pages.Render(destination, active, embedded, dark, pureBlack)
+                }
+            }
+        }
+        container.addView(root, FrameLayout.LayoutParams(-1, -1))
     }
 
     fun setPage(page: String) {
-        val next = if (page in setOf("/home", "/about", "/settings", "/list", "/history", "/station", "/train", "/user")) page else ""
-        if (next == route) {
-            // A station-to-station back navigation reuses this native view. Finish the
-            // outgoing animation even though the Web router's path stays /station.
-            motion.finish()
-            backProgress = 0f
-            updateVisibility()
-            return
-        }
-        val previous = route
-        val completedGesture = motion.returning
-        motion.finish()
-        route = next
-        if (!usesWebContent) statisticsState.dismissMonth()
-        val webParent = if (usesWebContent) statisticsBody else container
-        if (chartsWebView.parent !== webParent) {
-            (chartsWebView.parent as? android.view.ViewGroup)?.removeView(chartsWebView)
-            webParent.addView(chartsWebView, 0, FrameLayout.LayoutParams(-1, -1))
-        }
-        if (next != "/settings") settingsController.ui.resetPage()
-        if (!isHome) previewHome = previous == "/home"
-        updateVisibility()
-        backProgress = 0f
-        if (previous != route && visible && !completedGesture && !wide) {
-            motion.enter(
-                view = currentView(),
-                destination = homeView.takeIf { !isHome && previewHome },
-                reverse = isHome && previous.isNotEmpty(),
-                onEnd = ::updateVisibility,
-            )
-        }
+        if (navigator.currentLocation == null) applyLocation(page.ifEmpty { "/" })
+        navigator.navigate(page, fromWeb = true)
     }
 
-    fun setBackTarget(target: String) {
-        backTargetPath = android.net.Uri.parse(target).path.orEmpty()
+    fun navigate(location: String) = navigator.navigate(location)
+    fun pop() = navigator.pop()
+
+    private fun applyLocation(destination: String) {
+        val previous = location
+        location = destination
+        val page = when (ExpressiveRoutes.path(destination)) {
+            "/settings/arrival" -> SettingsPage.ARRIVAL
+            "/settings/permissions" -> SettingsPage.PERMISSIONS
+            else -> SettingsPage.MAIN
+        }
+        settings.ui.showDestination(page)
+        if (previous == "/history/editor" && destination != previous) history.ui.leaveDetail()
+        if (route != "/user") pages.statistics.dismissMonth()
+        if (route == "/about" || (wide && isHome)) pages.dataVersions.refresh()
     }
 
-    fun startBack(event: BackEventCompat) {
-        if (!visible || isHome) return
-        if (reusesBackSurface) return
-        if (hasSettingsDetail()) {
-            settingsController.ui.backProgress = 0f
-            return
-        }
-        if (hasHistoryDetail()) {
-            historyController.ui.backProgress = 0f
-            return
-        }
-        if (wide) {
-            backDirection = if (event.swipeEdge == BackEventCompat.EDGE_LEFT) 1f else -1f
-            backProgress = 0f
-            return
-        }
-        motion.start(currentView(), homeView.takeIf { previewHome }, event)
+    fun updateStatisticsState(empty: Boolean, loading: Boolean) = pages.statistics.update(empty, loading)
+    fun openStatisticsMonthPicker(month: String) {
+        if (usesWebContent) pages.statistics.chooseMonth(month.take(7))
     }
 
-    fun progressBack(event: BackEventCompat) {
-        if (reusesBackSurface) return
-        if (hasSettingsDetail()) settingsController.ui.backProgress = event.progress
-        else if (hasHistoryDetail()) historyController.ui.backProgress = event.progress
-        else if (wide) backProgress = event.progress else motion.progress(event)
-    }
-
-    fun cancelBack() {
-        if (reusesBackSurface) return
-        if (hasSettingsDetail()) settingsController.ui.backProgress = 0f
-        else if (hasHistoryDetail()) historyController.ui.backProgress = 0f
-        else if (wide) backProgress = 0f else motion.cancel(::updateVisibility)
-    }
-
-    fun animateBack(onEnd: () -> Unit): Boolean {
-        if (!visible || isHome) return false
-        if (hasSettingsDetail()) {
-            settingsController.ui.closeDetail()
-            return true
-        }
-        if (hasHistoryDetail()) {
-            historyController.ui.closeDetail()
-            return true
-        }
-        // The previous station is drawn by this same ComposeView. Fading it out
-        // exposes the empty host before the router can restore the prior station.
-        if (reusesBackSurface) {
-            motion.finish()
-            return false
-        }
-        if (wide) {
-            backProgress = 0f
-            return false
-        }
-        motion.commit(currentView(), homeView.takeIf { previewHome }, onEnd)
-        return true
-    }
-
-    fun close() {
-        motion.finish()
-        dataVersions.close()
-        trainListController.close()
-        historyController.close()
-        stationController.close()
-        trainQueryController.close()
-    }
+    // The native Navigation back stack now supplies the previous destination.
+    fun setBackTarget(@Suppress("UNUSED_PARAMETER") target: String) = Unit
 
     internal fun updateFolds(features: List<FoldingFeature>) {
         folds = features
         if (::container.isInitialized) updateWindow()
     }
 
-    private fun hasSettingsDetail() = route == "/settings" && settingsController.ui.hasDetail
-
-    private fun hasHistoryDetail() = route == "/history" && historyController.ui.hasDetail
-
     private fun updateWindow() {
         val width = (container.width - container.paddingLeft - container.paddingRight) /
             activity.resources.displayMetrics.density
         if (width <= 0) return
-        val hasVerticalFold = folds.any { it.orientation == FoldingFeature.Orientation.VERTICAL }
-        val next = width >= 840 || (hasVerticalFold && width >= 640)
-        if (next == wide) return
-        motion.finish()
-        backProgress = 0f
-        wide = next
-        updateVisibility()
+        val verticalFold = folds.any { it.orientation == FoldingFeature.Orientation.VERTICAL }
+        wide = width >= 840 || (verticalFold && width >= 640)
     }
 
-    private fun currentView() = when (route) {
-        "/settings" -> settingsView
-        "/about" -> aboutView
-        "/list" -> trainListView
-        "/history" -> historyView
-        "/station" -> stationView
-        "/train" -> trainQueryView
-        "/user" -> statisticsView
-        else -> homeView
-    }
-
-    private fun updateVisibility() {
-        if (route == "/about" || (wide && isHome)) dataVersions.refresh()
-        homeView.visibility = if (isHome || (wide && visible && route !in setOf("/list", "/history", "/station", "/train", "/user"))) {
-            View.VISIBLE
-        } else View.GONE
-        aboutView.visibility = if (route == "/about" && !wide) View.VISIBLE else View.GONE
-        settingsView.visibility = if (route == "/settings" && !wide) View.VISIBLE else View.GONE
-        trainListView.visibility = if (route == "/list") View.VISIBLE else View.GONE
-        historyView.visibility = if (route == "/history") View.VISIBLE else View.GONE
-        trainQueryView.visibility = if (route == "/train") View.VISIBLE else View.GONE
-        statisticsView.visibility = if (usesWebContent) View.VISIBLE else View.GONE
-        stationView.visibility = if (route == "/station") View.VISIBLE else View.GONE
+    fun close() {
+        navigator.detach()
+        pages.close()
     }
 }

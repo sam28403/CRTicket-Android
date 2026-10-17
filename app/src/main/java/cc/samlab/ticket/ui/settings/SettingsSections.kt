@@ -57,6 +57,12 @@ internal fun SettingsProfile(
             }
         }
     }
+    SettingsGroup("余票监控") {
+        SettingsRow(
+            "余票监控设置", "监控间隔、车站、时间与席别筛选",
+            0, 1, true, controller::openMonitorSettings,
+        )
+    }
     SettingsGroup(stringResource(R.string.settings_privacy)) {
         SettingsRow(
             stringResource(R.string.settings_permissions),

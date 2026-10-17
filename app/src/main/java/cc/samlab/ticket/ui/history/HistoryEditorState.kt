@@ -35,6 +35,7 @@ internal class HistoryDraft(val id: String?, value: JSONObject) {
 }
 
 internal class HistoryEditorState {
+    var onDetailChanged: ((Boolean) -> Unit)? = null
     var draft by mutableStateOf<HistoryDraft?>(null)
         private set
     var deleting by mutableStateOf<HistoryRecord?>(null)
@@ -47,11 +48,21 @@ internal class HistoryEditorState {
         draft = HistoryDraft(id, value)
         error = ""
         backProgress = 0f
+        onDetailChanged?.invoke(true)
+    }
+
+    fun leaveDetail() {
+        draft = null
+        backProgress = 0f
+        error = ""
     }
 
     fun closeDetail(): Boolean {
         if (!hasDetail) return false
-        if (!busy) draft = null
+        if (!busy) {
+            draft = null
+            onDetailChanged?.invoke(false)
+        }
         backProgress = 0f
         error = ""
         return true

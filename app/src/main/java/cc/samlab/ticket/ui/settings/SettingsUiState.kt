@@ -14,6 +14,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
 }
 
 internal class SettingsUiState {
+    var onPageChanged: ((SettingsPage, Boolean) -> Unit)? = null
     var dialog by mutableStateOf("")
         private set
     var nameDraft by mutableStateOf<String?>(null)
@@ -36,6 +37,12 @@ internal class SettingsUiState {
         dismiss()
         page = value
         backProgress = 0f
+        onPageChanged?.invoke(value, false)
+    }
+
+    fun showDestination(value: SettingsPage) {
+        page = value
+        backProgress = 0f
     }
 
     fun closeDetail(): Boolean {
@@ -43,6 +50,7 @@ internal class SettingsUiState {
         page = if (page == SettingsPage.PERMISSIONS) permissionsParent else SettingsPage.MAIN
         permissionsParent = SettingsPage.MAIN
         backProgress = 0f
+        onPageChanged?.invoke(page, true)
         return true
     }
 

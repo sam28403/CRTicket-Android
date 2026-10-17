@@ -100,7 +100,7 @@ class ExpressiveHomeTest {
             compose.waitUntil(10_000) {
                 var visible = false
                 instrumentation.runOnMainSync {
-                    val screen = activity.findViewById<android.view.View>(R.id.expressive_statistics_view)
+                    val screen = activity.findViewById<android.view.View>(R.id.expressive_navigation_view)
                     visible = screen.isShown && screen.width > 0 && screen.height > 0
                 }
                 visible
@@ -152,6 +152,7 @@ class ExpressiveHomeTest {
             compose.onNodeWithText(label).performScrollTo().performClick()
             awaitRoute(route)
             when (route) {
+                "/monitor" -> compose.onNodeWithTag("monitor-screen").assertIsDisplayed()
                 "/history" -> compose.onNodeWithContentDescription("历史记录排序").assertIsDisplayed()
                 "/list" -> compose.onNodeWithTag("train-list-date").assertIsDisplayed()
                 "/station" -> compose.onNodeWithTag("station-screen").assertIsDisplayed()
@@ -204,56 +205,33 @@ class ExpressiveHomeTest {
         compose.onNodeWithText("关于").performScrollTo().performClick()
         awaitRoute("/about")
         compose.waitForIdle()
+        val page = compose.onNodeWithTag("navigation-page:/about")
+        val width = page.fetchSemanticsNode().boundsInRoot.width
         instrumentation.runOnMainSync {
             val dispatcher = activity.onBackPressedDispatcher
             dispatcher.dispatchOnBackStarted(BackEventCompat(0f, 300f, 0f, BackEventCompat.EDGE_LEFT))
             dispatcher.dispatchOnBackProgressed(BackEventCompat(120f, 300f, 0.6f, BackEventCompat.EDGE_LEFT))
-            val about = activity.findViewById<android.view.View>(R.id.expressive_about_view)
-            assertTrue(about.scaleX < 1f)
-            assertTrue(about.translationX > 0f)
-            assertTrue(about.clipToOutline)
-            val home = activity.findViewById<android.view.View>(R.id.expressive_home_view)
-            assertEquals(android.view.View.VISIBLE, home.visibility)
-            assertTrue(home.scaleX < 1f)
-            assertTrue(home.foreground != null)
         }
+        compose.waitUntil(5_000) { page.fetchSemanticsNode().boundsInRoot.width < width - 1f }
+        compose.onNodeWithTag("navigation-page:/home").assertExists()
         capture("predictive-return-card")
-        instrumentation.runOnMainSync {
-            activity.onBackPressedDispatcher.dispatchOnBackCancelled()
-        }
+        instrumentation.runOnMainSync { activity.onBackPressedDispatcher.dispatchOnBackCancelled() }
         compose.waitUntil(5_000) {
-            var restored = false
-            instrumentation.runOnMainSync {
-                val about = activity.findViewById<android.view.View>(R.id.expressive_about_view)
-                restored = about.scaleX == 1f && about.translationX == 0f && !about.clipToOutline
-            }
-            restored
+            kotlin.math.abs(page.fetchSemanticsNode().boundsInRoot.width - width) < 1f
         }
         awaitRoute("/about")
         instrumentation.runOnMainSync {
-            val home = activity.findViewById<android.view.View>(R.id.expressive_home_view)
-            assertEquals(android.view.View.GONE, home.visibility)
-            assertEquals(1f, home.scaleX)
-            assertTrue(home.foreground == null)
             val dispatcher = activity.onBackPressedDispatcher
             dispatcher.dispatchOnBackStarted(BackEventCompat(400f, 300f, 0f, BackEventCompat.EDGE_RIGHT))
             dispatcher.dispatchOnBackProgressed(BackEventCompat(250f, 300f, 0.8f, BackEventCompat.EDGE_RIGHT))
-            val about = activity.findViewById<android.view.View>(R.id.expressive_about_view)
-            assertTrue(about.translationX < 0f)
-            val gestureScale = about.scaleX
-            dispatcher.onBackPressed()
-            assertEquals(gestureScale, about.scaleX)
-            assertEquals(android.view.View.VISIBLE, about.visibility)
         }
+        compose.waitUntil(5_000) { page.fetchSemanticsNode().boundsInRoot.width < width - 1f }
+        instrumentation.runOnMainSync { activity.onBackPressedDispatcher.onBackPressed() }
         awaitRoute("/home")
-        instrumentation.runOnMainSync {
-            assertFalse(activity.onBackPressedDispatcher.hasEnabledCallbacks())
-            val home = activity.findViewById<android.view.View>(R.id.expressive_home_view)
-            assertEquals(1f, home.scaleX)
-            assertTrue(home.foreground == null)
-        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("navigation-page:/about").assertDoesNotExist()
+        compose.onNodeWithTag("navigation-page:/home").assertExists()
     }
-
     private fun keyboardVisible(): Boolean {
         var visible = false
         instrumentation.runOnMainSync {

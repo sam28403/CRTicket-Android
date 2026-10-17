@@ -1,0 +1,144 @@
+package cc.samlab.ticket.ui.home
+
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.FrameLayout
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
+import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.history.*
+import cc.samlab.ticket.ui.monitor.*
+import cc.samlab.ticket.ui.navigation.ExpressiveRoutes
+import cc.samlab.ticket.ui.settings.*
+import cc.samlab.ticket.ui.station.*
+import cc.samlab.ticket.ui.statistics.*
+import cc.samlab.ticket.ui.trainlist.*
+import cc.samlab.ticket.ui.trainquery.*
+import org.json.JSONObject
+
+/** Screen rendering is independent of navigation and never changes host View visibility. */
+internal class ExpressivePageContent(
+    activity: ComponentActivity,
+    private val settings: NativeSettingsController,
+    private val trainList: NativeTrainListController,
+    private val history: NativeHistoryController,
+    private val station: NativeStationBoardController,
+    private val trainQuery: NativeTrainQueryController,
+    private val monitor: NativeTicketMonitorController,
+    private val web: WebView,
+    private val navigation: HomeNavigationState,
+    private val onNavigate: (String) -> Unit,
+    private val onBack: () -> Unit,
+    private val onExternal: (String) -> Unit,
+) {
+    val statistics = StatisticsUiState()
+    val dataVersions = AboutDataVersions(activity)
+    private val statisticsBody = StatisticsBodyLayout(activity)
+    private val backend = web.parent as FrameLayout
+
+    @Composable
+    fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
+        when (ExpressiveRoutes.path(location)) {
+            "/home" -> if (embedded) About(dark, pureBlack, true)
+                else ExpressiveHomeScreen(dark, active, onNavigate, pureBlack, navigation)
+            "/about" -> About(dark, pureBlack, embedded)
+            "/settings", "/settings/arrival", "/settings/permissions" -> {
+                val page = when (ExpressiveRoutes.path(location)) {
+                    "/settings/arrival" -> SettingsPage.ARRIVAL
+                    "/settings/permissions" -> SettingsPage.PERMISSIONS
+                    else -> SettingsPage.MAIN
+                }
+                ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, active, embedded, page)
+            }
+            "/monitor", "/monitor/settings" -> ExpressiveTicketMonitorScreen(
+                monitor, dark, pureBlack, location == "/monitor/settings", onBack,
+                { onNavigate("/monitor/settings") }, embedded, active,
+            )
+            "/history", "/history/editor" -> {
+                val draft = remember { history.ui.draft.takeIf { location == "/history/editor" } }
+                ExpressiveHistoryScreen(history, dark, pureBlack, onBack, embedded, active, draft)
+                BackHandler(enabled = active && draft != null && history.ui.busy) { }
+            }
+            "/list" -> TrainList(dark, pureBlack, embedded)
+            "/station" -> ExpressiveStationBoardScreen(
+                station, dark, pureBlack, onBack, onNavigate, active, embedded,
+            )
+            "/train" -> ExpressiveTrainQueryScreen(
+                trainQuery, dark, pureBlack, onBack, onNavigate, embedded, active,
+            )
+            "/user" -> {
+                ExpressiveStatisticsScreen(
+                    statisticsBody, statistics, dark, pureBlack, onBack, embedded, active,
+                ) { month ->
+                    statistics.dismissMonth()
+                    web.evaluateJavascript(
+                        "window.dispatchEvent(new CustomEvent('crticket-statistics-month'," +
+                            "{detail:${JSONObject.quote(month)}}))", null,
+                    )
+                }
+                SideEffect { moveWebTo(statisticsBody) }
+                DisposableEffect(Unit) {
+                    onDispose { if (web.parent === statisticsBody) moveWebTo(backend) }
+                }
+            }
+            else -> {
+                AndroidView(
+                    factory = { FrameLayout(it).apply { moveWebTo(this) } },
+                    modifier = Modifier.fillMaxSize(),
+                    onRelease = { parent -> if (web.parent === parent) moveWebTo(backend) },
+                )
+                // Web dialogs retain their existing close-before-leave behavior.
+                BackHandler(enabled = active) { onBack() }
+            }
+        }
+    }
+
+    @Composable
+    private fun About(dark: Boolean, pureBlack: Boolean, embedded: Boolean) {
+        ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack, embedded, dataVersions)
+    }
+
+    @Composable
+    private fun TrainList(dark: Boolean, pureBlack: Boolean, embedded: Boolean) {
+        val list = rememberLazyListState()
+        var lastRevision by rememberSaveable { mutableIntStateOf(trainList.revision) }
+        LaunchedEffect(trainList.revision) {
+            if (lastRevision != trainList.revision) {
+                list.scrollToItem(0)
+                lastRevision = trainList.revision
+            }
+        }
+        AndroidView(
+            factory = { TrainListScrollView(it).apply { id = R.id.expressive_train_list_view } },
+            modifier = Modifier.fillMaxSize(),
+            onRelease = { it.disposeContent() },
+            update = { scroll ->
+                scroll.setContent {
+                    ExpressiveTrainListScreen(
+                        trainList, dark, pureBlack, onBack, onNavigate, scroll, embedded, list,
+                    )
+                }
+            },
+        )
+    }
+
+    private fun moveWebTo(parent: FrameLayout) {
+        if (web.parent === parent) return
+        (web.parent as? ViewGroup)?.removeView(web)
+        parent.addView(web, FrameLayout.LayoutParams(-1, -1))
+    }
+
+    fun close() {
+        dataVersions.close()
+        trainList.close()
+        history.close()
+        station.close()
+        trainQuery.close()
+    }
+}

@@ -60,7 +60,7 @@ class HistoryDeviceTest {
             capture("history-start-failure")
             println("HISTORY_START: " + evaluate("[location.hash, Boolean(document.querySelector('.history-page'))]"))
             instrumentation.runOnMainSync {
-                println("HISTORY_VIEWS: " + activity.findViewById<android.view.View>(R.id.expressive_history_view).visibility +
+                println("HISTORY_VIEWS: " + activity.findViewById<android.view.View>(R.id.expressive_navigation_view).visibility +
                     ":" + activity.webView.visibility)
             }
             throw error

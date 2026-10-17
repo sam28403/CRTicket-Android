@@ -95,6 +95,7 @@ export function createBrowserTicketMonitor({
       }
       state.rows.value = data.trains
       state.queriedAt.value = data.queriedAt
+      if (state.monitoring.value && state.lastMonitorAt) state.lastMonitorAt.value = data.queriedAt
       await updateReminders(current, controller.signal)
     } catch (error) {
       if (current !== generation) return

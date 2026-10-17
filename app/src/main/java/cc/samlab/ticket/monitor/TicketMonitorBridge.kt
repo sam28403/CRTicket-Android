@@ -19,6 +19,13 @@ class TicketMonitorBridge(
         TicketMonitorService.update(activity, payload)
     }
 
+    fun reset(id: String) = change(id) {
+        TicketMonitorService.stop(activity)
+        TicketMonitorStore.save(activity, JSONObject())
+    }
+
+    fun refresh(id: String) = change(id) { TicketMonitorService.refresh(activity) }
+
     fun stop(id: String) = change(id) { TicketMonitorService.stop(activity) }
 
     private fun change(id: String, action: () -> Unit) {

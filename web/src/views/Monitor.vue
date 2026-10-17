@@ -1,10 +1,16 @@
 <script setup>
+import { useNativeTicketMonitor } from '@/composables/useNativeTicketMonitor.js'
+
+defineOptions({ name: 'TicketMonitor' })
+
 import AppBrand from '@/components/AppBrand.vue'
 import { Refresh } from '@element-plus/icons-vue'
 import LeftTicketCard from '@/components/LeftTicketCard.vue'
 import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useTicketMonitor } from '@/composables/useTicketMonitor.js'
 
+const monitor = useTicketMonitor()
+const nativeMonitor = useNativeTicketMonitor(monitor)
 const {
   from, to, date, interval, monitoring, loading, rows, queriedAt, error,
   nextAt, events, columns, trainFilters, seatFilters, timeRange,
@@ -12,7 +18,7 @@ const {
   selectedArrivalStations, departureStations, arrivalStations, filtered,
   ticketCount, nativeMonitoring, restoring, query, stop, disabledDate,
   swapStations, selectTrainType,
-} = useTicketMonitor()
+} = monitor
 
 const timeMarks = { 0: '0点', 6: '6点', 12: '12点', 18: '18点', 24: '24点' }
 const formatHour = value => `${String(value).padStart(2, '0')}:00`
@@ -22,7 +28,7 @@ const time = value => value
 </script>
 
 <template>
-  <div class="monitor-page">
+  <div v-if="!nativeMonitor" class="monitor-page">
     <el-header class="top-header">
       <AppBrand />
       </el-header>
@@ -31,14 +37,9 @@ const time = value => value
       <header class="page-heading">
         <h1>
           余票查询与监控
-          <el-tag type="warning">Beta</el-tag>
+
         </h1>
-        <nav class="monitor-navigation" aria-label="页面导航">
-          <RouterLink to="/">生成车票</RouterLink>
-          <a href="https://www.12306.cn" target="_blank" rel="noopener noreferrer">
-            打开 12306 官网 ↗
-          </a>
-        </nav>
+
       </header>
 
       <el-card shadow="never">

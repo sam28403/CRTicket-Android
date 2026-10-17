@@ -6,7 +6,7 @@ function fixture(get) {
   const ref = value => ({ value })
   const state = {
     interval: ref(10), monitoring: ref(false), systemNotifications: ref(true),
-    loading: ref(false), rows: ref([]), queriedAt: ref(''), error: ref(''),
+    loading: ref(false), rows: ref([]), queriedAt: ref(''), lastMonitorAt: ref(''), error: ref(''),
     nextAt: ref(''), events: ref([]),
   }
   const timers = new Map()
@@ -101,4 +101,23 @@ test('one-off ticket queries remain available without starting monitoring', asyn
   assert.equal(f.state.rows.value.length, 1)
   assert.equal(f.timers.size, 0)
   assert.equal(f.notifications.length, 0)
+})
+
+
+test('only successful monitor queries advance the last monitor success time', async () => {
+  let response = data
+  const f = fixture(async () => ({ data: response }))
+  await f.browser.query(params)
+  assert.equal(f.state.queriedAt.value, data.queriedAt)
+  assert.equal(f.state.lastMonitorAt.value, '')
+  await f.browser.query(params, true)
+  assert.equal(f.state.lastMonitorAt.value, data.queriedAt)
+  response = { ...data, queriedAt: '2026-10-13T01:01:00Z' }
+  await f.browser.query(params)
+  assert.equal(f.state.monitoring.value, true)
+  assert.equal(f.state.lastMonitorAt.value, response.queriedAt)
+  f.browser.stop()
+  response = { ...data, queriedAt: '2026-10-13T01:02:00Z' }
+  await f.browser.query(params)
+  assert.equal(f.state.lastMonitorAt.value, '2026-10-13T01:01:00Z')
 })

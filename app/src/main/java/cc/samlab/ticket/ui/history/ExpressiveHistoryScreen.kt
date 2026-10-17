@@ -1,17 +1,13 @@
 package cc.samlab.ticket.ui.history
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
@@ -29,22 +25,22 @@ internal fun ExpressiveHistoryScreen(
     onBack: () -> Unit,
     embedded: Boolean = false,
     visible: Boolean = true,
+    draft: HistoryDraft? = controller.ui.draft,
 ) {
     val list = rememberLazyListState()
     var sorting by remember { mutableStateOf(false) }
     val rows = remember(controller.rows, controller.sort) { sortHistory(controller.rows, controller.sort) }
-    val draft = controller.ui.draft
-    val progress by animateFloatAsState(controller.ui.backProgress, tween(120), label = "history-back")
-    LaunchedEffect(controller.sort) { list.scrollToItem(0) }
+    var lastSort by rememberSaveable { mutableStateOf(controller.sort.name) }
+    LaunchedEffect(controller.sort) {
+        if (lastSort != controller.sort.name) {
+            list.scrollToItem(0)
+            lastSort = controller.sort.name
+        }
+    }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
         Surface(
-            Modifier.fillMaxSize().graphicsLayer {
-                scaleX = 1f - progress * 0.05f
-                scaleY = 1f - progress * 0.05f
-                shape = RoundedCornerShape(24.dp)
-                clip = progress > 0f
-            },
+            Modifier.fillMaxSize(),
             color = colors.surfaceContainer,
         ) {
             Column {
@@ -57,7 +53,7 @@ internal fun ExpressiveHistoryScreen(
                     },
                     navigationIcon = {
                         if (!embedded || draft != null) FilledTonalIconButton(
-                            onClick = { if (!controller.ui.closeDetail()) onBack() },
+                            onClick = onBack,
                             modifier = Modifier.padding(start = 8.dp),
                             enabled = !controller.ui.busy,
                         ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") }
@@ -98,17 +94,9 @@ internal fun ExpressiveHistoryScreen(
                         color = colors.onErrorContainer,
                     )
                 }
-                AnimatedContent(
-                    targetState = draft,
-                    modifier = Modifier.weight(1f),
-                    transitionSpec = {
-                        (fadeIn(tween(160)) + slideInHorizontally(tween(220)) { it / 20 })
-                            .togetherWith(fadeOut(tween(100)))
-                    },
-                    label = "history-page",
-                ) { editor ->
-                    if (editor == null) HistoryListContent(controller, list, rows, visible && draft == null)
-                    else HistoryEditorContent(controller, editor)
+                Box(Modifier.weight(1f)) {
+                    if (draft == null) HistoryListContent(controller, list, rows, visible)
+                    else HistoryEditorContent(controller, draft)
                 }
             }
         }

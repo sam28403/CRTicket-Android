@@ -9,6 +9,8 @@ import {
 } from '../android/monitorNotifications.js'
 import {
   getTicketMonitorStatus,
+  refreshTicketMonitor,
+  resetTicketMonitor,
   startTicketMonitor,
   stopTicketMonitor,
   supportsTicketMonitoring,
@@ -48,6 +50,7 @@ export function useTicketMonitor() {
     loading: ref(nativeMonitoring),
     rows: ref([]),
     queriedAt: ref(''),
+    lastMonitorAt: ref(''),
     error: ref(''),
     nextAt: ref(''),
     events: ref([]),
@@ -110,6 +113,7 @@ export function useTicketMonitor() {
       if (reason === 'stop') return
       state.rows.value = Array.isArray(status.trains) ? status.trains : []
       state.queriedAt.value = status.queriedAt || ''
+      if (status.queriedAt) state.lastMonitorAt.value = status.queriedAt
       state.events.value = Array.isArray(status.events) ? status.events : []
     },
     onError(error) {
@@ -147,7 +151,7 @@ export function useTicketMonitor() {
     generation++
     permissionController?.abort()
     browser.stop()
-    if (stopNative) void connection.stop()
+    if (stopNative) return connection.stop()
   }
 
   function reset() {
@@ -212,6 +216,38 @@ export function useTicketMonitor() {
     }
   }
 
+  async function resetAll() {
+    await stop()
+    if (nativeMonitoring) {
+      try {
+        await resetTicketMonitor()
+      } catch (error) {
+        state.error.value = error.message
+        return
+      }
+    }
+    applyingConfig = true
+    try {
+      from.value = ''
+      to.value = ''
+      date.value = today()
+      interval.value = 60
+      onlyAvailable.value = false
+      for (const [key, target] of Object.entries(filters)) {
+        target.value = key === 'timeRange' ? [0, 24]
+          : ['highSpeedOnly', 'ordinaryOnly'].includes(key) ? false : []
+      }
+      state.rows.value = []
+      state.queriedAt.value = ''
+      state.lastMonitorAt.value = ''
+      state.error.value = ''
+      state.nextAt.value = ''
+      browser.resetReminders()
+    } finally {
+      applyingConfig = false
+    }
+  }
+
   onMounted(() => {
     if (nativeMonitoring) void connection.restore()
   })
@@ -239,7 +275,20 @@ export function useTicketMonitor() {
     columns: ticketSeatColumns,
     departureStations: stationNames('from'),
     arrivalStations: stationNames('to'),
-    query, stop, disabledDate,
+    query, stop, disabledDate, resetAll,
+    async refresh() {
+      if (restoring.value || state.loading.value) return
+      if (!state.monitoring.value) return query()
+      if (nativeMonitoring) {
+        try {
+          state.loading.value = true
+          await refreshTicketMonitor()
+        } catch (error) {
+          state.error.value = error.message
+          state.loading.value = false
+        }
+      } else return browser.query(parameters())
+    },
     swapStations() {
       const original = from.value
       from.value = to.value
