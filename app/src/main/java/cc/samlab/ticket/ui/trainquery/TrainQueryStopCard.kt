@@ -77,8 +77,9 @@ internal fun TrainQueryStopCard(
                 val day = stop.optInt("arrivalDay")
                 StopDetail(
                     "到达时间",
-                    if (index == 0) "始发站" else stop.text("arrival") + if (day > 0) " (+$day 天)" else "",
+                    if (index == 0) "始发站" else stop.text("arrival"),
                     Modifier.weight(1f),
+                    day = if (index > 0 && !stop.isNull("arrival")) day else 0,
                 )
                 StopDetail("出发时间", if (index == total - 1) "终到站" else stop.text("departure"), Modifier.weight(1f))
             }
@@ -91,10 +92,28 @@ internal fun TrainQueryStopCard(
 }
 
 @Composable
-private fun StopDetail(label: String, value: String, modifier: Modifier) {
+private fun StopDetail(label: String, value: String, modifier: Modifier, day: Int = 0) {
+    val content = LocalContentColor.current
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = LocalContentColor.current.copy(alpha = 0.88f))
-        Text(value, style = MaterialTheme.typography.titleMedium)
+        Text(label, style = MaterialTheme.typography.labelMedium, color = content.copy(alpha = 0.88f))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(value, style = MaterialTheme.typography.titleMedium)
+            if (day > 0) Surface(
+                shape = RoundedCornerShape(6.dp),
+                color = content.copy(alpha = 0.12f),
+                contentColor = content,
+                border = BorderStroke(1.dp, content.copy(alpha = 0.3f)),
+            ) {
+                Text(
+                    "+$day",
+                    Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+        }
     }
 }
 
