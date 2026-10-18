@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.history.*
+import cc.samlab.ticket.ui.generator.*
 import cc.samlab.ticket.ui.monitor.*
 import cc.samlab.ticket.ui.navigation.ExpressiveRoutes
 import cc.samlab.ticket.ui.settings.*
@@ -31,6 +32,7 @@ internal class ExpressivePageContent(
     private val station: NativeStationBoardController,
     private val trainQuery: NativeTrainQueryController,
     private val monitor: NativeTicketMonitorController,
+    private val generator: NativeGeneratorController,
     private val web: WebView,
     private val navigation: HomeNavigationState,
     private val onNavigate: (String) -> Unit,
@@ -45,6 +47,7 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/" -> ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, embedded, active)
             "/home" -> if (embedded) About(dark, pureBlack, true)
                 else ExpressiveHomeScreen(dark, active, onNavigate, pureBlack, navigation)
             "/about" -> About(dark, pureBlack, embedded)

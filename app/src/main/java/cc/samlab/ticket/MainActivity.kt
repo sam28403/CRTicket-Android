@@ -69,6 +69,9 @@ class MainActivity : ComponentActivity() {
         cc.samlab.ticket.ui.history.NativeHistoryController(this, webView, worker)
     }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
+    private val generator by lazy {
+        cc.samlab.ticket.ui.generator.NativeGeneratorController(this, webView)
+    }
     private lateinit var appearance: AppearanceController
     private var navigationReady = false
     private var pendingRoute: String? = null
@@ -92,7 +95,7 @@ class MainActivity : ComponentActivity() {
         history.restore(savedInstanceState)
         home.attach(
             container, ::navigateTo, ::navigateBack, { openExternal(Uri.parse(it)) },
-            settings, trainList, history, stationBoard, trainQuery, monitorPage, webView,
+            settings, trainList, history, stationBoard, trainQuery, monitorPage, generator, webView,
             ::onNativeRoute,
         )
         WindowLayoutObserver(this) { home.updateFolds(it) }
@@ -142,6 +145,8 @@ class MainActivity : ComponentActivity() {
                 trainList::receive,
                 history::receive,
                 history::receiveOperation,
+                generator::receive,
+                generator::savedDraft,
                 stationBoard::receive,
                 monitorPage::receive,
                 trainQuery::receive,

@@ -60,6 +60,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         station: NativeStationBoardController,
         trainQuery: NativeTrainQueryController,
         monitor: NativeTicketMonitorController,
+        generator: cc.samlab.ticket.ui.generator.NativeGeneratorController,
         webView: WebView,
         onNativeRoute: (String, Boolean, Boolean) -> Unit,
     ) {
@@ -67,7 +68,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         this.settings = settings
         this.history = history
         pages = ExpressivePageContent(
-            activity, settings, trainList, history, station, trainQuery, monitor,
+            activity, settings, trainList, history, station, trainQuery, monitor, generator,
             webView, navigation, onNavigate, onBack, onExternal,
         )
         settings.onMonitorSettings = { onNavigate("/monitor/settings") }

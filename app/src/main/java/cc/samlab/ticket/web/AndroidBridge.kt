@@ -30,6 +30,8 @@ class AndroidBridge(
     private val receiveTrainList: (String) -> Unit,
     private val receiveHistory: (String) -> Unit,
     private val receiveHistoryOperation: (String) -> Unit,
+    private val receiveGenerator: (String) -> Unit,
+    private val readGeneratorDraft: () -> String,
     private val receiveStationBoard: (String) -> Unit,
     private val receiveTicketMonitorPage: (String) -> Unit,
     private val receiveTrainQuery: (String) -> Unit,
@@ -86,6 +88,12 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun historyResult(payload: String) = receiveHistory(payload)
+
+    @JavascriptInterface
+    fun generatorResult(payload: String) = receiveGenerator(payload)
+
+    @JavascriptInterface
+    fun generatorDraft(): String = readGeneratorDraft()
 
     @JavascriptInterface
     fun historyOperationResult(payload: String) {

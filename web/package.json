@@ -7,7 +7,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "test:android": "node --test src/android/*.test.js src/android/railway/*.test.js src/stores/user.test.js src/utils/stationBoard.test.js src/utils/stationBoardTime.test.js src/utils/stationNavigation.test.js src/utils/trainInfoPdf.test.js src/utils/trainPdfFont.test.js src/utils/maps/trainRouteMap.test.js src/utils/maps/stationCoordinates.test.js ../tools/package-arrival-stations.test.mjs src/utils/trainQuerySource.test.js src/utils/trainQueryDate.test.js src/utils/maps/stationLocationMap.test.js src/utils/maps/tileLayerHealth.test.js src/utils/maps/transportConnection.test.js src/utils/pullRefreshGesture.test.js src/utils/historyValidation.test.js src/utils/ticketFacePrice.test.js",
+    "test:android": "node --test src/android/*.test.js src/android/railway/*.test.js src/stores/user.test.js src/utils/stationBoard.test.js src/utils/stationBoardTime.test.js src/utils/stationNavigation.test.js src/utils/trainInfoPdf.test.js src/utils/trainPdfFont.test.js src/utils/maps/trainRouteMap.test.js src/utils/maps/stationCoordinates.test.js ../tools/package-arrival-stations.test.mjs src/utils/trainQuerySource.test.js src/utils/trainQueryDate.test.js src/utils/maps/stationLocationMap.test.js src/utils/maps/tileLayerHealth.test.js src/utils/maps/transportConnection.test.js src/utils/pullRefreshGesture.test.js src/utils/historyValidation.test.js src/utils/ticketFacePrice.test.js src/utils/generatorSaveFlow.test.js",
     "dev": "vite",
     "build": "vite build && node ../tools/package-web-assets.mjs",
     "preview": "vite preview"

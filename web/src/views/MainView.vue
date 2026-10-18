@@ -232,7 +232,7 @@
 
             <div class="date-time">{{ticket.date}}&nbsp;&nbsp; {{ticket.time}}开</div>
 
-            <div class="price">￥{{ticket.price}}元</div>
+            <div class="price">￥{{facePrice}}元</div>
 
             <div class="tip"><strong>限乘当日当次车</strong></div>
 
@@ -257,24 +257,16 @@
           </div>
         </div>
         <div class="download-buttons">
-          <el-button type="primary" @click="downloadPDF">
+          <el-button type="primary" :loading="isSavingTicket" @click="downloadPDF">
             <el-icon><Document /></el-icon>
-            下载 PDF
+            保存 PDF
           </el-button>
 
-          <el-button type="success" @click="downloadPNG">
+          <el-button type="success" :disabled="isSavingTicket" @click="downloadPNG">
             <el-icon><Picture /></el-icon>
-            下载 PNG
+            保存图片
           </el-button>
-          <el-button
-              type="success"
-              :disabled="isGithubPagesBuild"
-              :loading="isSavingTicket"
-              @click="saveTicket"
-          >
-            <el-icon><Checked /></el-icon>
-            {{ deviceMode ? '存储到本机' : '保存车票' }}
-          </el-button>
+          <el-button :disabled="isSavingTicket" @click="generator.clear">清空</el-button>
         </div>
       </el-card>
 
@@ -288,21 +280,19 @@ import {ElButton, ElIcon, ElMessage, ElMessageBox, ElNotification} from 'element
 import QRCode from 'qrcode'
 
 
-import {Check, Checked, Close, Document, Picture, Star, User} from '@element-plus/icons-vue'
+import {Check, Close, Document, Picture, Star, User} from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import api from '@/api.js'
+import { useTicketGenerator } from '@/composables/useTicketGenerator.js'
 import { useUserStore } from '@/stores/user.js'
 import { isGithubPagesBuild } from '@/config/deploy.js'
-import { downloadTicketPNG, renderTicketImage } from '@/utils/ticketExport.js'
-import { native, deviceMode, saveFile } from '@/android/platform.js'
+import { native } from '@/android/platform.js'
 import {
-  buildTicketPayload,
   createDefaultTicket,
-  hasRequiredTicketFields,
   seatOptions,
   themeOptions,
   ticketRules,
   ticketQRCodeOptions,
+  ticketFacePrice,
 } from '@/utils/ticketShared.js'
 import {
   formatStationName as formatTicketStationName,
@@ -315,10 +305,7 @@ import {
 const userStore = useUserStore()
 userStore.init()
 
-const ticket = reactive({
-  ...createDefaultTicket(),
-  distance: undefined,
-})
+const ticket = reactive(createDefaultTicket())
 const formRef = ref(null)
 const rules = ticketRules
 const options = seatOptions
@@ -333,6 +320,7 @@ const {
 } = useSeatType(ticket)
 
 const useCredit = computed(() => useCreditLabel.value)
+const facePrice = computed(() => ticketFacePrice(ticket.price, credit.value))
 const querySearch = queryStationSearch
 const handleSelect = (field, item) => handleStationSelect(ticket, field, item)
 const formatStationName = (name) => formatTicketStationName(name)
@@ -350,16 +338,13 @@ const distanceRules = [
 
 const qrCodeUrl = ref('')
 
-function generateQRCode(text) {
+async function generateQRCode(text) {
   if (!text) {
     qrCodeUrl.value = ''
     return
   }
-  QRCode.toDataURL(text, ticketQRCodeOptions(), (err, url) => {
-    if (!err) {
-      qrCodeUrl.value = url
-    }
-  })
+  const url = await QRCode.toDataURL(text, ticketQRCodeOptions()).catch(() => '')
+  if (ticket.number === text) qrCodeUrl.value = url
 }
 
 watch(() => ticket.number, (newVal) => {
@@ -444,45 +429,23 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateMobilePreviewFlag)
 })
 
-const downloadPDF = async () => {
-  if (!hasRequiredTicketFields(ticket)) {
-    ElMessage.warning('请填写所有必填项')
-    return
-  }
+const generator = useTicketGenerator({
+  ticket, credit, conditioner: value3, ticketRef,
+  owner: () => JSON.parse(localStorage.getItem('user') || 'null'),
+  prepare: () => generateQRCode(ticket.number),
+})
+const isSavingTicket = generator.busy
 
+async function saveGeneratedTicket(format) {
   try {
-    const element = ticketRef.value
-    const imgData = await renderTicketImage(element)
-
-    const { default: jsPDF } = await import('jspdf')
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'cm',
-      format: [8.6, 5.4]
-    })
-
-    pdf.addImage(imgData, 'PNG', 0, 0, 8.6, 5.4)
-    await saveFile(pdf.output('blob'), `${ticket.number}.pdf`)
+    const result = await generator.saveFormat(format)
+    if (result?.exported) ElMessage.success('车票已保存到账户并导出')
   } catch (error) {
-    ElMessage.error(error.message || 'PDF导出失败')
+    ElMessage.error(error?.response?.data?.message || error.message || '保存失败，请重试')
   }
 }
-
-const downloadPNG = async () => {
-  if (!hasRequiredTicketFields(ticket)) {
-    ElMessage.warning('请填写所有必填项')
-    return
-  }
-
-  try {
-    const element = ticketRef.value
-    const imgData = await renderTicketImage(element)
-
-    await downloadTicketPNG(imgData, ticket.number)
-  } catch (error) {
-    ElMessage.error(error.message || 'PNG导出失败')
-  }
-}
+const downloadPDF = () => saveGeneratedTicket('pdf')
+const downloadPNG = () => saveGeneratedTicket('image')
 
 const router = useRouter()
 const goToMonitor = () => {
@@ -517,57 +480,6 @@ const goToGitHub = () => {
       })
 }
 
-const isSavingTicket = ref(false)
-
-const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('user'))
-}
-
-const saveTicket = async () => {
-  if (isSavingTicket.value) return
-  if (isGithubPagesBuild) {
-    ElMessage.warning('GitHub Pages 演示版不支持账号存储/历史记录功能')
-    return
-  }
-
-  const currentUser = getCurrentUser()
-  if (!currentUser) {
-    ElMessage.warning('无法读取默认用户资料')
-    return
-  }
-
-  if (!hasRequiredTicketFields(ticket)) {
-    ElMessage.warning('请填写完整车票信息')
-    return
-  }
-
-  const validDistance = await formRef.value.validateField('distance').catch(() => false)
-  if (!validDistance || isSavingTicket.value) return
-
-  isSavingTicket.value = true
-  try {
-    const res = await api.post(
-      '/ticket/add',
-      buildTicketPayload(ticket, {
-        userId: currentUser.id,
-        useCredit: credit.value,
-        finalSeatType: finalSeatType.value,
-        hasConditioner: value3.value,
-        distance: ticket.distance,
-      })
-    )
-
-    if (res.data.success) {
-      ElMessage.success('车票保存成功')
-    } else {
-      ElMessage.error(res.data.message)
-    }
-  } catch (err) {
-    ElMessage.error('保存失败')
-  } finally {
-    isSavingTicket.value = false
-  }
-}
 </script>
 
 <style scoped>

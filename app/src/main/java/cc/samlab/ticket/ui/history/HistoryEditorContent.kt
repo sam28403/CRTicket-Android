@@ -25,11 +25,13 @@ internal fun HistoryEditorContent(controller: NativeHistoryController, draft: Hi
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (wide) Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Column(Modifier.weight(1f)) { JourneyFields(controller, draft, enabled) }
-                Column(Modifier.weight(1f)) { TicketFields(controller, draft, enabled) }
+                Column(Modifier.weight(1f)) { JourneyFields(draft, controller.stations, enabled) }
+                Column(Modifier.weight(1f)) {
+                    TicketFields(draft, controller.seats, controller.airDisabledSeats, enabled)
+                }
             } else {
-                JourneyFields(controller, draft, enabled)
-                TicketFields(controller, draft, enabled)
+                JourneyFields(draft, controller.stations, enabled)
+                TicketFields(draft, controller.seats, controller.airDisabledSeats, enabled)
             }
             EditorSection("其他信息") {
                 HistoryTextField(draft, "sellPlace", "售票地点", "例如：南京南站", enabled = enabled)
@@ -55,36 +57,41 @@ internal fun HistoryEditorContent(controller: NativeHistoryController, draft: Hi
 }
 
 @Composable
-private fun JourneyFields(controller: NativeHistoryController, draft: HistoryDraft, enabled: Boolean) {
+internal fun JourneyFields(draft: HistoryDraft, stations: List<HistoryStation>, enabled: Boolean) {
     EditorSection("行程信息") {
         HistoryTextField(draft, "trainNo", "车次", "例如：G25 或 1461", enabled = enabled)
-        HistoryStationField(draft, "from", "出发站", controller.stations, enabled)
-        HistoryStationField(draft, "to", "到达站", controller.stations, enabled)
+        HistoryStationField(draft, "from", "出发站", stations, enabled)
+        HistoryStationField(draft, "to", "到达站", stations, enabled)
         HistoryDateTimeFields(draft, enabled)
         HistoryTextField(draft, "distance", "里程（公里）", numeric = true, enabled = enabled)
     }
 }
 
 @Composable
-private fun TicketFields(controller: NativeHistoryController, draft: HistoryDraft, enabled: Boolean) {
+internal fun TicketFields(
+    draft: HistoryDraft,
+    seats: List<HistoryChoice>,
+    airDisabledSeats: Set<String>,
+    enabled: Boolean,
+) {
     EditorSection("车票信息") {
         HistoryTextField(draft, "number", "票号 / 订单号", "例如：E351822734", enabled = enabled)
         HistoryTextField(draft, "price", "票价 / 积分", numeric = true, enabled = enabled)
-        HistoryChoiceField(draft, "seatType", "席别", controller.seats, enabled) { selected ->
+        HistoryChoiceField(draft, "seatType", "席别", seats, enabled) { selected ->
             draft.fields["seatType"] = selected
-            if (selected in controller.airDisabledSeats) draft.conditioner = false
+            if (selected in airDisabledSeats) draft.conditioner = false
         }
         HistoryTextField(draft, "seatNo", "座位号", "例如：03车12A号", enabled = enabled)
         HistorySwitch("使用积分", draft.credit, enabled, draft::changeCredit)
         HistorySwitch(
             "空调", draft.conditioner,
-            enabled && draft.value("seatType") !in controller.airDisabledSeats,
+            enabled && draft.value("seatType") !in airDisabledSeats,
         ) { draft.conditioner = it }
     }
 }
 
 @Composable
-private fun EditorSection(title: String, content: @Composable ColumnScope.() -> Unit) {
+internal fun EditorSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
