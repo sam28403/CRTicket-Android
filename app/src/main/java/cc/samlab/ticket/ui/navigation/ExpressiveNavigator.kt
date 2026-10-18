@@ -7,7 +7,13 @@ import androidx.navigation.NavHostController
 internal class ExpressiveNavigator {
     private var controller: NavHostController? = null
     private var listener: NavController.OnDestinationChangedListener? = null
-    private var pending: Pair<String, Boolean>? = null
+    private data class Request(
+        val location: String,
+        val fromWeb: Boolean,
+        val replace: Boolean = false,
+        val reset: Boolean = false,
+    )
+    private var pending: Request? = null
     private var mirror = true
 
     val currentLocation: String?
@@ -18,8 +24,8 @@ internal class ExpressiveNavigator {
         controller = nav
         val initial = pending
         pending = null
-        if (initial != null && currentLocation != initial.first) {
-            nav.navigate(ExpressiveRoutes.graphRoute(initial.first))
+        if (initial != null) {
+            navigate(initial.location, initial.fromWeb, initial.replace, initial.reset)
         }
         val visited = mutableSetOf<String>()
         runCatching { nav.getBackStackEntry(nav.graph.startDestinationId).id }.getOrNull()?.let(visited::add)
@@ -29,7 +35,7 @@ internal class ExpressiveNavigator {
             val back = entry.id in visited
             visited.add(entry.id)
             nav.previousBackStackEntry?.id?.let(visited::add)
-            val shouldMirror = if (initialNotification) initial?.second ?: false else mirror
+            val shouldMirror = if (initialNotification) initial?.let { !it.fromWeb } ?: false else mirror
             initialNotification = false
             onDestination(ExpressiveRoutes.location(entry), back, shouldMirror)
         }
@@ -37,21 +43,34 @@ internal class ExpressiveNavigator {
         nav.addOnDestinationChangedListener(observer)
     }
 
-    fun navigate(location: String, fromWeb: Boolean = false): Boolean {
+    fun navigate(
+        location: String,
+        fromWeb: Boolean = false,
+        replace: Boolean = false,
+        reset: Boolean = false,
+    ): Boolean {
         val target = location.ifEmpty { "/" }
         val nav = controller
         if (nav == null) {
-            pending = target to !fromWeb
+            pending = Request(target, fromWeb, replace, reset)
             return true
         }
-        if (currentLocation == target ||
-            (fromWeb && currentLocation?.let(ExpressiveRoutes::webLocation) == target)) return false
+        if (!reset && (currentLocation == target ||
+            (fromWeb && currentLocation?.let(ExpressiveRoutes::webLocation) == target))) return false
         mirror = !fromWeb
         try {
             val previous = nav.previousBackStackEntry?.let(ExpressiveRoutes::location)
-            if (target == "/home") {
+            if (reset) {
+                // Every notification starts a fresh journey rooted at home, even
+                // when the same train is already the current destination.
+                nav.navigate(ExpressiveRoutes.graphRoute(target)) {
+                    popUpTo(nav.graph.startDestinationId) { inclusive = false }
+                    launchSingleTop = true
+                }
+            } else if (target == "/home") {
                 nav.popBackStack(nav.graph.startDestinationId, false)
-            } else if (fromWeb && currentLocation?.let { ExpressiveRoutes.addsDefaultDate(it, target) } == true) {
+            } else if (replace ||
+                (fromWeb && currentLocation?.let { ExpressiveRoutes.addsDefaultDate(it, target) } == true)) {
                 nav.navigate(ExpressiveRoutes.graphRoute(target)) {
                     popUpTo(nav.currentDestination!!.id) { inclusive = true }
                 }

@@ -31,11 +31,11 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
         .put("interactive", context.getSystemService(PowerManager::class.java).isInteractive)
         .put("trainNotification", notice(TrainTrackingNotifications.NOTIFICATION_ID) != null)
 
-    fun open() {
+    fun open(intent: Intent = Intent(context, MainActivity::class.java)) {
         shell("input keyevent KEYCODE_WAKEUP")
         finish()
         activity = instrumentation.startActivitySync(
-            Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         ) as MainActivity
         instrumentation.runOnMainSync {
             activity?.setShowWhenLocked(true)

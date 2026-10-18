@@ -104,12 +104,13 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         container.addView(root, FrameLayout.LayoutParams(-1, -1))
     }
 
-    fun setPage(page: String) {
+    fun setPage(page: String, replace: Boolean = false) {
         if (navigator.currentLocation == null) applyLocation(page.ifEmpty { "/" })
-        navigator.navigate(page, fromWeb = true)
+        navigator.navigate(page, fromWeb = true, replace = replace)
     }
 
     fun navigate(location: String) = navigator.navigate(location)
+    fun openNotification(location: String) = navigator.navigate(location, reset = true)
     fun pop() = navigator.pop()
 
     private fun applyLocation(destination: String) {

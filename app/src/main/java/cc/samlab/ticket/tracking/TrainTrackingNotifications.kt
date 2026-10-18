@@ -52,7 +52,9 @@ class TrainTrackingNotifications(private val context: Context) {
         val route = Uri.Builder().path("/train")
             .appendQueryParameter("train", timeline.queryTrain)
             .appendQueryParameter("date", timeline.date)
-            .appendQueryParameter("source", timeline.querySource)
+            .apply {
+                if (timeline.querySource.isNotEmpty()) appendQueryParameter("source", timeline.querySource)
+            }
             .build().toString()
         val open = PendingIntent.getActivity(
             context, NOTIFICATION_ID,

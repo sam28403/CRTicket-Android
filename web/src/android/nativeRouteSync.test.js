@@ -1,6 +1,31 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createNativeRouteSync } from './nativeRouteSync.js'
+import { createNativeRouteReporter, createNativeRouteSync } from './nativeRouteSync.js'
+
+test('query form replacements retain one entry while links push distinct entries', () => {
+  let position = 0
+  const calls = []
+  const report = createNativeRouteReporter({
+    readPosition: () => position,
+    report: (route, replaced) => calls.push([route, replaced]),
+  })
+  position++
+  report('/train')
+  report('/train?train=G1')
+  position++
+  report('/station?station=北京南')
+  position++
+  report('/train?train=G3')
+  position--
+  report('/station?station=北京南')
+  assert.deepEqual(calls, [
+    ['/train', false],
+    ['/train?train=G1', true],
+    ['/station?station=北京南', false],
+    ['/train?train=G3', false],
+    ['/station?station=北京南', false],
+  ])
+})
 
 function fixture(current, previous) {
   const calls = []

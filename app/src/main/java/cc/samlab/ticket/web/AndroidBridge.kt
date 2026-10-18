@@ -25,7 +25,7 @@ class AndroidBridge(
     private val openExternal: (Uri) -> Unit,
     private val refresh: ExpressiveRefreshHost,
     private val ticketMonitor: TicketMonitorBridge,
-    private val showNativePage: (String) -> Unit,
+    private val showNativePage: (String, Boolean) -> Unit,
     private val receiveSettings: (JSONObject) -> Unit,
     private val receiveTrainList: (String) -> Unit,
     private val receiveHistory: (String) -> Unit,
@@ -42,10 +42,13 @@ class AndroidBridge(
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
     @JavascriptInterface
-    fun setHomeVisible(visible: Boolean) = onUi { showNativePage(if (visible) "/home" else "") }
+    fun setHomeVisible(visible: Boolean) = onUi { showNativePage(if (visible) "/home" else "", false) }
 
     @JavascriptInterface
-    fun setNativePage(route: String) = onUi { showNativePage(route) }
+    fun setNativePage(route: String) = onUi { showNativePage(route, false) }
+
+    @JavascriptInterface
+    fun setNativeRoute(route: String, replace: Boolean) = onUi { showNativePage(route, replace) }
 
     @JavascriptInterface
     fun setNativeBackTarget(route: String) = onUi { updateBackTarget(route) }

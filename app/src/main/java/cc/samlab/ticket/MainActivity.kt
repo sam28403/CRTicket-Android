@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var appearance: AppearanceController
     private var navigationReady = false
     private var pendingRoute: String? = null
+    private var pendingNotification = false
     private var pendingNativeRoute: String? = null
     private val navigationBack = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() = navigateBack()
@@ -101,9 +102,12 @@ class MainActivity : ComponentActivity() {
         WindowLayoutObserver(this) { home.updateFolds(it) }
         val route = initialNotificationRoute()
         pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
-        home.setPage(if (route == "#/home") {
-            savedInstanceState?.getString("nativePage") ?: "/home"
-        } else route.removePrefix("#"))
+        pendingNotification = savedInstanceState?.getBoolean("pendingNotification") ?: false
+        if (route == "#/home") {
+            home.setPage(savedInstanceState?.getString("nativePage") ?: "/home")
+        } else {
+            home.openNotification(route.removePrefix("#"))
+        }
         refresh.enabled = !home.usesWebContent
         webView.visibility = if (home.visible && !home.usesWebContent) android.view.View.INVISIBLE else android.view.View.VISIBLE
         appearance = AppearanceController(this, container, webView, dialogs, refresh, home)
@@ -206,16 +210,18 @@ class MainActivity : ComponentActivity() {
         intent.removeExtra(MonitorNotifications.OPEN_MONITOR)
     }
 
-    private fun receiveWebPage(page: String) {
+    private fun receiveWebPage(page: String, replace: Boolean) {
         val expected = pendingNativeRoute
         if (expected != null && page != expected && !ExpressiveRoutes.addsDefaultDate(expected, page)) return
         pendingNativeRoute = null
         navigationReady = true
-        home.setPage(page)
+        home.setPage(page, replace)
         updateNavigationUi()
         pendingRoute?.let { route ->
             pendingRoute = null
-            navigateTo(route)
+            val notification = pendingNotification
+            pendingNotification = false
+            navigateTo(route, notification)
         }
     }
 
@@ -232,13 +238,16 @@ class MainActivity : ComponentActivity() {
 
     private fun stationRoute(station: String) = "/station?station=${Uri.encode(station)}"
 
-    private fun navigateTo(route: String) {
+    private fun navigateTo(route: String) = navigateTo(route, notification = false)
+
+    private fun navigateTo(route: String, notification: Boolean) {
         // The native home can receive a tap before the WebView router finishes starting.
         if (!navigationReady) {
             pendingRoute = route
+            pendingNotification = notification
             return
         }
-        home.navigate(route)
+        if (notification) home.openNotification(route) else home.navigate(route)
     }
 
     private fun onNativeRoute(route: String, back: Boolean, mirror: Boolean) {
@@ -260,7 +269,9 @@ class MainActivity : ComponentActivity() {
             intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         }
         if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) navigateTo("/monitor")
-        intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)?.let(::navigateTo)
+        intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)?.let {
+            navigateTo(it, notification = true)
+        }
         clearNotificationRoute()
     }
 
@@ -331,6 +342,7 @@ class MainActivity : ComponentActivity() {
         webView.saveState(outState)
         outState.putString("nativePage", home.location)
         outState.putString("pendingRoute", pendingRoute)
+        outState.putBoolean("pendingNotification", pendingNotification)
         settings.ui.save(outState)
         history.save(outState)
         files.saveState(outState)

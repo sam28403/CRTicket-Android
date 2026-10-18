@@ -1,4 +1,14 @@
 // Native Navigation owns the UI stack; the web router mirrors data-page locations.
+export function createNativeRouteReporter({ readPosition, report }) {
+  let position = readPosition()
+  return route => {
+    const nextPosition = readPosition()
+    const replaced = typeof position === 'number' && nextPosition === position
+    position = nextPosition
+    report(route, replaced)
+  }
+}
+
 export function createNativeRouteSync({
   router,
   acknowledge,
