@@ -11,6 +11,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.unit.IntSize
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -22,15 +23,6 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
-
-internal data class NavigationScene(
-    val outgoing: NavBackStackEntry,
-    val incoming: NavBackStackEntry,
-    val closing: RouteFrame,
-    val entering: RouteFrame,
-    val back: Boolean,
-    val predictive: Boolean = false,
-)
 
 /** Owns the clock: a committed gesture always gets a fresh system-length release phase. */
 internal class ExpressiveNavigationMotion(
@@ -57,23 +49,42 @@ internal class ExpressiveNavigationMotion(
         }
     }
 
+    fun pendingScene(
+        stack: List<NavBackStackEntry>,
+        system: SystemRouteAnimations,
+    ): NavigationScene? {
+        val source = shown ?: return null
+        val destination = stack.lastOrNull() ?: return null
+        if (source.id == destination.id) return null
+        val back = stack.none { it.id == source.id }
+        val transition = RouteTransition(
+            enter = if (back) system.closeEnter else system.openEnter,
+            exit = if (back) system.closeExit else system.openExit,
+        )
+        return NavigationScene(
+            source, destination, transition.closing, transition.entering, back,
+            transition = transition,
+        )
+    }
+
     suspend fun navigate(stack: List<NavBackStackEntry>, system: SystemRouteAnimations) {
         val destination = stack.lastOrNull() ?: return
         val source = shown
+        val next = pendingScene(stack, system)
         shown = destination
         if (source == null || source.id == destination.id) {
             navigator.onTransitionComplete(destination)
             return
         }
         normalJob = currentCoroutineContext()[Job]
-        val back = stack.none { it.id == source.id }
-        val enter = if (back) system.closeEnter else system.openEnter
-        val exit = if (back) system.closeExit else system.openExit
-        val duration = maxOf(enter.duration, exit.duration)
-        scene = NavigationScene(source, destination, exit.at(0f), enter.at(0f), back)
+        val transition = requireNotNull(next?.transition)
+        val duration = transition.duration
+        scene = next
         try {
+            // Lay out the incoming page at its initial pose before starting its clock.
+            withFrameNanos { }
             Animatable(0f).animateTo(duration.toFloat(), tween(duration, easing = LinearEasing)) {
-                scene = NavigationScene(source, destination, exit.at(value), enter.at(value), back)
+                transition.timeMillis = value
             }
             scene = null
         } finally {

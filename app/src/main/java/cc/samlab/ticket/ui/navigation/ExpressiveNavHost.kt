@@ -91,19 +91,22 @@ internal fun ExpressiveNavHost(
             .testTag("expressive-navigation")
             .onSizeChanged { size = it },
     ) {
-        val scene = motion.scene
+        // Keep the old page composed and put the new page at its animation origin
+        // in this composition, before LaunchedEffect starts the transition clock.
+        val scene = motion.scene ?: motion.pendingScene(stack, system)
         val entries = if (scene == null) {
-            listOfNotNull(current).map { it to RouteFrame() }
+            listOfNotNull(current).map { it to true }
         } else if (scene.back) {
-            listOf(scene.incoming to scene.entering, scene.outgoing to scene.closing)
+            listOf(scene.incoming to true, scene.outgoing to false)
         } else {
-            listOf(scene.outgoing to scene.closing, scene.incoming to scene.entering)
+            listOf(scene.outgoing to false, scene.incoming to true)
         }
-        entries.forEach { (entry, frame) ->
+        entries.forEach { (entry, incoming) ->
             key(entry.id) {
                 val location = ExpressiveRoutes.location(entry)
                 Box(
                     Modifier.fillMaxSize().graphicsLayer {
+                        val frame = scene?.frame(incoming) ?: RouteFrame()
                         transformOrigin = TransformOrigin(0f, 0f)
                         translationX = frame.x
                         translationY = frame.y
@@ -114,6 +117,7 @@ internal fun ExpressiveNavHost(
                         clip = scene?.predictive == true
                     }.testTag("navigation-page:$location").drawWithContent {
                         drawContent()
+                        val frame = scene?.frame(incoming) ?: RouteFrame()
                         if (frame.dim > 0f) drawRect(Color.Black.copy(alpha = frame.dim))
                     },
                 ) {
