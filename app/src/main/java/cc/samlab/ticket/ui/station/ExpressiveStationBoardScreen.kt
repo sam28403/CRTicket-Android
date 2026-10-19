@@ -72,10 +72,14 @@ internal fun ExpressiveStationBoardScreen(
                             controller.resultStation, dark,
                             Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp, vertical = 8.dp),
                         )
+                    } else if (controller.tabs[StationTab.ALL].orEmpty().isEmpty()) {
+                        StationBoardEmptyState(controller.resultStation, Modifier.weight(1f))
                     } else StationBoardGrid(
                         controller, rows, timing, dark, onNavigate,
                         Modifier.weight(1f),
                     )
+                } else if (!controller.loading) {
+                    StationBoardDiscovery(controller, onNavigate, Modifier.weight(1f))
                 }
             }
         }

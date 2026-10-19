@@ -13,6 +13,7 @@ class NativeStationBoardController(
     private val worker: ExecutorService,
 ) {
     private val boards = linkedMapOf<String, StationBoardState>()
+    private var discovery = JSONObject()
     private var suggestionTarget: StationBoardState? = null
     private var suggestionQuery = ""
     private val generation = AtomicInteger()
@@ -22,7 +23,7 @@ class NativeStationBoardController(
         board(Uri.parse(location).getQueryParameter("station").orEmpty())
 
     private fun board(station: String): StationBoardState = boards.getOrPut(station) {
-        StationBoardState(station, ::dispatch)
+        StationBoardState(station, ::dispatch).also { it.discovery = discovery }
     }
 
     private fun dispatch(target: StationBoardState, action: String, station: String) {
@@ -38,6 +39,15 @@ class NativeStationBoardController(
     fun receive(payload: String) {
         if (closed || payload.length > 16 * 1024 * 1024) return
         val value = runCatching { JSONObject(payload) }.getOrNull() ?: return
+        if (value.optString("kind") == "discovery") {
+            activity.runOnUiThread {
+                if (!closed) {
+                    discovery = value
+                    boards.values.forEach { it.discovery = value }
+                }
+            }
+            return
+        }
         if (value.optString("kind") == "suggestions") {
             val query = value.optString("query")
             val items = value.optJSONArray("suggestions") ?: return

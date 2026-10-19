@@ -2,6 +2,7 @@
 import { computed, defineAsyncComponent, ref } from 'vue'
 import AppBrand from '@/components/AppBrand.vue'
 import StationBoardTable from '@/components/StationBoardTable.vue'
+import StationBoardDiscovery from '@/components/StationBoardDiscovery.vue'
 import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useStationBoard } from '@/composables/useStationBoard.js'
 import { boardTabs, stationBoardRows } from '@/utils/stationBoard.js'
@@ -85,6 +86,7 @@ function queryOnEnter(event) {
         class="query-message"
       />
       <el-card
+        v-if="result || loading"
         v-loading="loading"
         shadow="never"
         class="results"
@@ -138,6 +140,12 @@ function queryOnEnter(event) {
             :key="result.station"
             :station="result.station"
           />
+          <el-empty
+            v-else-if="result.total === 0"
+            :description="`${result.station} 今日没有到发车次，可查询其他车站。`"
+          >
+            <template #default><strong>今日暂无车次</strong></template>
+          </el-empty>
           <StationBoardTable
             v-else
             ref="table"
@@ -157,6 +165,7 @@ function queryOnEnter(event) {
             : error ? '查询未完成，请重试' : '输入站名查询当天到发信息'"
         />
       </el-card>
+      <StationBoardDiscovery v-else :discovery="board.discovery" />
     </main>
   </div>
 </template>

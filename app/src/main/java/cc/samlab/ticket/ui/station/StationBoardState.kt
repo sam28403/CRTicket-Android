@@ -3,6 +3,7 @@ package cc.samlab.ticket.ui.station
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import org.json.JSONObject
 
 /** A destination owns its data as well as its scroll positions during transitions. */
 internal class StationBoardState(
@@ -17,6 +18,7 @@ internal class StationBoardState(
     var tabs by mutableStateOf<Map<StationTab, List<StationBoardRow>>>(emptyMap())
     var suggestions by mutableStateOf<List<String>>(emptyList())
     var revision by mutableStateOf(0)
+    var discovery by mutableStateOf(JSONObject())
     private var presentation by mutableStateOf(StationBoardPresentation())
     private var presentationDate = ""
     var selectedTab: StationTab
@@ -42,6 +44,10 @@ internal class StationBoardState(
         if (loading) return
         suggestions = emptyList()
         dispatch(this, "query", station)
+    }
+
+    fun discoveryAction(action: String) {
+        dispatch(this, action, station)
     }
 
     fun preparePresentation(date: String) {

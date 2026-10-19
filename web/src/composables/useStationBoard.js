@@ -4,6 +4,7 @@ import api, { timetableTimeout } from '@/api.js'
 import { stationQueryName } from '@/utils/stationName.js'
 import { stationClock } from '@/utils/stationBoard.js'
 import { stationLocation } from '@/utils/stationNavigation.js'
+import { useStationDiscovery } from './useStationDiscovery.js'
 
 export function useStationBoard() {
   const route = useRoute()
@@ -11,6 +12,7 @@ export function useStationBoard() {
   const station = ref('')
   const now = ref(Date.now())
   const clock = computed(() => stationClock(now.value))
+  const discovery = useStationDiscovery(clock)
   const loading = ref(false)
   const result = shallowRef(null)
   const error = ref('')
@@ -53,6 +55,7 @@ export function useStationBoard() {
         return
       }
       result.value = data
+      discovery.record(selected)
       snapshots.delete(selected)
       snapshots.set(selected, data)
       if (snapshots.size > 12) snapshots.delete(snapshots.keys().next().value)
@@ -105,5 +108,5 @@ export function useStationBoard() {
     controller?.abort()
   })
 
-  return { station, clock, loading, result, error, query }
+  return { station, clock, loading, result, error, query, discovery }
 }

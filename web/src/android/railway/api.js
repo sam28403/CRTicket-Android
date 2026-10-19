@@ -5,6 +5,7 @@ import { listLltTrains, validListDate } from './lltList.js'
 import { lltTrainDetail } from './lltDetail.js'
 import { queryLeftTicket } from './leftTicket.js'
 import { requestStation } from './station.js'
+import { listStationSummaries } from './stationDiscovery.js'
 
 const summaries = new WeakMap()
 
@@ -25,6 +26,10 @@ export async function requestRailway(path, signal) {
     }
     if (!validListDate(query.date)) throw new Error('请选择有效日期')
     const database = await loadLltDatabase()
+    if (url.pathname === '/station/discovery') {
+        return { success: true, date: query.date,
+            stations: listStationSummaries(database, query.date) }
+    }
     if (url.pathname === '/llt-trains/detail') {
         return lltTrainDetail(database, query.train, query.date)
     }
