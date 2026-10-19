@@ -26,8 +26,9 @@ internal fun ExpressiveTrainQueryScreen(
     onNavigate: (String) -> Unit,
     embedded: Boolean = false,
     active: Boolean = true,
+    location: String = "/train",
 ) {
-    val state = controller.state
+    val state = controller.stateFor(location)
     val loading = state.optBoolean("loading")
     val result = state.optJSONObject("result")
     val stops = result?.optJSONArray("stops")
@@ -48,7 +49,10 @@ internal fun ExpressiveTrainQueryScreen(
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.surfaceContainer),
                 )
-                TrainQueryControls(controller, onDate = { datePicker = true })
+                TrainQueryControls(
+                    controller, state, controller.state.optString("location") == location,
+                    onDate = { datePicker = true },
+                )
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 320.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -106,8 +110,12 @@ internal fun ExpressiveTrainQueryScreen(
                     } else if (!loading) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(
                             if (result != null) "该日期未查询到此车次" else "输入车次和始发日期查询时刻表",
-                            Modifier.padding(24.dp), color = colors.onSurfaceVariant,
+                            Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                            color = colors.onSurfaceVariant,
                         )
+                    }
+                    if (result == null && !loading) {
+                        trainQueryDiscovery(controller, state, onNavigate)
                     }
                 }
             }

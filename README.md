@@ -62,7 +62,7 @@
 ## 构建和检查
 
 版本名称格式为 `<x.y.z>-<当前提交的至少 7 位短哈希>-<原项目版本日期>`。
-`x.y.z` 由你手动修改根目录 `gradle.properties` 中的 `crticket.version`，当前为 `0.6.1`，不会随提交自动变化。
+`x.y.z` 由你手动修改根目录 `gradle.properties` 中的 `crticket.version`，当前为 `0.6.2`，不会随提交自动变化。
 日期在构建时自动读取 `crticket.upstreamMainView` 指向的原项目 `MainView.vue` 中的 `<h3>Version 260930</h3>`。
 默认文件为 `C:/Users/SAM-LAB/WebstormProjects/CRTicket/src/views/MainView.vue`；换电脑时可修改该路径，原文件更新后构建缓存会自动刷新。
 文件缺失或没有唯一的版本日期时构建会报错，不会使用旧日期或本机日期。
@@ -70,7 +70,10 @@ Android 内部 `versionCode` 从 7 起随提交次数递增，支持覆盖升级
 尚无提交时哈希标记为 `uncommitted`；构建需要完整 Git 历史。
 可运行 `.\gradlew.bat :app:printAndroidVersion` 查看实际版本，或运行 `tools/verify-versioning.ps1` 验证版本配置、日期更新和缓存刷新。
 
-网页资源已生成，Android Studio 可直接运行 app。修改网页副本后重新构建：
+网页构建产物不纳入 Git：`app/src/main/assets/web/` 由 Vite 和资源复制脚本生成，
+`app/src/main/assets/arrival-stations.json` 由到站清单脚本生成。
+源码、图片和字体分别保留在 `web/src/` 和 `web/public/`。
+首次拉取项目或修改网页源码、公共资源后，需先运行以下网页构建，再通过 Android Studio 运行 app 或执行 Gradle 构建：
 
 ```powershell
 cd web

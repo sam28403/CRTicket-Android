@@ -1,9 +1,11 @@
 package cc.samlab.ticket.ui.trainquery
 
 import android.webkit.WebView
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.setValue
 import org.json.JSONObject
 
@@ -18,6 +20,16 @@ class NativeTrainQueryController(
     var date by mutableStateOf("")
         private set
     private var closed = false
+    private val snapshots = mutableStateMapOf<String, JSONObject>()
+
+    internal fun stateFor(location: String): JSONObject = snapshots[location] ?: run {
+        val uri = Uri.parse(location)
+        val code = uri.getQueryParameter("train").orEmpty()
+        JSONObject()
+            .put("train", code)
+            .put("date", uri.getQueryParameter("date") ?: date)
+            .put("loading", code.isNotEmpty())
+    }
 
     fun edit(code: String = train, day: String = date) {
         train = code.uppercase().take(40)
@@ -44,11 +56,21 @@ class NativeTrainQueryController(
                     data.put("route", previousRoute)
                 }
                 state = data
+                val location = data.optString("location")
+                if (location.isNotEmpty()) {
+                    snapshots[location] = data
+                    if (snapshots.size > 16) {
+                        snapshots.remove(snapshots.keys.first { it != location })
+                    }
+                }
                 train = data.optString("train")
                 date = data.optString("date")
             }
         }
     }
 
-    fun close() { closed = true }
+    fun close() {
+        closed = true
+        snapshots.clear()
+    }
 }

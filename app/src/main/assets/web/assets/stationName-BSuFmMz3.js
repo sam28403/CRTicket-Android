@@ -1,1 +1,0 @@
-function e(e){return String(e||``).replace(/\s+/g,``)}function t(t){if(typeof t!=`string`||/[\u0000-\u001f\u007f]/.test(t))return``;let n=e(t);return n.length<=30?n:``}export{t as n,e as t};

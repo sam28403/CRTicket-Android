@@ -12,6 +12,8 @@ import { isTrainQueryDateInRange, trainQueryRange } from '@/utils/trainQueryDate
 import { displayTrainCode, trainInfoForDisplay } from '@/utils/trainDisplay.js'
 import { trainQuerySourceLocation } from '@/utils/trainQuerySource.js'
 import { getTrainQueryNumberError } from '@/utils/trainQueryValidation.js'
+import { useTrainDiscovery } from '@/composables/useTrainDiscovery.js'
+import TrainQueryDiscovery from '@/components/TrainQueryDiscovery.vue'
 
 defineOptions({ name: 'TrainQuery' })
 
@@ -24,6 +26,7 @@ const error = ref('')
 const result = ref(null)
 const route = useRoute()
 const router = useRouter()
+const discovery = useTrainDiscovery(route, router)
 const offlineMode = computed(() => route.query.source === 'llt')
 const offlineRecord = ref('')
 const trainNumberError = computed(() => getTrainQueryNumberError(
@@ -34,7 +37,7 @@ const resultQuerySource = ref('')
 const trackingButton = ref(null)
 const nativeQuery = useNativeTrainQuery({
   train, date, loading, error, result, offlineMode, trackingButton, exporting,
-  query, switchSource, exportData,
+  query, switchSource, exportData, discovery, location: () => route.fullPath,
 })
 function toast(message) {
   if (!trainQueryToast(message)) ElMessage.info(message)
@@ -105,6 +108,7 @@ async function query() {
   }
   if (offlineMode.value) offlineRecord.value = code
   const selectedDate = date.value
+  discovery.record(code)
   const source = offlineMode.value ? 'llt' : undefined
   train.value = displayTrainCode(code)
   loading.value = true
@@ -322,6 +326,8 @@ onBeforeUnmount(() => {
         </template>
         <el-empty
           v-else
+          class="query-empty"
+          :image-size="48"
           :description="loading
             ? '正在获取时刻表'
             : error
@@ -331,6 +337,7 @@ onBeforeUnmount(() => {
                 : '输入车次和始发日期查询时刻表'"
         />
       </el-card>
+      <TrainQueryDiscovery v-if="!result && !loading" :discovery="discovery" />
       <TrainRouteMap v-if="result?.stops.length" :train="result.train" :stops="result.stops" />
     </main>
   </div>
@@ -349,6 +356,12 @@ onBeforeUnmount(() => {
 .train-query-page {
   min-height: 100vh;
   color: var(--el-text-color-primary);
+}
+.query-empty {
+  padding: 8px 0;
+}
+.query-empty :deep(.el-empty__description) {
+  margin-top: 8px;
 }
 .top-header {
   display: flex;

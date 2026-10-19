@@ -76,6 +76,7 @@ internal class ExpressivePageContent(
             )
             "/train" -> ExpressiveTrainQueryScreen(
                 trainQuery, dark, pureBlack, onBack, onNavigate, embedded, active,
+                location,
             )
             "/user" -> {
                 ExpressiveStatisticsScreen(

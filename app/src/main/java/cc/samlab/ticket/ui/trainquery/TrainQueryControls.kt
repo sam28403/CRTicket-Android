@@ -16,11 +16,17 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun TrainQueryControls(controller: NativeTrainQueryController, onDate: () -> Unit) {
-    val loading = controller.state.optBoolean("loading")
+internal fun TrainQueryControls(
+    controller: NativeTrainQueryController,
+    state: JSONObject,
+    current: Boolean,
+    onDate: () -> Unit,
+) {
+    val loading = state.optBoolean("loading")
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     fun dismissKeyboard() {
@@ -37,7 +43,7 @@ internal fun TrainQueryControls(controller: NativeTrainQueryController, onDate: 
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
-                value = controller.train,
+                value = if (current) controller.train else state.optString("train"),
                 onValueChange = { controller.edit(code = it) },
                 label = { Text("车次") },
                 placeholder = { Text("例如 G1") },
@@ -50,7 +56,7 @@ internal fun TrainQueryControls(controller: NativeTrainQueryController, onDate: 
             )
             Box(Modifier.weight(1.4f)) {
                 OutlinedTextField(
-                    value = controller.date,
+                    value = if (current) controller.date else state.optString("date"),
                     onValueChange = {},
                     label = { Text("始发日期") },
                     readOnly = true,
@@ -80,7 +86,7 @@ internal fun TrainQueryControls(controller: NativeTrainQueryController, onDate: 
                 enabled = !loading,
                 shapes = ButtonDefaults.shapes(),
                 modifier = Modifier.height(48.dp),
-            ) { Text(if (controller.state.optBoolean("offline")) "切换为在线查询" else "切换为路路通离线") }
+            ) { Text(if (state.optBoolean("offline")) "切换为在线查询" else "切换为路路通离线") }
         }
     }
 }
