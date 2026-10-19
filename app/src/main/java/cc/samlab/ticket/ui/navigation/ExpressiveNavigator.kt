@@ -2,9 +2,13 @@ package cc.samlab.ticket.ui.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 /** One native back stack, with the web router mirroring only committed locations. */
 internal class ExpressiveNavigator {
+    var largeScreen by mutableStateOf(false)
     private var controller: NavHostController? = null
     private var listener: NavController.OnDestinationChangedListener? = null
     private data class Request(
@@ -67,6 +71,12 @@ internal class ExpressiveNavigator {
                     popUpTo(nav.graph.startDestinationId) { inclusive = false }
                     launchSingleTop = true
                 }
+            } else if (largeScreen && target != "/home" &&
+                WideNavigationPolicy.startsJourney(target)) {
+                nav.navigate(ExpressiveRoutes.graphRoute(target)) {
+                    popUpTo(nav.graph.startDestinationId) { inclusive = false }
+                    launchSingleTop = true
+                }
             } else if (target == "/home") {
                 nav.popBackStack(nav.graph.startDestinationId, false)
             } else if (replace ||
@@ -90,7 +100,10 @@ internal class ExpressiveNavigator {
     }
 
     fun pop(): Boolean = controller?.let { nav ->
-        nav.previousBackStackEntry != null && nav.popBackStack()
+        WideNavigationPolicy.canPop(
+            largeScreen,
+            nav.previousBackStackEntry?.let(ExpressiveRoutes::location),
+        ) && nav.popBackStack()
     } ?: false
 
     fun detach() {

@@ -1,7 +1,10 @@
+import { getTrainNumberError } from './ticketShared.js'
+
 export function validateHistoryTicket(ticket) {
   const required = ['number', 'trainNo', 'from', 'to', 'date', 'time', 'seatType', 'seatNo']
   if (required.some(key => !String(ticket[key] ?? '').trim())) return '请填写完整车票信息'
-  if (!/^(\d{4}|5\d{4}|[GCDZTKLYS]\d{1,4})$/i.test(ticket.trainNo)) return '请输入正确的车次'
+  const trainError = getTrainNumberError(ticket.trainNo)
+  if (trainError) return trainError
   if (ticket.price === '' || !Number.isFinite(Number(ticket.price)) || Number(ticket.price) < 0) {
     return '请输入有效的票价或积分'
   }

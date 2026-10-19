@@ -289,7 +289,7 @@ class MainActivity : ComponentActivity() {
     private fun navigateBack() {
         if (home.visible) {
             if (!home.pop()) {
-                if (home.isHome) finish() else home.navigate("/home")
+                if (home.isHome || home.exitsAtRoot) finish() else home.navigate("/home")
             }
         } else {
             completeBackNavigation()

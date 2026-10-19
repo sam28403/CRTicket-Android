@@ -8,12 +8,14 @@ import { Refresh } from '@element-plus/icons-vue'
 import LeftTicketCard from '@/components/LeftTicketCard.vue'
 import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useTicketMonitor } from '@/composables/useTicketMonitor.js'
+import { trainTypeLabels } from '@/utils/trainTypeRules.js'
 
 const monitor = useTicketMonitor()
 const nativeMonitor = useNativeTicketMonitor(monitor)
 const {
   from, to, date, interval, monitoring, loading, rows, queriedAt, error,
   nextAt, events, columns, trainFilters, seatFilters, timeRange,
+  pendingTrainFilter, trainFilterError,
   onlyAvailable, highSpeedOnly, ordinaryOnly, selectedDepartureStations,
   selectedArrivalStations, departureStations, arrivalStations, filtered,
   ticketCount, nativeMonitoring, restoring, query, stop, disabledDate,
@@ -204,13 +206,19 @@ const time = value => value
             <small>{{ filtered.length }} 趟 · 关注席别有票 {{ ticketCount }} 趟</small>
           </h2>
           <div class="filters">
-            <el-input-tag
-              v-model="trainFilters"
-              class="train-filter-input"
-              placeholder="输入车次后回车，如 G1"
-              clearable
-              aria-label="筛选车次"
-            />
+            <el-form-item :error="trainFilterError">
+              <el-input-tag
+                :model-value="trainFilters"
+                class="train-filter-input"
+                placeholder="输入车次后回车，如 G1"
+                clearable
+                aria-label="筛选车次"
+                @update:model-value="trainFilters = $event || []"
+                @input="pendingTrainFilter = $event"
+                @add-tag="pendingTrainFilter = ''"
+                @clear="pendingTrainFilter = ''"
+              />
+            </el-form-item>
             <el-select
               v-model="seatFilters"
               multiple
@@ -229,16 +237,16 @@ const time = value => value
               />
             </el-select>
             <div class="train-type-switches" aria-label="车种筛选">
-              <span>高速动车</span>
+              <span>{{ trainTypeLabels.highSpeed }}</span>
               <el-switch
                 v-model="highSpeedOnly"
-                aria-label="仅显示高速动车"
+                :aria-label="`仅显示${trainTypeLabels.highSpeed}`"
                 @change="selectTrainType('highSpeed', $event)"
               />
-              <span>普速列车</span>
+              <span>{{ trainTypeLabels.ordinary }}</span>
               <el-switch
                 v-model="ordinaryOnly"
-                aria-label="仅显示普速列车"
+                :aria-label="`仅显示${trainTypeLabels.ordinary}`"
                 @change="selectTrainType('ordinary', $event)"
               />
             </div>

@@ -11,6 +11,7 @@ import api, { timetableTimeout } from '@/api.js'
 import { isTrainQueryDateInRange, trainQueryRange } from '@/utils/trainQueryDate.js'
 import { displayTrainCode, trainInfoForDisplay } from '@/utils/trainDisplay.js'
 import { trainQuerySourceLocation } from '@/utils/trainQuerySource.js'
+import { getTrainQueryNumberError } from '@/utils/trainQueryValidation.js'
 
 defineOptions({ name: 'TrainQuery' })
 
@@ -25,6 +26,9 @@ const route = useRoute()
 const router = useRouter()
 const offlineMode = computed(() => route.query.source === 'llt')
 const offlineRecord = ref('')
+const trainNumberError = computed(() => getTrainQueryNumberError(
+  train.value, offlineMode.value, offlineRecord.value,
+))
 const resultQueryCode = ref('')
 const resultQuerySource = ref('')
 const trackingButton = ref(null)
@@ -83,14 +87,15 @@ function disabledDate(value) {
 
 async function query() {
   if (loading.value) return
+  if (trainNumberError.value) {
+    toast(trainNumberError.value)
+    return
+  }
   const entered = train.value.trim().toUpperCase()
   const code = offlineMode.value && offlineRecord.value && entered === displayTrainCode(offlineRecord.value)
     ? offlineRecord.value
     : entered
-  const validCode = offlineMode.value
-    ? /^[A-Z]?\d{1,5}[A-Z]?(?:\/[A-Z]?\d{1,5}[A-Z]?)*$/.test(code) && code.length <= 40
-    : /^[A-Z]?\d{1,5}$/.test(code)
-  if (!validCode || !date.value) {
+  if (!date.value) {
     toast('请输入完整车次并选择始发日期')
     return
   }
@@ -193,7 +198,7 @@ onBeforeUnmount(() => {
       </div>
       <el-card shadow="never">
         <el-form class="query-form" label-position="top" @submit.prevent="query">
-          <el-form-item label="车次">
+          <el-form-item label="车次" :error="train ? trainNumberError : ''">
             <el-input
               v-model="train"
               :disabled="loading"

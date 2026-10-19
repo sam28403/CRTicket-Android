@@ -132,6 +132,7 @@ import {
   DEFAULT_TICKET_MESSAGE,
   DEFAULT_TICKET_THEME,
   hasRequiredTicketFields,
+  getTrainNumberError,
   ticketQRCodeOptions,
   ticketFacePrice,
 } from '@/utils/ticketShared.js'
@@ -337,6 +338,11 @@ const generateDownloadQRCode = async (text) => {
 }
 
 const downloadHistoryPNG = async (row) => {
+  const trainError = getTrainNumberError(row.trainNo)
+  if (trainError) {
+    ElMessage.warning(trainError)
+    return
+  }
   if (!hasRequiredTicketFields(row)) {
     ElMessage.warning('该记录信息不完整，无法下载')
     return
@@ -409,6 +415,11 @@ onMounted(() => { loadTickets() })
 
 const saveDistance = ref(false)
 const saveTicket = async () => {
+  const trainError = getTrainNumberError(ticket.trainNo)
+  if (trainError) {
+    ElMessage.warning(trainError)
+    return
+  }
   if (!hasRequiredTicketFields(ticket)) {
     ElMessage.warning('请填写完整车票信息')
     return

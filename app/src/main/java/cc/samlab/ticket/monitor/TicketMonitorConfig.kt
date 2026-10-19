@@ -3,6 +3,7 @@ package cc.samlab.ticket.monitor
 import org.json.JSONObject
 import java.time.LocalDate
 import java.time.ZoneId
+import cc.samlab.ticket.railway.TrainNumberRules
 
 data class TicketMonitorConfig(
     val from: String,
@@ -33,12 +34,18 @@ data class TicketMonitorConfig(
             val today = LocalDate.now(ZoneId.of("Asia/Shanghai"))
             require(parsed.toString() == date && !parsed.isBefore(today) &&
                 !parsed.isAfter(today.plusDays(14))) { "请选择今天起 15 天内的出发日期" }
+            val filters = json.optJSONObject("filters") ?: JSONObject()
+            val trains = filters.optJSONArray("trainFilters")
+            for (index in 0 until (trains?.length() ?: 0)) {
+                val error = TrainNumberRules.error(trains!!.optString(index).trim().uppercase())
+                require(error.isEmpty()) { error }
+            }
             return TicketMonitorConfig(
                 from, to, date,
                 json.optString("fromName", from).take(50),
                 json.optString("toName", to).take(50),
                 json.optLong("interval", 60).coerceIn(10, 3600),
-                json.optJSONObject("filters") ?: JSONObject(),
+                filters,
             )
         }
     }

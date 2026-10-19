@@ -11,6 +11,7 @@ import androidx.window.layout.FoldingFeature
 import cc.samlab.ticket.ui.navigation.ExpressiveNavigator
 import cc.samlab.ticket.ui.navigation.ExpressiveNavHost
 import cc.samlab.ticket.ui.navigation.ExpressiveRoutes
+import cc.samlab.ticket.ui.notice.ImportantNoticeDialog
 import cc.samlab.ticket.ui.window.*
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -28,15 +29,20 @@ internal fun ExpressiveAppLayout(
 ) {
     val latestContent by rememberUpdatedState(content)
     val latestDestination by rememberUpdatedState(onDestination)
+    val latestLocation by rememberUpdatedState(location)
     // Moving between compact and dual-pane layouts must preserve the graph itself.
     val graph = remember(navigator) {
         movableContentOf<Boolean> { embedded ->
-            ExpressiveNavHost(navigator, { destination, back, mirror ->
+            LaunchedEffect(embedded, latestLocation) {
+                if (embedded && latestLocation == "/home") navigator.navigate("/")
+            }
+            ExpressiveNavHost(navigator, embedded, { destination, back, mirror ->
                 latestDestination(destination, back, mirror)
             }) { destination, active -> latestContent(destination, active, embedded) }
         }
     }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
+        ImportantNoticeDialog()
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
             CompositionLocalProvider(LocalFoldingFeatures provides folds) {
                 val native = ExpressiveRoutes.isNative(location)
@@ -56,7 +62,7 @@ internal fun ExpressiveAppLayout(
                                         location.startsWith("/settings") -> "/settings"
                                         location.startsWith("/monitor") -> "/monitor"
                                         location.startsWith("/history") -> "/history"
-                                        location == "/home" -> "/about"
+                                        location == "/home" -> "/"
                                         else -> ExpressiveRoutes.path(location)
                                     }
                                     ExpressiveHomeScreen(

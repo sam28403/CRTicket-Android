@@ -1,7 +1,6 @@
 package cc.samlab.ticket.ui.generator
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,9 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -71,35 +68,35 @@ private fun GeneratorForm(controller: NativeGeneratorController, draft: HistoryD
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        BoxWithConstraints {
-            if (maxWidth >= 720.dp) Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Column(Modifier.weight(1f)) { JourneyFields(draft, controller.stations, enabled) }
-                Column(Modifier.weight(1f)) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val twoColumns = maxWidth >= 720.dp
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                if (twoColumns) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column(Modifier.weight(1f).testTag("generator-journey")) {
+                            JourneyFields(draft, controller.stations, enabled)
+                        }
+                        Column(Modifier.weight(1f)) {
+                            TicketFields(draft, controller.seats, controller.airDisabledSeats, enabled)
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column(Modifier.weight(1f).testTag("generator-other")) {
+                            GeneratorOtherFields(controller, draft, enabled)
+                        }
+                        Box(Modifier.weight(1f).testTag("generator-preview-column")) {
+                            GeneratorPreview(controller, wide = true)
+                        }
+                    }
+                } else {
+                    Column(Modifier.fillMaxWidth().testTag("generator-journey")) {
+                        JourneyFields(draft, controller.stations, enabled)
+                    }
                     TicketFields(draft, controller.seats, controller.airDisabledSeats, enabled)
-                }
-            } else Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                JourneyFields(draft, controller.stations, enabled)
-                TicketFields(draft, controller.seats, controller.airDisabledSeats, enabled)
-            }
-        }
-        EditorSection("其他信息") {
-            HistoryTextField(draft, "sellPlace", "售票地点", "例如：南京南站", enabled = enabled)
-            HistoryTextField(draft, "gate", "检票 / 候车", "例如：1A / 一候", enabled = enabled)
-            HistoryChoiceField(draft, "theme", "车票背景", controller.themes, enabled)
-            HistoryTextField(draft, "message", "提示语", multiline = true, enabled = enabled)
-        }
-        if (controller.showPreview) Box(
-            Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            Box(Modifier.widthIn(max = 480.dp)) {
-                EditorSection("实时预览") {
-                    val bitmap = controller.preview
-                    if (bitmap == null) LinearProgressIndicator(Modifier.fillMaxWidth())
-                    else Image(
-                        bitmap.asImageBitmap(), "车票实时预览",
-                        Modifier.fillMaxWidth().aspectRatio(86f / 54f).testTag("generator-preview"),
-                    )
+                    Column(Modifier.fillMaxWidth().testTag("generator-other")) {
+                        GeneratorOtherFields(controller, draft, enabled)
+                    }
+                    GeneratorPreview(controller, wide = false)
                 }
             }
         }

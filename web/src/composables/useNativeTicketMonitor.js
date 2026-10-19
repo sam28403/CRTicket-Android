@@ -4,7 +4,7 @@ import { queryStationSearch } from './useTicketShared.js'
 
 const fields = [
   'from', 'to', 'date', 'interval', 'monitoring', 'loading', 'queriedAt',
-  'lastMonitorAt', 'error', 'restoring', 'filtered', 'ticketCount', 'departureStations',
+  'lastMonitorAt', 'error', 'trainFilterError', 'restoring', 'filtered', 'ticketCount', 'departureStations',
   'arrivalStations', 'trainFilters', 'seatFilters', 'timeRange',
   'highSpeedOnly', 'ordinaryOnly', 'onlyAvailable',
   'selectedDepartureStations', 'selectedArrivalStations',

@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 internal fun ExpressiveNavHost(
     navigator: ExpressiveNavigator,
+    largeScreen: Boolean,
     onDestination: (String, Boolean, Boolean) -> Unit,
     content: @Composable (String, Boolean) -> Unit,
 ) {
@@ -70,6 +71,7 @@ internal fun ExpressiveNavHost(
     }
     val scrim = if (androidx.compose.foundation.isSystemInDarkTheme()) 0.8f else 0.2f
     SideEffect {
+        navigator.largeScreen = largeScreen
         motion.size = size
         motion.density = density.density
         motion.scrim = scrim
@@ -79,11 +81,16 @@ internal fun ExpressiveNavHost(
         onDispose { }
     }
     DisposableEffect(nav, navigator) {
+        navigator.largeScreen = largeScreen
         navigator.attach(nav) { location, popped, mirror -> callback(location, popped, mirror) }
         onDispose { navigator.detach() }
     }
     LaunchedEffect(current?.id) { motion.navigate(stack, system) }
-    PredictiveBackHandler(enabled = stack.size > 1) { events ->
+    val canPop = WideNavigationPolicy.canPop(
+        largeScreen,
+        stack.getOrNull(stack.lastIndex - 1)?.let(ExpressiveRoutes::location),
+    )
+    PredictiveBackHandler(enabled = canPop) { events ->
         motion.back { onProgress -> events.collect { onProgress(it) } }
     }
     Box(

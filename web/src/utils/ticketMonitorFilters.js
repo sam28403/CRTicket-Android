@@ -1,5 +1,8 @@
 import { hasAvailableSeat } from './seatAvailability.js'
 import { matchesDepartureTime } from './trainTime.js'
+import { isOrdinaryTrain } from './trainTypeRules.js'
+
+export { isOrdinaryTrain } from './trainTypeRules.js'
 
 export const ticketSeatColumns = [
   ['second', '二等座'],
@@ -15,21 +18,6 @@ export const ticketSeatColumns = [
   ['standing', '无座'],
   ['other', '其他'],
 ]
-
-export function isOrdinaryTrain(trainNo) {
-  const normalized = String(trainNo || '').trim().toUpperCase()
-  if (/^(?:[ZTKLY]\d+|\d+)$/.test(normalized)) return true
-  const match = normalized.match(/^([DCS])(\d+)$/)
-  if (!match) return false
-  const number = Number(match[2])
-  if (match[1] === 'D') {
-    return (number >= 1 && number <= 300) || (number >= 701 && number <= 800)
-  }
-  if (match[1] === 'C') {
-    return (number >= 1 && number <= 999) || (number >= 4001 && number <= 4999)
-  }
-  return (number >= 101 && number <= 999) || (number >= 1001 && number <= 2999)
-}
 
 export function matchesTicketMonitor(row, filters) {
   const trains = filters.trainFilters.map(value => value.trim().toUpperCase())

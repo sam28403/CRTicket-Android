@@ -10,11 +10,13 @@ object TicketMonitorMatches {
     }
 
     fun ordinary(train: String): Boolean {
-        if (Regex("(?:[ZTKLY]\\d+|\\d+)").matches(train)) return true
-        val number = train.drop(1).toIntOrNull() ?: return false
-        return when (train.firstOrNull()) {
+        val normalized = train.trim().uppercase()
+        if (Regex("(?:[ZTKLY]\\d+|\\d+)").matches(normalized)) return true
+        if (!Regex("[DCS]\\d+").matches(normalized)) return false
+        val number = normalized.drop(1).toIntOrNull() ?: return false
+        return when (normalized.firstOrNull()) {
             'D' -> number in 1..300 || number in 701..800
-            'C' -> number in 1..999 || number in 4001..4999
+            'C' -> number in 1..999 || number in 4001..4699
             'S' -> number in 101..999 || number in 1001..2999
             else -> false
         }

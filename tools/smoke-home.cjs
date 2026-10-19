@@ -93,6 +93,8 @@ async function main() {
 
         const fallback = await browser.newPage()
         await fallback.goto(`${address}/#/home`)
+        await fallback.getByRole('dialog', { name: '重要通知', exact: true })
+            .getByRole('button', { name: '确定', exact: true }).click()
         await fallback.getByRole('heading', { name: 'CRTicket' }).waitFor()
         for (const width of [320, 390, 840]) {
             await fallback.setViewportSize({ width, height: 844 })

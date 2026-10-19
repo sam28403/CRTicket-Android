@@ -17,6 +17,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import kotlin.math.roundToInt
 import org.json.JSONArray
+import cc.samlab.ticket.railway.TrainNumberRules
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +51,12 @@ internal fun MonitorSettingsDialog(
         state.optBoolean("ordinaryOnly") -> 2
         else -> 0
     }) }
-    val valid = key != "interval" || text.toIntOrNull() in 10..3600
+    val trains = text.uppercase().split(Regex("[\\s,，、]+"))
+        .filter { it.isNotEmpty() }.distinct()
+    val trainError = if (key == "trainFilters") {
+        trains.firstNotNullOfOrNull { TrainNumberRules.error(it).takeIf(String::isNotEmpty) }
+    } else null
+    val valid = (key != "interval" || text.toIntOrNull() in 10..3600) && trainError == null
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
@@ -64,7 +70,13 @@ internal fun MonitorSettingsDialog(
                             textStyle = if (key == "interval") MaterialTheme.typography.headlineLarge.copy(fontSize = 26.sp)
                                 else MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp),
                             label = { Text(if (key == "interval") "10–3600 秒" else "车次，如 G1 G3", fontSize = 16.sp) },
-                            supportingText = { Text(if (key == "interval") "停止监控后可调整间隔" else "多个车次用空格或逗号分隔，清空显示全部", fontSize = 14.sp) },
+                            supportingText = {
+                                Text(
+                                    trainError ?: if (key == "interval") "停止监控后可调整间隔"
+                                        else "多个车次用空格或逗号分隔，清空显示全部",
+                                    fontSize = 14.sp,
+                                )
+                            },
                             keyboardOptions = KeyboardOptions(keyboardType =
                                 if (key == "interval") KeyboardType.Number else KeyboardType.Text),
                             isError = !valid,
@@ -121,9 +133,7 @@ internal fun MonitorSettingsDialog(
             TextButton({
                 when (key) {
                     "interval" -> controller.edit(key, text.toInt())
-                    "trainFilters" -> controller.edit(key, JSONArray(
-                        text.uppercase().split(Regex("[\\s,，、]+" )).filter { it.isNotEmpty() }.distinct(),
-                    ))
+                    "trainFilters" -> controller.edit(key, JSONArray(trains))
                     "timeRange" -> controller.edit(key, JSONArray(listOf(range.start.toInt(), range.endInclusive.toInt())))
                     "trainType" -> {
                         controller.edit("highSpeedOnly", type == 1)

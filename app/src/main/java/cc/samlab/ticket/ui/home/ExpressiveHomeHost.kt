@@ -36,6 +36,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         }
     val visible get() = route.isNotEmpty()
     val isHome get() = route == "/home"
+    val exitsAtRoot get() = navigator.largeScreen
     val usesWebContent get() = route == "/user"
     val backgroundColor get() = homeColorScheme(activity, dark, pureBlack).surfaceContainer.toArgb()
     internal var folds by mutableStateOf<List<FoldingFeature>>(emptyList())

@@ -17,6 +17,7 @@ import {
   updateTicketMonitor,
 } from '../android/ticketMonitor.js'
 import { createTicketMonitorConnection } from '../android/ticketMonitorConnection.js'
+import { getTrainNumberError } from '../utils/ticketShared.js'
 import {
   matchesTicketMonitor,
   rowHasTicket,
@@ -33,6 +34,7 @@ export function useTicketMonitor() {
   const to = ref('')
   const date = ref(today())
   const interval = ref(60)
+  const pendingTrainFilter = ref('')
   const onlyAvailable = ref(false)
   const filters = {
     trainFilters: ref([]),
@@ -55,6 +57,11 @@ export function useTicketMonitor() {
     nextAt: ref(''),
     events: ref([]),
   }
+  const trainFilterError = computed(() => {
+    const values = [...filters.trainFilters.value]
+    if (pendingTrainFilter.value) values.push(pendingTrainFilter.value)
+    return values.map(getTrainNumberError).find(Boolean) || ''
+  })
   let applyingConfig = false
   let pendingRestore = nativeMonitoring
   let nativeStarting = false
@@ -129,6 +136,7 @@ export function useTicketMonitor() {
   })
 
   function parameters() {
+    if (trainFilterError.value) throw new Error(trainFilterError.value)
     const start = stations.find(station => station.name === from.value.trim())
     const end = stations.find(station => station.name === to.value.trim())
     if (!start || !end) throw new Error('请输入并选择有效的出发站和到达站')
@@ -166,11 +174,21 @@ export function useTicketMonitor() {
   }
 
   watch([from, to, date], reset, { flush: 'sync' })
+  watch(trainFilterError, (message, previousMessage) => {
+    if (applyingConfig) return
+    if (!message) {
+      if (state.error.value === previousMessage) state.error.value = ''
+      return
+    }
+    stop()
+    state.error.value = message
+  }, { flush: 'sync' })
   watch(interval, () => {
     if (!applyingConfig && pendingRestore) stop()
   }, { flush: 'sync' })
   watch(Object.values(filters), () => {
     if (applyingConfig) return
+    if (trainFilterError.value) return
     if (pendingRestore) stop()
     browser.resetReminders()
     if (nativeMonitoring && state.monitoring.value) {
@@ -196,6 +214,7 @@ export function useTicketMonitor() {
     try {
       const permission = await requestMonitorNotificationPermission(permissionController.signal)
       if (current !== generation) return
+      if (trainFilterError.value) throw new Error(trainFilterError.value)
       state.systemNotifications.value = permission.granted
       if (permission.message) {
         ElMessage[permission.granted ? 'success' : 'warning'](permission.message)
@@ -271,6 +290,7 @@ export function useTicketMonitor() {
 
   return {
     ...state, ...filters, from, to, date, onlyAvailable,
+    pendingTrainFilter, trainFilterError,
     nativeMonitoring, restoring, filtered, ticketCount,
     columns: ticketSeatColumns,
     departureStations: stationNames('from'),

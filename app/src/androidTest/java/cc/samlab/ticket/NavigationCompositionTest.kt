@@ -28,7 +28,7 @@ class NavigationCompositionTest {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 activity.findViewById<ComposeView>(R.id.expressive_navigation_view).setContent {
-                    ExpressiveNavHost(navigator, { _, _, _ -> }) { location, _ ->
+                    ExpressiveNavHost(navigator, false, { _, _, _ -> }) { location, _ ->
                         DisposableEffect(location) {
                             mounts[location] = mounts.getOrDefault(location, 0) + 1
                             onDispose {

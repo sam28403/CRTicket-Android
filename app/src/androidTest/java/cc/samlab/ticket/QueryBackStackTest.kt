@@ -1,14 +1,19 @@
 package cc.samlab.ticket
 
 import android.content.Intent
+import android.content.Context
 import android.net.Uri
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.tracking.TrainTrackingNotifications
+import cc.samlab.ticket.ui.notice.IMPORTANT_NOTICE_SUPPRESSED
 import org.json.JSONObject
 import org.json.JSONArray
 import org.junit.Rule
+import org.junit.Before
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
@@ -20,6 +25,23 @@ class QueryBackStackTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val fixture = MonitorLifecycleDeviceFixture(instrumentation)
     private val date = LocalDate.now(ZoneId.of("Asia/Shanghai")).toString()
+    private val preferences = instrumentation.targetContext
+        .getSharedPreferences("android", Context.MODE_PRIVATE)
+    private var noticeWasSet = false
+    private var noticeWasSuppressed = false
+
+    @Before fun suppressStartupNoticeDuringNavigationChecks() {
+        noticeWasSet = preferences.contains(IMPORTANT_NOTICE_SUPPRESSED)
+        noticeWasSuppressed = preferences.getBoolean(IMPORTANT_NOTICE_SUPPRESSED, false)
+        preferences.edit().putBoolean(IMPORTANT_NOTICE_SUPPRESSED, true).commit()
+    }
+
+    @After fun restoreStartupNoticePreference() {
+        val editor = preferences.edit()
+        if (noticeWasSet) editor.putBoolean(IMPORTANT_NOTICE_SUPPRESSED, noticeWasSuppressed)
+        else editor.remove(IMPORTANT_NOTICE_SUPPRESSED)
+        editor.commit()
+    }
 
     @Test fun stationTrainStationReturnsThroughEachVisitedQuery() = fixture.withSnapshot {
         navigate("/station")
@@ -28,8 +50,7 @@ class QueryBackStackTest {
         navigate(station("南京南"))
         backTo(train("G1"))
         backTo(station("北京南"))
-        backTo("/home")
-        assertHomeExits()
+        assertJourneyEnds()
     }
 
     @Test fun trainStationTrainReturnsThroughEachVisitedQuery() = fixture.withSnapshot {
@@ -39,8 +60,19 @@ class QueryBackStackTest {
         navigate(train("G3"))
         backTo(station("北京南"))
         backTo(train("G1"))
-        backTo("/home")
-        assertHomeExits()
+        assertJourneyEnds()
+    }
+
+    @Test fun switchingFromGeneratorToHistoryUsesTheWindowBackPolicy() = fixture.withSnapshot {
+        navigate("/")
+        navigate("/history")
+        if (isLargeScreen()) {
+            assertHomeExits()
+        } else {
+            backTo("/")
+            backTo("/home")
+            assertHomeExits()
+        }
     }
 
     @Test fun repeatedTrackingNotificationAlwaysReturnsDirectlyHome() = fixture.withSnapshot {
@@ -64,17 +96,14 @@ class QueryBackStackTest {
                 compose.waitForIdle()
             }
         }
-        backTo("/home")
-        // A second back must close the activity, without exposing an old query.
-        assertHomeExits()
+        assertJourneyEnds()
     }
 
     @Test fun coldTrackingNotificationHasHomeAsItsOnlyParent() = fixture.withSnapshot {
         fixture.open(Intent(fixture.context, MainActivity::class.java)
             .putExtra(TrainTrackingNotifications.OPEN_TRACKING, train("G1")))
         awaitRoute(train("G1"))
-        backTo("/home")
-        assertHomeExits()
+        assertJourneyEnds()
     }
 
     private fun train(code: String) = "/train?train=$code&date=$date&source=llt"
@@ -109,6 +138,14 @@ class QueryBackStackTest {
             fixture.evaluate("location.hash === ${JSONObject.quote("#$route")}") == "true"
         }
         compose.waitForIdle()
+    }
+
+    private fun isLargeScreen() =
+        compose.onAllNodesWithTag("navigation-menu").fetchSemanticsNodes().isNotEmpty()
+
+    private fun assertJourneyEnds() {
+        if (!isLargeScreen()) backTo("/home")
+        assertHomeExits()
     }
 
     private fun assertHomeExits() {

@@ -48,7 +48,9 @@ internal class ExpressivePageContent(
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
             "/" -> ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, embedded, active)
-            "/home" -> if (embedded) About(dark, pureBlack, true)
+            "/home" -> if (embedded) {
+                ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, true, active)
+            }
                 else ExpressiveHomeScreen(dark, active, onNavigate, pureBlack, navigation)
             "/about" -> About(dark, pureBlack, embedded)
             "/settings", "/settings/arrival", "/settings/permissions" -> {
