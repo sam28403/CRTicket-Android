@@ -72,7 +72,7 @@ internal class ExpressivePageContent(
             }
             "/list" -> TrainList(dark, pureBlack, embedded)
             "/station" -> ExpressiveStationBoardScreen(
-                station, dark, pureBlack, onBack, onNavigate, active, embedded,
+                station.stateFor(location), dark, pureBlack, onBack, onNavigate, active, embedded,
             )
             "/train" -> ExpressiveTrainQueryScreen(
                 trainQuery, dark, pureBlack, onBack, onNavigate, embedded, active,

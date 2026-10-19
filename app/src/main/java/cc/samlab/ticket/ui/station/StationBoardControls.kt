@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun StationBoardSearch(
-    controller: NativeStationBoardController,
+    controller: StationBoardState,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }

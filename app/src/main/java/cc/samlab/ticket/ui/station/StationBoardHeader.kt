@@ -13,7 +13,7 @@ import cc.samlab.ticket.ui.home.projectTitleFont
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StationBoardHeader(
-    controller: NativeStationBoardController,
+    controller: StationBoardState,
     embedded: Boolean,
     onBack: () -> Unit,
 ) {

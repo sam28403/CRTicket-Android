@@ -1,10 +1,8 @@
 package cc.samlab.ticket.ui.station
 
+import android.net.Uri
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.atomic.AtomicInteger
 import org.json.JSONObject
@@ -14,56 +12,22 @@ class NativeStationBoardController(
     private val webView: WebView,
     private val worker: ExecutorService,
 ) {
-    var station by mutableStateOf("")
-        private set
-    var loading by mutableStateOf(false)
-        private set
-    var error by mutableStateOf("")
-        private set
-    var date by mutableStateOf("")
-        private set
-    var resultStation by mutableStateOf("")
-        private set
-    internal var tabs by mutableStateOf<Map<StationTab, List<StationBoardRow>>>(emptyMap())
-        private set
-    private val presentations = linkedMapOf<String, StationBoardPresentation>()
-    private var presentation by mutableStateOf(StationBoardPresentation())
-    internal var selectedTab: StationTab
-        get() = presentation.selectedTab
-        set(value) { presentation.selectedTab = value }
-    internal var follow: Boolean
-        get() = presentation.follow
-        set(value) { presentation.follow = value }
-    internal val gridState
-        get() = presentation.grids.getValue(selectedTab)
-    internal var suggestions by mutableStateOf<List<String>>(emptyList())
-        private set
-    var revision by mutableStateOf(0)
-        private set
+    private val boards = linkedMapOf<String, StationBoardState>()
+    private var suggestionTarget: StationBoardState? = null
     private var suggestionQuery = ""
     private val generation = AtomicInteger()
     @Volatile private var closed = false
 
-    fun editStation(value: String) {
-        station = value.take(30)
+    internal fun stateFor(location: String): StationBoardState =
+        board(Uri.parse(location).getQueryParameter("station").orEmpty())
+
+    private fun board(station: String): StationBoardState = boards.getOrPut(station) {
+        StationBoardState(station, ::dispatch)
+    }
+
+    private fun dispatch(target: StationBoardState, action: String, station: String) {
+        suggestionTarget = if (action == "suggest") target else null
         suggestionQuery = station
-        suggestions = emptyList()
-        dispatch("suggest", station)
-    }
-
-    fun selectStation(value: String) {
-        station = value
-        suggestionQuery = ""
-        suggestions = emptyList()
-    }
-
-    fun request() {
-        if (loading) return
-        suggestions = emptyList()
-        dispatch("query", station)
-    }
-
-    private fun dispatch(action: String, station: String) {
         val detail = JSONObject().put("action", action).put("station", station)
         webView.evaluateJavascript(
             "window.dispatchEvent(new CustomEvent('crticket-station-request',{detail:$detail}))",
@@ -79,7 +43,10 @@ class NativeStationBoardController(
             val items = value.optJSONArray("suggestions") ?: return
             val names = List(items.length()) { items.getJSONObject(it).getString("value") }
             activity.runOnUiThread {
-                if (!closed && query == suggestionQuery) suggestions = names
+                val target = suggestionTarget
+                if (!closed && query == suggestionQuery && target?.station == query) {
+                    target.suggestions = names
+                }
             }
             return
         }
@@ -93,22 +60,23 @@ class NativeStationBoardController(
             }
             activity.runOnUiThread {
                 if (!closed && token == generation.get()) {
-                    station = value.optString("station")
-                    loading = value.optBoolean("loading")
-                    error = value.optString("error")
-                    date = if (data == null) "" else value.optString("date")
-                    resultStation = if (data == null) "" else value.optString("resultStation")
-                    if (data != null) {
-                        val key = "$date:$resultStation"
-                        presentation = presentations.getOrPut(key) { StationBoardPresentation() }
-                        if (presentations.size > 12) presentations.remove(presentations.keys.first())
-                    }
-                    tabs = parsed
-                    revision++
+                    val state = board(value.optString("station"))
+                    state.station = value.optString("station")
+                    state.loading = value.optBoolean("loading")
+                    state.error = value.optString("error")
+                    state.date = if (data == null) "" else value.optString("date")
+                    state.resultStation = if (data == null) "" else value.optString("resultStation")
+                    if (data != null) state.preparePresentation(state.date)
+                    state.tabs = parsed
+                    state.revision++
                 }
             }
         }
     }
 
-    fun close() { closed = true }
+    fun close() {
+        closed = true
+        boards.clear()
+        suggestionTarget = null
+    }
 }

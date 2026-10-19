@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun ExpressiveStationBoardScreen(
-    controller: NativeStationBoardController,
+    controller: StationBoardState,
     dark: Boolean,
     pureBlack: Boolean,
     onBack: () -> Unit,
@@ -27,8 +27,8 @@ internal fun ExpressiveStationBoardScreen(
     val rows = controller.tabs[tab].orEmpty()
     val timing by rememberStationBoardTiming(rows, active)
     val index = timing.currentIndex
-    LaunchedEffect(index, controller.follow, tab, controller.revision, active) {
-        if (active && controller.follow && rows.isNotEmpty()) list.scrollToItem(index)
+    LaunchedEffect(list, index, controller.follow, controller.revision, active) {
+        if (active && controller.follow && rows.isNotEmpty()) list.animateToCurrentTrain(index)
     }
     LaunchedEffect(list, controller) {
         list.interactionSource.interactions.collect { interaction ->
@@ -57,8 +57,11 @@ internal fun ExpressiveStationBoardScreen(
                                 controller.tabs[StationTab.ALL].orEmpty().size
                             } else rows.size,
                             onLocate = {
+                                val alreadyFollowing = controller.follow
                                 controller.follow = true
-                                scope.launch { if (rows.isNotEmpty()) list.animateScrollToItem(index) }
+                                if (alreadyFollowing && rows.isNotEmpty()) {
+                                    scope.launch { list.animateToCurrentTrain(index) }
+                                }
                             },
                         )
                     }

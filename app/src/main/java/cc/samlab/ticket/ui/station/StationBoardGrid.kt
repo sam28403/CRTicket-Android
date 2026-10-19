@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun StationBoardGrid(
-    controller: NativeStationBoardController,
+    controller: StationBoardState,
     rows: List<StationBoardRow>,
     timing: StationBoardTiming,
     dark: Boolean,

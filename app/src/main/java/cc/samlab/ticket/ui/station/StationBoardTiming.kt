@@ -31,7 +31,9 @@ internal fun stationBoardTiming(rows: List<StationBoardRow>, seconds: Int) = Sta
 @Composable
 internal fun rememberStationBoardTiming(rows: List<StationBoardRow>, active: Boolean): State<StationBoardTiming> {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val seconds = remember { mutableIntStateOf(0) }
+    val seconds = remember {
+        mutableIntStateOf(ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).toLocalTime().toSecondOfDay())
+    }
     LaunchedEffect(active, lifecycle) {
         if (!active) return@LaunchedEffect
         lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {

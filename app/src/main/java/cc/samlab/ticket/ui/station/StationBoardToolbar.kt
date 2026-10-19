@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun StationBoardToolbar(
-    controller: NativeStationBoardController,
+    controller: StationBoardState,
     total: Int,
     onLocate: () -> Unit,
 ) {
