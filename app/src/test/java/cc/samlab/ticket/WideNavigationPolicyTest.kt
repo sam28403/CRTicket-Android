@@ -19,7 +19,7 @@ class WideNavigationPolicyTest {
             "/train?date=2026-10-19&train=G3",
             "/station?station=%E5%8C%97%E4%BA%AC%E5%8D%97",
             "/settings/arrival", "/settings/permissions",
-            "/history/editor", "/monitor/settings",
+            "/history/editor", "/monitor/settings", "/about/report",
         ).forEach { assertFalse(it, WideNavigationPolicy.startsJourney(it)) }
     }
 

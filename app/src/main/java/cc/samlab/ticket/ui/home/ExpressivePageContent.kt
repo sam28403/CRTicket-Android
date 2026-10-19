@@ -53,6 +53,9 @@ internal class ExpressivePageContent(
             }
                 else ExpressiveHomeScreen(dark, active, onNavigate, pureBlack, navigation)
             "/about" -> About(dark, pureBlack, embedded)
+            "/about/report" -> cc.samlab.ticket.ui.report.ExpressiveReportScreen(
+                dark, pureBlack, onBack, onExternal,
+            )
             "/settings", "/settings/arrival", "/settings/permissions" -> {
                 val page = when (ExpressiveRoutes.path(location)) {
                     "/settings/arrival" -> SettingsPage.ARRIVAL
@@ -107,7 +110,9 @@ internal class ExpressivePageContent(
 
     @Composable
     private fun About(dark: Boolean, pureBlack: Boolean, embedded: Boolean) {
-        ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack, embedded, dataVersions)
+        ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack, embedded, dataVersions) {
+            onNavigate("/about/report")
+        }
     }
 
     @Composable

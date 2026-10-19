@@ -51,6 +51,14 @@ class WideNavigationStackTest {
         assertFalse(nav.pop())
     }
 
+    @Test fun reportReturnsToAboutOnLargeScreens() = withGraph(true) { nav ->
+        nav.navigate("/about")
+        nav.navigate("/about/report")
+        assertTrue(nav.pop())
+        assertEquals("/about", nav.currentLocation)
+        assertFalse(nav.pop())
+    }
+
     @Test fun phoneKeepsTheGeneratorAndHomeInItsBackStack() = withGraph(false) { nav ->
         nav.navigate("/")
         nav.navigate("/history")

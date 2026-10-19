@@ -30,6 +30,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         private set
     val route: String
         get() = when (val path = ExpressiveRoutes.path(location)) {
+            "/about/report" -> "/about"
             "/settings/arrival", "/settings/permissions" -> "/settings"
             "/history/editor" -> "/history"
             else -> path.takeIf { ExpressiveRoutes.isNative(location) }.orEmpty()

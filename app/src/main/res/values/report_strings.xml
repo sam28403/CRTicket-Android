@@ -1,0 +1,20 @@
+<resources>
+    <string name="report_error">报告错误</string>
+    <string name="report_intro">遇到了什么问题？</string>
+    <string name="report_hint">填写后前往 GitHub 确认并发布，需要登录 GitHub。截图可在 GitHub 页面添加。</string>
+    <string name="report_bug">错误报告</string>
+    <string name="report_feature">功能建议</string>
+    <string name="report_question">使用问题</string>
+    <string name="report_title">标题（必填）</string>
+    <string name="report_description">问题描述（必填）</string>
+    <string name="report_steps">复现步骤（选填）</string>
+    <string name="report_expected">预期表现（选填）</string>
+    <string name="report_device">附带设备信息</string>
+    <string name="report_device_hint">仅包含机型和 Android 版本</string>
+    <string name="report_preview">报告预览</string>
+    <string name="report_copy">复制报告</string>
+    <string name="report_copied">报告已复制</string>
+    <string name="report_long_copied">报告较长，已完整复制，请在 GitHub 正文中粘贴</string>
+    <string name="report_submit">前往 GitHub 提交</string>
+    <string name="report_browse">查看已有问题</string>
+</resources>

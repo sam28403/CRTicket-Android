@@ -43,6 +43,7 @@ internal fun ExpressiveAboutScreen(
     pureBlack: Boolean = false,
     embedded: Boolean = false,
     dataVersions: AboutDataVersions,
+    onReport: () -> Unit = {},
 ) {
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
@@ -71,14 +72,14 @@ internal fun ExpressiveAboutScreen(
                         AboutPanel {
                             AboutLogo()
                             AboutDescription(dataVersions)
-                            AboutLinks(onExternal)
+                            AboutLinks(onExternal, onReport)
                         }
                     },
                     first = { AboutPanel { AboutLogo() } },
                     second = {
                         AboutPanel {
                             AboutDescription(dataVersions)
-                            AboutLinks(onExternal)
+                            AboutLinks(onExternal, onReport)
                         }
                     },
                 )
@@ -139,7 +140,15 @@ private fun AboutDescription(dataVersions: AboutDataVersions) {
 }
 
 @Composable
-private fun AboutLinks(onExternal: (String) -> Unit) {
+private fun AboutLinks(onExternal: (String) -> Unit, onReport: () -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+        AboutGithubLink(onExternal)
+        AboutReportLink(onReport)
+    }
+}
+
+@Composable
+private fun AboutGithubLink(onExternal: (String) -> Unit) {
     val colors = MaterialTheme.colorScheme
     val githubUrl = stringResource(R.string.about_github_url)
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
