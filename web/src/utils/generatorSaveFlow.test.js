@@ -5,8 +5,8 @@ import { validateHistoryTicket } from './historyValidation.js'
 
 const ticket = {
   number: 'CODEX_GENERATOR_TEST', trainNo: 'G25', from: '北京南', to: '上海虹桥',
-  date: '2026年10月18日', time: '08:00', price: '0', seatType: '二等座',
-  seatNo: '03车12A号', distance: '1318',
+  date: '2026年10月18日', time: '08:00', price: '0.5', seatType: '二等座',
+  seatNo: '03车12A号', distance: '1318', sellPlace: '北京南站',
 }
 
 function fixture(overrides = {}) {
@@ -24,7 +24,7 @@ function fixture(overrides = {}) {
   return { save, calls }
 }
 
-test('PDF and image saves insert the ticket once and clear after successful exports, including zero fares', async () => {
+test('PDF and image saves insert the ticket once and clear after successful exports', async () => {
   const { save, calls } = fixture()
   await save('pdf', ticket, { id: 'device' })
   await save('image', { ...ticket }, { id: 'device' })

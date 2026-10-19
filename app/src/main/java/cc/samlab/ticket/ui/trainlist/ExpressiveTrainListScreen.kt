@@ -115,7 +115,10 @@ internal fun ExpressiveTrainListScreen(
                         }
                         if (!controller.loading && controller.error.isEmpty() && controller.rows.isEmpty()) {
                             item(key = "empty") {
-                                Text(stringResource(R.string.train_list_empty), Modifier.padding(24.dp))
+                                TrainListEmptyState(
+                                    onSelectDate = { calendar = true },
+                                    modifier = Modifier.fillParentMaxSize(),
+                                )
                             }
                         }
                         itemsIndexed(

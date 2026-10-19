@@ -12,6 +12,17 @@ internal class HistoryDraft(val id: String?, value: JSONObject) {
     }
     var credit by mutableStateOf(value.optInt("useCredit") == 1)
     var conditioner by mutableStateOf(value.optInt("hasConditioner") == 1)
+    private var validationRequested by mutableStateOf(false)
+    val errors by derivedStateOf {
+        if (validationRequested) validateTicketFields(fields, credit) else emptyMap()
+    }
+
+    fun validate(): Boolean {
+        validationRequested = true
+        return errors.isEmpty()
+    }
+
+    fun error(key: String): String? = errors[key]
 
     init {
         val seat = fields["seatType"].orEmpty()

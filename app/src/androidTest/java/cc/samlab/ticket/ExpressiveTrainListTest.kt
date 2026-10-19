@@ -89,6 +89,38 @@ class ExpressiveTrainListTest {
         capture("returned-list")
     }
 
+    @Test fun emptyDateShowsGuidanceAndAllowsChangingDate() {
+        evaluate("""
+            window.dispatchEvent(new CustomEvent('crticket-train-list-request', {
+                detail: {date: '2100-10-19'}
+            }));
+        """.trimIndent())
+        compose.waitUntil(120_000) {
+            compose.onAllNodesWithTag("train-list-empty").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("2100-10-19").assertIsDisplayed()
+        compose.onNodeWithText("共 0 趟").assertIsDisplayed()
+        compose.onNodeWithText("当日暂无车次").assertIsDisplayed()
+        compose.onNodeWithText("离线时刻表中没有该日期开行的车次，可切换日期查看。")
+            .assertIsDisplayed()
+        capture("empty-2100-10-19")
+        compose.onNodeWithTag("train-list-empty-date").performClick()
+        compose.onNodeWithText("确定").assertIsDisplayed()
+        compose.onNodeWithText("取消").performClick()
+        compose.onNodeWithTag("train-list-empty").assertIsDisplayed()
+        evaluate("""
+            window.emptyListRefreshes = 0;
+            window.addEventListener('crticket-train-list-request', () => window.emptyListRefreshes++);
+        """.trimIndent())
+        compose.onNodeWithTag("train-list").performTouchInput {
+            swipeDown(durationMillis = 600)
+        }
+        compose.waitUntil(10_000) { evaluate("window.emptyListRefreshes") == "1" }
+        compose.waitUntil(120_000) {
+            compose.onAllNodesWithTag("train-list-empty").fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
     @Test fun twentyThousandRowsAreLazyVerticalAndRestorePosition() {
         evaluate("""
             CRTicketAndroid.trainListResult(JSON.stringify({

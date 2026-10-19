@@ -1,16 +1,15 @@
 import { getTrainNumberError } from './ticketShared.js'
+import { ticketPriceError, ticketDistanceError } from './ticketNumericValidation.js'
 
 export function validateHistoryTicket(ticket) {
-  const required = ['number', 'trainNo', 'from', 'to', 'date', 'time', 'seatType', 'seatNo']
+  const required = ['number', 'trainNo', 'from', 'to', 'date', 'time', 'seatType', 'seatNo', 'sellPlace']
   if (required.some(key => !String(ticket[key] ?? '').trim())) return '请填写完整车票信息'
   const trainError = getTrainNumberError(ticket.trainNo)
   if (trainError) return trainError
-  if (ticket.price === '' || !Number.isFinite(Number(ticket.price)) || Number(ticket.price) < 0) {
-    return '请输入有效的票价或积分'
-  }
-  if (ticket.distance !== '' && (!Number.isFinite(Number(ticket.distance)) || Number(ticket.distance) < 0)) {
-    return '请输入有效的里程'
-  }
+  const priceError = ticketPriceError(ticket.price, Number(ticket.useCredit) === 1)
+  if (priceError) return priceError
+  const distanceError = ticketDistanceError(ticket.distance)
+  if (distanceError) return distanceError
   const parts = String(ticket.date).match(/^(\d{4})(?:年|-|\/)(\d{1,2})(?:月|-|\/)(\d{1,2})日?$/)
   if (!parts) return '请选择有效的开车日期'
   const date = new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]))

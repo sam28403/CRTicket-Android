@@ -33,6 +33,8 @@ internal fun HistoryStationField(
                 expanded = true
             },
             label = { Text(label) },
+            isError = draft.error(key) != null,
+            supportingText = draft.error(key)?.let { message -> { Text(message) } },
             placeholder = { Text("输入站名或拼音") },
             shape = MaterialTheme.shapes.large,
             enabled = enabled, singleLine = true,

@@ -108,7 +108,10 @@
     <string name="permissions_all">全部应用权限</string>
     <string name="permissions_all_description">在系统应用信息中管理 CRTicket 的权限</string>
     <string name="train_list_incomplete">读取未完成</string>
-    <string name="train_list_empty">该日期没有开行的车次</string>
+    <string name="ticket_form_invalid">有 %1$d 项填写不符合规定，请检查标红的输入框</string>
+    <string name="train_list_empty">当日暂无车次</string>
+    <string name="train_list_empty_hint">离线时刻表中没有该日期开行的车次，可切换日期查看。</string>
+    <string name="train_list_change_date">切换日期</string>
     <string name="train_list_refreshing">正在刷新车次</string>
     <string name="arrival_requirements_description">需要精确定位、始终允许定位、通知权限，以及可用的 Google Play 服务。使用低功耗地理围栏，提醒可能受系统省电或定位信号影响而延迟。</string>
     <string name="settings_name_length">%1$d/%2$d</string>

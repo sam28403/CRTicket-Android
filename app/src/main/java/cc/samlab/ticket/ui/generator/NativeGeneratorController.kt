@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.*
 import cc.samlab.ticket.ui.history.*
@@ -100,8 +101,18 @@ class NativeGeneratorController(
     }
 
     internal fun action(action: String) {
-        val ticket = draft?.json() ?: return
+        val draft = draft ?: return
         if (busy) return
+        error = ""
+        if (action in listOf("pdf", "image") && !draft.validate()) {
+            Toast.makeText(
+                activity,
+                activity.getString(cc.samlab.ticket.R.string.ticket_form_invalid, draft.errors.size),
+                Toast.LENGTH_LONG,
+            ).show()
+            return
+        }
+        val ticket = draft.json()
         val operation = java.util.UUID.randomUUID().toString()
         pendingOperation = operation
         busy = true

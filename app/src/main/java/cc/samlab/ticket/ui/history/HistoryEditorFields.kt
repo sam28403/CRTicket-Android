@@ -20,18 +20,27 @@ internal fun HistoryTextField(
     multiline: Boolean = false,
     enabled: Boolean = true,
 ) {
+    val decimal = numeric && key == "price" && !draft.credit
     OutlinedTextField(
         value = draft.value(key),
-        onValueChange = { draft.fields[key] = it },
+        onValueChange = {
+            if (!numeric || acceptsTicketNumberInput(it, decimal)) draft.fields[key] = it
+        },
         label = { Text(label) },
         placeholder = { Text(placeholder) },
         modifier = Modifier.fillMaxWidth().testTag("history-field-$key"),
         shape = MaterialTheme.shapes.large,
         enabled = enabled,
+        isError = draft.error(key) != null,
+        supportingText = draft.error(key)?.let { message -> { Text(message) } },
         singleLine = !multiline,
         minLines = if (multiline) 3 else 1,
         keyboardOptions = KeyboardOptions(
-            keyboardType = if (numeric) KeyboardType.Decimal else KeyboardType.Text,
+            keyboardType = when {
+                decimal -> KeyboardType.Decimal
+                numeric -> KeyboardType.Number
+                else -> KeyboardType.Text
+            },
         ),
     )
 }
@@ -52,6 +61,8 @@ internal fun HistoryChoiceField(
             value = choices.firstOrNull { it.value == draft.value(key) }?.label ?: draft.value(key),
             onValueChange = {}, readOnly = true, enabled = enabled,
             label = { Text(label) },
+            isError = draft.error(key) != null,
+            supportingText = draft.error(key)?.let { message -> { Text(message) } },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)

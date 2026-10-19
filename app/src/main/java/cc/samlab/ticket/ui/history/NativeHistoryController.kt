@@ -1,6 +1,7 @@
 package cc.samlab.ticket.ui.history
 
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -108,7 +109,17 @@ class NativeHistoryController(
     }
 
     internal fun submit() {
+        if (ui.busy) return
         val draft = ui.draft ?: return
+        ui.error = ""
+        if (!draft.validate()) {
+            Toast.makeText(
+                activity,
+                activity.getString(cc.samlab.ticket.R.string.ticket_form_invalid, draft.errors.size),
+                Toast.LENGTH_LONG,
+            ).show()
+            return
+        }
         mutate(JSONObject().put("action", "save").put("id", draft.id).put("ticket", draft.json()))
     }
 
