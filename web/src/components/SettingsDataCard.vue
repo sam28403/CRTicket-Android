@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { performSettingsAction } from '@/android/settingsActions.js'
-import { parseTicketBackup } from '@/utils/ticketBackup.js'
+import { parseAppBackup } from '@/utils/appBackup.js'
 
 const busy = ref(false)
 const input = ref(null)
@@ -23,8 +23,11 @@ async function importFile(event) {
   try {
     if (file.size > 20 * 1024 * 1024) throw new Error('备份文件不能超过 20MB')
     const text = await file.text()
-    const tickets = parseTicketBackup(text)
-    await ElMessageBox.confirm(`导入 ${tickets.length} 条记录，已有的相同记录会略过。`, '导入备份')
+    const backup = parseAppBackup(text)
+    const settingsNotice = backup.settings ? '个人资料和设置将恢复为备份中的内容。' : ''
+    await ElMessageBox.confirm(
+      `导入 ${backup.tickets.length} 条记录，已有的相同记录会略过。${settingsNotice}`, '导入备份',
+    )
     await run('import', { text })
   } catch (error) {
     if (error !== 'cancel' && error !== 'close') ElMessage.error(error.message)

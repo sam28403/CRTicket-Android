@@ -485,4 +485,5 @@
     <string name="station_busy_expand">Mostra posizioni 4–10</string>
     <string name="station_busy_collapse">Nascondi posizioni 4–10</string>
     <string name="train_list_sort_duration">Durata del viaggio</string>
+    <string name="settings_import_settings_confirmation">Profilo e impostazioni verranno ripristinati da questo backup. Le attività in corso non verranno riprese.</string>
 </resources>

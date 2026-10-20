@@ -485,4 +485,5 @@
     <string name="station_busy_expand">৪–১০ নম্বর দেখান</string>
     <string name="station_busy_collapse">৪–১০ নম্বর লুকান</string>
     <string name="train_list_sort_duration">যাত্রার সময়কাল</string>
+    <string name="settings_import_settings_confirmation">এই ব্যাকআপ থেকে প্রোফাইল ও সেটিংস পুনরুদ্ধার করা হবে। চলমান কাজ পুনরায় শুরু হবে না।</string>
 </resources>

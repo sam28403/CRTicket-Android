@@ -270,7 +270,12 @@ export function useTicketMonitor() {
   onMounted(() => {
     if (nativeMonitoring) void connection.restore()
   })
+  const restoreBackup = () => {
+    if (nativeMonitoring) void connection.restore()
+  }
+  window.addEventListener('crticket-backup-restored', restoreBackup)
   onBeforeUnmount(() => {
+    window.removeEventListener('crticket-backup-restored', restoreBackup)
     generation++
     permissionController?.abort()
     connection.detach()

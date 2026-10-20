@@ -7,13 +7,18 @@ const historyKey = 'crticket-train-query-history'
 
 export function useTrainDiscovery(route, router) {
   const history = ref([])
-  try {
-    const saved = JSON.parse(localStorage.getItem(historyKey) || '[]')
-    if (Array.isArray(saved)) {
-      history.value = saved.slice().reverse().reduce((items, code) =>
-        typeof code === 'string' ? addTrainHistory(items, code) : items, [])
-    }
-  } catch { /* Storage may be unavailable. Queries still work. */ }
+  function restoreHistory() {
+    history.value = []
+    try {
+      const saved = JSON.parse(localStorage.getItem(historyKey) || '[]')
+      if (Array.isArray(saved)) {
+        history.value = saved.slice().reverse().reduce((items, code) =>
+          typeof code === 'string' ? addTrainHistory(items, code) : items, [])
+      }
+    } catch { /* Storage may be unavailable. Queries still work. */ }
+  }
+  restoreHistory()
+  window.addEventListener('crticket-backup-restored', restoreHistory)
   const recommendations = ref([])
   const recommendationDate = ref('')
   const recommendationLoading = ref(false)
@@ -74,6 +79,7 @@ export function useTrainDiscovery(route, router) {
   watch(() => route.path, schedule, { immediate: true })
   document.addEventListener('visibilitychange', schedule)
   onBeforeUnmount(() => {
+    window.removeEventListener('crticket-backup-restored', restoreHistory)
     clearTimeout(timer)
     controller?.abort()
     document.removeEventListener('visibilitychange', schedule)

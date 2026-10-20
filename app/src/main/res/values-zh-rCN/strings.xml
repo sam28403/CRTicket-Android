@@ -485,4 +485,5 @@
     <string name="settings_language">语言</string>
     <string name="language_system">跟随系统</string>
     <string name="language_native_name">简体中文（中国）</string>
+    <string name="settings_import_settings_confirmation">个人资料和设置将恢复为备份中的内容，不会恢复正在运行的任务。</string>
 </resources>

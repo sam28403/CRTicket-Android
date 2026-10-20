@@ -158,6 +158,7 @@ class MainActivity : AppCompatActivity() {
                 home::openStatisticsMonthPicker,
                 home::setBackTarget,
                 home::receiveSearch,
+                ::callback,
             ),
             "CRTicketAndroid",
         )

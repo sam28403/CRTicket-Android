@@ -53,6 +53,8 @@ class NativeSettingsController(
         private set
     var importCount by mutableStateOf(0)
         private set
+    var importIncludesSettings by mutableStateOf(false)
+        private set
     private var requestId = 0
     private var pendingAction = "snapshot"
     private var pickingFile = false
@@ -76,6 +78,7 @@ class NativeSettingsController(
             activity.runOnUiThread {
                 importText = text
                 importCount = records.length()
+                importIncludesSettings = (value as? JSONObject)?.optInt("schemaVersion") == 2
             }
         }
     }

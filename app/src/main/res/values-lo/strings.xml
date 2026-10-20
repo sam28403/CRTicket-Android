@@ -485,4 +485,5 @@
     <string name="station_busy_expand">ສະແດງອັນດັບ 4–10</string>
     <string name="station_busy_collapse">ເຊື່ອງອັນດັບ 4–10</string>
     <string name="train_list_sort_duration">ໄລຍະເວລາເດີນທາງ</string>
+    <string name="settings_import_settings_confirmation">ຈະກູ້ຄືນໂປຣໄຟລ໌ ແລະການຕັ້ງຄ່າຈາກສຳຮອງນີ້. ຈະບໍ່ເລີ່ມວຽກທີ່ກຳລັງເຮັດຄືນ.</string>
 </resources>

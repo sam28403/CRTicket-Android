@@ -63,7 +63,14 @@ internal fun SettingsDialogs(dialog: String, dismiss: () -> Unit, controller: Na
     if (controller.importText != null) AlertDialog(
         onDismissRequest = controller::dismissImport,
         title = { Text(stringResource(R.string.settings_import_backup)) },
-        text = { Text(stringResource(R.string.settings_import_confirmation, controller.importCount)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.settings_import_confirmation, controller.importCount))
+                if (controller.importIncludesSettings) {
+                    Text(stringResource(R.string.settings_import_settings_confirmation))
+                }
+            }
+        },
         confirmButton = { TextButton(onClick = controller::confirmImport) { Text(stringResource(R.string.settings_start_import)) } },
         dismissButton = { TextButton(onClick = controller::dismissImport) { Text(stringResource(R.string.action_cancel)) } },
     )

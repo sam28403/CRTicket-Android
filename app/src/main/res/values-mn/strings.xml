@@ -485,4 +485,5 @@
     <string name="station_busy_expand">4–10-р байрыг харуулах</string>
     <string name="station_busy_collapse">4–10-р байрыг нуух</string>
     <string name="train_list_sort_duration">Аяллын хугацаа</string>
+    <string name="settings_import_settings_confirmation">Энэ нөөцөөс хувийн мэдээлэл болон тохиргоог сэргээнэ. Ажиллаж буй ажлуудыг үргэлжлүүлэхгүй.</string>
 </resources>

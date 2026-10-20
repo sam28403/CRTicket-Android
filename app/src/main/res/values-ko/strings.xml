@@ -485,4 +485,5 @@
     <string name="station_busy_expand">4~10위 펼치기</string>
     <string name="station_busy_collapse">4~10위 접기</string>
     <string name="train_list_sort_duration">소요 시간</string>
+    <string name="settings_import_settings_confirmation">이 백업에서 프로필과 설정을 복원합니다. 실행 중인 작업은 재개되지 않습니다.</string>
 </resources>

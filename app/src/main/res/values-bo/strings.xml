@@ -485,4 +485,5 @@
     <string name="station_busy_expand">ཨང་ 4–10 སྟོན།</string>
     <string name="station_busy_collapse">ཨང་ 4–10 སྦས།</string>
     <string name="train_list_sort_duration">འགྲུལ་བཞུད་དུས་ཡུན།</string>
+    <string name="settings_import_settings_confirmation">གྲབས་ཉར་ལས་མི་སྒེར་གྱི་གནས་ཚུལ་དང་སྒྲིག་འགོད་སླར་གསོ་བྱེད། འགྲོ་བཞིན་པའི་ལས་ཀ་སླར་འགོ་མི་འཛུགས།</string>
 </resources>

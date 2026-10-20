@@ -485,4 +485,5 @@
     <string name="settings_language">語言</string>
     <string name="language_system">跟隨系統</string>
     <string name="language_native_name">繁體中文（香港）</string>
+    <string name="settings_import_settings_confirmation">個人資料和設定將還原為備份中的內容，不會恢復正在執行的工作。</string>
 </resources>

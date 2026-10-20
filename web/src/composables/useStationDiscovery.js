@@ -12,13 +12,18 @@ export function useStationDiscovery(clock) {
   const route = useRoute()
   const router = useRouter()
   const history = ref([])
-  try {
-    const saved = JSON.parse(localStorage.getItem(historyKey) || '[]')
-    if (Array.isArray(saved)) {
-      history.value = saved.slice().reverse().reduce((items, name) =>
-        addStationHistory(items, name), [])
-    }
-  } catch { /* History is optional. */ }
+  function restoreHistory() {
+    history.value = []
+    try {
+      const saved = JSON.parse(localStorage.getItem(historyKey) || '[]')
+      if (Array.isArray(saved)) {
+        history.value = saved.slice().reverse().reduce((items, name) =>
+          addStationHistory(items, name), [])
+      }
+    } catch { /* History is optional. */ }
+  }
+  restoreHistory()
+  window.addEventListener('crticket-backup-restored', restoreHistory)
   const stations = ref([])
   const loading = ref(false)
   const error = ref('')
@@ -66,6 +71,10 @@ export function useStationDiscovery(clock) {
   const picks = computed(() => dailyStationPicks(stations.value, clock.value.date))
   const recommendations = computed(() => picks.value.map(row => stationSummaryNow(row, minute.value)))
   watch(() => [route.path, clock.value.date], refresh, { immediate: true })
-  onBeforeUnmount(() => { generation++; controller?.abort() })
+  onBeforeUnmount(() => {
+    window.removeEventListener('crticket-backup-restored', restoreHistory)
+    generation++
+    controller?.abort()
+  })
   return { history, busy, recommendations, loading, error, record, clearHistory, open, refresh }
 }

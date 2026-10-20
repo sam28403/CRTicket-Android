@@ -4,6 +4,7 @@ import android.app.Activity
 import android.net.Uri
 import android.webkit.JavascriptInterface
 import cc.samlab.ticket.arrival.StationArrivalBridge
+import cc.samlab.ticket.backup.BackupPreferences
 import cc.samlab.ticket.files.DocumentFiles
 import cc.samlab.ticket.monitor.TicketMonitorBridge
 import cc.samlab.ticket.network.PhoneHttp
@@ -39,8 +40,32 @@ class AndroidBridge(
     private val chooseStatisticsMonth: (String) -> Unit,
     private val updateBackTarget: (String) -> Unit,
     private val receiveSearch: (String) -> Unit,
+    private val backupCallback: (String, String, JSONObject) -> Unit,
 ) {
+    private val backupPreferences = BackupPreferences(activity)
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
+
+    @JavascriptInterface
+    fun backupSettings(): String = backupPreferences.snapshot().toString()
+
+    @JavascriptInterface
+    fun validateBackupSettings(payload: String): String = runCatching {
+        require(payload.length <= 200_000)
+        backupPreferences.validate(JSONObject(payload))
+        ""
+    }.getOrElse { it.message ?: "Invalid backup settings" }
+
+    @JavascriptInterface
+    fun restoreBackupSettings(id: String, payload: String) = onUi {
+        val result = runCatching {
+            require(payload.length <= 200_000)
+            backupPreferences.restore(JSONObject(payload))
+            JSONObject().put("success", true)
+        }.getOrElse {
+            JSONObject().put("success", false).put("message", it.message ?: "Invalid backup settings")
+        }
+        backupCallback("crticketBackupResult", id, result)
+    }
 
     @JavascriptInterface
     fun setHomeVisible(visible: Boolean) = onUi { showNativePage(if (visible) "/home" else "", false) }
@@ -114,7 +139,12 @@ class AndroidBridge(
     fun settingsResult(payload: String) {
         if (payload.length > 500_000) return
         val result = runCatching { JSONObject(payload) }.getOrNull() ?: return
-        onUi { receiveSettings(result) }
+        onUi {
+            receiveSettings(result)
+            if (result.optBoolean("success") && result.optBoolean("backupRestored")) {
+                backupPreferences.complete()
+            }
+        }
     }
 
     @JavascriptInterface

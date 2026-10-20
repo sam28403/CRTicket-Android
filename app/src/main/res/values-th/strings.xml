@@ -485,4 +485,5 @@
     <string name="station_busy_expand">แสดงอันดับ 4–10</string>
     <string name="station_busy_collapse">ซ่อนอันดับ 4–10</string>
     <string name="train_list_sort_duration">ระยะเวลาเดินทาง</string>
+    <string name="settings_import_settings_confirmation">จะกู้คืนโปรไฟล์และการตั้งค่าจากข้อมูลสำรองนี้ โดยจะไม่เริ่มงานที่กำลังทำงานต่อ</string>
 </resources>

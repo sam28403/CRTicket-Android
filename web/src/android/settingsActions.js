@@ -4,9 +4,9 @@ import { normalizeUsername } from '@/utils/username.js'
 import { useTheme } from '@/composables/useTheme.js'
 import { appearancePreference } from '@/composables/themePreference.js'
 import {
-  buildBackupPayload, buildExcelRows, getExportFileStamp,
-  parseTicketBackup, importTicketBackup,
+  buildExcelRows, getExportFileStamp,
 } from '@/utils/ticketBackup.js'
+import { exportSettingsBackup, importSettingsBackup } from './settingsBackup.js'
 import { saveFile, native } from './platform.js'
 import { settingsText } from './settingsStrings.js'
 import {
@@ -61,11 +61,9 @@ export async function performSettingsAction(action, payload = {}) {
   const user = await owner()
   const records = await tickets(user)
   if (action === 'import') {
-    const backup = parseTicketBackup(payload.text, {
+    return importSettingsBackup(payload.text, records, user, api, {
       noTickets: settingsText('backup_no_tickets'),
       limit: settingsText('backup_limit'),
-    })
-    return importTicketBackup(backup, records, user, api, {
       failed: settingsText('import_failed'),
       complete: (...counts) => settingsText('import_complete', ...counts),
     })
@@ -74,7 +72,7 @@ export async function performSettingsAction(action, payload = {}) {
   let blob
   let filename
   if (action === 'exportBackup') {
-    blob = new Blob([JSON.stringify(buildBackupPayload(records, user), null, 2)], {
+    blob = new Blob([JSON.stringify(exportSettingsBackup(records, user), null, 2)], {
       type: 'application/json;charset=utf-8',
     })
     filename = settingsText('backup_filename', stamp)
@@ -113,10 +111,15 @@ export function initializeNativeSettings() {
     }
     try {
       const state = await settingsSnapshot()
-      const result = { id, success, message, state }
+      const result = { id, success, message, state, backupRestored: success && action === 'import' }
       native.settingsResult(JSON.stringify(result))
       return result
     } catch (error) {
+      if (success && action === 'import') {
+        const result = { id, success: true, message, backupRestored: true }
+        native.settingsResult(JSON.stringify(result))
+        return result
+      }
       const result = { id, success: false, message: message || error.message }
       native.settingsResult(JSON.stringify(result))
       return result
