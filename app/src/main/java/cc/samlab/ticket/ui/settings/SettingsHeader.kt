@@ -52,7 +52,7 @@ internal fun SettingsHeader(
                     fontFamily = projectTitleFont,
                     fontSize = if (expanded) 36.sp else 20.sp,
                     lineHeight = if (expanded) 44.sp else 28.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Normal,
                 ),
                 maxLines = 1,
             )

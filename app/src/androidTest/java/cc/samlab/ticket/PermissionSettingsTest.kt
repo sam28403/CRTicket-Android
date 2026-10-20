@@ -32,15 +32,15 @@ class PermissionSettingsTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private lateinit var activity: MainActivity
 
-    @Test fun thirdLevelUsesBoldTitleSystemEntriesAndLocalBack() {
+    @Test fun thirdLevelUsesRegularTitleSystemEntriesAndLocalBack() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity = it; wake() }
             ready()
             navigateSettings()
-            assertBoldHeader("设置")
+            assertRegularHeader("设置")
             val wide = compose.onAllNodesWithTag("navigation-shell").fetchSemanticsNodes().isNotEmpty()
             openPermissions()
-            assertBoldHeader("权限管理")
+            assertRegularHeader("权限管理")
             if (wide) compose.onNodeWithTag("navigation-menu").assertExists()
             capture("permissions-${Build.MODEL.replace(' ', '-')}")
             val last = AtomicReference<Intent>()
@@ -107,7 +107,7 @@ class PermissionSettingsTest {
             scenario.onActivity { activity = it; wake() }
             ready()
             compose.onNodeWithTag("permissions-content").assertExists()
-            assertBoldHeader("权限管理")
+            assertRegularHeader("权限管理")
             compose.onNodeWithContentDescription("返回").performClick()
             compose.waitForIdle()
             compose.onNodeWithTag("permissions-content").assertDoesNotExist()
@@ -137,11 +137,11 @@ class PermissionSettingsTest {
         compose.onNodeWithTag("permissions-content").assertExists()
     }
 
-    private fun assertBoldHeader(text: String) {
+    private fun assertRegularHeader(text: String) {
         val layouts = mutableListOf<TextLayoutResult>()
         compose.onNode(hasText(text) and hasAnyAncestor(hasTestTag("settings-header")))
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
-        assertEquals(FontWeight.Bold, layouts.single().layoutInput.style.fontWeight)
+        assertEquals(FontWeight.Normal, layouts.single().layoutInput.style.fontWeight)
     }
 
     private fun evaluate(script: String): String {

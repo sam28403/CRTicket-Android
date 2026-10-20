@@ -64,7 +64,7 @@ internal fun ExpressiveAboutScreen(
                         stringResource(R.string.home_about),
                         style = MaterialTheme.typography.titleLarge,
                         fontFamily = projectTitleFont,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                     )
                 }
                 AdaptivePanes(

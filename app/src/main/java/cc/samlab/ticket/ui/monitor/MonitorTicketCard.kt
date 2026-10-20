@@ -7,11 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.rememberAppText
+import cc.samlab.ticket.ui.home.projectTitleFont
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -31,8 +30,13 @@ internal fun MonitorTicketCard(row: JSONObject, columns: JSONArray?) {
     ) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(row.optString("train"), Modifier.weight(1f), style = MaterialTheme.typography.headlineMedium,
-                    fontFamily = FontFamily(Font(R.font.google_sans_rounded_regular)))
+                Text(
+                    row.optString("train"),
+                    Modifier.weight(1f),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontFamily = projectTitleFont,
+                    color = colors.primary,
+                )
                 Text(row.optString("duration"), style = MaterialTheme.typography.labelLarge)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

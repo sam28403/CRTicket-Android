@@ -4,6 +4,7 @@ plugins {
 }
 
 apply(from = rootProject.file("gradle/versioning.gradle.kts"))
+apply(from = rootProject.file("gradle/web-assets.gradle.kts"))
 val gitVersionCode = extra["androidVersionCode"] as Int
 val gitVersionName = extra["androidVersionName"] as String
 val stationDataVersion = Regex("Station Version (\\d+)")
