@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,10 +13,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.material3.LocalContentColor
-import cc.samlab.ticket.ui.home.projectTitleFont
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
+import cc.samlab.ticket.ui.home.projectTitleFont
 import org.json.JSONObject
 
 @Composable
@@ -27,6 +29,7 @@ internal fun TrainQueryStopCard(
     dark: Boolean,
     onNavigate: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     val background = when (highlight) {
         QueryStopHighlight.IN_STATION -> if (dark) Color(0xFF154B2D) else Color(0xFFD1F0DC)
@@ -39,8 +42,8 @@ internal fun TrainQueryStopCard(
         QueryStopHighlight.NONE -> colors.onSurface
     }
     val status = when (highlight) {
-        QueryStopHighlight.IN_STATION -> "停在站内"
-        QueryStopHighlight.UPCOMING -> "前方到站"
+        QueryStopHighlight.IN_STATION -> textResources(R.string.station_in_station)
+        QueryStopHighlight.UPCOMING -> textResources(R.string.station_upcoming)
         QueryStopHighlight.NONE -> ""
     }
     Surface(
@@ -76,16 +79,29 @@ internal fun TrainQueryStopCard(
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 val day = stop.optInt("arrivalDay")
                 StopDetail(
-                    "到达时间",
-                    if (index == 0) "始发站" else stop.text("arrival"),
+                    textResources(R.string.station_arrival_time),
+                    if (index == 0) textResources(R.string.station_origin) else stop.text("arrival"),
                     Modifier.weight(1f),
                     day = if (index > 0 && !stop.isNull("arrival")) day else 0,
                 )
-                StopDetail("出发时间", if (index == total - 1) "终到站" else stop.text("departure"), Modifier.weight(1f))
+                StopDetail(
+                    textResources(R.string.station_departure_time),
+                    if (index == total - 1) textResources(R.string.station_terminal) else stop.text("departure"),
+                    Modifier.weight(1f),
+                )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                StopDetail("停留时长", if (stop.isNull("stay")) "—" else "${stop.optString("stay")} 分钟", Modifier.weight(1f))
-                StopDetail("里程", if (stop.isNull("mileage")) "暂无" else "${stop.optString("mileage")} km", Modifier.weight(1f))
+                StopDetail(
+                    textResources(R.string.station_stay_duration),
+                    if (stop.isNull("stay")) "—" else textResources(R.string.duration_minutes, stop.optString("stay")),
+                    Modifier.weight(1f),
+                )
+                StopDetail(
+                    textResources(R.string.ticket_mileage),
+                    if (stop.isNull("mileage")) textResources(R.string.status_unavailable)
+                    else textResources(R.string.distance_km, stop.optString("mileage")),
+                    Modifier.weight(1f),
+                )
             }
         }
     }

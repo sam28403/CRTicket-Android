@@ -1,14 +1,14 @@
 package cc.samlab.ticket
 
 import cc.samlab.ticket.tracking.TrainTrackingSession
+import java.time.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.Instant
 
-class TrainTrackingSessionTest {
+class TrainTrackingSessionTest : StringResourceTest() {
     private val arrival = Instant.parse("2026-10-12T16:00:00Z").toEpochMilli()
 
     @Test fun trackingBeforeArrivalExpiresThirtyMinutesAfterTheScheduledArrival() {

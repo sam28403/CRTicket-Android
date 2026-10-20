@@ -1,6 +1,8 @@
 package cc.samlab.ticket.monitor
 
 import android.app.Activity
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import org.json.JSONObject
 
 class TicketMonitorBridge(
@@ -34,7 +36,7 @@ class TicketMonitorBridge(
             state(id)
         } catch (error: Exception) {
             reply(id, JSONObject().put("success", false)
-                .put("message", error.message ?: "无法更新余票监控"))
+                .put("message", error.message ?: appString(R.string.monitor_error_update)))
         }
     }
 

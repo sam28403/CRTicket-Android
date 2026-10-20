@@ -1,9 +1,11 @@
 package cc.samlab.ticket.monitor
 
-import org.json.JSONObject
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
+import cc.samlab.ticket.railway.TrainNumberRules
 import java.time.LocalDate
 import java.time.ZoneId
-import cc.samlab.ticket.railway.TrainNumberRules
+import org.json.JSONObject
 
 data class TicketMonitorConfig(
     val from: String,
@@ -27,13 +29,13 @@ data class TicketMonitorConfig(
             val from = json.getString("from")
             val to = json.getString("to")
             require(Regex("[A-Z]{3}").matches(from) && Regex("[A-Z]{3}").matches(to)) {
-                "请选择有效的出发站和到达站"
+                appString(R.string.monitor_error_stations)
             }
             val date = json.getString("date")
             val parsed = LocalDate.parse(date)
             val today = LocalDate.now(ZoneId.of("Asia/Shanghai"))
             require(parsed.toString() == date && !parsed.isBefore(today) &&
-                !parsed.isAfter(today.plusDays(14))) { "请选择今天起 15 天内的出发日期" }
+                !parsed.isAfter(today.plusDays(14))) { appString(R.string.monitor_error_date_range) }
             val filters = json.optJSONObject("filters") ?: JSONObject()
             val trains = filters.optJSONArray("trainFilters")
             for (index in 0 until (trains?.length() ?: 0)) {

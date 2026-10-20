@@ -2,6 +2,8 @@ package cc.samlab.ticket.ui.trainquery
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -10,6 +12,7 @@ import java.time.ZoneOffset
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TrainQueryDatePicker(date: String, onDismiss: () -> Unit, onSelect: (String) -> Unit) {
+    val textResources = rememberAppText()
     val today = LocalDate.now(ZoneId.of("Asia/Shanghai"))
     val min = today.minusDays(2)
     val max = today.plusDays(14)
@@ -35,8 +38,8 @@ internal fun TrainQueryDatePicker(date: String, onDismiss: () -> Unit, onSelect:
                     onSelect(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate().toString())
                 }
                 onDismiss()
-            }, enabled = state.selectedDateMillis != null) { Text("确定") }
+            }, enabled = state.selectedDateMillis != null) { Text(textResources(R.string.action_confirm)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(textResources(R.string.action_cancel)) } },
     ) { DatePicker(state = state, title = null, showModeToggle = false) }
 }

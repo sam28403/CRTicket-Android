@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.projectTitleFont
 import org.json.JSONObject
 
@@ -18,6 +20,7 @@ internal fun StationDiscoveryCard(
     rank: Int? = null,
     onClick: () -> Unit,
 ) {
+    val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     Surface(
         onClick = onClick,
@@ -40,7 +43,7 @@ internal fun StationDiscoveryCard(
                 )
                 Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
                     Text(
-                        "共 ${row.optInt("total")} 趟",
+                        textResources(R.string.train_list_total, row.optInt("total")),
                         Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = colors.onSecondaryContainer,
@@ -51,12 +54,22 @@ internal fun StationDiscoveryCard(
                 Modifier.fillMaxWidth().padding(top = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text("始发 ${row.optInt("origin")} 趟", style = MaterialTheme.typography.titleMedium)
-                Text("终到 ${row.optInt("terminal")} 趟", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    textResources(R.string.station_discovery_origin, row.optInt("origin")),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    textResources(R.string.station_discovery_terminal, row.optInt("terminal")),
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
             Text(
-                "已接发：${row.optInt("handled")} / ${row.optInt("total")}，" +
-                    "在站过路车：${row.optInt("passing")}",
+                textResources(
+                    R.string.station_discovery_summary,
+                    row.optInt("handled"),
+                    row.optInt("total"),
+                    row.optInt("passing"),
+                ),
                 Modifier.padding(top = 10.dp), style = MaterialTheme.typography.bodySmall,
                 color = colors.onSurfaceVariant,
             )

@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-class UpstreamPolicyTest {
+class UpstreamPolicyTest : StringResourceTest() {
     @Test fun acceptsOnlyOfficialRailwayEndpoints() {
         val urls = listOf(
             "https://search.12306.cn/search/v1/train/search?keyword=G1",

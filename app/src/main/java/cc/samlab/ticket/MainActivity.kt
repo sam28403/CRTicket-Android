@@ -12,7 +12,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.OnBackPressedCallback
 import cc.samlab.ticket.arrival.ArrivalNotifications
 import cc.samlab.ticket.arrival.StationArrivalBridge
@@ -35,7 +35,7 @@ import cc.samlab.ticket.web.WebViewLayout
 import java.util.concurrent.Executors
 import org.json.JSONObject
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     companion object {
         const val ORIGIN = LocalAssetClient.ORIGIN
     }

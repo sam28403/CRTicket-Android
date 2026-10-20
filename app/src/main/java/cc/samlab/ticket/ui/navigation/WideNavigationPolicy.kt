@@ -6,6 +6,7 @@ internal object WideNavigationPolicy {
         "/about/report",
         "/settings/arrival",
         "/settings/permissions",
+        "/settings/language",
         "/history/editor",
         "/monitor/settings",
     )

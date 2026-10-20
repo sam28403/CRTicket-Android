@@ -1,11 +1,22 @@
 package cc.samlab.ticket.monitor
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
+
 object TicketSeats {
-    val columns = linkedMapOf(
-        "second" to "二等座", "first" to "一等座", "premiumSleeper" to "优选一等座",
-        "business" to "商务座", "premium" to "特等座", "advancedSleeper" to "高级软卧",
-        "softSleeper" to "软卧 / 动卧", "hardSleeper" to "硬卧", "softSeat" to "软座",
-        "hardSeat" to "硬座", "standing" to "无座", "other" to "其他",
+    val columns get() = linkedMapOf(
+        "second" to appString(R.string.seat_second_class),
+        "first" to appString(R.string.seat_first_class),
+        "premiumSleeper" to appString(R.string.seat_premium_first),
+        "business" to appString(R.string.seat_business),
+        "premium" to appString(R.string.seat_premium),
+        "advancedSleeper" to appString(R.string.seat_advanced_sleeper),
+        "softSleeper" to appString(R.string.seat_soft_sleeper),
+        "hardSleeper" to appString(R.string.seat_hard_sleeper),
+        "softSeat" to appString(R.string.seat_soft),
+        "hardSeat" to appString(R.string.seat_hard),
+        "standing" to appString(R.string.seat_standing),
+        "other" to appString(R.string.seat_other),
     )
     private val indices = mapOf(
         "business" to 32, "premium" to 25, "first" to 31, "second" to 30,

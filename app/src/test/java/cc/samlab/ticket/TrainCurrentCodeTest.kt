@@ -6,7 +6,7 @@ import cc.samlab.ticket.tracking.TrainTrackingText
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class TrainCurrentCodeTest {
+class TrainCurrentCodeTest : StringResourceTest() {
     @Test fun g97G100ChangesFromG100ToG97AtTianjinWest() {
         val timeline = TrainTimeline("G97/G100", "2026-10-10", listOf(
             TrainStopSchedule("上海虹桥", null, "10:04", train = "G100"),

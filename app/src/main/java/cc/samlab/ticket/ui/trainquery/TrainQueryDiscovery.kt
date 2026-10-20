@@ -1,5 +1,6 @@
 package cc.samlab.ticket.ui.trainquery
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -16,23 +17,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import cc.samlab.ticket.ui.home.projectTitleFont
 import cc.samlab.ticket.ui.trainlist.TrainListItem
 import cc.samlab.ticket.ui.trainlist.parseTrainListRows
-import org.json.JSONArray
-import org.json.JSONObject
-import android.net.Uri
 import java.time.LocalDate
 import java.time.ZoneId
+import org.json.JSONArray
+import org.json.JSONObject
 
 internal fun LazyGridScope.trainQueryDiscovery(
     controller: NativeTrainQueryController,
@@ -65,11 +67,11 @@ internal fun LazyGridScope.trainQueryDiscovery(
                     TextButton(
                         onClick = { controller.dispatch("clearHistory") },
                         modifier = Modifier.testTag("train-query-clear-history"),
-                    ) { Text("清空") }
+                    ) { Text(appString(R.string.action_clear)) }
                 }
             }
             Text(
-                "今日随机推荐",
+                appString(R.string.discovery_today),
                 Modifier.padding(start = 4.dp, top = 16.dp, bottom = 8.dp)
                     .testTag("train-query-recommendation-title"),
                 style = MaterialTheme.typography.titleLarge,
@@ -85,12 +87,12 @@ internal fun LazyGridScope.trainQueryDiscovery(
     } else if (state.optString("recommendationError").isNotEmpty()) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             TextButton(onClick = { controller.dispatch("recommendations") }) {
-                Text("推荐暂时无法加载，点击重试")
+                Text(appString(R.string.train_discovery_error))
             }
         }
     } else if (recommendations == null || recommendations.length() == 0) {
         item(span = { GridItemSpan(maxLineSpan) }) {
-            Text("今日暂无可推荐车次", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(appString(R.string.train_discovery_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     } else {
         items(recommendations.length()) { index ->

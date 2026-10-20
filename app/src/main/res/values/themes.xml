@@ -1,5 +1,5 @@
 <resources>
-    <style name="Base.CRTicket" parent="android:style/Theme.Material.Light.NoActionBar">
+    <style name="Base.CRTicket" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:colorAccent">#1677FF</item>

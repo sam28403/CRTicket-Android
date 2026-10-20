@@ -2,14 +2,16 @@ package cc.samlab.ticket.network
 
 import android.util.Base64
 import android.webkit.CookieManager
-import okhttp3.Call
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 
 class PhoneHttp(
     private val worker: ExecutorService,
@@ -35,9 +37,9 @@ class PhoneHttp(
         worker.execute {
             val result = JSONObject()
             try {
-                require(method == "GET") { "铁路接口仅支持读取数据" }
+                require(method == "GET") { appString(R.string.network_error_read_only) }
                 val url = UpstreamPolicy.validate(address)
-                require(!cancelled.contains(id)) { "请求已取消" }
+                require(!cancelled.contains(id)) { appString(R.string.network_error_cancelled) }
                 val builder = Request.Builder()
                     .url(url)
                     .header("User-Agent", "Mozilla/5.0 CRTicketAndroid/3.0")
@@ -71,7 +73,7 @@ class PhoneHttp(
                         while (true) {
                             val count = input.read(buffer)
                             if (count < 0) break
-                            require(output.size() + count <= maxBytes) { "铁路服务响应过大" }
+                            require(output.size() + count <= maxBytes) { appString(R.string.network_error_response_size) }
                             output.write(buffer, 0, count)
                         }
                     }
@@ -83,7 +85,7 @@ class PhoneHttp(
                         // Keep each WebView callback well below Android IPC message limits.
                         var offset = 0
                         while (offset < bytes.size) {
-                            require(!cancelled.contains(id)) { "请求已取消" }
+                            require(!cancelled.contains(id)) { appString(R.string.network_error_cancelled) }
                             val length = minOf(384 * 1024, bytes.size - offset)
                             callback("crticketBinaryChunk", id, JSONObject().put(
                                 "chunk", Base64.encodeToString(bytes, offset, length, Base64.NO_WRAP)
@@ -97,7 +99,7 @@ class PhoneHttp(
                 }
             } catch (error: Exception) {
                 result.put("status", 503)
-                result.put("error", error.message ?: "手机无法连接铁路服务")
+                result.put("error", error.message ?: appString(R.string.network_error_connection))
                 result.put("body", "")
             } finally {
                 active.remove(id)

@@ -3,12 +3,12 @@ package cc.samlab.ticket
 import cc.samlab.ticket.tracking.TrainStopSchedule
 import cc.samlab.ticket.tracking.TrainTimeline
 import cc.samlab.ticket.tracking.TrainTrackingText
+import java.time.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
-import java.time.Instant
 
-class TrainTrackingTextTest {
+class TrainTrackingTextTest : StringResourceTest() {
     private fun time(value: String) = Instant.parse(value).toEpochMilli()
 
     private fun journey() = TrainTimeline("G1", "2026-10-10", listOf(

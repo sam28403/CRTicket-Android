@@ -1,12 +1,16 @@
 package cc.samlab.ticket.ui.station
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import org.json.JSONObject
 
-internal enum class StationTab(val key: String, val title: String) {
-    ALL("all", "全部信息"),
-    DEPARTURE("departure", "出发大屏"),
-    ARRIVAL("arrival", "到达大屏"),
-    MAP("map", "地图"),
+internal enum class StationTab(val key: String, private val textId: Int) {
+    ALL("all", R.string.station_tab_all),
+    DEPARTURE("departure", R.string.station_tab_departure),
+    ARRIVAL("arrival", R.string.station_tab_arrival),
+    MAP("map", R.string.station_tab_map);
+
+    val title: String get() = appString(textId)
 }
 
 internal data class StationBoardRow(

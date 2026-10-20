@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import org.json.JSONObject
 
 @Composable
@@ -27,6 +28,7 @@ internal fun SettingsProfile(
     controller: NativeSettingsController,
     onDialog: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val state = controller.state
     val enabled = state.loaded && !controller.busy
     SettingsGroup(stringResource(R.string.settings_profile), first = true) {
@@ -57,9 +59,9 @@ internal fun SettingsProfile(
             }
         }
     }
-    SettingsGroup("余票监控") {
+    SettingsGroup(textResources(R.string.home_monitor)) {
         SettingsRow(
-            "余票监控设置", "监控间隔、车站、时间与席别筛选",
+            textResources(R.string.monitor_settings_title), textResources(R.string.monitor_settings_description),
             0, 1, true, controller::openMonitorSettings,
         )
     }
@@ -89,17 +91,21 @@ internal fun SettingsPreferences(
             ?: R.string.theme_system
         SettingsRow(
             stringResource(R.string.settings_theme), stringResource(themeTitle),
-            0, 2, enabled, { onDialog("theme") },
+            0, 3, enabled, { onDialog("theme") },
         )
         SettingsRow(
             stringResource(R.string.settings_pure_black),
             stringResource(R.string.settings_pure_black_description),
-            1, 2, enabled, { controller.changeTheme(pureBlack = !state.pureBlack) },
+            1, 3, enabled, { controller.changeTheme(pureBlack = !state.pureBlack) },
         ) {
             SettingsSwitch(state.pureBlack, enabled, stringResource(R.string.settings_pure_black_switch)) {
                 controller.changeTheme(pureBlack = it)
             }
         }
+        SettingsRow(
+            stringResource(R.string.settings_language), selectedLanguageName(),
+            2, 3, true, controller.ui::openLanguage,
+        )
     }
     SettingsGroup(stringResource(R.string.settings_backup)) {
         SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,

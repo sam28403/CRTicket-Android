@@ -11,6 +11,8 @@ import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import cc.samlab.ticket.MainActivity
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import cc.samlab.ticket.notifications.NotificationAccess
 
 class TrainTrackingNotifications(private val context: Context) {
@@ -26,8 +28,8 @@ class TrainTrackingNotifications(private val context: Context) {
 
     init {
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "列车追踪", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                description = "列车发车、到站和终到状态"
+            NotificationChannel(CHANNEL_ID, appString(R.string.tracking_channel_name), NotificationManager.IMPORTANCE_DEFAULT).apply {
+                description = appString(R.string.tracking_channel_description)
                 setSound(null, null)
                 enableVibration(false)
             }
@@ -92,7 +94,7 @@ class TrainTrackingNotifications(private val context: Context) {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(Notification.BigTextStyle()
                 .bigText(TrainNotificationFormatting.prominent(content.text)))
-        builder.addAction(Notification.Action.Builder(null, "停止追踪", stop).build())
+        builder.addAction(Notification.Action.Builder(null, appString(R.string.tracking_action_stop), stop).build())
         if (status.phase == TrainPhase.ARRIVED && session != null) {
             // The system removes the detached terminal notification and sends its delete intent.
             builder.setTimeoutAfter(session.remaining(now).coerceAtLeast(1))

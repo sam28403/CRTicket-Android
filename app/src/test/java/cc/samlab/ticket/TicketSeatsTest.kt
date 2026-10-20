@@ -6,7 +6,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class TicketSeatsTest {
+class TicketSeatsTest : StringResourceTest() {
     private fun seats(detail: String, second: String = "有", standing: String = "有") =
         MutableList(40) { "" }.apply {
             this[30] = second

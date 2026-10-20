@@ -8,6 +8,17 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SettingsUiStateTest {
+    @Test fun languageIsAnIndependentSettingsDetail() {
+        val state = SettingsUiState()
+        state.open("theme")
+        state.openLanguage()
+        assertEquals(SettingsPage.LANGUAGE, state.page)
+        assertEquals("", state.dialog)
+        assertTrue(state.closeDetail())
+        assertEquals(SettingsPage.MAIN, state.page)
+        assertFalse(state.closeDetail())
+    }
+
     @Test fun arrivalReturnsToSettingsBeforeLeavingTheSettingsRoute() {
         val state = SettingsUiState()
         state.openArrival()

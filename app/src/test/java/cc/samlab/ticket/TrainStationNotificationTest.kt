@@ -4,13 +4,13 @@ import cc.samlab.ticket.tracking.TrainStationChip
 import cc.samlab.ticket.tracking.TrainStopSchedule
 import cc.samlab.ticket.tracking.TrainTimeline
 import cc.samlab.ticket.tracking.TrainTrackingText
+import java.time.Instant
+import java.util.TimeZone
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
-import java.time.Instant
-import java.util.TimeZone
 
-class TrainStationNotificationTest {
+class TrainStationNotificationTest : StringResourceTest() {
     private val timeline = TrainTimeline("K1", "2026-10-10", listOf(
         TrainStopSchedule("北京", null, "21:00"),
         TrainStopSchedule("乌鲁木齐南", "22:00", "23:05"),

@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.atomic.AtomicInteger
 import org.json.JSONObject
@@ -139,7 +141,7 @@ class NativeHistoryController(
             if (!closed && pendingOperation == operation) {
                 pendingOperation = null
                 ui.busy = false
-                ui.error = "操作超时，请刷新记录后重试"
+                ui.error = appString(R.string.history_error_timeout)
             }
         }, 60_000)
     }
@@ -153,7 +155,7 @@ class NativeHistoryController(
             if (value.optBoolean("success")) {
                 ui.deleting = null
                 ui.closeDetail()
-            } else ui.error = value.optString("message", "操作失败，请重试")
+            } else ui.error = value.optString("message", appString(R.string.settings_operation_failed))
         }
     }
 

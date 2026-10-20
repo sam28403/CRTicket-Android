@@ -56,10 +56,11 @@ internal class ExpressivePageContent(
             "/about/report" -> cc.samlab.ticket.ui.report.ExpressiveReportScreen(
                 dark, pureBlack, onBack, onExternal,
             )
-            "/settings", "/settings/arrival", "/settings/permissions" -> {
+            "/settings", "/settings/arrival", "/settings/permissions", "/settings/language" -> {
                 val page = when (ExpressiveRoutes.path(location)) {
                     "/settings/arrival" -> SettingsPage.ARRIVAL
                     "/settings/permissions" -> SettingsPage.PERMISSIONS
+                    "/settings/language" -> SettingsPage.LANGUAGE
                     else -> SettingsPage.MAIN
                 }
                 ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, active, embedded, page)

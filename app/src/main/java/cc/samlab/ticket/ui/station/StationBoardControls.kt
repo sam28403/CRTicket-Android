@@ -1,7 +1,7 @@
 package cc.samlab.ticket.ui.station
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,6 +20,8 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -27,6 +29,7 @@ internal fun StationBoardSearch(
     controller: StationBoardState,
     modifier: Modifier = Modifier,
 ) {
+    val textResources = rememberAppText()
     var expanded by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submit = {
@@ -47,7 +50,7 @@ internal fun StationBoardSearch(
             OutlinedTextField(
                 value = controller.station,
                 onValueChange = { controller.editStation(it); expanded = true },
-                placeholder = { Text("输入站名或拼音") },
+                placeholder = { Text(textResources(R.string.station_search_hint)) },
                 leadingIcon = { Icon(Icons.Default.Search, null) },
                 enabled = !controller.loading,
                 singleLine = true,
@@ -71,7 +74,7 @@ internal fun StationBoardSearch(
             enabled = !controller.loading,
             shapes = ButtonDefaults.shapes(),
             modifier = Modifier.height(48.dp).testTag("station-submit"),
-        ) { Text("查询") }
+        ) { Text(textResources(R.string.action_query)) }
     }
 }
 

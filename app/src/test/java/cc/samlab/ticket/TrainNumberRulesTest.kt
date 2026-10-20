@@ -7,7 +7,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class TrainNumberRulesTest {
+class TrainNumberRulesTest : StringResourceTest() {
     @Test fun currentRulesStayActiveBeforeFutureNumberingChanges() {
         for (train in listOf("G1", "g97", "1461", "50001", "C4699")) {
             assertEquals(train, "", TrainNumberRules.error(train))

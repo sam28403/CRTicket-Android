@@ -9,15 +9,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
+import cc.samlab.ticket.railway.TrainNumberRules
 import kotlin.math.roundToInt
 import org.json.JSONArray
-import cc.samlab.ticket.railway.TrainNumberRules
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,16 +28,17 @@ internal fun MonitorSettingsDialog(
     key: String,
     onDismiss: () -> Unit,
 ) {
+    val textResources = rememberAppText()
     val haptics = LocalHapticFeedback.current
     val state = controller.state
     val title = when (key) {
-        "interval" -> "监控间隔"
-        "selectedDepartureStations" -> "出发车站筛选"
-        "selectedArrivalStations" -> "到达车站筛选"
-        "timeRange" -> "出发时间筛选"
-        "trainFilters" -> "车次搜索"
-        "seatFilters" -> "席别选定"
-        else -> "车次类型选定"
+        "interval" -> textResources(R.string.monitor_interval)
+        "selectedDepartureStations" -> textResources(R.string.monitor_departure_filter)
+        "selectedArrivalStations" -> textResources(R.string.monitor_arrival_filter)
+        "timeRange" -> textResources(R.string.monitor_departure_time_filter)
+        "trainFilters" -> textResources(R.string.monitor_train_search)
+        "seatFilters" -> textResources(R.string.monitor_seat_filter)
+        else -> textResources(R.string.monitor_train_type_filter)
     }
     var text by remember(key) { mutableStateOf(
         if (key == "interval") state.optInt("interval", 60).toString()
@@ -69,11 +72,14 @@ internal fun MonitorSettingsDialog(
                             modifier = Modifier.testTag("monitor-setting-input"),
                             textStyle = if (key == "interval") MaterialTheme.typography.headlineLarge.copy(fontSize = 26.sp)
                                 else MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp),
-                            label = { Text(if (key == "interval") "10–3600 秒" else "车次，如 G1 G3", fontSize = 16.sp) },
+                            label = { Text(
+                                if (key == "interval") textResources(R.string.monitor_interval_range) else textResources(R.string.monitor_train_search_hint),
+                                fontSize = 16.sp,
+                            ) },
                             supportingText = {
                                 Text(
-                                    trainError ?: if (key == "interval") "停止监控后可调整间隔"
-                                        else "多个车次用空格或逗号分隔，清空显示全部",
+                                    trainError ?: if (key == "interval") textResources(R.string.monitor_interval_hint)
+                                        else textResources(R.string.monitor_train_filter_hint),
                                     fontSize = 14.sp,
                                 )
                             },
@@ -94,7 +100,11 @@ internal fun MonitorSettingsDialog(
                                 modifier = Modifier.testTag("monitor-time-slider"),
                             )
                         }
-                        "trainType" -> listOf("全部车次", "高速动车", "普速列车").forEachIndexed { index, label ->
+                        "trainType" -> listOf(
+                            textResources(R.string.monitor_train_all),
+                            textResources(R.string.monitor_train_high_speed),
+                            textResources(R.string.monitor_train_ordinary),
+                        ).forEachIndexed { index, label ->
                             Row(
                                 Modifier.fillMaxWidth().clickable { type = index }.padding(vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -112,8 +122,8 @@ internal fun MonitorSettingsDialog(
                             } else state.optJSONArray(
                                 if (key == "selectedDepartureStations") "departureStations" else "arrivalStations",
                             ).strings().map { it to it }
-                            TextButton({ selected = emptyList() }) { Text("全部") }
-                            if (options.isEmpty()) Text("查询余票后可选择具体车站")
+                            TextButton({ selected = emptyList() }) { Text(textResources(R.string.filter_all)) }
+                            if (options.isEmpty()) Text(textResources(R.string.monitor_station_filter_hint))
                             options.forEach { (value, label) ->
                                 val toggle = { selected = if (value in selected) selected - value else selected + value }
                                 Row(
@@ -142,8 +152,8 @@ internal fun MonitorSettingsDialog(
                     else -> controller.edit(key, JSONArray(selected))
                 }
                 onDismiss()
-            }, enabled = valid) { Text("确定", fontSize = 16.sp) }
+            }, enabled = valid) { Text(textResources(R.string.action_confirm), fontSize = 16.sp) }
         },
-        dismissButton = { TextButton(onDismiss) { Text("取消", fontSize = 16.sp) } },
+        dismissButton = { TextButton(onDismiss) { Text(textResources(R.string.action_cancel), fontSize = 16.sp) } },
     )
 }

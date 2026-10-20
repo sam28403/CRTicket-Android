@@ -9,9 +9,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun StationBoardEmptyState(station: String, modifier: Modifier = Modifier) {
+    val textResources = rememberAppText()
     Column(
         modifier.fillMaxWidth().padding(32.dp).testTag("station-no-trains"),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -21,9 +23,9 @@ internal fun StationBoardEmptyState(station: String, modifier: Modifier = Modifi
             painterResource(R.drawable.ic_home_train), contentDescription = null,
             modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary,
         )
-        Text("今日暂无车次", style = MaterialTheme.typography.titleLarge)
+        Text(textResources(R.string.station_board_empty), style = MaterialTheme.typography.titleLarge)
         Text(
-            "$station 今日没有到发车次，可查询其他车站。",
+            textResources(R.string.station_board_empty_description, station),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

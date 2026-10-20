@@ -1,8 +1,8 @@
 package cc.samlab.ticket.ui.monitor
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,6 +28,7 @@ internal fun monitorTime(value: String): String = runCatching {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun MonitorControls(controller: NativeTicketMonitorController) {
+    val textResources = rememberAppText()
     val state = controller.state
     val ready = state.has("restoring") && !state.optBoolean("restoring")
     var calendar by remember { mutableStateOf(false) }
@@ -33,20 +36,20 @@ internal fun MonitorControls(controller: NativeTicketMonitorController) {
     Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLowest) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                MonitorStationField(controller, "from", "出发站", ready, Modifier.weight(1f))
+                MonitorStationField(controller, "from", textResources(R.string.ticket_from), ready, Modifier.weight(1f))
                 FilledTonalIconButton(
                     { controller.action("swap") },
                     enabled = ready,
                     modifier = Modifier.padding(horizontal = 4.dp).testTag("monitor-swap")
-                        .semantics { contentDescription = "交换出发站和到达站" },
+                        .semantics { contentDescription = textResources(R.string.station_swap_description) },
                 ) { Text("⇄", style = MaterialTheme.typography.headlineSmall) }
-                MonitorStationField(controller, "to", "到达站", ready, Modifier.weight(1f))
+                MonitorStationField(controller, "to", textResources(R.string.ticket_to), ready, Modifier.weight(1f))
             }
             OutlinedButton(
                 onClick = { keyboard?.hide(); calendar = true },
                 enabled = ready,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("monitor-date"),
-            ) { Text("出发日期  ${state.optString("date")}") }
+            ) { Text(textResources(R.string.monitor_departure_date, state.optString("date"))) }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -57,24 +60,24 @@ internal fun MonitorControls(controller: NativeTicketMonitorController) {
                     shapes = ButtonDefaults.shapes(),
                     contentPadding = PaddingValues(horizontal = 12.dp),
                     modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("monitor-query"),
-                ) { Text("查询余票") }
-                Text("监控", style = MaterialTheme.typography.titleMedium)
+                ) { Text(textResources(R.string.monitor_query)) }
+                Text(textResources(R.string.monitor_toggle), style = MaterialTheme.typography.titleMedium)
                 Switch(
                     checked = controller.monitoring,
                     onCheckedChange = { controller.action(if (it) "start" else "stop") },
                     enabled = ready && (!controller.loading || controller.monitoring),
                     modifier = Modifier.testTag("monitor-toggle")
-                        .semantics { contentDescription = "监控" },
+                        .semantics { contentDescription = textResources(R.string.monitor_toggle) },
                 )
                 FilledTonalIconButton(
                     onClick = { keyboard?.hide(); controller.action("reset") },
                     enabled = ready,
                     shape = CircleShape,
                     modifier = Modifier.size(48.dp).testTag("monitor-reset"),
-                ) { Icon(Icons.Default.Refresh, "重置余票监控设定") }
+                ) { Icon(Icons.Default.Refresh, textResources(R.string.monitor_reset)) }
             }
             Text(
-                "上次监控成功：${monitorTime(controller.lastMonitorAt)}",
+                textResources(R.string.monitor_last_success, monitorTime(controller.lastMonitorAt)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.testTag("monitor-last-success"),

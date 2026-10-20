@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import cc.samlab.ticket.notifications.MonitorNotifications
 import org.json.JSONObject
 
@@ -19,8 +21,8 @@ class TrainTrackingBridge(
     private val permission = MonitorNotifications(
         activity, callback,
         channelId = TrainTrackingNotifications.CHANNEL_ID,
-        channelName = "列车追踪",
-        channelDescription = "列车发车、到站和终到状态",
+        channelName = appString(R.string.tracking_channel_name),
+        channelDescription = appString(R.string.tracking_channel_description),
         channelImportance = NotificationManager.IMPORTANCE_DEFAULT,
         permissionRequest = 43,
         settingsRequest = 44,
@@ -59,12 +61,12 @@ class TrainTrackingBridge(
     fun start(id: String, payload: String) {
         try {
             TrainTrackingStore.parse(payload)
-            require(notifications.enabled()) { "请先开启列车追踪通知权限" }
+            require(notifications.enabled()) { appString(R.string.tracking_error_permission) }
             val receiver = object : ResultReceiver(Handler(Looper.getMainLooper())) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                     reply(id, JSONObject().put("success", resultCode == 1)
                         .put("finished", resultData?.getBoolean("finished", false) == true)
-                        .put("message", resultData?.getString("message") ?: "已开启列车追踪"))
+                        .put("message", resultData?.getString("message") ?: appString(R.string.tracking_started)))
                 }
             }
             activity.startForegroundService(
@@ -74,7 +76,7 @@ class TrainTrackingBridge(
             )
         } catch (error: Exception) {
             reply(id, JSONObject().put("success", false)
-                .put("message", error.message ?: "无法启动列车追踪"))
+                .put("message", error.message ?: appString(R.string.tracking_error_start)))
         }
     }
 

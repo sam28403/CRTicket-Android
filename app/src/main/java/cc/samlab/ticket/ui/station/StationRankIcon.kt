@@ -11,16 +11,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun StationRankIcon(rank: Int) {
+    val textResources = rememberAppText()
     Box(
         modifier = Modifier.size(28.dp).clearAndSetSemantics {
-            contentDescription = "第${rank}名"
+            contentDescription = textResources(R.string.station_rank, rank)
         },
         contentAlignment = Alignment.Center,
     ) {

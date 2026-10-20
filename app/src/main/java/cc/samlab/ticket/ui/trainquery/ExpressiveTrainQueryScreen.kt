@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import cc.samlab.ticket.ui.home.projectTitleFont
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.homeColorScheme
+import cc.samlab.ticket.ui.home.projectTitleFont
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -28,6 +30,7 @@ internal fun ExpressiveTrainQueryScreen(
     active: Boolean = true,
     location: String = "/train",
 ) {
+    val textResources = rememberAppText()
     val state = controller.stateFor(location)
     val loading = state.optBoolean("loading")
     val result = state.optJSONObject("result")
@@ -40,10 +43,10 @@ internal fun ExpressiveTrainQueryScreen(
         Surface(Modifier.fillMaxSize().testTag("train-query-screen"), color = colors.surfaceContainer) {
             Column {
                 TopAppBar(
-                    title = { Text("车次查询", fontFamily = projectTitleFont) },
+                    title = { Text(textResources(R.string.home_train), fontFamily = projectTitleFont) },
                     navigationIcon = {
                         if (!embedded) FilledTonalIconButton(onBack, Modifier.padding(start = 8.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back))
                         }
                     },
                     windowInsets = WindowInsets(0, 0, 0, 0),
@@ -79,7 +82,10 @@ internal fun ExpressiveTrainQueryScreen(
                                     Text("${result.optString("from")} → ${result.optString("to")}", style = MaterialTheme.typography.titleMedium)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("追踪", style = MaterialTheme.typography.labelMedium)
+                                    Text(
+                                        textResources(R.string.tracking_action_start),
+                                        style = MaterialTheme.typography.labelMedium,
+                                    )
                                     Switch(
                                         checked = state.optBoolean("tracking"),
                                         onCheckedChange = { controller.dispatch("tracking") },
@@ -102,14 +108,14 @@ internal fun ExpressiveTrainQueryScreen(
                                 enabled = !state.optBoolean("exporting"),
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
                                     .testTag("train-query-export"),
-                            ) { Text("导出数据") }
+                            ) { Text(textResources(R.string.train_query_export)) }
                         }
                         state.optJSONObject("route")?.let { route ->
                             item(span = { GridItemSpan(maxLineSpan) }) { TrainQueryRouteMap(route, result!!.optString("train")) }
                         }
                     } else if (!loading) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(
-                            if (result != null) "该日期未查询到此车次" else "输入车次和始发日期查询时刻表",
+                            if (result != null) textResources(R.string.train_query_empty) else textResources(R.string.train_query_hint),
                             Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                             color = colors.onSurfaceVariant,
                         )

@@ -12,9 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun HistoryRecordCard(row: HistoryRecord, action: (String, String) -> Unit) {
+    val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     var menu by remember { mutableStateOf(false) }
     Surface(
@@ -32,10 +35,14 @@ internal fun HistoryRecordCard(row: HistoryRecord, action: (String, String) -> U
                 )
                 Box {
                     IconButton(onClick = { menu = true }) {
-                        Icon(Icons.Default.MoreVert, "记录操作")
+                        Icon(Icons.Default.MoreVert, textResources(R.string.history_record_actions))
                     }
                     DropdownMenu(menu, { menu = false }) {
-                        listOf("download" to "下载车票", "edit" to "编辑记录", "delete" to "删除记录")
+                        listOf(
+                            "download" to textResources(R.string.history_download),
+                            "edit" to textResources(R.string.history_edit),
+                            "delete" to textResources(R.string.history_delete),
+                        )
                             .forEach { (key, label) ->
                                 DropdownMenuItem(
                                     text = { Text(label, color = if (key == "delete") colors.error else colors.onSurface) },
@@ -88,7 +95,10 @@ internal fun HistoryRecordCard(row: HistoryRecord, action: (String, String) -> U
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text(
-                    "${if (row.credit) "积分 " else "¥"}${historyAmount(row.price)}",
+                    textResources(
+                        if (row.credit) R.string.history_credit_amount else R.string.history_price_amount,
+                        historyAmount(row.price),
+                    ),
                     modifier = Modifier.testTag("history-price"),
                     style = MaterialTheme.typography.titleMedium,
                     color = colors.primary, fontWeight = FontWeight.Bold,

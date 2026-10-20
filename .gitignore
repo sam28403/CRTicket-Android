@@ -17,6 +17,7 @@ build/
 .cxx/
 /captures/
 /app/release/
+/app/benchmark/
 *.apk
 *.aab
 *.apks

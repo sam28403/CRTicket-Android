@@ -1,5 +1,7 @@
 package cc.samlab.ticket.ui.history
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import cc.samlab.ticket.railway.TrainNumberRules
 import java.time.LocalDate
 
@@ -10,15 +12,15 @@ internal fun validateTicketFields(
 ): Map<String, String> {
     val errors = linkedMapOf<String, String>()
     val required = mapOf(
-        "number" to "请填写票号 / 订单号",
-        "trainNo" to "请输入车次",
-        "from" to "请填写出发站",
-        "to" to "请填写到达站",
-        "date" to "请选择有效的开车日期",
-        "time" to "请选择有效的开车时间",
-        "seatType" to "请选择席别",
-        "seatNo" to "请填写座位号",
-        "sellPlace" to "请填写售票地点",
+        "number" to appString(R.string.ticket_error_number),
+        "trainNo" to appString(R.string.train_error_required),
+        "from" to appString(R.string.ticket_error_from),
+        "to" to appString(R.string.ticket_error_to),
+        "date" to appString(R.string.ticket_error_date),
+        "time" to appString(R.string.ticket_error_time),
+        "seatType" to appString(R.string.ticket_error_seat_type),
+        "seatNo" to appString(R.string.ticket_error_seat_number),
+        "sellPlace" to appString(R.string.ticket_error_sell_place),
     )
     required.forEach { (key, message) ->
         if (fields[key].isNullOrBlank()) errors[key] = message
@@ -37,9 +39,9 @@ internal fun validateTicketFields(
         val (year, month, day) = date.destructured
         LocalDate.of(year.toInt(), month.toInt(), day.toInt())
     }.isSuccess
-    if (!validDate) errors["date"] = "请选择有效的开车日期"
+    if (!validDate) errors["date"] = appString(R.string.ticket_error_date)
     if (!Regex("^([01]\\d|2[0-3]):[0-5]\\d$").matches(fields["time"].orEmpty())) {
-        errors["time"] = "请选择有效的开车时间"
+        errors["time"] = appString(R.string.ticket_error_time)
     }
     val textFields = listOf(
         "number", "trainNo", "from", "to", "date", "time", "seatType", "seatNo",
@@ -48,7 +50,7 @@ internal fun validateTicketFields(
     textFields.forEach { key ->
         val limit = if (key == "message") 2000 else 200
         if (fields[key].orEmpty().length > limit) {
-            errors[key] = "最多可输入 $limit 个字符"
+            errors[key] = appString(R.string.ticket_error_length, limit)
         }
     }
     return errors

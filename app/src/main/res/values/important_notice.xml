@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="important_notice_title">重要通知</string>
-    <string name="important_notice_do_not_show">不再弹出</string>
-    <string name="important_notice_message">中国铁路即将开始调整车次规则\n\n根据新闻稿，将新增X开头列车，Z, T, K, 普车将更改为Z, N, V字头车。\n\n因此，本站规则更新时间如下：\n\n即日起 ~ 2026.11.25：维持现有规则；\n\n2026.11.25（预计）起开车的车票，同时保留现有规则，新增允许N、V开头列车；\n\n2026.12.XX起，新增对X等车次的支持，同时保留现有规则，此时到下一阶段站点将允许两套规则；\n\n2027.01.15（预计）起，将删除旧规则，您将可能无法生成旧规则的车票。\n\n如有发现错误，请在项目主页提交Issues。</string>
-</resources>

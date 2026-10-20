@@ -4,7 +4,7 @@ import cc.samlab.ticket.ui.history.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class HistorySortingTest {
+class HistorySortingTest : StringResourceTest() {
     private fun record(id: String, date: String, price: Double) = HistoryRecord(
         id, date, "08:00", "G1", "北京南", "上海虹桥", "二等座", "01车01A号", id, price, false,
     )

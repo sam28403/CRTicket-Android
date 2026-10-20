@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.window.AdaptivePanes
 
@@ -64,11 +63,14 @@ internal fun ExpressiveSettingsScreen(
                     embedded && page == SettingsPage.MAIN,
                     title = stringResource(page.title),
                 )
-                if (controller.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+                if (controller.busy && page != SettingsPage.LANGUAGE) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
                 Box(Modifier.weight(1f)) {
                     when (page) {
                         SettingsPage.PERMISSIONS -> PermissionSettingsContent(controller.permissions, embedded)
                         SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
+                        SettingsPage.LANGUAGE -> LanguageSettingsContent()
                         SettingsPage.MAIN -> AdaptivePanes(
                             modifier = Modifier.fillMaxSize(),
                             single = {

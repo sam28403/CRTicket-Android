@@ -7,6 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun StationBoardActions(
@@ -17,6 +19,7 @@ internal fun StationBoardActions(
     map: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val textResources = rememberAppText()
     // Wrap at large font scales instead of squeezing labels or touch targets.
     FlowRow(
         modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("station-actions"),
@@ -24,14 +27,14 @@ internal fun StationBoardActions(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         itemVerticalAlignment = Alignment.CenterVertically,
     ) {
-        Text("共 $total 趟", style = MaterialTheme.typography.labelLarge)
+        Text(textResources(R.string.train_list_total, total), style = MaterialTheme.typography.labelLarge)
         if (!map) {
             TextButton(
                 onClick = onLocate,
                 contentPadding = PaddingValues(horizontal = 8.dp),
-            ) { Text("定位到当前时间", style = MaterialTheme.typography.labelMedium) }
+            ) { Text(textResources(R.string.station_board_locate_now), style = MaterialTheme.typography.labelMedium) }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("跟随当前时间", style = MaterialTheme.typography.labelMedium)
+                Text(textResources(R.string.station_board_follow_now), style = MaterialTheme.typography.labelMedium)
                 Switch(
                     checked = follow,
                     onCheckedChange = onFollow,

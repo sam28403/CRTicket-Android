@@ -11,6 +11,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
     MAIN(R.string.home_settings),
     PERMISSIONS(R.string.settings_permissions),
     ARRIVAL(R.string.settings_arrival),
+    LANGUAGE(R.string.settings_language),
 }
 
 internal class SettingsUiState {
@@ -31,6 +32,10 @@ internal class SettingsUiState {
 
     fun openArrival() {
         showPage(SettingsPage.ARRIVAL)
+    }
+
+    fun openLanguage() {
+        showPage(SettingsPage.LANGUAGE)
     }
 
     private fun showPage(value: SettingsPage) {

@@ -10,11 +10,13 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
-import org.json.JSONArray
-import org.json.JSONObject
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.Executors
+import org.json.JSONArray
+import org.json.JSONObject
 
 class TicketMonitorService : Service() {
     companion object {
@@ -109,7 +111,7 @@ class TicketMonitorService : Service() {
             return START_STICKY
         } catch (error: Exception) {
             TicketMonitorStore.save(this, state.put("loading", false)
-                .put("error", error.message ?: "暂时无法启动后台监控，请重开应用重试"))
+                .put("error", error.message ?: appString(R.string.monitor_error_start)))
             stopSelf()
             return START_NOT_STICKY
         }
@@ -143,7 +145,7 @@ class TicketMonitorService : Service() {
                     val details = TicketMonitorMatches.collect(latest, rows, config)
                     notifications.available(details)
                 }.onFailure { error ->
-                    latest.put("error", error.message ?: "查询失败，稍后自动重试")
+                    latest.put("error", error.message ?: appString(R.string.monitor_error_retry))
                 }
                 latest.put("loading", false)
                     .put("nextAt", Instant.now().plusSeconds(config.interval).toString())

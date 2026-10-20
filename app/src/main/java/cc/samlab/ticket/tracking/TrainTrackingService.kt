@@ -13,6 +13,8 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import android.os.ResultReceiver
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 
 class TrainTrackingService : Service() {
     companion object {
@@ -69,14 +71,14 @@ class TrainTrackingService : Service() {
         try {
             val requested = intent?.getStringExtra(PAYLOAD)
             val payload = requested ?: TrainTrackingStore.read(this)
-            require(payload != null) { "没有正在追踪的列车" }
+            require(payload != null) { appString(R.string.tracking_error_no_train) }
             val next = try {
                 TrainTrackingStore.parse(payload)
             } catch (error: Exception) {
                 if (requested == null) TrainTrackingStore.clear(this)
                 throw error
             }
-            require(notifications.enabled()) { "请在系统设置中开启列车追踪通知" }
+            require(notifications.enabled()) { appString(R.string.tracking_error_system_permission) }
             val now = System.currentTimeMillis()
             val nextSession = if (requested != null) TrainTrackingSession.start(next.end, now)
                 else TrainTrackingStore.session(this) ?: TrainTrackingSession.restoreLegacy(next.end)
@@ -105,7 +107,7 @@ class TrainTrackingService : Service() {
             return if (next.status(now).phase == TrainPhase.ARRIVED) START_NOT_STICKY else START_STICKY
         } catch (error: Exception) {
             receiver?.send(0, Bundle().apply {
-                putString("message", error.message ?: "无法启动列车追踪")
+                putString("message", error.message ?: appString(R.string.tracking_error_start))
             })
             // Temporary notification or foreground-start restrictions must not erase
             // the saved journey. Opening the app can retry it while the train is running.

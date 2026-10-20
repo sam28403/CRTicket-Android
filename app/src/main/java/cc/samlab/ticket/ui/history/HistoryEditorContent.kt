@@ -10,9 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun HistoryEditorContent(controller: NativeHistoryController, draft: HistoryDraft) {
+    val textResources = rememberAppText()
     val enabled = !controller.ui.busy
     BoxWithConstraints(Modifier.fillMaxSize().testTag("history-editor")) {
         val wide = maxWidth >= 720.dp
@@ -33,24 +36,42 @@ internal fun HistoryEditorContent(controller: NativeHistoryController, draft: Hi
                 JourneyFields(draft, controller.stations, enabled)
                 TicketFields(draft, controller.seats, controller.airDisabledSeats, enabled)
             }
-            EditorSection("其他信息") {
-                HistoryTextField(draft, "sellPlace", "售票地点", "例如：南京南站", enabled = enabled)
-                HistoryTextField(draft, "gate", "检票 / 候车", "例如：1A / 一候", enabled = enabled)
-                HistoryChoiceField(draft, "theme", "车票背景", controller.themes, enabled)
-                HistoryTextField(draft, "message", "提示语", multiline = true, enabled = enabled)
+            EditorSection(textResources(R.string.ticket_section_other)) {
+                HistoryTextField(
+                    draft,
+                    "sellPlace",
+                    textResources(R.string.ticket_sell_place),
+                    textResources(R.string.ticket_sell_place_hint),
+                    enabled = enabled,
+                )
+                HistoryTextField(
+                    draft,
+                    "gate",
+                    textResources(R.string.ticket_gate),
+                    textResources(R.string.ticket_gate_hint),
+                    enabled = enabled,
+                )
+                HistoryChoiceField(draft, "theme", textResources(R.string.ticket_theme), controller.themes, enabled)
+                HistoryTextField(
+                    draft,
+                    "message",
+                    textResources(R.string.ticket_message),
+                    multiline = true,
+                    enabled = enabled,
+                )
             }
             Row(
                 Modifier.fillMaxWidth().padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TextButton(onClick = { controller.ui.closeDetail() }, enabled = enabled) { Text("取消") }
+                TextButton(onClick = { controller.ui.closeDetail() }, enabled = enabled) { Text(textResources(R.string.action_cancel)) }
                 Spacer(Modifier.width(12.dp))
                 Button(
                     onClick = controller::submit, enabled = enabled,
                     modifier = Modifier.testTag("history-save"),
                     contentPadding = PaddingValues(horizontal = 28.dp, vertical = 16.dp),
-                ) { Text(if (enabled) "保存记录" else "正在保存…") }
+                ) { Text(if (enabled) textResources(R.string.history_save) else textResources(R.string.status_saving)) }
             }
         }
     }
@@ -58,12 +79,19 @@ internal fun HistoryEditorContent(controller: NativeHistoryController, draft: Hi
 
 @Composable
 internal fun JourneyFields(draft: HistoryDraft, stations: List<HistoryStation>, enabled: Boolean) {
-    EditorSection("行程信息") {
-        HistoryTextField(draft, "trainNo", "车次", "例如：G25 或 1461", enabled = enabled)
-        HistoryStationField(draft, "from", "出发站", stations, enabled)
-        HistoryStationField(draft, "to", "到达站", stations, enabled)
+    val textResources = rememberAppText()
+    EditorSection(textResources(R.string.ticket_section_journey)) {
+        HistoryTextField(
+            draft,
+            "trainNo",
+            textResources(R.string.ticket_train),
+            textResources(R.string.ticket_train_hint),
+            enabled = enabled,
+        )
+        HistoryStationField(draft, "from", textResources(R.string.ticket_from), stations, enabled)
+        HistoryStationField(draft, "to", textResources(R.string.ticket_to), stations, enabled)
         HistoryDateTimeFields(draft, enabled)
-        HistoryTextField(draft, "distance", "里程（公里）", numeric = true, enabled = enabled)
+        HistoryTextField(draft, "distance", textResources(R.string.ticket_distance), numeric = true, enabled = enabled)
     }
 }
 
@@ -74,17 +102,30 @@ internal fun TicketFields(
     airDisabledSeats: Set<String>,
     enabled: Boolean,
 ) {
-    EditorSection("车票信息") {
-        HistoryTextField(draft, "number", "票号 / 订单号", "例如：E351822734", enabled = enabled)
-        HistoryTextField(draft, "price", "票价 / 积分", numeric = true, enabled = enabled)
-        HistoryChoiceField(draft, "seatType", "席别", seats, enabled) { selected ->
+    val textResources = rememberAppText()
+    EditorSection(textResources(R.string.ticket_section_details)) {
+        HistoryTextField(
+            draft,
+            "number",
+            textResources(R.string.ticket_number),
+            textResources(R.string.ticket_number_hint),
+            enabled = enabled,
+        )
+        HistoryTextField(draft, "price", textResources(R.string.ticket_price), numeric = true, enabled = enabled)
+        HistoryChoiceField(draft, "seatType", textResources(R.string.ticket_seat_type), seats, enabled) { selected ->
             draft.fields["seatType"] = selected
             if (selected in airDisabledSeats) draft.conditioner = false
         }
-        HistoryTextField(draft, "seatNo", "座位号", "例如：03车12A号", enabled = enabled)
-        HistorySwitch("使用积分", draft.credit, enabled, draft::changeCredit)
+        HistoryTextField(
+            draft,
+            "seatNo",
+            textResources(R.string.ticket_seat_number),
+            textResources(R.string.ticket_seat_number_hint),
+            enabled = enabled,
+        )
+        HistorySwitch(textResources(R.string.ticket_use_credit), draft.credit, enabled, draft::changeCredit)
         HistorySwitch(
-            "空调", draft.conditioner,
+            textResources(R.string.ticket_air_conditioning), draft.conditioner,
             enabled && draft.value("seatType") !in airDisabledSeats,
         ) { draft.conditioner = it }
     }

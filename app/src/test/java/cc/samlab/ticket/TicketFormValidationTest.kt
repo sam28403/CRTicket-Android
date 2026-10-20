@@ -1,16 +1,16 @@
 package cc.samlab.ticket
 
-import cc.samlab.ticket.ui.history.validateTicketFields
 import cc.samlab.ticket.ui.history.acceptsTicketNumberInput
 import cc.samlab.ticket.ui.history.ticketDistanceError
 import cc.samlab.ticket.ui.history.ticketPriceError
+import cc.samlab.ticket.ui.history.validateTicketFields
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class TicketFormValidationTest {
+class TicketFormValidationTest : StringResourceTest() {
     private val valid = mapOf(
         "number" to "E123456789", "trainNo" to "G25",
         "from" to "北京南", "to" to "上海虹桥",

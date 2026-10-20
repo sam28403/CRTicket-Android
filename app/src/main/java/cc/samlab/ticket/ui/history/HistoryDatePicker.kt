@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -19,6 +21,7 @@ internal fun HistoryDatePicker(
     onDismiss: () -> Unit,
     onSelect: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val initial = historyEditorDate(date) ?: LocalDate.now()
     val state = rememberDatePickerState(
         initialSelectedDateMillis = initial.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
@@ -37,9 +40,9 @@ internal fun HistoryDatePicker(
                         )
                     }
                 },
-            ) { Text("确定") }
+            ) { Text(textResources(R.string.action_confirm)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(textResources(R.string.action_cancel)) } },
     ) {
         DatePicker(state = state)
     }

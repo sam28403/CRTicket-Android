@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.projectTitleFont
 
 @Composable
@@ -20,6 +22,7 @@ internal fun StationBoardItem(
     onTrain: () -> Unit,
     onStation: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     val accent = when (highlight) {
         StationHighlight.IN_STATION -> if (dark) Color(0xFFFFC078) else Color(0xFF975009)
@@ -49,9 +52,9 @@ internal fun StationBoardItem(
             }
             StationRoute(row.from, row.to, onStation)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StationTimeField("到达", row.arrival, Modifier.weight(1f), accent)
-                StationTimeField("开车", row.departure, Modifier.weight(1f), accent)
-                StationTimeField("停留", row.stay, Modifier.weight(1f))
+                StationTimeField(textResources(R.string.station_arrival), row.arrival, Modifier.weight(1f), accent)
+                StationTimeField(textResources(R.string.station_departure), row.departure, Modifier.weight(1f), accent)
+                StationTimeField(textResources(R.string.station_stay), row.stay, Modifier.weight(1f))
             }
         } else Row(
             Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -64,7 +67,7 @@ internal fun StationBoardItem(
             }
             Column(Modifier.weight(1.3f)) {
                 Text(
-                    if (tab == StationTab.DEPARTURE) "开往" else "来自",
+                    if (tab == StationTab.DEPARTURE) textResources(R.string.station_bound_for) else textResources(R.string.station_from),
                     style = MaterialTheme.typography.labelMedium,
                     color = colors.onSurfaceVariant,
                 )
@@ -72,7 +75,7 @@ internal fun StationBoardItem(
                 StationName(station, onStation = { onStation(station) })
             }
             StationTimeField(
-                if (tab == StationTab.DEPARTURE) "开车" else "到达",
+                if (tab == StationTab.DEPARTURE) textResources(R.string.station_departure) else textResources(R.string.station_arrival),
                 if (tab == StationTab.DEPARTURE) row.departure else row.arrival,
                 Modifier.widthIn(min = 64.dp), accent,
                 prominent = true,

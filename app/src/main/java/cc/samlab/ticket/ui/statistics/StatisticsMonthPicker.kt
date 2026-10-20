@@ -6,13 +6,15 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import java.time.YearMonth
 
 /** Month-only selection, using the same native Expressive theme as the page. */
@@ -22,6 +24,7 @@ internal fun StatisticsMonthPicker(
     onDismiss: () -> Unit,
     onSelect: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val value = remember(initial) { YearMonth.parse(initial) }
     var year by remember(initial) { mutableIntStateOf(value.year) }
     var month by remember(initial) { mutableIntStateOf(value.monthValue) }
@@ -29,7 +32,7 @@ internal fun StatisticsMonthPicker(
     AlertDialog(
         modifier = Modifier.testTag("statistics-month-picker"),
         onDismissRequest = onDismiss,
-        title = { Text("选择月份") },
+        title = { Text(textResources(R.string.statistics_choose_month)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(
@@ -38,14 +41,17 @@ internal fun StatisticsMonthPicker(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     FilledTonalIconButton(onClick = { year-- }, enabled = year > 1) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "上一年")
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, textResources(R.string.action_previous_year))
                     }
                     Text(
-                        "${year}年", Modifier.weight(1f).testTag("statistics-month-year"),
+                        textResources(
+                            R.string.calendar_year,
+                            year,
+                        ), Modifier.weight(1f).testTag("statistics-month-year"),
                         style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center,
                     )
                     FilledTonalIconButton(onClick = { year++ }, enabled = year < 9999) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "下一年")
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, textResources(R.string.action_next_year))
                     }
                 }
                 (1..12).chunked(3).forEach { months ->
@@ -63,7 +69,7 @@ internal fun StatisticsMonthPicker(
                                     contentColor = if (month == number) colors.onPrimaryContainer
                                         else colors.onSurfaceVariant,
                                 ),
-                            ) { Text("${number}月") }
+                            ) { Text(textResources(R.string.calendar_month, number)) }
                         }
                     }
                 }
@@ -71,9 +77,9 @@ internal fun StatisticsMonthPicker(
         },
         confirmButton = {
             TextButton(onClick = { onSelect(YearMonth.of(year, month).toString().padStart(7, '0')) }) {
-                Text("确定")
+                Text(textResources(R.string.action_confirm))
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(textResources(R.string.action_cancel)) } },
     )
 }

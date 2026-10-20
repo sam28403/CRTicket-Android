@@ -1,14 +1,16 @@
 package cc.samlab.ticket.network
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 object UpstreamPolicy {
     fun validate(value: String): HttpUrl {
         val url = value.toHttpUrlOrNull()
-            ?: throw IllegalArgumentException("无效的铁路服务地址")
+            ?: throw IllegalArgumentException(appString(R.string.network_error_invalid_url))
         require(url.username.isEmpty() && url.password.isEmpty() && url.fragment == null) {
-            "铁路服务地址格式无效"
+            appString(R.string.network_error_url_format)
         }
         val allowed = when (url.host) {
             "search.12306.cn" -> url.scheme == "https" && url.port == 443 &&
@@ -29,7 +31,7 @@ object UpstreamPolicy {
                 url.encodedPath == "/an.db"
             else -> false
         }
-        require(allowed) { "只允许访问 12306 和路路通数据服务" }
+        require(allowed) { appString(R.string.network_error_host_not_allowed) }
         return url
     }
 }

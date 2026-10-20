@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun StationBoardGrid(
@@ -18,6 +20,7 @@ internal fun StationBoardGrid(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val textResources = rememberAppText()
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 320.dp),
         state = controller.gridState,
@@ -27,7 +30,7 @@ internal fun StationBoardGrid(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (rows.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-            Text("本站当天没有该类型的车次", Modifier.padding(24.dp))
+            Text(textResources(R.string.station_board_type_empty), Modifier.padding(24.dp))
         }
         items(rows, key = { it.id }, contentType = { "station-train" }) { row ->
             StationBoardItem(

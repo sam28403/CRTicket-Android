@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -30,6 +32,7 @@ internal fun HistoryTimePicker(
     onDismiss: () -> Unit,
     onSelect: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val parts = time.split(":")
     val state = rememberTimePickerState(
         initialHour = parts.getOrNull(0)?.toIntOrNull()?.coerceIn(0, 23) ?: 8,
@@ -51,9 +54,9 @@ internal fun HistoryTimePicker(
             TextButton(
                 enabled = state.isInputValid,
                 onClick = { onSelect("%02d:%02d".format(Locale.ROOT, state.hour, state.minute)) },
-            ) { Text("确定") }
+            ) { Text(textResources(R.string.action_confirm)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(textResources(R.string.action_cancel)) } },
         modeToggleButton = {
             if (clockFits) {
                 TimePickerDialogDefaults.DisplayModeToggle(

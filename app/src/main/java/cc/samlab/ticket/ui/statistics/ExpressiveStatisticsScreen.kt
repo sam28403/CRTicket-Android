@@ -16,6 +16,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.viewinterop.AndroidView
 import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.settings.SettingsCollapsedHeight
 import cc.samlab.ticket.ui.settings.SettingsExpandedHeight
@@ -35,6 +36,7 @@ internal fun ExpressiveStatisticsScreen(
     visible: Boolean,
     onMonthSelected: (String) -> Unit,
 ) {
+    val textResources = rememberAppText()
     val collapseRange = with(LocalDensity.current) {
         (SettingsExpandedHeight - SettingsCollapsedHeight).toPx()
     }
@@ -83,7 +85,7 @@ internal fun ExpressiveStatisticsScreen(
         ) {
             Column {
                 Box(Modifier.testTag("statistics-header").semantics {
-                    stateDescription = if (appBar.collapsedFraction < 0.5f) "已展开" else "已收起"
+                    stateDescription = if (appBar.collapsedFraction < 0.5f) textResources(R.string.state_expanded) else textResources(R.string.state_collapsed)
                 }) {
                     SettingsHeader(behavior, onBack, embedded, stringResource(R.string.home_data))
                 }

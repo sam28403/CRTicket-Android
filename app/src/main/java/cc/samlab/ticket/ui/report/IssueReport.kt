@@ -1,13 +1,17 @@
 package cc.samlab.ticket.ui.report
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.net.URLEncoder
 
 internal const val ISSUES_URL = "https://github.com/sam28403/CRTicket/issues"
 
-internal enum class ReportKind(val title: String) {
-    BUG("错误报告"),
-    FEATURE("功能建议"),
-    QUESTION("使用问题"),
+internal enum class ReportKind(private val textId: Int) {
+    BUG(R.string.report_bug),
+    FEATURE(R.string.report_feature),
+    QUESTION(R.string.report_question);
+
+    val title: String get() = appString(textId)
 }
 
 internal data class IssueReport(
@@ -22,27 +26,27 @@ internal data class IssueReport(
     val ready: Boolean get() = title.isNotBlank() && description.isNotBlank()
 
     fun body(): String = buildString {
-        appendLine("### 类型")
+        appendLine(appString(R.string.report_heading_kind))
         appendLine(kind.title)
         appendLine()
-        appendLine("### 问题描述")
+        appendLine(appString(R.string.report_heading_description))
         appendLine(description.trim())
         if (steps.isNotBlank()) {
             appendLine()
-            appendLine("### 复现步骤")
+            appendLine(appString(R.string.report_heading_steps))
             appendLine(steps.trim())
         }
         if (expected.isNotBlank()) {
             appendLine()
-            appendLine("### 预期表现")
+            appendLine(appString(R.string.report_heading_expected))
             appendLine(expected.trim())
         }
         appendLine()
-        appendLine("### 应用版本")
-        appendLine("CRTicket $appVersion")
+        appendLine(appString(R.string.report_heading_version))
+        appendLine(appString(R.string.report_app_version, appVersion))
         if (device != null) {
             appendLine()
-            appendLine("### 设备信息")
+            appendLine(appString(R.string.report_heading_device))
             appendLine(device)
         }
     }.trimEnd()

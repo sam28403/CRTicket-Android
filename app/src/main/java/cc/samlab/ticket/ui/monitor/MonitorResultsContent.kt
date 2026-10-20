@@ -1,9 +1,9 @@
 package cc.samlab.ticket.ui.monitor
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.*
@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.ExpressiveEmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,6 +25,7 @@ internal fun MonitorResultsContent(
     pull: PullToRefreshState,
     active: Boolean,
 ) {
+    val textResources = rememberAppText()
     var armed by remember { mutableStateOf(false) }
     PullToRefreshBox(
         isRefreshing = controller.loading,
@@ -56,7 +59,7 @@ internal fun MonitorResultsContent(
             if ((rows?.length() ?: 0) > 0) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        "${rows!!.length()} 趟 · 关注席别有票 ${state.optInt("ticketCount")} 趟",
+                        textResources(R.string.monitor_results_summary, rows!!.length(), state.optInt("ticketCount")),
                         Modifier.padding(8.dp), style = MaterialTheme.typography.titleSmall,
                     )
                 }
@@ -66,9 +69,9 @@ internal fun MonitorResultsContent(
             } else item(span = { GridItemSpan(maxLineSpan) }) {
                 ExpressiveEmptyState(
                     message = when {
-                        controller.loading -> "正在查询…"
-                        state.optString("queriedAt").isEmpty() -> "请选择车站和日期，开始查询"
-                        else -> "没有符合条件的车次"
+                        controller.loading -> textResources(R.string.status_querying)
+                        state.optString("queriedAt").isEmpty() -> textResources(R.string.monitor_query_hint)
+                        else -> textResources(R.string.monitor_results_empty)
                     },
                     visible = active,
                     modifier = Modifier.fillMaxWidth().testTag("monitor-empty"),

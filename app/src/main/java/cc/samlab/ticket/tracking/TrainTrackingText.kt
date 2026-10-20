@@ -1,5 +1,7 @@
 package cc.samlab.ticket.tracking
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -21,7 +23,7 @@ object TrainTrackingText {
 
     fun duration(milliseconds: Long): String {
         val remaining = minutes(milliseconds)
-        return "${remaining / 60}小时${remaining % 60}分钟"
+        return appString(R.string.duration_hours_minutes, remaining / 60, remaining % 60)
     }
 
     fun compactDuration(milliseconds: Long): String {
@@ -29,24 +31,32 @@ object TrainTrackingText {
         val hours = remaining / 60
         val minutes = remaining % 60
         return when {
-            hours == 0L -> "${minutes}m"
-            minutes == 0L -> "${hours}h"
-            else -> "${hours}h${minutes}m"
+            hours == 0L -> appString(R.string.duration_compact_minutes, minutes)
+            minutes == 0L -> appString(R.string.duration_compact_hours, hours)
+            else -> appString(R.string.duration_compact_hours_minutes, hours, minutes)
         }
     }
 
     fun departureCountdown(milliseconds: Long): String {
         val remaining = minutes(milliseconds)
         return when {
-            milliseconds > 86_400_000L -> "${remaining / (24 * 60)}d${remaining / 60 % 24}h"
-            milliseconds >= 3_600_000L -> "${remaining / 60}h${remaining % 60}m"
-            else -> "${remaining}m"
+            milliseconds > 86_400_000L -> appString(
+                R.string.duration_compact_days_hours,
+                remaining / (24 * 60),
+                remaining / 60 % 24,
+            )
+            milliseconds >= 3_600_000L -> appString(
+                R.string.duration_compact_hours_minutes,
+                remaining / 60,
+                remaining % 60,
+            )
+            else -> appString(R.string.duration_compact_minutes, remaining)
         }
     }
 
     private fun stationDepartureCountdown(milliseconds: Long): String {
         val remaining = minutes(milliseconds)
-        return "${remaining / 60}h${remaining % 60}m"
+        return appString(R.string.duration_compact_hours_minutes, remaining / 60, remaining % 60)
     }
 
     private fun arrivalTime(timestamp: Long, now: Long): String {
@@ -64,13 +74,13 @@ object TrainTrackingText {
         return when (status.phase) {
             TrainPhase.WAITING -> TrainNotificationContent(
                 title,
-                "等待发车 · ${departureCountdown(timeline.start - now)}后发车",
+                appString(R.string.tracking_notification_waiting, departureCountdown(timeline.start - now)),
                 departureCountdown(timeline.start - now),
                 route,
             )
             TrainPhase.RUNNING -> TrainNotificationContent(
                 title,
-                "前方到站：${status.station}\n剩余${duration(next!!.arrival!! - now)}",
+                appString(R.string.tracking_notification_running, status.station, duration(next!!.arrival!! - now)),
                 compactDuration(next.arrival - now),
                 route,
             )
@@ -79,16 +89,21 @@ object TrainTrackingText {
                 val departure = stationDepartureCountdown(status.nextEvent!! - now)
                 TrainNotificationContent(
                     title,
-                    "当前到站：${status.station}，${departure}后出发\n" +
-                        "前方到站：${next!!.station}，预计到达：${arrivalTime(next.arrival!!, now)}",
+                    appString(
+                        R.string.tracking_notification_at_station,
+                        status.station,
+                        departure,
+                        next!!.station,
+                        arrivalTime(next.arrival!!, now),
+                    ),
                     TrainStationChip.text(status.station, current.arrival!!, now),
                     route,
                 )
             }
             TrainPhase.ARRIVED -> TrainNotificationContent(
                 title,
-                "已达终点：${status.station}",
-                "已达终点",
+                appString(R.string.tracking_notification_arrived, status.station),
+                appString(R.string.tracking_chip_arrived),
                 route,
             )
         }

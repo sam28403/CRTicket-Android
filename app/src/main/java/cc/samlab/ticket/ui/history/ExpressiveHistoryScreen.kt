@@ -9,10 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
 
@@ -27,6 +28,7 @@ internal fun ExpressiveHistoryScreen(
     visible: Boolean = true,
     draft: HistoryDraft? = controller.ui.draft,
 ) {
+    val textResources = rememberAppText()
     val list = rememberLazyListState()
     var sorting by remember { mutableStateOf(false) }
     val rows = remember(controller.rows, controller.sort) { sortHistory(controller.rows, controller.sort) }
@@ -47,7 +49,11 @@ internal fun ExpressiveHistoryScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            if (draft == null) "历史记录" else if (draft.id == null) "补登记录" else "编辑记录",
+                            textResources(when {
+                                draft == null -> R.string.home_history
+                                draft.id == null -> R.string.history_create
+                                else -> R.string.history_edit
+                            }),
                             fontFamily = projectTitleFont,
                         )
                     },
@@ -56,15 +62,22 @@ internal fun ExpressiveHistoryScreen(
                             onClick = onBack,
                             modifier = Modifier.padding(start = 8.dp),
                             enabled = !controller.ui.busy,
-                        ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") }
+                        ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back)) }
                     },
                     actions = {
                         if (draft != null) TextButton(
                             onClick = controller::submit, enabled = !controller.ui.busy,
-                        ) { Text(if (controller.ui.busy) "正在保存…" else "保存") }
+                        ) {
+                            Text(textResources(
+                                if (controller.ui.busy) R.string.status_saving else R.string.action_save,
+                            ))
+                        }
                         else Box {
                             IconButton(onClick = { sorting = true }) {
-                                Icon(painterResource(R.drawable.ic_filter_list), "历史记录排序")
+                                Icon(
+                                    painterResource(R.drawable.ic_filter_list),
+                                    textResources(R.string.history_sort_description),
+                                )
                             }
                             DropdownMenu(sorting, { sorting = false }) {
                                 HistorySort.entries.forEach { sort ->

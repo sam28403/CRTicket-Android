@@ -1,6 +1,8 @@
 package cc.samlab.ticket.tracking
 
 import android.content.Context
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import org.json.JSONObject
 
 object TrainTrackingStore {
@@ -34,10 +36,10 @@ object TrainTrackingStore {
     }
 
     fun parse(payload: String): TrainTimeline {
-        require(payload.length <= 100_000) { "时刻表数据过大" }
+        require(payload.length <= 100_000) { appString(R.string.tracking_error_payload_size) }
         val data = JSONObject(payload)
         val rows = data.getJSONArray("stops")
-        require(rows.length() in 2..200) { "至少需要两个站点才能追踪" }
+        require(rows.length() in 2..200) { appString(R.string.tracking_error_stop_count) }
         val schedules = (0 until rows.length()).map { index ->
             val row = rows.getJSONObject(index)
             TrainStopSchedule(
@@ -63,7 +65,7 @@ object TrainTrackingStore {
         if (isNull(key)) return null
         val value = get(key)
         require(value is Number && value.toDouble() == value.toInt().toDouble()) {
-            "时刻表跨日数据无效"
+            appString(R.string.tracking_error_day)
         }
         return value.toInt()
     }

@@ -17,12 +17,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /** The indicator enters from the top edge of the page, including its toolbar. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BoxScope.MonitorRefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
+    val textResources = rememberAppText()
     val fraction = state.distanceFraction.coerceIn(0f, 1.5f)
     val position by animateFloatAsState(
         if (refreshing) 1f else fraction,
@@ -38,7 +41,7 @@ internal fun BoxScope.MonitorRefreshIndicator(state: PullToRefreshState, refresh
         modifier = Modifier.align(Alignment.TopCenter).size(48.dp).graphicsLayer {
             translationY = (-56f + position * 80f).dp.toPx()
         }.testTag("monitor-refresh-indicator").semantics {
-            contentDescription = if (refreshing) "正在刷新余票" else "下拉刷新"
+            contentDescription = if (refreshing) textResources(R.string.monitor_refreshing) else textResources(R.string.refresh_pull)
         },
         shape = CircleShape,
         color = MaterialTheme.colorScheme.primaryFixedDim,

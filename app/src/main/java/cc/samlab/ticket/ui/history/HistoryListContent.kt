@@ -17,9 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
-import cc.samlab.ticket.ui.trainlist.TrainListRefreshIndicator
 import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.ExpressiveEmptyState
+import cc.samlab.ticket.ui.trainlist.TrainListRefreshIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +30,7 @@ internal fun HistoryListContent(
     rows: List<HistoryRecord>,
     visible: Boolean,
 ) {
+    val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     val pull = rememberPullToRefreshState()
     PullToRefreshBox(
@@ -36,9 +38,9 @@ internal fun HistoryListContent(
         onRefresh = { controller.action("refresh") },
         state = pull,
         modifier = Modifier.fillMaxSize().testTag("history-pull").semantics {
-            stateDescription = if (controller.loading) "正在刷新历史记录" else "历史记录已加载"
+            stateDescription = if (controller.loading) textResources(R.string.history_refreshing) else textResources(R.string.history_loaded)
         },
-        indicator = { TrainListRefreshIndicator(pull, controller.loading, "正在刷新历史记录") },
+        indicator = { TrainListRefreshIndicator(pull, controller.loading, textResources(R.string.history_refreshing)) },
     ) {
         LazyColumn(
             state = list,
@@ -50,9 +52,12 @@ internal fun HistoryListContent(
                 Surface(shape = RoundedCornerShape(32.dp), color = colors.primaryContainer) {
                     Column(Modifier.fillMaxWidth().padding(24.dp)) {
                         Text(
-                            "你已经运转了 ${controller.rows.size} 次，" +
-                                "${historyAmount(controller.distance)} 公里，共消费 " +
-                                "${historyAmount(controller.money)} 元！",
+                            textResources(
+                                R.string.history_summary,
+                                controller.rows.size,
+                                historyAmount(controller.distance),
+                                historyAmount(controller.money),
+                            ),
                             style = MaterialTheme.typography.headlineSmall,
                             color = colors.onPrimaryContainer,
                         )
@@ -60,7 +65,7 @@ internal fun HistoryListContent(
                         Button(onClick = { controller.action("create") }) {
                             Icon(Icons.Default.Add, null, Modifier.size(20.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("补登记录")
+                            Text(textResources(R.string.history_create))
                         }
                     }
                 }
@@ -68,7 +73,7 @@ internal fun HistoryListContent(
             if (controller.error.isNotEmpty()) item(key = "error") {
                 Column(Modifier.padding(16.dp)) {
                     Text(controller.error, color = colors.error)
-                    TextButton(onClick = { controller.action("refresh") }) { Text("重试") }
+                    TextButton(onClick = { controller.action("refresh") }) { Text(textResources(R.string.action_retry)) }
                 }
             }
             if (!controller.loading && controller.error.isEmpty() && rows.isEmpty()) item(key = "empty") {

@@ -12,6 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.projectTitleFont
 import org.json.JSONArray
 
@@ -21,6 +23,7 @@ internal fun StationBoardDiscovery(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val textResources = rememberAppText()
     val state = controller.discovery
     val history = state.optJSONArray("history") ?: JSONArray()
     fun open(name: String) { onNavigate("/station?station=${Uri.encode(name)}") }
@@ -49,11 +52,14 @@ internal fun StationBoardDiscovery(
                     TextButton(
                         onClick = { controller.discoveryAction("clearHistory") },
                         modifier = Modifier.testTag("station-clear-history"),
-                    ) { Text("清空") }
+                    ) { Text(textResources(R.string.action_clear)) }
                 }
             }
         }
-        for ((key, title) in listOf("busy" to "繁忙车站", "recommendations" to "今日随机推荐")) {
+        for ((key, title) in listOf(
+            "busy" to textResources(R.string.station_discovery_busy),
+            "recommendations" to textResources(R.string.discovery_today),
+        )) {
             item(key = "$key-title", span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     title, Modifier.padding(start = 4.dp, top = 16.dp, bottom = 8.dp)
@@ -69,12 +75,15 @@ internal fun StationBoardDiscovery(
             } else if (state.optString("error").isNotEmpty()) {
                 item(key = "$key-error", span = { GridItemSpan(maxLineSpan) }) {
                     TextButton(onClick = { controller.discoveryAction("recommendations") }) {
-                        Text("车站推荐暂时无法加载，点击重试")
+                        Text(textResources(R.string.station_discovery_error))
                     }
                 }
             } else if (rows.length() == 0) {
                 item(key = "$key-empty", span = { GridItemSpan(maxLineSpan) }) {
-                    Text("今日暂无可展示车站", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        textResources(R.string.station_discovery_empty),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             } else {
                 items(rows.length(), key = { "$key-${rows.getJSONObject(it).optString("station")}" }) { index ->

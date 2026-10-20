@@ -13,6 +13,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
 internal fun StationTrainCode(
@@ -78,8 +80,9 @@ internal fun StationTimeField(
 
 @Composable
 internal fun StationStatus(row: StationBoardRow, highlight: StationHighlight, color: Color) {
+    val textResources = rememberAppText()
     if (highlight != StationHighlight.NONE) Text(
-        if (highlight == StationHighlight.IN_STATION) "停在站内" else row.highlightLabel,
+        if (highlight == StationHighlight.IN_STATION) textResources(R.string.station_in_station) else row.highlightLabel,
         color = color, style = MaterialTheme.typography.labelMedium,
     )
 }

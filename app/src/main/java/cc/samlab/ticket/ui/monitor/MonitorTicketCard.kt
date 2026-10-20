@@ -7,15 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
 internal fun MonitorTicketCard(row: JSONObject, columns: JSONArray?) {
+    val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     val seats = row.optJSONObject("seats") ?: JSONObject()
     val palette = monitorCardColors(seats, colors)
@@ -55,9 +57,9 @@ internal fun MonitorTicketCard(row: JSONObject, columns: JSONArray?) {
                             Text(column.getString(1), style = MaterialTheme.typography.labelMedium)
                             Text(
                                 when {
-                                    value in listOf("有", ">20") -> ">20 张"
-                                    value == "无" -> "0 张"
-                                    count != null -> "$count 张"
+                                    value in listOf("有", ">20") -> textResources(R.string.monitor_tickets_many)
+                                    value == "无" -> textResources(R.string.monitor_tickets_zero)
+                                    count != null -> textResources(R.string.monitor_tickets_count, count)
                                     else -> value
                                 },
                                 color = if (available) palette.accent else palette.muted,
@@ -68,7 +70,7 @@ internal fun MonitorTicketCard(row: JSONObject, columns: JSONArray?) {
                     if (pair.size == 1) Spacer(Modifier.weight(1f))
                 }
             }
-            if (known.isEmpty()) Text("暂无在售席别数据", color = palette.muted)
+            if (known.isEmpty()) Text(textResources(R.string.monitor_seats_empty), color = palette.muted)
             val status = row.optString("status").replace("预订", "").trim()
             if (!row.optBoolean("canBuy") && status.isNotEmpty()) Text(status, color = colors.error)
         }

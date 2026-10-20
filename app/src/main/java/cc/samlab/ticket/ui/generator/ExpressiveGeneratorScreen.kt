@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.history.*
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
@@ -27,6 +29,7 @@ internal fun ExpressiveGeneratorScreen(
     embedded: Boolean,
     active: Boolean,
 ) {
+    val textResources = rememberAppText()
     val draft = controller.draft
     LaunchedEffect(draft, active) {
         if (draft != null && active) snapshotFlow { draft.json().toString() }.collect { json ->
@@ -39,13 +42,13 @@ internal fun ExpressiveGeneratorScreen(
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
             Column {
                 TopAppBar(
-                    title = { Text("生成车票", fontFamily = projectTitleFont) },
+                    title = { Text(textResources(R.string.generator_title), fontFamily = projectTitleFont) },
                     navigationIcon = {
                         if (!embedded) FilledTonalIconButton(
                             onClick = onBack,
                             enabled = !controller.busy,
                             modifier = Modifier.padding(start = 8.dp),
-                        ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") }
+                        ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back)) }
                     },
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -112,29 +115,34 @@ private fun GeneratorForm(controller: NativeGeneratorController, draft: HistoryD
 
 @Composable
 private fun GeneratorActions(controller: NativeGeneratorController) {
+    val textResources = rememberAppText()
     val enabled = !controller.busy
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FilledTonalButton(
                 onClick = { controller.showPreview = !controller.showPreview },
                 modifier = Modifier.weight(1f), enabled = enabled,
-            ) { Text(if (controller.showPreview) "收起实时预览" else "实时预览") }
+            ) {
+                Text(textResources(
+                    if (controller.showPreview) R.string.generator_collapse_preview else R.string.generator_preview,
+                ))
+            }
             OutlinedButton(
                 onClick = { controller.action("clear") },
                 modifier = Modifier.weight(1f).testTag("generator-clear"), enabled = enabled,
-            ) { Text("清空") }
+            ) { Text(textResources(R.string.action_clear)) }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Button(
                 onClick = { controller.action("pdf") }, enabled = enabled,
                 modifier = Modifier.weight(1f).testTag("generator-pdf"),
                 contentPadding = PaddingValues(vertical = 16.dp),
-            ) { Text("保存 PDF") }
+            ) { Text(textResources(R.string.generator_save_pdf)) }
             Button(
                 onClick = { controller.action("image") }, enabled = enabled,
                 modifier = Modifier.weight(1f).testTag("generator-image"),
                 contentPadding = PaddingValues(vertical = 16.dp),
-            ) { Text("保存图片") }
+            ) { Text(textResources(R.string.generator_save_image)) }
         }
         if (!enabled) LinearProgressIndicator(Modifier.fillMaxWidth())
     }

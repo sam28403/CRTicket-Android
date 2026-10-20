@@ -1,5 +1,8 @@
 package cc.samlab.ticket.ui.history
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
+
 internal data class HistoryRecord(
     val id: String,
     val date: String,
@@ -14,11 +17,13 @@ internal data class HistoryRecord(
     val credit: Boolean,
 )
 
-internal enum class HistorySort(val label: String) {
-    NEWEST("日期从近到远"),
-    OLDEST("日期从远到近"),
-    PRICE_HIGH("票价从高到低"),
-    PRICE_LOW("票价从低到高"),
+internal enum class HistorySort(private val textId: Int) {
+    NEWEST(R.string.history_sort_newest),
+    OLDEST(R.string.history_sort_oldest),
+    PRICE_HIGH(R.string.history_sort_price_high),
+    PRICE_LOW(R.string.history_sort_price_low);
+
+    val label: String get() = appString(textId)
 }
 
 internal fun sortHistory(rows: List<HistoryRecord>, sort: HistorySort): List<HistoryRecord> {

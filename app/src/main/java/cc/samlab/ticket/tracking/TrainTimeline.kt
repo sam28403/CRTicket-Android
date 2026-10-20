@@ -1,5 +1,7 @@
 package cc.samlab.ticket.tracking
 
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -42,8 +44,8 @@ class TrainTimeline(
     val end: Long
 
     init {
-        require(train.isNotBlank() && train.length <= 40) { "车次无效" }
-        require(schedules.size in 2..200) { "至少需要两个站点才能追踪" }
+        require(train.isNotBlank() && train.length <= 40) { appString(R.string.tracking_error_train) }
+        require(schedules.size in 2..200) { appString(R.string.tracking_error_stop_count) }
         val baseDate = LocalDate.parse(date)
         val zone = ZoneId.of("Asia/Shanghai")
         var previous: Long? = null
@@ -52,11 +54,11 @@ class TrainTimeline(
 
         fun timestamp(clock: String?, explicitDay: Int?): Long {
             require(clock != null && clock.matches(Regex("([01]\\d|2[0-3]):[0-5]\\d"))) {
-                "时刻表缺少有效的到发时间，无法追踪"
+                appString(R.string.tracking_error_missing_times)
             }
             val time = LocalTime.parse(clock)
             if (explicitDay != null) {
-                require(explicitDay in 0..14) { "时刻表跨日数据无效" }
+                require(explicitDay in 0..14) { appString(R.string.tracking_error_day) }
                 day = explicitDay
             }
             var value = baseDate.plusDays(day.toLong()).atTime(time)
@@ -66,25 +68,25 @@ class TrainTimeline(
                 value = baseDate.plusDays(day.toLong()).atTime(time)
                     .atZone(zone).toInstant().toEpochMilli()
             }
-            require(previous == null || value >= previous!!) { "时刻表到发顺序无效" }
+            require(previous == null || value >= previous!!) { appString(R.string.tracking_error_time_order) }
             previous = value
             return value
         }
 
         stops = schedules.mapIndexed { index, stop ->
-            require(stop.station.isNotBlank() && stop.station.length <= 80) { "站名无效" }
+            require(stop.station.isNotBlank() && stop.station.length <= 80) { appString(R.string.tracking_error_station) }
             val arrival = if (index == 0) null else timestamp(stop.arrival, stop.arrivalDay)
             val departure = if (index == schedules.lastIndex) null
                 else timestamp(stop.departure, stop.departureDay)
             stop.train?.trim()?.takeIf { it.isNotEmpty() }?.let { code ->
-                require(code.length <= 40) { "站点车次号无效" }
+                require(code.length <= 40) { appString(R.string.tracking_error_station_train) }
                 currentTrain = code
             }
             TimedTrainStop(stop.station, arrival, departure, currentTrain)
         }
         start = stops.first().departure!!
         end = stops.last().arrival!!
-        require(end > start) { "时刻表运行时长无效" }
+        require(end > start) { appString(R.string.tracking_error_duration) }
     }
 
     fun currentTrain(now: Long): String = stops.lastOrNull { stop ->
@@ -95,13 +97,16 @@ class TrainTimeline(
         val progress = (((now - start).coerceIn(0, end - start) * 100) / (end - start)).toInt()
         if (now < start) {
             return TrainTrackingStatus(
-                TrainPhase.WAITING, "${TrainTrackingText.duration(start - now)}后发车",
+                TrainPhase.WAITING, appString(
+                    R.string.tracking_departure_countdown,
+                    TrainTrackingText.duration(start - now),
+                ),
                 stops.first().station, start, progress,
             )
         }
         if (now >= end) {
             return TrainTrackingStatus(
-                TrainPhase.ARRIVED, "列车已经到达目的地", stops.last().station, null, 100,
+                TrainPhase.ARRIVED, appString(R.string.tracking_arrived), stops.last().station, null, 100,
             )
         }
         for (stop in stops.drop(1)) {
@@ -109,17 +114,17 @@ class TrainTimeline(
             if (now < arrival) {
                 return TrainTrackingStatus(
                     TrainPhase.RUNNING,
-                    "前方到站${stop.station}，剩余${TrainTrackingText.duration(arrival - now)}",
+                    appString(R.string.tracking_next_station, stop.station, TrainTrackingText.duration(arrival - now)),
                     stop.station, arrival, progress,
                 )
             }
             if (stop.departure != null && now < stop.departure) {
                 return TrainTrackingStatus(
-                    TrainPhase.AT_STATION, "当前到站${stop.station}",
+                    TrainPhase.AT_STATION, appString(R.string.tracking_current_station, stop.station),
                     stop.station, stop.departure, progress,
                 )
             }
         }
-        error("时刻表状态无效")
+        error(appString(R.string.tracking_error_status))
     }
 }

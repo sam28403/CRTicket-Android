@@ -6,11 +6,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun HistoryDateTimeFields(draft: HistoryDraft, enabled: Boolean) {
+    val textResources = rememberAppText()
     var dateOpen by rememberSaveable { mutableStateOf(false) }
     var timeOpen by rememberSaveable { mutableStateOf(false) }
     val date = draft.value("date")
@@ -22,7 +25,7 @@ internal fun HistoryDateTimeFields(draft: HistoryDraft, enabled: Boolean) {
         HistoryPickerField(
             draft = draft,
             key = "date",
-            label = "开车日期",
+            label = textResources(R.string.ticket_departure_date),
             value = dateLabel,
             enabled = enabled,
             modifier = Modifier.weight(1f),
@@ -31,7 +34,7 @@ internal fun HistoryDateTimeFields(draft: HistoryDraft, enabled: Boolean) {
         HistoryPickerField(
             draft = draft,
             key = "time",
-            label = "开车时间",
+            label = textResources(R.string.ticket_departure_time),
             value = draft.value("time"),
             enabled = enabled,
             modifier = Modifier.weight(1f),

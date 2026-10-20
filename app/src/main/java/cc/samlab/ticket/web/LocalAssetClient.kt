@@ -8,6 +8,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.appString
 import java.io.ByteArrayInputStream
 
 class LocalAssetClient(
@@ -103,6 +105,6 @@ class LocalAssetClient(
         request: WebResourceRequest,
         error: WebResourceError,
     ) {
-        if (request.isForMainFrame) toast("页面加载失败，可在系统返回后重新打开应用")
+        if (request.isForMainFrame) toast(appString(R.string.web_error_page_load))
     }
 }

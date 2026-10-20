@@ -10,9 +10,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -24,13 +24,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
+import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import kotlin.math.min
 
 @Composable
 internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
+    val textResources = rememberAppText()
     val assets = LocalContext.current.assets
     val outline by produceState(emptyList<List<GeoPoint>>(), assets) {
         value = withContext(Dispatchers.IO) { runCatching { readRouteOutline(assets) }.getOrDefault(emptyList()) }
@@ -50,15 +53,22 @@ internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
     Surface(shape = RoundedCornerShape(28.dp), color = colors.surfaceContainerLowest) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("车次线路图", Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
-                TextButton(onClick = { zoom = 1f; pan = Offset.Zero }) { Text("线路居中") }
+                Text(
+                    textResources(R.string.train_map_title),
+                    Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                TextButton(onClick = { zoom = 1f; pan = Offset.Zero }) { Text(textResources(R.string.train_map_center)) }
             }
             val missing = route.optJSONArray("missingStations")
             if (missing != null && missing.length() > 0) Text(
-                "暂无坐标：${List(missing.length()) { missing.getString(it) }.joinToString("、")}。相关区间暂不连线。",
+                textResources(
+                    R.string.train_map_missing_coordinates,
+                    List(missing.length()) { missing.getString(it) }.joinToString("、"),
+                ),
                 style = MaterialTheme.typography.bodySmall,
             )
-            if (coordinates.isEmpty()) Text("暂无可定位的站点") else {
+            if (coordinates.isEmpty()) Text(textResources(R.string.train_map_empty)) else {
                 val centerX = (coordinates.minOf { it.longitude } + coordinates.maxOf { it.longitude }) / 2
                 val centerY = (coordinates.minOf { it.latitude } + coordinates.maxOf { it.latitude }) / 2
                 val spanX = (coordinates.maxOf { it.longitude } - coordinates.minOf { it.longitude }).coerceAtLeast(0.2f)
@@ -75,7 +85,7 @@ internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
                 }
                 Canvas(
                     Modifier.fillMaxWidth().height(380.dp).clipToBounds()
-                        .semantics { contentDescription = "$train 途经站点线路地图，可双指缩放、拖动和点选站点" }
+                        .semantics { contentDescription = textResources(R.string.train_map_description, train) }
                         .pointerInput(route) {
                             detectTransformGestures { centroid, delta, scale, _ ->
                                 val next = (zoom * scale).coerceIn(0.5f, 12f)
@@ -133,20 +143,31 @@ internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Info, contentDescription = "提示", modifier = Modifier.size(18.dp))
-                Text("连线表示站序，不代表实际铁路走向。", style = MaterialTheme.typography.bodySmall)
+                Icon(
+                    Icons.Outlined.Info,
+                    contentDescription = textResources(R.string.label_hint),
+                    modifier = Modifier.size(18.dp),
+                )
+                Text(textResources(R.string.train_map_disclaimer), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
     selected?.let { stop ->
-        val arrival = if (stop.optBoolean("isFirst")) "始发站" else stop.optString("arrival", "—")
-        val departure = if (stop.optBoolean("isLast")) "终到站" else stop.optString("departure", "—")
+        val arrival = if (stop.optBoolean("isFirst")) textResources(R.string.station_origin) else stop.optString("arrival", "—")
+        val departure = if (stop.optBoolean("isLast")) textResources(R.string.station_terminal) else stop.optString("departure", "—")
         val day = stop.optInt("arrivalDay")
         AlertDialog(
             onDismissRequest = { selected = null },
             title = { Text("${stop.optString("no")}. ${stop.optString("name")}") },
-            text = { Text("到达：$arrival${if (day > 0) "（+$day 天）" else ""}\n出发：$departure") },
-            confirmButton = { TextButton(onClick = { selected = null }) { Text("确定") } },
+            text = {
+                Text(textResources(
+                    R.string.train_map_stop_times,
+                    arrival,
+                    if (day > 0) textResources(R.string.calendar_day_offset, day) else "",
+                    departure,
+                ))
+            },
+            confirmButton = { TextButton(onClick = { selected = null }) { Text(textResources(R.string.action_confirm)) } },
         )
     }
 }

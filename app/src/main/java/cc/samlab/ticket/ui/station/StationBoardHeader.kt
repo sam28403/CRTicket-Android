@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.R
+import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.projectTitleFont
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -17,14 +19,15 @@ internal fun StationBoardHeader(
     embedded: Boolean,
     onBack: () -> Unit,
 ) {
+    val textResources = rememberAppText()
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         if (maxWidth >= 600.dp) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (!embedded) FilledTonalIconButton(onBack, Modifier.padding(start = 8.dp)) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back))
                 }
                 Text(
-                    "车站大屏",
+                    textResources(R.string.home_station),
                     Modifier.padding(start = 16.dp, end = 8.dp),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = projectTitleFont,
@@ -33,10 +36,10 @@ internal fun StationBoardHeader(
             }
         } else Column {
             TopAppBar(
-                title = { Text("车站大屏", fontFamily = projectTitleFont) },
+                title = { Text(textResources(R.string.home_station), fontFamily = projectTitleFont) },
                 navigationIcon = {
                     if (!embedded) FilledTonalIconButton(onBack, Modifier.padding(start = 8.dp)) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back))
                     }
                 },
                 expandedHeight = 48.dp,

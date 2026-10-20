@@ -9,7 +9,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class IssueReportTest {
+class IssueReportTest : StringResourceTest() {
     private fun report(
         title: String = "车票 & 日期? #1",
         description: String = "中文说明\n第二行 + emoji 🚆",
