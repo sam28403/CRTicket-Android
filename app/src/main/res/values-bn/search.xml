@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">ট্রেন</string>
+    <string name="search_stations">স্টেশন</string>
+    <string name="search_expand">সব দেখান</string>
+    <string name="search_collapse">গুটিয়ে নিন</string>
+    <string name="search_empty">ট্রেন, স্টেশন ও সেটিংস খুঁজুন</string>
+    <string name="search_empty_hint">ট্রেন নম্বর, স্টেশনের নাম বা সেটিং লিখুন</string>
+    <string name="search_no_results">কোনো ফলাফল নেই</string>
+    <string name="search_no_results_hint">অন্য শব্দ দিয়ে চেষ্টা করুন</string>
+    <string name="search_error">ট্রেন ও স্টেশনের ফলাফল লোড হয়নি। আবার চেষ্টা করতে ট্যাপ করুন</string>
+</resources>

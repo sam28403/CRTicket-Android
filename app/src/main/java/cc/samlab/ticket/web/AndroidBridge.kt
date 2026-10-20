@@ -38,6 +38,7 @@ class AndroidBridge(
     private val receiveStatisticsState: (Boolean, Boolean) -> Unit,
     private val chooseStatisticsMonth: (String) -> Unit,
     private val updateBackTarget: (String) -> Unit,
+    private val receiveSearch: (String) -> Unit,
 ) {
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 
@@ -68,6 +69,9 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun trainListResult(payload: String) = receiveTrainList(payload)
+
+    @JavascriptInterface
+    fun searchResult(payload: String) = receiveSearch(payload)
 
     @JavascriptInterface
     fun stationBoardResult(payload: String) = receiveStationBoard(payload)

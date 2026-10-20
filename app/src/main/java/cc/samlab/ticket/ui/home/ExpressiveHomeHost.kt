@@ -132,6 +132,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     }
 
     fun updateStatisticsState(empty: Boolean, loading: Boolean) = pages.statistics.update(empty, loading)
+    fun receiveSearch(payload: String) = pages.search.receive(payload)
     fun openStatisticsMonthPicker(month: String) {
         if (usesWebContent) pages.statistics.chooseMonth(month.take(7))
     }

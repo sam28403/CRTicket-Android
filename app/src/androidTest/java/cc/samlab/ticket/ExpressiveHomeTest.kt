@@ -55,19 +55,26 @@ class ExpressiveHomeTest {
         instrumentation.runOnMainSync { activity.finish() }
     }
 
-    @Test fun compactHomeSearchAcceptsInputWithoutFilteringAndKeepsNavigation() {
+    @Test fun compactHomeSearchOpensSecondLevelAndKeepsNavigation() {
         compose.onNodeWithText("CRTicket").assertIsDisplayed()
         compose.onNodeWithText("关于").assertExists()
         compose.waitUntil(10_000) { !keyboardVisible() }
         capture("home")
 
         val search = compose.onNodeWithContentDescription("搜索")
-        search.assertIsDisplayed().performClick().performTextInput("G1")
-        search.assertTextEquals("G1")
+        search.assertIsDisplayed().performClick()
+        awaitRoute("/search")
+        compose.onNodeWithTag("search-empty-state").assertIsDisplayed()
+        val field = compose.onNodeWithTag("global-search-field")
+        field.performTextInput("G1")
+        field.assertTextEquals("G1")
         compose.waitUntil(10_000) { keyboardVisible() }
         capture("search-keyboard")
-        search.performImeAction()
+        field.performImeAction()
         compose.waitUntil(10_000) { !keyboardVisible() }
+        compose.onNodeWithTag("global-search-screen").assertIsDisplayed()
+        compose.onNodeWithContentDescription(activity.getString(R.string.about_back)).performClick()
+        awaitRoute("/home")
         compose.onNodeWithText("车票生成").assertIsDisplayed()
         compose.onNodeWithText("设置").assertExists()
         compose.onNodeWithText("关于").assertExists()
@@ -80,7 +87,7 @@ class ExpressiveHomeTest {
         }
         pressBack()
         awaitRoute("/home")
-        compose.onNodeWithContentDescription("搜索").assertTextEquals("G1")
+        compose.onNodeWithContentDescription("搜索").assertIsDisplayed()
         compose.waitUntil(10_000) { !keyboardVisible() }
 
         compose.onNodeWithText("设置").performScrollTo().performClick()

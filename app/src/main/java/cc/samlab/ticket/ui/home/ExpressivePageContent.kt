@@ -41,12 +41,16 @@ internal class ExpressivePageContent(
 ) {
     val statistics = StatisticsUiState()
     val dataVersions = AboutDataVersions(activity)
+    val search = cc.samlab.ticket.ui.search.NativeSearchController(activity, web)
     private val statisticsBody = StatisticsBodyLayout(activity)
     private val backend = web.parent as FrameLayout
 
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/search" -> cc.samlab.ticket.ui.search.ExpressiveSearchScreen(
+                search, settings, dark, pureBlack, active, onBack, onNavigate,
+            )
             "/" -> ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, embedded, active)
             "/home" -> if (embedded) {
                 ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, true, active)
@@ -147,6 +151,7 @@ internal class ExpressivePageContent(
     }
 
     fun close() {
+        search.close()
         dataVersions.close()
         trainList.close()
         history.close()

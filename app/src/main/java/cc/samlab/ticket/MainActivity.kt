@@ -157,6 +157,7 @@ class MainActivity : AppCompatActivity() {
                 home::updateStatisticsState,
                 home::openStatisticsMonthPicker,
                 home::setBackTarget,
+                home::receiveSearch,
             ),
             "CRTicketAndroid",
         )
@@ -241,7 +242,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshSettingsIfReady() {
         // Locale changes restore the native destination before the new WebView has a document.
         // An early request can lose its JS callback and leave every settings action busy.
-        if (navigationReady && home.route == "/settings") settings.refresh()
+        if (navigationReady && home.route in setOf("/settings", "/search")) settings.refresh()
     }
 
     private fun navigateTo(route: String) = navigateTo(route, notification = false)

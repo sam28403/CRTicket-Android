@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">ขบวนรถ</string>
+    <string name="search_stations">สถานี</string>
+    <string name="search_expand">แสดงทั้งหมด</string>
+    <string name="search_collapse">ย่อ</string>
+    <string name="search_empty">ค้นหาขบวนรถ สถานี และการตั้งค่า</string>
+    <string name="search_empty_hint">ป้อนหมายเลขขบวนรถ ชื่อสถานี หรือการตั้งค่า</string>
+    <string name="search_no_results">ไม่พบผลลัพธ์</string>
+    <string name="search_no_results_hint">ลองใช้คำค้นหาอื่น</string>
+    <string name="search_error">โหลดข้อมูลรถไฟและสถานีไม่สำเร็จ แตะเพื่อลองอีกครั้ง</string>
+</resources>

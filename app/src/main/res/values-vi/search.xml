@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Tàu</string>
+    <string name="search_stations">Ga</string>
+    <string name="search_expand">Mở rộng tất cả</string>
+    <string name="search_collapse">Thu gọn</string>
+    <string name="search_empty">Tìm tàu, ga và cài đặt</string>
+    <string name="search_empty_hint">Nhập số tàu, tên ga hoặc cài đặt</string>
+    <string name="search_no_results">Không có kết quả</string>
+    <string name="search_no_results_hint">Thử từ khóa khác</string>
+    <string name="search_error">Không tải được kết quả tàu và ga. Nhấn để thử lại</string>
+</resources>

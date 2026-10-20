@@ -118,7 +118,7 @@ internal fun SettingsPreferences(
 }
 
 @Composable
-private fun SettingsAvatar(data: String, name: String) {
+internal fun SettingsAvatar(data: String, name: String) {
     val bitmap = remember(data) {
         runCatching {
             val bytes = Base64.decode(data.substringAfter(','), Base64.DEFAULT)

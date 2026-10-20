@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">قطارها</string>
+    <string name="search_stations">ایستگاه‌ها</string>
+    <string name="search_expand">نمایش همه</string>
+    <string name="search_collapse">جمع کردن</string>
+    <string name="search_empty">جستجوی قطار، ایستگاه و تنظیمات</string>
+    <string name="search_empty_hint">شماره قطار، نام ایستگاه یا تنظیم را وارد کنید</string>
+    <string name="search_no_results">نتیجه‌ای یافت نشد</string>
+    <string name="search_no_results_hint">واژه دیگری را امتحان کنید</string>
+    <string name="search_error">بارگیری نتایج قطار و ایستگاه ناموفق بود. برای تلاش دوباره بزنید</string>
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Treni</string>
+    <string name="search_stations">Stazioni</string>
+    <string name="search_expand">Mostra tutto</string>
+    <string name="search_collapse">Comprimi</string>
+    <string name="search_empty">Cerca treni, stazioni e impostazioni</string>
+    <string name="search_empty_hint">Inserisci un treno, una stazione o una impostazione</string>
+    <string name="search_no_results">Nessun risultato</string>
+    <string name="search_no_results_hint">Prova un altro termine</string>
+    <string name="search_error">Impossibile caricare i risultati ferroviari. Tocca per riprovare</string>
+</resources>

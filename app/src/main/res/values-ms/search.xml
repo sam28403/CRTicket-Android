@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Kereta api</string>
+    <string name="search_stations">Stesen</string>
+    <string name="search_expand">Kembangkan semua</string>
+    <string name="search_collapse">Runtuhkan</string>
+    <string name="search_empty">Cari kereta api, stesen dan tetapan</string>
+    <string name="search_empty_hint">Masukkan nombor kereta api, stesen atau tetapan</string>
+    <string name="search_no_results">Tiada hasil</string>
+    <string name="search_no_results_hint">Cuba kata kunci lain</string>
+    <string name="search_error">Gagal memuatkan hasil kereta api dan stesen. Ketik untuk cuba lagi</string>
+</resources>

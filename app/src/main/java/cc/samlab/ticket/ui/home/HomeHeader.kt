@@ -7,25 +7,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 
@@ -51,27 +44,21 @@ internal fun HomeHeader() {
 }
 
 @Composable
-internal fun HomeSearchField(query: String, onQueryChange: (String) -> Unit) {
-    val focusManager = LocalFocusManager.current
+internal fun HomeSearchField(onClick: () -> Unit) {
     val searchLabel = stringResource(R.string.home_search)
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
+    androidx.compose.material3.Surface(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth().semantics { contentDescription = searchLabel },
-        placeholder = { Text(searchLabel) },
-        leadingIcon = {
-            Icon(painterResource(R.drawable.ic_home_search), contentDescription = null)
-        },
-        singleLine = true,
         shape = CircleShape,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-        ),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        // Only dismiss the keyboard for now; no search or filtering is performed.
-        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
-    )
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ) {
+        Row(
+            Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Icon(painterResource(R.drawable.ic_home_search), contentDescription = null)
+            Text(searchLabel, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
 }

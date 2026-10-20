@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 
 /** Shared by compact home and the persistent wide navigation menu. */
 internal class HomeNavigationState {
-    var query by mutableStateOf("")
     val scroll = androidx.compose.foundation.ScrollState(0)
 }
 
@@ -64,7 +63,7 @@ internal fun ExpressiveHomeScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 HomeHeader()
-                HomeSearchField(navigation.query) { navigation.query = it }
+                HomeSearchField { onNavigate("/search") }
                 HomeDestinations(ticketDestinations, 0, onNavigate, selectedRoute)
                 HomeUtilities(onNavigate, selectedRoute)
             }

@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">열차</string>
+    <string name="search_stations">역</string>
+    <string name="search_expand">모두 펼치기</string>
+    <string name="search_collapse">접기</string>
+    <string name="search_empty">열차, 역 및 설정 검색</string>
+    <string name="search_empty_hint">열차 번호, 역 이름 또는 설정을 입력하세요</string>
+    <string name="search_no_results">검색 결과가 없습니다</string>
+    <string name="search_no_results_hint">다른 검색어를 사용해 보세요</string>
+    <string name="search_error">철도 정보를 불러오지 못했습니다. 눌러서 다시 시도하세요</string>
+</resources>

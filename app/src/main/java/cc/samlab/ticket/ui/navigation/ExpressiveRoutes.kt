@@ -6,7 +6,7 @@ import androidx.navigation.NavBackStackEntry
 internal object ExpressiveRoutes {
     val pages = setOf(
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
-        "/settings/language",
+        "/settings/language", "/search",
         "/history", "/history/editor", "/list", "/station", "/train", "/user",
         "/monitor", "/monitor/settings", "/about/report",
     )

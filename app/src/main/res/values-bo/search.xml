@@ -1,0 +1,12 @@
+<resources>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">མེ་འཁོར།</string>
+    <string name="search_stations">འབབ་ཚུགས།</string>
+    <string name="search_expand">ཚང་མ་སྟོན།</string>
+    <string name="search_collapse">བསྡུ།</string>
+    <string name="search_empty">མེ་འཁོར་དང་འབབ་ཚུགས། སྒྲིག་འགོད་འཚོལ།</string>
+    <string name="search_empty_hint">མེ་འཁོར་ཨང་དང་འབབ་ཚུགས་མིང་ངམ་སྒྲིག་འགོད་འཇུག་རོགས།</string>
+    <string name="search_no_results">འཚོལ་འབྲས་མི་འདུག</string>
+    <string name="search_no_results_hint">གནད་ཚིག་གཞན་ཞིག་ཚོད་ལྟ་གནང་།</string>
+    <string name="search_error">མེ་འཁོར་དང་འབབ་ཚུགས་ཀྱི་གཞི་གྲངས་འགེལ་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱེད་པར་མནན།</string>
+</resources>
