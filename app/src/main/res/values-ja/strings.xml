@@ -484,4 +484,5 @@
     <string name="language_native_name">日本語</string>
     <string name="station_busy_expand">4～10位を表示</string>
     <string name="station_busy_collapse">4～10位を折りたたむ</string>
+    <string name="train_list_sort_duration">所要時間</string>
 </resources>

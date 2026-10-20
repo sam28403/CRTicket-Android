@@ -68,7 +68,17 @@ class TrainListSortingDeviceTest {
         instrumentation.runOnMainSync { activity.finish() }
     }
 
-    @Test fun allFourSortModesAndDirectionsWorkWithTwentyThousandRows() {
+    @Test fun allFiveSortModesAndDirectionsWorkWithTwentyThousandRows() {
+        assertFirst("G1")
+        choose("按历时")
+        assertFirst("G1")
+        compose.onNodeWithContentDescription("列表排序").performClick()
+        compose.onNodeWithText("降序").assertIsSelected()
+        compose.onNodeWithText("按历时").assertIsSelected()
+        compose.onNodeWithText("升序").performClick()
+        assertFirst("G3")
+        choose("按车次")
+        choose("按历时")
         assertFirst("G1")
         choose("按里程")
         assertFirst("G20000")

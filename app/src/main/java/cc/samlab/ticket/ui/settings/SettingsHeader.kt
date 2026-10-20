@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.home.projectTitleFont
 
 internal val SettingsCollapsedHeight = 56.dp
 internal val SettingsExpandedHeight = 179.dp
@@ -48,6 +49,7 @@ internal fun SettingsHeader(
                 modifier = if (expanded) Modifier.padding(start = 8.dp, bottom = 32.dp)
                     else Modifier.padding(start = if (embedded) 8.dp else 16.dp),
                 style = MaterialTheme.typography.titleLarge.copy(
+                    fontFamily = projectTitleFont,
                     fontSize = if (expanded) 36.sp else 20.sp,
                     lineHeight = if (expanded) 44.sp else 28.sp,
                     fontWeight = FontWeight.Bold,

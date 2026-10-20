@@ -484,4 +484,5 @@
     <string name="language_native_name">བོད་ཡིག</string>
     <string name="station_busy_expand">ཨང་ 4–10 སྟོན།</string>
     <string name="station_busy_collapse">ཨང་ 4–10 སྦས།</string>
+    <string name="train_list_sort_duration">འགྲུལ་བཞུད་དུས་ཡུན།</string>
 </resources>

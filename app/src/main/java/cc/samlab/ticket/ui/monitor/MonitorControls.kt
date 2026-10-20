@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.i18n.rememberAppText
 import java.time.Instant
 import java.time.ZoneId
@@ -62,7 +63,7 @@ internal fun MonitorControls(controller: NativeTicketMonitorController) {
                     modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("monitor-query"),
                 ) { Text(textResources(R.string.monitor_query)) }
                 Text(textResources(R.string.monitor_toggle), style = MaterialTheme.typography.titleMedium)
-                Switch(
+                AppSwitch(
                     checked = controller.monitoring,
                     onCheckedChange = { controller.action(if (it) "start" else "stop") },
                     enabled = ready && (!controller.loading || controller.monitoring),

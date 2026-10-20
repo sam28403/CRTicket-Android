@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import cc.samlab.ticket.ui.components.AppSwitch
 
 @Composable
 internal fun HistoryTextField(
@@ -90,6 +91,11 @@ internal fun HistorySwitch(label: String, checked: Boolean, enabled: Boolean, on
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(label, style = MaterialTheme.typography.bodyLarge)
-        Switch(checked, onChange, enabled = enabled, modifier = Modifier.testTag("history-switch-$label"))
+        AppSwitch(
+            checked = checked,
+            onCheckedChange = onChange,
+            enabled = enabled,
+            modifier = Modifier.testTag("history-switch-$label"),
+        )
     }
 }

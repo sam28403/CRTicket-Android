@@ -9,11 +9,14 @@ internal fun parseTrainListRows(context: Context, data: JSONArray): List<TrainLi
     return List(data.length()) { index ->
         val row = data.getJSONObject(index)
         val duration = row.optString("duration")
-        val parts = duration.split(":").mapNotNull { it.toIntOrNull() }
-        val minutes = if (parts.size == 2) parts[0] * 60 + parts[1] else 0
+        val minutes = parseTrainListDuration(duration)
         val km = row.optDouble("mileage", Double.NaN)
         val distance = km.takeIf { it.isFinite() && it >= 0 }
-        val speed = distance?.takeIf { minutes > 0 }?.let { it * 60 / minutes }
+        val speed = if (minutes != null && minutes > 0) {
+            distance?.let { it * 60 / minutes }
+        } else {
+            null
+        }
         TrainListRow(
             row.optString("train"), row.optString("from"), row.optString("to"),
             duration.takeIf { it.isNotBlank() && it != "null" } ?: unavailable,

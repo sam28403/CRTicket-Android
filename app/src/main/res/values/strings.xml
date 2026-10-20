@@ -208,6 +208,7 @@
     <string name="settings_export_read_failed">Could not read the exported file</string>
     <string name="train_list_sort">Sort list</string>
     <string name="train_list_sort_train">Train number</string>
+    <string name="train_list_sort_duration">Running time (duration)</string>
     <string name="train_list_sort_mileage">Distance</string>
     <string name="train_list_sort_speed">Average speed</string>
     <string name="train_list_sort_stations">Number of stops</string>

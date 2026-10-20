@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
@@ -35,7 +36,7 @@ internal fun StationBoardActions(
             ) { Text(textResources(R.string.station_board_locate_now), style = MaterialTheme.typography.labelMedium) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(textResources(R.string.station_board_follow_now), style = MaterialTheme.typography.labelMedium)
-                Switch(
+                AppSwitch(
                     checked = follow,
                     onCheckedChange = onFollow,
                     modifier = Modifier.testTag("station-follow"),

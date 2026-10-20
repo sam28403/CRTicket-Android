@@ -15,10 +15,22 @@ internal data class TrainListRow(
     val distanceKm: Double?,
     val speedKmh: Double?,
     val stationCount: Double?,
-)
+) {
+    val durationMinutes: Double? = parseTrainListDuration(duration)
+}
+
+internal fun parseTrainListDuration(duration: String): Double? {
+    val parts = duration.split(":")
+    if (parts.size != 2) return null
+    val hours = parts[0].toIntOrNull() ?: return null
+    val minutes = parts[1].toIntOrNull() ?: return null
+    if (hours < 0 || minutes !in 0..59) return null
+    return hours.toDouble() * 60 + minutes
+}
 
 internal enum class TrainListSort(@StringRes val label: Int) {
     TRAIN(R.string.train_list_sort_train),
+    DURATION(R.string.train_list_sort_duration),
     MILEAGE(R.string.train_list_sort_mileage),
     SPEED(R.string.train_list_sort_speed),
     STATIONS(R.string.train_list_sort_stations),
@@ -32,6 +44,7 @@ internal fun sortTrainList(
     // Snapshots already follow the railway source's natural train category/number order.
     if (sort == TrainListSort.TRAIN) return if (descending) rows.asReversed() else rows
     fun value(row: TrainListRow): Double? = when (sort) {
+        TrainListSort.DURATION -> row.durationMinutes
         TrainListSort.MILEAGE -> row.distanceKm
         TrainListSort.SPEED -> row.speedKmh
         TrainListSort.STATIONS -> row.stationCount

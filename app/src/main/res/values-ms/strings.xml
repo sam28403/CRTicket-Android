@@ -484,4 +484,5 @@
     <string name="language_native_name">Bahasa Melayu</string>
     <string name="station_busy_expand">Tunjukkan kedudukan 4–10</string>
     <string name="station_busy_collapse">Sembunyikan kedudukan 4–10</string>
+    <string name="train_list_sort_duration">Tempoh perjalanan</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.settings.SettingsGroup
 import cc.samlab.ticket.ui.settings.SettingsPanel
@@ -87,7 +88,7 @@ internal fun MonitorSettingsContent(
                 3, 4, enabled,
                 { controller.edit("onlyAvailable", !state.optBoolean("onlyAvailable")) },
             ) {
-                Switch(
+                AppSwitch(
                     state.optBoolean("onlyAvailable"), { controller.edit("onlyAvailable", it) },
                     enabled = enabled, modifier = Modifier.testTag("monitor-only-available"),
                 )

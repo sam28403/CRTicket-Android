@@ -484,4 +484,5 @@
     <string name="language_native_name">العربية</string>
     <string name="station_busy_expand">عرض المراكز 4–10</string>
     <string name="station_busy_collapse">إخفاء المراكز 4–10</string>
+    <string name="train_list_sort_duration">مدة الرحلة</string>
 </resources>

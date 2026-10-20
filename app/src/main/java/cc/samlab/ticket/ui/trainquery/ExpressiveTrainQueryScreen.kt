@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
@@ -86,7 +87,7 @@ internal fun ExpressiveTrainQueryScreen(
                                         textResources(R.string.tracking_action_start),
                                         style = MaterialTheme.typography.labelMedium,
                                     )
-                                    Switch(
+                                    AppSwitch(
                                         checked = state.optBoolean("tracking"),
                                         onCheckedChange = { controller.dispatch("tracking") },
                                         enabled = state.optBoolean("trackingReady"),

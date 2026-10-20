@@ -484,4 +484,5 @@
     <string name="language_native_name">हिन्दी</string>
     <string name="station_busy_expand">स्थान 4–10 दिखाएँ</string>
     <string name="station_busy_collapse">स्थान 4–10 छिपाएँ</string>
+    <string name="train_list_sort_duration">यात्रा की अवधि</string>
 </resources>

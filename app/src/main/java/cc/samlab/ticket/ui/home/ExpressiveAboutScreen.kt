@@ -63,6 +63,7 @@ internal fun ExpressiveAboutScreen(
                     Text(
                         stringResource(R.string.home_about),
                         style = MaterialTheme.typography.titleLarge,
+                        fontFamily = projectTitleFont,
                         fontWeight = FontWeight.Bold,
                     )
                 }

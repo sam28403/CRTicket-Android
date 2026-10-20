@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +39,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.ui.home.homeColorScheme
+import cc.samlab.ticket.ui.home.projectTitleFont
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -79,6 +80,7 @@ internal fun ExpressiveReportScreen(
                     Text(
                         stringResource(R.string.report_error),
                         style = MaterialTheme.typography.titleLarge,
+                        fontFamily = projectTitleFont,
                     )
                 }
                 Box(
@@ -125,7 +127,7 @@ internal fun ExpressiveReportScreen(
                                 )
                             }
                             val deviceLabel = stringResource(R.string.report_device)
-                            Switch(
+                            AppSwitch(
                                 checked = includeDevice,
                                 onCheckedChange = { includeDevice = it },
                                 modifier = Modifier.testTag("report-device")

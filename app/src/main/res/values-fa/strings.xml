@@ -484,4 +484,5 @@
     <string name="language_native_name">فارسی</string>
     <string name="station_busy_expand">نمایش رتبه‌های ۴ تا ۱۰</string>
     <string name="station_busy_collapse">پنهان کردن رتبه‌های ۴ تا ۱۰</string>
+    <string name="train_list_sort_duration">مدت سفر</string>
 </resources>

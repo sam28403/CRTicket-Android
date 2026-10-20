@@ -484,4 +484,5 @@
     <string name="language_native_name">Español</string>
     <string name="station_busy_expand">Mostrar puestos 4–10</string>
     <string name="station_busy_collapse">Ocultar puestos 4–10</string>
+    <string name="train_list_sort_duration">Duración del viaje</string>
 </resources>

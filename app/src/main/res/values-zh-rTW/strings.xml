@@ -208,6 +208,7 @@
     <string name="settings_export_read_failed">無法讀取匯出檔案</string>
     <string name="train_list_sort">列表排序</string>
     <string name="train_list_sort_train">按車次</string>
+    <string name="train_list_sort_duration">按歷時</string>
     <string name="train_list_sort_mileage">按里程</string>
     <string name="train_list_sort_speed">按均速</string>
     <string name="train_list_sort_stations">按站數</string>
