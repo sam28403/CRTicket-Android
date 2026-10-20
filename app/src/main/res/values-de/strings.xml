@@ -482,4 +482,6 @@
     <string name="settings_language">Sprache</string>
     <string name="language_system">Systemstandard</string>
     <string name="language_native_name">Deutsch</string>
+    <string name="station_busy_expand">Plätze 4–10 anzeigen</string>
+    <string name="station_busy_collapse">Plätze 4–10 ausblenden</string>
 </resources>

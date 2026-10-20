@@ -482,4 +482,6 @@
     <string name="settings_language">زبان</string>
     <string name="language_system">سسٹم کی طے شدہ زبان</string>
     <string name="language_native_name">اردو</string>
+    <string name="station_busy_expand">درجہ 4–10 دکھائیں</string>
+    <string name="station_busy_collapse">درجہ 4–10 چھپائیں</string>
 </resources>

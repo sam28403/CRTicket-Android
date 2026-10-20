@@ -414,6 +414,8 @@
     <string name="station_board_follow_now">跟随当前时间</string>
     <string name="action_query">查询</string>
     <string name="station_discovery_busy">繁忙车站</string>
+    <string name="station_busy_expand">展开第 4～10 名</string>
+    <string name="station_busy_collapse">收起第 4～10 名</string>
     <string name="discovery_today">今日随机推荐</string>
     <string name="station_discovery_error">车站推荐暂时无法加载，点击重试</string>
     <string name="station_discovery_empty">今日暂无可展示车站</string>

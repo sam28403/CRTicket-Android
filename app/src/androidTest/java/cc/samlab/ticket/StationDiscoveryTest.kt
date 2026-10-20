@@ -32,10 +32,11 @@ class StationDiscoveryTest {
                     api.defaults.adapter = async config => {
                         const data = config.url === '/station/discovery'
                             ? {success: true, date: config.params.date,
-                               stations: ['广州南','杭州东','南京南','郑州东'].map((station, i) => ({
+                               stations: ['广州南','杭州东','南京南','郑州东','北京南','上海虹桥',
+                                   '深圳北','长沙南','成都东','武汉','济南西','西安北'].map((station, i) => ({
                                    station, total: 100 - i, origin: 20, terminal: 10,
                                    passingWindows: [{arrival: 0, departure: 86400}],
-                                   completionTimes: ['00:00','01:00']
+                                   completionTimes: Array(i === 0 ? 100 : Math.floor((100 - i) / 2)).fill('00:00')
                                }))}
                             : {success: true, station: config.params.station, date: config.params.date,
                                total: 0, trains: [], source: '路路通', generatedAt: new Date().toISOString()};
@@ -53,7 +54,9 @@ class StationDiscoveryTest {
                 compose.onNodeWithTag("important-notice-confirm").performClick()
             }
             compose.onNodeWithTag("station-query-history").assertIsDisplayed()
-            compose.onAllNodesWithText("已接发：2 / 100，在站过路车：1").onFirst().assertIsDisplayed()
+            compose.onAllNodesWithText("已接发：100 / 100，在站过路车：1").onFirst().assertIsDisplayed()
+            compose.onAllNodesWithText("广铁").onFirst().assertIsDisplayed()
+            compose.onNodeWithTag("station-busy-card:4").assertDoesNotExist()
             val before = compose.onNodeWithTag("station-busy-title").fetchSemanticsNode().boundsInWindow.top
             compose.onNodeWithTag("station-clear-history").performClick()
             compose.waitUntil(5_000) {
@@ -64,6 +67,17 @@ class StationDiscoveryTest {
             assertTrue("History should collapse", after < before)
             assertEquals("null", fixture.evaluate("localStorage.getItem('crticket-station-query-history')"))
             fixture.capture("station-discovery-busy")
+            compose.onNodeWithTag("station-discovery")
+                .performScrollToNode(hasTestTag("station-busy-toggle"))
+            compose.onNodeWithTag("station-busy-toggle").performClick()
+            compose.onNodeWithTag("station-discovery")
+                .performScrollToNode(hasTestTag("station-busy-card:10"))
+            compose.onNodeWithTag("station-busy-card:10").assertIsDisplayed()
+            fixture.capture("station-discovery-expanded")
+            compose.onNodeWithTag("station-discovery")
+                .performScrollToNode(hasTestTag("station-busy-toggle"))
+            compose.onNodeWithTag("station-busy-toggle").performClick()
+            compose.onNodeWithTag("station-busy-card:4").assertDoesNotExist()
             compose.onNodeWithTag("station-discovery")
                 .performScrollToNode(hasTestTag("station-recommendations-title"))
             compose.onNodeWithText("今日随机推荐").assertIsDisplayed()

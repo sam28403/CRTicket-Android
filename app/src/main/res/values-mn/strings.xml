@@ -482,4 +482,6 @@
     <string name="settings_language">Хэл</string>
     <string name="language_system">Системийн хэл</string>
     <string name="language_native_name">Монгол</string>
+    <string name="station_busy_expand">4–10-р байрыг харуулах</string>
+    <string name="station_busy_collapse">4–10-р байрыг нуух</string>
 </resources>

@@ -482,4 +482,6 @@
     <string name="settings_language">Lingua</string>
     <string name="language_system">Predefinita di sistema</string>
     <string name="language_native_name">Italiano</string>
+    <string name="station_busy_expand">Mostra posizioni 4–10</string>
+    <string name="station_busy_collapse">Nascondi posizioni 4–10</string>
 </resources>

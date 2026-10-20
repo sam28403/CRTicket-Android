@@ -482,4 +482,6 @@
     <string name="settings_language">ພາສາ</string>
     <string name="language_system">ຕາມລະບົບ</string>
     <string name="language_native_name">ລາວ</string>
+    <string name="station_busy_expand">ສະແດງອັນດັບ 4–10</string>
+    <string name="station_busy_collapse">ເຊື່ອງອັນດັບ 4–10</string>
 </resources>

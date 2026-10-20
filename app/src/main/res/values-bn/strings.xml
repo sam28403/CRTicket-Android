@@ -482,4 +482,6 @@
     <string name="settings_language">ভাষা</string>
     <string name="language_system">সিস্টেমের ভাষা</string>
     <string name="language_native_name">বাংলা</string>
+    <string name="station_busy_expand">৪–১০ নম্বর দেখান</string>
+    <string name="station_busy_collapse">৪–১০ নম্বর লুকান</string>
 </resources>

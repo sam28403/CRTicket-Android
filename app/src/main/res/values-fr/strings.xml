@@ -482,4 +482,6 @@
     <string name="settings_language">Langue</string>
     <string name="language_system">Langue du système</string>
     <string name="language_native_name">Français</string>
+    <string name="station_busy_expand">Afficher les rangs 4–10</string>
+    <string name="station_busy_collapse">Masquer les rangs 4–10</string>
 </resources>

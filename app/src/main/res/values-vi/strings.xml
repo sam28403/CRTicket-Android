@@ -482,4 +482,6 @@
     <string name="settings_language">Ngôn ngữ</string>
     <string name="language_system">Mặc định hệ thống</string>
     <string name="language_native_name">Tiếng Việt</string>
+    <string name="station_busy_expand">Hiện hạng 4–10</string>
+    <string name="station_busy_collapse">Ẩn hạng 4–10</string>
 </resources>

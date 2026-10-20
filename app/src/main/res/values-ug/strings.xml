@@ -482,4 +482,6 @@
     <string name="settings_language">تىل</string>
     <string name="language_system">سىستېما تىلى</string>
     <string name="language_native_name">ئۇيغۇرچە</string>
+    <string name="station_busy_expand">4–10-ئورۇننى كۆرسىتىش</string>
+    <string name="station_busy_collapse">4–10-ئورۇننى يوشۇرۇش</string>
 </resources>

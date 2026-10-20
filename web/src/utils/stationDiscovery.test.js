@@ -1,12 +1,47 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { addStationHistory, dailyStationPicks, stationSummaryNow } from './stationDiscovery.js'
+import {
+  addStationHistory, busyStationPicks, dailyStationPicks, stationSummaryNow,
+} from './stationDiscovery.js'
+import { bureauForTelecode, stationBureau } from './stationBureau.js'
 import { listStationSummaries } from '../android/railway/stationDiscovery.js'
 
 test('station history normalizes, deduplicates, and limits recent queries', () => {
   assert.deepEqual(addStationHistory(['北京南', '上海虹桥'], ' 上海虹桥 '), ['上海虹桥', '北京南'])
   assert.deepEqual(addStationHistory(['北京南'], ''), ['北京南'])
   assert.equal(addStationHistory(Array.from({ length: 10 }, (_, i) => `车站${i}`), '新站').length, 10)
+})
+
+test('busy stations rank the top ten by daily trains without changing the source', () => {
+  const stations = Array.from({ length: 15 }, (_, i) => ({ station: `站${i}`, total: i }))
+  const original = structuredClone(stations)
+  assert.deepEqual(busyStationPicks(stations).map(row => row.total), [14, 13, 12, 11, 10, 9, 8, 7, 6, 5])
+  assert.deepEqual(stations, original)
+  assert.deepEqual(busyStationPicks([{ station: '空站', total: 0 }]), [])
+  assert.equal(busyStationPicks(stations.slice(0, 3)).length, 2)
+})
+
+test('bureau labels follow rail.re telecodes and do not guess unknown stations', () => {
+  assert.equal(stationBureau(' 北京南 '), '京局')
+  assert.equal(stationBureau('上海虹桥'), '上局')
+  assert.equal(stationBureau('广州南'), '广铁')
+  assert.equal(bureauForTelecode('COE'), '成局')
+  assert.equal(bureauForTelecode('AAX'), '哈局')
+  assert.equal(bureauForTelecode('AAS'), '南局')
+  assert.equal(bureauForTelecode('AAO'), '青藏')
+  assert.equal(stationBureau('拉萨'), '青藏')
+  for (const code of ['', 'INVALID', 'AAI', 'AAA?']) assert.equal(bureauForTelecode(code), '')
+  assert.equal(stationBureau('未收录车站'), '')
+})
+
+test('card progress handles zero, partial and fully handled days', () => {
+  const row = { station: '北京南', total: 2, completionTimes: ['08:00', '12:00'], passingWindows: [] }
+  assert.equal(stationSummaryNow(row, '07:59').handledRatio, 0)
+  assert.equal(stationSummaryNow(row, '08:00').handledRatio, 0.5)
+  assert.equal(stationSummaryNow(row, '12:00').handledRatio, 1)
+  assert.equal(stationSummaryNow(row, '23:59').bureau, '京局')
+  assert.equal(stationSummaryNow({ ...row, total: 0 }, '12:00').handledRatio, 0)
+  assert.equal(stationSummaryNow({ ...row, total: 1 }, '12:00').handledRatio, 1)
 })
 
 test('daily picks are stable, unique, and only contain stations with trains', () => {

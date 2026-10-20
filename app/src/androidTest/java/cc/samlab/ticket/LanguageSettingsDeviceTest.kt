@@ -7,15 +7,18 @@ import android.os.PowerManager
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.core.os.LocaleListCompat
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -64,10 +67,12 @@ class LanguageSettingsDeviceTest {
                     awaitLanguage(scenario, "zh-HK", "語言")
                     awaitPage("/settings/language")
                     assertChoiceSelected("zh-HK")
+                    assertSettingsRemainEditable(scenario)
                     scenario.recreate()
                     awaitLanguage(scenario, "zh-HK", "語言")
                     awaitPage("/settings/language")
                     assertChoiceSelected("zh-HK")
+                    assertSettingsRemainEditable(scenario)
                     capture("hong-kong-after-recreation")
                     pressBack()
                     awaitPage("/settings")
@@ -81,6 +86,7 @@ class LanguageSettingsDeviceTest {
                         assertEquals(View.LAYOUT_DIRECTION_RTL, it.resources.configuration.layoutDirection)
                     }
                     assertChoiceSelected("ar")
+                    assertSettingsRemainEditable(scenario)
                     capture("arabic")
 
                     choose("system")
@@ -95,6 +101,7 @@ class LanguageSettingsDeviceTest {
                     }
                     awaitPage("/settings/language")
                     assertChoiceSelected("system")
+                    assertSettingsRemainEditable(scenario)
                     scenario.onActivity {
                         assertEquals(
                             Resources.getSystem().configuration.locales[0].language,
@@ -148,6 +155,41 @@ class LanguageSettingsDeviceTest {
             }
             ready
         }
+    }
+
+    private fun assertSettingsRemainEditable(scenario: ActivityScenario<MainActivity>) {
+        var switchLabel = ""
+        var languageTitle = ""
+        scenario.onActivity {
+            switchLabel = it.getString(R.string.settings_pure_black_switch)
+            languageTitle = it.getString(R.string.settings_language)
+        }
+        pressBack()
+        awaitPage("/settings")
+        val toggle = compose.onNodeWithContentDescription(switchLabel)
+        toggle.performScrollTo()
+        compose.waitUntil(15_000) {
+            !toggle.fetchSemanticsNode().config.contains(SemanticsProperties.Disabled)
+        }
+        toggle.assertIsEnabled()
+        val original = toggle.fetchSemanticsNode().config[SemanticsProperties.ToggleableState]
+        try {
+            toggle.performClick()
+            compose.waitUntil(15_000) {
+                toggle.fetchSemanticsNode().config[SemanticsProperties.ToggleableState] != original &&
+                    !toggle.fetchSemanticsNode().config.contains(SemanticsProperties.Disabled)
+            }
+        } finally {
+            if (toggle.fetchSemanticsNode().config[SemanticsProperties.ToggleableState] != original) {
+                toggle.performClick()
+            }
+        }
+        compose.waitUntil(15_000) {
+            toggle.fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == original &&
+                !toggle.fetchSemanticsNode().config.contains(SemanticsProperties.Disabled)
+        }
+        compose.onNodeWithText(languageTitle).performScrollTo().performClick()
+        awaitPage("/settings/language")
     }
 
     private fun awaitPage(route: String) {

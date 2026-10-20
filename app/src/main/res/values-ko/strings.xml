@@ -482,4 +482,6 @@
     <string name="settings_language">언어</string>
     <string name="language_system">시스템 기본값</string>
     <string name="language_native_name">한국어</string>
+    <string name="station_busy_expand">4~10위 펼치기</string>
+    <string name="station_busy_collapse">4~10위 접기</string>
 </resources>

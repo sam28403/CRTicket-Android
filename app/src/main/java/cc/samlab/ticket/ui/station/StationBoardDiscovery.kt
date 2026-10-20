@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ internal fun StationBoardDiscovery(
     val textResources = rememberAppText()
     val state = controller.discovery
     val history = state.optJSONArray("history") ?: JSONArray()
+    var busyExpanded by rememberSaveable(controller) { mutableStateOf(false) }
     fun open(name: String) { onNavigate("/station?station=${Uri.encode(name)}") }
     LazyVerticalGrid(
         columns = GridCells.Adaptive(320.dp),
@@ -62,7 +64,7 @@ internal fun StationBoardDiscovery(
         )) {
             item(key = "$key-title", span = { GridItemSpan(maxLineSpan) }) {
                 Text(
-                    title, Modifier.padding(start = 4.dp, top = 16.dp, bottom = 8.dp)
+                    title, discoveryItemAnimation().padding(start = 4.dp, top = 16.dp, bottom = 8.dp)
                         .testTag("station-$key-title"),
                     style = MaterialTheme.typography.titleLarge, fontFamily = projectTitleFont,
                 )
@@ -86,14 +88,38 @@ internal fun StationBoardDiscovery(
                     )
                 }
             } else {
-                items(rows.length(), key = { "$key-${rows.getJSONObject(it).optString("station")}" }) { index ->
+                val count = if (key == "busy") {
+                    minOf(rows.length(), if (busyExpanded) 10 else 3)
+                } else rows.length()
+                items(count, key = { "$key-${rows.getJSONObject(it).optString("station")}" }) { index ->
                     val row = rows.getJSONObject(index)
                     StationDiscoveryCard(
                         row = row,
                         rank = if (key == "busy") index + 1 else null,
+                        modifier = discoveryItemAnimation(),
                     ) { open(row.optString("station")) }
+                }
+                if (key == "busy" && rows.length() > 3) {
+                    item(key = "busy-toggle", span = { GridItemSpan(maxLineSpan) }) {
+                        TextButton(
+                            onClick = { busyExpanded = !busyExpanded },
+                            modifier = discoveryItemAnimation().fillMaxWidth()
+                                .testTag("station-busy-toggle"),
+                        ) {
+                            Text(textResources(
+                                if (busyExpanded) R.string.station_busy_collapse
+                                else R.string.station_busy_expand,
+                            ))
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+private fun LazyGridItemScope.discoveryItemAnimation() = Modifier.animateItem(
+    fadeInSpec = tween(220),
+    placementSpec = tween(300),
+    fadeOutSpec = tween(180),
+)

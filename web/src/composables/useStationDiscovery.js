@@ -1,7 +1,9 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api, { timetableTimeout } from '@/api.js'
-import { addStationHistory, dailyStationPicks, stationSummaryNow } from '@/utils/stationDiscovery.js'
+import {
+  addStationHistory, busyStationPicks, dailyStationPicks, stationSummaryNow,
+} from '@/utils/stationDiscovery.js'
 import { stationLocation } from '@/utils/stationNavigation.js'
 
 const historyKey = 'crticket-station-query-history'
@@ -59,7 +61,8 @@ export function useStationDiscovery(clock) {
   }
   // Timetable events have minute precision; avoid resending unchanged cards every second.
   const minute = computed(() => clock.value.time.slice(0, 5))
-  const busy = computed(() => stations.value.slice(0, 3).map(row => stationSummaryNow(row, minute.value)))
+  const busiest = computed(() => busyStationPicks(stations.value))
+  const busy = computed(() => busiest.value.map(row => stationSummaryNow(row, minute.value)))
   const picks = computed(() => dailyStationPicks(stations.value, clock.value.date))
   const recommendations = computed(() => picks.value.map(row => stationSummaryNow(row, minute.value)))
   watch(() => [route.path, clock.value.date], refresh, { immediate: true })

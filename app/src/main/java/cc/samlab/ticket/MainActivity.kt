@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateNavigationUi() {
         refresh.enabled = home.route != "/user"
-        if (home.route == "/settings") settings.refresh()
+        refreshSettingsIfReady()
         navigationBack.isEnabled = !home.visible
         webView.visibility = if (home.visible && !home.usesWebContent) {
             android.view.View.INVISIBLE
@@ -237,6 +237,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stationRoute(station: String) = "/station?station=${Uri.encode(station)}"
+
+    private fun refreshSettingsIfReady() {
+        // Locale changes restore the native destination before the new WebView has a document.
+        // An early request can lose its JS callback and leave every settings action busy.
+        if (navigationReady && home.route == "/settings") settings.refresh()
+    }
 
     private fun navigateTo(route: String) = navigateTo(route, notification = false)
 
@@ -359,7 +365,7 @@ class MainActivity : AppCompatActivity() {
         webView.onResume()
         appearance.updateSystem(resources.configuration)
         stationArrival.onResume()
-        if (home.route == "/settings") settings.refresh()
+        refreshSettingsIfReady()
         trainTracking.restore()
         ticketMonitor.restore()
     }

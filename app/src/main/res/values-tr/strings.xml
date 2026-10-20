@@ -482,4 +482,6 @@
     <string name="settings_language">Dil</string>
     <string name="language_system">Sistem varsayılanı</string>
     <string name="language_native_name">Türkçe</string>
+    <string name="station_busy_expand">4–10. sıraları göster</string>
+    <string name="station_busy_collapse">4–10. sıraları gizle</string>
 </resources>

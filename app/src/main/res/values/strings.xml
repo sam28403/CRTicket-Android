@@ -414,6 +414,8 @@
     <string name="station_board_follow_now">Follow current time</string>
     <string name="action_query">Search</string>
     <string name="station_discovery_busy">Busy stations</string>
+    <string name="station_busy_expand">Show ranks 4–10</string>
+    <string name="station_busy_collapse">Hide ranks 4–10</string>
     <string name="discovery_today">Today’s picks</string>
     <string name="station_discovery_error">Could not load station suggestions. Tap to retry.</string>
     <string name="station_discovery_empty">No stations to show today</string>

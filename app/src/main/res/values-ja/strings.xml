@@ -482,4 +482,6 @@
     <string name="settings_language">言語</string>
     <string name="language_system">システムのデフォルト</string>
     <string name="language_native_name">日本語</string>
+    <string name="station_busy_expand">4～10位を表示</string>
+    <string name="station_busy_collapse">4～10位を折りたたむ</string>
 </resources>

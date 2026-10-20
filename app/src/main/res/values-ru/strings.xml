@@ -482,4 +482,6 @@
     <string name="settings_language">Язык</string>
     <string name="language_system">Как в системе</string>
     <string name="language_native_name">Русский</string>
+    <string name="station_busy_expand">Показать места 4–10</string>
+    <string name="station_busy_collapse">Скрыть места 4–10</string>
 </resources>

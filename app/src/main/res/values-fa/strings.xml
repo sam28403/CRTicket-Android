@@ -482,4 +482,6 @@
     <string name="settings_language">زبان</string>
     <string name="language_system">پیش‌فرض سیستم</string>
     <string name="language_native_name">فارسی</string>
+    <string name="station_busy_expand">نمایش رتبه‌های ۴ تا ۱۰</string>
+    <string name="station_busy_collapse">پنهان کردن رتبه‌های ۴ تا ۱۰</string>
 </resources>

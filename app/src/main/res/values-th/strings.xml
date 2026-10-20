@@ -482,4 +482,6 @@
     <string name="settings_language">ภาษา</string>
     <string name="language_system">ค่าเริ่มต้นของระบบ</string>
     <string name="language_native_name">ไทย</string>
+    <string name="station_busy_expand">แสดงอันดับ 4–10</string>
+    <string name="station_busy_collapse">ซ่อนอันดับ 4–10</string>
 </resources>
