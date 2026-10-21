@@ -1,10 +1,12 @@
 import { onBeforeUnmount, watch } from 'vue'
 import { native } from '@/android/platform.js'
 import { buildTrainRouteData } from '@/utils/maps/trainRouteMap.js'
+import { useNextRouting } from './useNextRouting.js'
 
 export function useNativeTrainQuery(state) {
   if (typeof native?.trainQueryResult !== 'function') return false
   const { train, date, loading, error, result, offlineMode, trackingButton } = state
+  const nextRouting = useNextRouting(result)
   function request(event) {
     const { action, train: code, date: day } = event.detail || {}
     if (action === 'clearHistory') return state.discovery.clearHistory()
@@ -20,7 +22,7 @@ export function useNativeTrainQuery(state) {
   }
   window.addEventListener('crticket-train-query-request', request)
   const stop = watch([
-    train, date, loading, error, result, offlineMode, state.exporting,
+    train, date, loading, error, result, offlineMode, state.exporting, nextRouting,
     () => trackingButton.value?.tracking,
     () => trackingButton.value?.busy,
     () => trackingButton.value?.ready,
@@ -36,6 +38,7 @@ export function useNativeTrainQuery(state) {
       location,
       error: error.value, result: result.value, offline: offlineMode.value,
       route: result.value ? buildTrainRouteData(result.value.stops) : null,
+      nextRouting: nextRouting.value,
       tracking: Boolean(trackingButton.value?.tracking),
       trackingReady: Boolean(trackingButton.value?.ready && !trackingButton.value?.busy),
       exporting: state.exporting.value,

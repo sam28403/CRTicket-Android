@@ -11,7 +11,7 @@ internal val railfanDestinations = listOf(
         R.drawable.ic_home_vehicle, "/railfan/vehicle",
     ),
     HomeDestination(
-        R.string.railfan_routing, R.string.railfan_placeholder,
+        R.string.railfan_routing, R.string.routing_query_description,
         R.drawable.ic_home_routing, "/railfan/routing",
     ),
     HomeDestination(

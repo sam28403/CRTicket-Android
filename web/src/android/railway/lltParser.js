@@ -1,4 +1,5 @@
 import { unzipSync } from 'fflate'
+import { parseLltRouting } from './lltRouting.js'
 
 const decode = bytes => new TextDecoder().decode(new Uint8Array(bytes))
 function readBigEndian(bytes, offset) {
@@ -135,13 +136,13 @@ export function parseLltFiles(files) {
     }
   }
   if (trains.size !== trainNames.length) throw new Error('路路通车次字典与记录数量不一致')
-  return { version, trains }
+  return { version, trains, routing: files['jlb.dat'] ? parseLltRouting(files['jlb.dat']) : null }
 }
 
 export function parseLltArchive(bytes) {
   if (bytes.byteLength > maxArchiveBytes) throw new Error('路路通数据包过大')
   const files = unzipSync(bytes, { filter: entry => {
-    if (!/^(?:[st]\.i|t\.rule|ver\.txt|T\d{1,2}\.dat)$/.test(entry.name)) return false
+    if (!/^(?:[st]\.i|t\.rule|jlb\.dat|ver\.txt|T\d{1,2}\.dat)$/.test(entry.name)) return false
     if (entry.originalSize > maxFileBytes) throw new Error('路路通数据文件过大')
     return true
   } })

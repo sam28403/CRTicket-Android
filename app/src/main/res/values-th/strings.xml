@@ -506,4 +506,12 @@
     <string name="search_error">โหลดข้อมูลรถไฟและสถานีไม่สำเร็จ แตะเพื่อลองอีกครั้ง</string>
     <string name="visits_empty">ยังไม่มีประวัติการเยี่ยมชมสถานี</string>
     <string name="visits_description">บันทึกเวลาเยี่ยมชมแต่ละสถานีครั้งแรก</string>
+    <string name="routing_query_description">ค้นหารถไฟทั้งหมดในวงรอบขบวนรถ</string>
+    <string name="routing_query_hint">หมายเลขขบวนรถ</string>
+    <string name="routing_query_invalid">กรุณาระบุหมายเลขขบวนรถที่ถูกต้อง</string>
+    <string name="routing_query_welcome">ระบุหมายเลขขบวนรถเพื่อดูวงรอบทั้งหมด</string>
+    <string name="routing_query_empty">ไม่พบวงรอบของขบวนรถนี้</string>
+    <string name="routing_query_error">โหลดข้อมูลวงรอบไม่สำเร็จ โปรดลองอีกครั้ง</string>
+    <string name="train_query_next_routing">ขบวนรถถัดไปในวงรอบ</string>
+    <string name="routing_disclaimer">ข้อมูลวงรอบใช้เพื่ออ้างอิงเท่านั้น</string>
 </resources>

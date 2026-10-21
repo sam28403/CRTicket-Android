@@ -506,4 +506,12 @@
     <string name="search_error">Не удалось загрузить данные поездов и станций. Нажмите для повтора</string>
     <string name="visits_empty">Посещённых станций пока нет</string>
     <string name="visits_description">Первое посещение каждой станции</string>
+    <string name="routing_query_description">Поиск всех поездов в обороте состава</string>
+    <string name="routing_query_hint">Номер поезда</string>
+    <string name="routing_query_invalid">Введите допустимый номер поезда</string>
+    <string name="routing_query_welcome">Введите номер поезда для просмотра полного оборота</string>
+    <string name="routing_query_empty">Оборот этого поезда не найден</string>
+    <string name="routing_query_error">Не удалось загрузить оборот. Повторите попытку.</string>
+    <string name="train_query_next_routing">Следующий поезд в обороте</string>
+    <string name="routing_disclaimer">Данные об обороте приведены для справки</string>
 </resources>

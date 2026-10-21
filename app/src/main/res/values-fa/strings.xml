@@ -506,4 +506,12 @@
     <string name="search_error">بارگیری نتایج قطار و ایستگاه ناموفق بود. برای تلاش دوباره بزنید</string>
     <string name="visits_empty">هنوز ایستگاهی بازدید نشده است</string>
     <string name="visits_description">زمان اولین بازدید از هر ایستگاه</string>
+    <string name="routing_query_description">جستجوی همه قطارهای یک گردش</string>
+    <string name="routing_query_hint">شماره قطار</string>
+    <string name="routing_query_invalid">شماره قطار معتبر وارد کنید</string>
+    <string name="routing_query_welcome">برای مشاهده گردش کامل، شماره قطار را وارد کنید</string>
+    <string name="routing_query_empty">گردشی برای این قطار یافت نشد</string>
+    <string name="routing_query_error">بارگیری گردش ناموفق بود. دوباره تلاش کنید.</string>
+    <string name="train_query_next_routing">قطار بعدی در گردش</string>
+    <string name="routing_disclaimer">اطلاعات گردش فقط برای مرجع است</string>
 </resources>

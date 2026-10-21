@@ -506,4 +506,12 @@
     <string name="search_error">Gagal memuatkan hasil kereta api dan stesen. Ketik untuk cuba lagi</string>
     <string name="visits_empty">Belum ada stesen dilawati</string>
     <string name="visits_description">Lawatan pertama ke setiap stesen</string>
+    <string name="routing_query_description">Cari semua tren dalam pusingan</string>
+    <string name="routing_query_hint">Nombor tren</string>
+    <string name="routing_query_invalid">Masukkan nombor tren yang sah</string>
+    <string name="routing_query_welcome">Masukkan nombor tren untuk melihat pusingan penuh</string>
+    <string name="routing_query_empty">Tiada pusingan ditemui untuk tren ini</string>
+    <string name="routing_query_error">Gagal memuatkan pusingan. Cuba lagi.</string>
+    <string name="train_query_next_routing">Tren seterusnya dalam pusingan</string>
+    <string name="routing_disclaimer">Data pusingan untuk rujukan sahaja</string>
 </resources>

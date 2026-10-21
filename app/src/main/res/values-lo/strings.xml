@@ -506,4 +506,12 @@
     <string name="search_error">ໂຫຼດຂໍ້ມູນລົດໄຟແລະສະຖານີບໍ່ສຳເລັດ. ແຕະເພື່ອລອງໃໝ່</string>
     <string name="visits_empty">ຍັງບໍ່ມີສະຖານີທີ່ໄປຢ້ຽມຢາມ</string>
     <string name="visits_description">ເວລາຢ້ຽມຢາມແຕ່ລະສະຖານີຄັ້ງທຳອິດ</string>
+    <string name="routing_query_description">ຄົ້ນຫາລົດໄຟທັງໝົດໃນຮອບວຽນ</string>
+    <string name="routing_query_hint">ເລກຂະບວນລົດ</string>
+    <string name="routing_query_invalid">ປ້ອນເລກຂະບວນລົດທີ່ຖືກຕ້ອງ</string>
+    <string name="routing_query_welcome">ປ້ອນເລກຂະບວນລົດເພື່ອເບິ່ງຮອບວຽນທັງໝົດ</string>
+    <string name="routing_query_empty">ບໍ່ພົບຮອບວຽນຂອງລົດໄຟນີ້</string>
+    <string name="routing_query_error">ໂຫຼດຮອບວຽນບໍ່ສຳເລັດ. ລອງໃໝ່.</string>
+    <string name="train_query_next_routing">ຂະບວນລົດຖັດໄປໃນຮອບວຽນ</string>
+    <string name="routing_disclaimer">ຂໍ້ມູນຮອບວຽນໃຊ້ເພື່ອອ້າງອີງເທົ່ານັ້ນ</string>
 </resources>

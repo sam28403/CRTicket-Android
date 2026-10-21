@@ -506,4 +506,12 @@
     <string name="search_error">Não foi possível carregar os resultados ferroviários. Toque para tentar novamente</string>
     <string name="visits_empty">Nenhuma estação visitada</string>
     <string name="visits_description">Primeira visita a cada estação</string>
+    <string name="routing_query_description">Pesquisar todos os trens de uma rotação</string>
+    <string name="routing_query_hint">Número do trem</string>
+    <string name="routing_query_invalid">Digite um número de trem válido</string>
+    <string name="routing_query_welcome">Digite um trem para ver a rotação completa</string>
+    <string name="routing_query_empty">Nenhuma rotação encontrada para este trem</string>
+    <string name="routing_query_error">Não foi possível carregar a rotação. Tente novamente.</string>
+    <string name="train_query_next_routing">Próximo trem da rotação</string>
+    <string name="routing_disclaimer">Os dados de rotação são apenas uma referência</string>
 </resources>

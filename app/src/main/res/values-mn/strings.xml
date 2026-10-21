@@ -506,4 +506,12 @@
     <string name="search_error">Галт тэрэг болон өртөөний илэрцийг ачаалж чадсангүй. Дахин оролдохын тулд товшино уу</string>
     <string name="visits_empty">Одоогоор очсон өртөө алга</string>
     <string name="visits_description">Өртөө бүрд анх очсон цаг</string>
+    <string name="routing_query_description">Галт тэрэгний эргэлтийн бүх галт тэргийг хайх</string>
+    <string name="routing_query_hint">Галт тэрэгний дугаар</string>
+    <string name="routing_query_invalid">Зөв дугаар оруулна уу</string>
+    <string name="routing_query_welcome">Бүтэн эргэлтийг харахын тулд дугаар оруулна уу</string>
+    <string name="routing_query_empty">Энэ галт тэрэгний эргэлт олдсонгүй</string>
+    <string name="routing_query_error">Эргэлтийн мэдээлэл ачаалж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="train_query_next_routing">Эргэлтийн дараагийн галт тэрэг</string>
+    <string name="routing_disclaimer">Эргэлтийн мэдээлэл зөвхөн лавлагааны зориулалттай</string>
 </resources>

@@ -508,4 +508,12 @@
     <string name="search_error">Could not load railway results. Tap to retry</string>
     <string name="visits_empty">No stations visited yet</string>
     <string name="visits_description">Your first arrival at each station</string>
+    <string name="routing_query_description">Search all trains in a train routing</string>
+    <string name="routing_query_hint">Train number</string>
+    <string name="routing_query_invalid">Enter a valid train number</string>
+    <string name="routing_query_welcome">Enter a train number to view its full routing</string>
+    <string name="routing_query_empty">No routing found for this train</string>
+    <string name="routing_query_error">Unable to load routing data. Please try again.</string>
+    <string name="train_query_next_routing">Next assigned train</string>
+    <string name="routing_disclaimer">Routing data is for reference only</string>
 </resources>

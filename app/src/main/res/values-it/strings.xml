@@ -506,4 +506,12 @@
     <string name="search_error">Impossibile caricare i risultati ferroviari. Tocca per riprovare</string>
     <string name="visits_empty">Nessuna stazione visitata</string>
     <string name="visits_description">Prima visita a ogni stazione</string>
+    <string name="routing_query_description">Cerca tutti i treni del turno</string>
+    <string name="routing_query_hint">Numero del treno</string>
+    <string name="routing_query_invalid">Inserisci un numero di treno valido</string>
+    <string name="routing_query_welcome">Inserisci un treno per visualizzare il turno completo</string>
+    <string name="routing_query_empty">Nessun turno trovato per questo treno</string>
+    <string name="routing_query_error">Impossibile caricare il turno. Riprova.</string>
+    <string name="train_query_next_routing">Prossimo treno del turno</string>
+    <string name="routing_disclaimer">I dati del turno sono solo indicativi</string>
 </resources>

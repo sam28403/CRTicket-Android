@@ -506,4 +506,12 @@
     <string name="search_error">ट्रेन और स्टेशन के परिणाम लोड नहीं हुए। फिर से प्रयास करने के लिए टैप करें</string>
     <string name="visits_empty">अभी तक कोई स्टेशन नहीं देखा गया</string>
     <string name="visits_description">हर स्टेशन पर पहली यात्रा का समय</string>
+    <string name="routing_query_description">ट्रेन के चक्र की सभी ट्रेनें खोजें</string>
+    <string name="routing_query_hint">ट्रेन नंबर</string>
+    <string name="routing_query_invalid">मान्य ट्रेन नंबर दर्ज करें</string>
+    <string name="routing_query_welcome">पूरा चक्र देखने के लिए ट्रेन नंबर दर्ज करें</string>
+    <string name="routing_query_empty">इस ट्रेन का चक्र नहीं मिला</string>
+    <string name="routing_query_error">चक्र का डेटा लोड नहीं हुआ। फिर कोशिश करें।</string>
+    <string name="train_query_next_routing">चक्र की अगली ट्रेन</string>
+    <string name="routing_disclaimer">चक्र की जानकारी केवल संदर्भ के लिए है</string>
 </resources>

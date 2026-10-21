@@ -14,6 +14,7 @@ import { trainQuerySourceLocation } from '@/utils/trainQuerySource.js'
 import { getTrainQueryNumberError } from '@/utils/trainQueryValidation.js'
 import { useTrainDiscovery } from '@/composables/useTrainDiscovery.js'
 import TrainQueryDiscovery from '@/components/TrainQueryDiscovery.vue'
+import { createTrainQueryCache } from '@/utils/trainQueryCache.js'
 
 defineOptions({ name: 'TrainQuery' })
 
@@ -35,6 +36,7 @@ const trainNumberError = computed(() => getTrainQueryNumberError(
 const resultQueryCode = ref('')
 const resultQuerySource = ref('')
 const trackingButton = ref(null)
+const queryCache = createTrainQueryCache()
 const nativeQuery = useNativeTrainQuery({
   train, date, loading, error, result, offlineMode, trackingButton, exporting,
   query, switchSource, exportData, discovery, location: () => route.fullPath,
@@ -134,6 +136,11 @@ async function query() {
       result.value = trainInfoForDisplay(data)
       resultQueryCode.value = code
       resultQuerySource.value = source === 'llt' ? 'llt' : ''
+      queryCache.set(code, selectedDate, source, {
+        result: result.value,
+        queryCode: resultQueryCode.value,
+        querySource: resultQuerySource.value,
+      })
       toast(`数据来源：${source === 'llt' ? '路路通' : '12306'}`)
     }
   } catch (err) {
@@ -174,6 +181,13 @@ watch(
     if (offlineMode.value) offlineRecord.value = record
     train.value = displayTrainCode(record)
     date.value = typeof selectedDate === 'string' ? selectedDate : trainQueryRange().today
+    const saved = queryCache.get(record, date.value, source)
+    if (saved) {
+      result.value = saved.result
+      resultQueryCode.value = saved.queryCode
+      resultQuerySource.value = saved.querySource
+      return
+    }
     if (train.value && /^\d{4}-\d{2}-\d{2}$/.test(date.value)) query()
   },
   { immediate: true },

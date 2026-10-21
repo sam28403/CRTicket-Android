@@ -506,4 +506,12 @@
     <string name="search_error">車次和車站載入失敗，點擊重試</string>
     <string name="visits_empty">尚無到訪紀錄</string>
     <string name="visits_description">記錄每個車站的首次到訪時間</string>
+    <string name="routing_query_description">查看交路及全部擔當車次</string>
+    <string name="routing_query_hint">車次</string>
+    <string name="routing_query_invalid">請輸入有效車次</string>
+    <string name="routing_query_welcome">輸入車次，查看所屬交路的全部車次</string>
+    <string name="routing_query_empty">未找到該車次的交路資訊</string>
+    <string name="routing_query_error">交路資料載入失敗，請重試</string>
+    <string name="train_query_next_routing">下一擔當車次</string>
+    <string name="routing_disclaimer">交路資料僅供參考</string>
 </resources>

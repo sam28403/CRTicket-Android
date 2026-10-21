@@ -28,6 +28,10 @@ internal fun VehicleSearchField(
     onEdit: (String) -> Unit,
     onClear: () -> Unit,
     onSearch: () -> Unit,
+    @StringRes label: Int = R.string.vehicle_query_hint,
+    @StringRes invalidMessage: Int = R.string.vehicle_query_invalid,
+    placeholder: String = "G1 / 380B-3626",
+    tag: String = "vehicle-search",
 ) {
     val focus = LocalFocusManager.current
     fun submit() {
@@ -37,13 +41,13 @@ internal fun VehicleSearchField(
     OutlinedTextField(
         value = input,
         onValueChange = onEdit,
-        modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp).testTag("vehicle-search"),
-        label = { Text(stringResource(R.string.vehicle_query_hint)) },
-        placeholder = { Text("G1 / 380B-3626") },
+        modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp).testTag(tag),
+        label = { Text(stringResource(label)) },
+        placeholder = { Text(placeholder) },
         singleLine = true,
         shape = RoundedCornerShape(28.dp),
         isError = invalid,
-        supportingText = if (invalid) ({ Text(stringResource(R.string.vehicle_query_invalid)) }) else null,
+        supportingText = if (invalid) ({ Text(stringResource(invalidMessage)) }) else null,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Characters,
             imeAction = ImeAction.Search,

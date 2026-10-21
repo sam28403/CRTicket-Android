@@ -506,4 +506,12 @@
     <string name="search_error">پويىز ۋە ۋوگزال نەتىجىلىرى يۈكلەنمىدى. قايتا سىناش ئۈچۈن چېكىڭ</string>
     <string name="visits_empty">تېخى بېرىپ باققان بېكەت يوق</string>
     <string name="visits_description">ھەر بىر بېكەتكە تۇنجى بارغان ۋاقىت</string>
+    <string name="routing_query_description">پويىز ئايلىنىشىدىكى بارلىق پويىزلارنى ئىزدەش</string>
+    <string name="routing_query_hint">پويىز نومۇرى</string>
+    <string name="routing_query_invalid">ئىناۋەتلىك پويىز نومۇرى كىرگۈزۈڭ</string>
+    <string name="routing_query_welcome">تولۇق ئايلىنىشنى كۆرۈش ئۈچۈن پويىز نومۇرى كىرگۈزۈڭ</string>
+    <string name="routing_query_empty">بۇ پويىزنىڭ ئايلىنىشى تېپىلمىدى</string>
+    <string name="routing_query_error">ئايلىنىش ئۇچۇرى يۈكلەنمىدى. قايتا سىناڭ.</string>
+    <string name="train_query_next_routing">ئايلىنىشتىكى كېيىنكى پويىز</string>
+    <string name="routing_disclaimer">ئايلىنىش ئۇچۇرى پايدىلىنىش ئۈچۈنلا</string>
 </resources>

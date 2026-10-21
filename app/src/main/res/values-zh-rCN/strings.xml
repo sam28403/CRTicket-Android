@@ -506,4 +506,12 @@
     <string name="search_error">车次和车站加载失败，点击重试</string>
     <string name="visits_empty">还没有到访记录</string>
     <string name="visits_description">记录每个车站的首次到访时间</string>
+    <string name="routing_query_description">查看交路及全部担当车次</string>
+    <string name="routing_query_hint">车次</string>
+    <string name="routing_query_invalid">请输入有效车次</string>
+    <string name="routing_query_welcome">输入车次，查看所属交路的全部车次</string>
+    <string name="routing_query_empty">未找到该车次的交路信息</string>
+    <string name="routing_query_error">交路数据加载失败，请重试</string>
+    <string name="train_query_next_routing">下一担当车次</string>
+    <string name="routing_disclaimer">交路数据仅供参考</string>
 </resources>

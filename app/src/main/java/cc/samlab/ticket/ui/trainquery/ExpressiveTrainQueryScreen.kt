@@ -18,6 +18,7 @@ import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
+import cc.samlab.ticket.ui.railfan.RailfanPreferences
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -32,6 +33,7 @@ internal fun ExpressiveTrainQueryScreen(
     location: String = "/train",
 ) {
     val textResources = rememberAppText()
+    val railfanEnabled by RailfanPreferences.rememberEnabled()
     val state = controller.stateFor(location)
     val loading = state.optBoolean("loading")
     val result = state.optJSONObject("result")
@@ -113,6 +115,11 @@ internal fun ExpressiveTrainQueryScreen(
                         }
                         state.optJSONObject("route")?.let { route ->
                             item(span = { GridItemSpan(maxLineSpan) }) { TrainQueryRouteMap(route, result!!.optString("train")) }
+                        }
+                        state.optJSONObject("nextRouting")?.takeIf { railfanEnabled }?.let { next ->
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                TrainQueryNextRouting(next, result!!.optString("date"), onNavigate)
+                            }
                         }
                     } else if (!loading) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(

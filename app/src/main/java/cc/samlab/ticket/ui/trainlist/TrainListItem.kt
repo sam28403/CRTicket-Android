@@ -16,6 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -28,14 +31,20 @@ internal fun TrainListItem(
     row: TrainListRow,
     vehicle: String? = null,
     onVehicleClick: (() -> Unit)? = null,
+    highlighted: Boolean = false,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     Surface(
         onClick = onClick,
+        enabled = enabled,
         shape = RoundedCornerShape(24.dp),
-        color = colors.surfaceContainerLowest,
-        modifier = Modifier.fillMaxWidth(),
+        color = if (highlighted) colors.primaryContainer else colors.surfaceContainerLowest,
+        contentColor = if (highlighted) colors.onPrimaryContainer else colors.onSurface,
+        modifier = Modifier.fillMaxWidth()
+            .testTag("train-card:${row.train}")
+            .semantics { selected = highlighted },
     ) {
         Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
             Row(
@@ -46,7 +55,7 @@ internal fun TrainListItem(
                 Text(
                     row.train,
                     Modifier.weight(1f),
-                    color = colors.primary,
+                    color = if (highlighted) colors.onPrimaryContainer else colors.primary,
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = projectTitleFont,
                     fontWeight = FontWeight.Bold,
@@ -68,14 +77,15 @@ internal fun TrainListItem(
                     )
                 }
             }
-            TrainListDetails(row)
+            TrainListDetails(row, highlighted)
         }
     }
 }
 
 @Composable
-private fun TrainListDetails(row: TrainListRow) {
+private fun TrainListDetails(row: TrainListRow, highlighted: Boolean) {
     val colors = MaterialTheme.colorScheme
+    val detailColor = if (highlighted) colors.onPrimaryContainer else colors.onSurfaceVariant
     Row(
         Modifier.fillMaxWidth().padding(top = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -87,21 +97,23 @@ private fun TrainListDetails(row: TrainListRow) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium,
+            color = if (highlighted) colors.onPrimaryContainer else colors.onSurface,
         )
-        Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = colors.onSurfaceVariant)
+        Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = detailColor)
         Text(
             row.to,
             Modifier.weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium,
+            color = if (highlighted) colors.onPrimaryContainer else colors.onSurface,
         )
     }
     Text(
         stringResource(R.string.train_list_metrics, row.duration, row.mileage, row.speed),
         Modifier.padding(top = 10.dp),
         style = MaterialTheme.typography.bodySmall,
-        color = colors.onSurfaceVariant,
+        color = detailColor,
         maxLines = 2,
     )
 }

@@ -506,4 +506,12 @@
     <string name="search_error">列車と駅の読み込みに失敗しました。タップして再試行</string>
     <string name="visits_empty">訪問記録はまだありません</string>
     <string name="visits_description">各駅への初訪問を記録</string>
+    <string name="routing_query_description">運用に含まれるすべての列車を検索</string>
+    <string name="routing_query_hint">列車番号</string>
+    <string name="routing_query_invalid">有効な列車番号を入力してください</string>
+    <string name="routing_query_welcome">列車番号を入力して運用全体を表示</string>
+    <string name="routing_query_empty">この列車の運用情報は見つかりませんでした</string>
+    <string name="routing_query_error">運用情報を読み込めませんでした。再試行してください。</string>
+    <string name="train_query_next_routing">次の担当列車</string>
+    <string name="routing_disclaimer">運用情報は参考情報です</string>
 </resources>

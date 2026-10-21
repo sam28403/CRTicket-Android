@@ -506,4 +506,12 @@
     <string name="search_error">تعذر تحميل نتائج القطارات والمحطات. اضغط لإعادة المحاولة</string>
     <string name="visits_empty">لا توجد محطات تمت زيارتها بعد</string>
     <string name="visits_description">وقت الزيارة الأولى لكل محطة</string>
+    <string name="routing_query_description">عرض جميع قطارات دورة القطار</string>
+    <string name="routing_query_hint">رقم القطار</string>
+    <string name="routing_query_invalid">أدخل رقم قطار صالحًا</string>
+    <string name="routing_query_welcome">أدخل رقم القطار لعرض دورته كاملة</string>
+    <string name="routing_query_empty">لم يتم العثور على دورة لهذا القطار</string>
+    <string name="routing_query_error">تعذر تحميل بيانات الدورة. أعد المحاولة.</string>
+    <string name="train_query_next_routing">القطار التالي في الدورة</string>
+    <string name="routing_disclaimer">بيانات الدورة للمرجع فقط</string>
 </resources>

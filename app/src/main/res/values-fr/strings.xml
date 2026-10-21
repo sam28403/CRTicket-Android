@@ -506,4 +506,12 @@
     <string name="search_error">Impossible de charger les résultats ferroviaires. Appuyez pour réessayer</string>
     <string name="visits_empty">Aucune gare visitée</string>
     <string name="visits_description">Première visite de chaque gare</string>
+    <string name="routing_query_description">Rechercher tous les trains du roulement</string>
+    <string name="routing_query_hint">Numéro du train</string>
+    <string name="routing_query_invalid">Saisissez un numéro de train valide</string>
+    <string name="routing_query_welcome">Saisissez un train pour voir son roulement complet</string>
+    <string name="routing_query_empty">Aucun roulement trouvé pour ce train</string>
+    <string name="routing_query_error">Chargement du roulement impossible. Réessayez.</string>
+    <string name="train_query_next_routing">Prochain train du roulement</string>
+    <string name="routing_disclaimer">Les données de roulement sont indicatives</string>
 </resources>

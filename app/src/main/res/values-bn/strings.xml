@@ -506,4 +506,12 @@
     <string name="search_error">ট্রেন ও স্টেশনের ফলাফল লোড হয়নি। আবার চেষ্টা করতে ট্যাপ করুন</string>
     <string name="visits_empty">এখনও কোনো স্টেশন পরিদর্শন করা হয়নি</string>
     <string name="visits_description">প্রতিটি স্টেশনে প্রথম পরিদর্শনের সময়</string>
+    <string name="routing_query_description">ট্রেনের চক্রের সব ট্রেন খুঁজুন</string>
+    <string name="routing_query_hint">ট্রেন নম্বর</string>
+    <string name="routing_query_invalid">সঠিক ট্রেন নম্বর লিখুন</string>
+    <string name="routing_query_welcome">সম্পূর্ণ চক্র দেখতে ট্রেন নম্বর লিখুন</string>
+    <string name="routing_query_empty">এই ট্রেনের চক্র পাওয়া যায়নি</string>
+    <string name="routing_query_error">চক্রের তথ্য লোড হয়নি। আবার চেষ্টা করুন।</string>
+    <string name="train_query_next_routing">চক্রের পরবর্তী ট্রেন</string>
+    <string name="routing_disclaimer">চক্রের তথ্য কেবলতথ্যসূত্রের জন্য</string>
 </resources>

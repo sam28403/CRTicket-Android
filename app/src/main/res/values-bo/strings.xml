@@ -506,4 +506,12 @@
     <string name="search_error">མེ་འཁོར་དང་འབབ་ཚུགས་ཀྱི་གཞི་གྲངས་འགེལ་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱེད་པར་མནན།</string>
     <string name="visits_empty">ད་དུང་འབབ་ཚུགས་སུ་བསྐྱོད་པའི་ཟིན་ཐོ་མེད།</string>
     <string name="visits_description">འབབ་ཚུགས་རེར་ཐོག་མར་སླེབས་པའི་དུས་ཚོད།</string>
+    <string name="routing_query_description">མེ་འཁོར་འཁོར་སྐྱོད་ནང་གི་མེ་འཁོར་ཚང་མ་འཚོལ་བ།</string>
+    <string name="routing_query_hint">མེ་འཁོར་ཨང་།</string>
+    <string name="routing_query_invalid">མེ་འཁོར་ཨང་ཡང་དག་ཅིག་འཇུག་རོགས།</string>
+    <string name="routing_query_welcome">འཁོར་སྐྱོད་ཚང་མ་ལྟ་བར་མེ་འཁོར་ཨང་འཇུག་རོགས།</string>
+    <string name="routing_query_empty">མེ་འཁོར་འདིའི་འཁོར་སྐྱོད་རྙེད་མ་བྱུང་།</string>
+    <string name="routing_query_error">འཁོར་སྐྱོད་གཞི་གྲངས་འཇུག་མ་ཐུབ། ཡང་བསྐྱར་ཚོད་ལྟ་གནང་རོགས།</string>
+    <string name="train_query_next_routing">རྗེས་ཀྱི་མེ་འཁོར།</string>
+    <string name="routing_disclaimer">འཁོར་སྐྱོད་གཞི་གྲངས་ནི་ཟུར་ལྟའི་དོན་དུ་ཡིན།</string>
 </resources>

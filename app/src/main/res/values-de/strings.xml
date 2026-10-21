@@ -506,4 +506,12 @@
     <string name="search_error">Bahndaten konnten nicht geladen werden. Zum Wiederholen tippen</string>
     <string name="visits_empty">Noch keine Bahnhöfe besucht</string>
     <string name="visits_description">Erster Besuch an jedem Bahnhof</string>
+    <string name="routing_query_description">Alle Züge eines Umlaufs suchen</string>
+    <string name="routing_query_hint">Zugnummer</string>
+    <string name="routing_query_invalid">Gültige Zugnummer eingeben</string>
+    <string name="routing_query_welcome">Zugnummer eingeben, um den gesamten Umlauf zu sehen</string>
+    <string name="routing_query_empty">Kein Umlauf für diesen Zug gefunden</string>
+    <string name="routing_query_error">Umlaufdaten konnten nicht geladen werden. Erneut versuchen.</string>
+    <string name="train_query_next_routing">Nächster Zug im Umlauf</string>
+    <string name="routing_disclaimer">Umlaufdaten dienen nur als Referenz</string>
 </resources>

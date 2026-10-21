@@ -51,12 +51,12 @@ class NativeTrainQueryController(
         activity.runOnUiThread {
             if (!closed) {
                 // Form and tracking updates should preserve the map's zoom and selection.
-                val previousRoute = state.optJSONObject("route")
+                val location = data.optString("location")
+                val previousRoute = snapshots[location]?.optJSONObject("route")
                 if (previousRoute != null && previousRoute.toString() == data.optJSONObject("route")?.toString()) {
                     data.put("route", previousRoute)
                 }
                 state = data
-                val location = data.optString("location")
                 if (location.isNotEmpty()) {
                     snapshots[location] = data
                     if (snapshots.size > 16) {

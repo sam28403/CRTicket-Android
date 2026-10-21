@@ -506,4 +506,12 @@
     <string name="search_error">Không tải được kết quả tàu và ga. Nhấn để thử lại</string>
     <string name="visits_empty">Chưa có ga đã ghé thăm</string>
     <string name="visits_description">Ghi lại lần đầu đến mỗi ga</string>
+    <string name="routing_query_description">Tìm tất cả chuyến tàu trong vòng quay</string>
+    <string name="routing_query_hint">Số hiệu tàu</string>
+    <string name="routing_query_invalid">Nhập số hiệu tàu hợp lệ</string>
+    <string name="routing_query_welcome">Nhập số hiệu tàu để xem toàn bộ vòng quay</string>
+    <string name="routing_query_empty">Không tìm thấy vòng quay của tàu này</string>
+    <string name="routing_query_error">Không tải được vòng quay. Vui lòng thử lại.</string>
+    <string name="train_query_next_routing">Chuyến tàu tiếp theo trong vòng quay</string>
+    <string name="routing_disclaimer">Dữ liệu vòng quay chỉ mang tính tham khảo</string>
 </resources>

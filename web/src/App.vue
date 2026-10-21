@@ -5,9 +5,11 @@ import { native } from '@/android/platform.js'
 import { ref } from 'vue'
 import { useVisitedStationCards } from '@/android/visitedStationCards.js'
 import { useVehicleTrainCards } from '@/android/vehicleTrainCards.js'
+import { useRoutingQuery } from '@/android/routingQuery.js'
 
 useVisitedStationCards()
 useVehicleTrainCards()
+useRoutingQuery()
 
 const noticeVisible = ref(!native &&
   localStorage.getItem('crticket-important-notice-hidden') !== '1' &&

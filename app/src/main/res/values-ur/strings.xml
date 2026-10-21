@@ -506,4 +506,12 @@
     <string name="search_error">ٹرین اور اسٹیشن کے نتائج لوڈ نہیں ہو سکے۔ دوبارہ کوشش کے لیے دبائیں</string>
     <string name="visits_empty">ابھی تک کسی اسٹیشن کا دورہ نہیں کیا</string>
     <string name="visits_description">ہر اسٹیشن کے پہلے دورے کا وقت</string>
+    <string name="routing_query_description">گردش میں شامل تمام ٹرینیں تلاش کریں</string>
+    <string name="routing_query_hint">ٹرین نمبر</string>
+    <string name="routing_query_invalid">درست ٹرین نمبر درج کریں</string>
+    <string name="routing_query_welcome">مکمل گردش دیکھنے کے لیے ٹرین نمبر درج کریں</string>
+    <string name="routing_query_empty">اس ٹرین کی گردش نہیں ملی</string>
+    <string name="routing_query_error">گردش کی معلومات لوڈ نہیں ہو سکیں۔ دوبارہ کوشش کریں۔</string>
+    <string name="train_query_next_routing">گردش میں اگلی ٹرین</string>
+    <string name="routing_disclaimer">گردش کی معلومات صرف حوالہ کے لیے ہیں</string>
 </resources>

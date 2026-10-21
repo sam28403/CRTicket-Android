@@ -506,4 +506,12 @@
     <string name="search_error">Demiryolu sonuçları yüklenemedi. Yeniden denemek için dokunun</string>
     <string name="visits_empty">Henüz ziyaret edilen istasyon yok</string>
     <string name="visits_description">Her istasyonun ilk ziyaret zamanı</string>
+    <string name="routing_query_description">Bir dolaşımdaki tüm trenleri ara</string>
+    <string name="routing_query_hint">Tren numarası</string>
+    <string name="routing_query_invalid">Geçerli bir tren numarası girin</string>
+    <string name="routing_query_welcome">Tüm dolaşımı görmek için tren numarası girin</string>
+    <string name="routing_query_empty">Bu tren için dolaşım bulunamadı</string>
+    <string name="routing_query_error">Dolaşım yüklenemedi. Tekrar deneyin.</string>
+    <string name="train_query_next_routing">Dolaşımdaki sonraki tren</string>
+    <string name="routing_disclaimer">Dolaşım verileri yalnızca referans içindir</string>
 </resources>

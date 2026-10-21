@@ -48,6 +48,9 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/railfan/routing" -> cc.samlab.ticket.ui.railfan.RoutingQueryScreen(
+                trainList.routing, dark, pureBlack, embedded, active, onBack, onNavigate,
+            )
             "/railfan/vehicle" -> cc.samlab.ticket.ui.railfan.VehicleQueryScreen(
                 trainList, dark, pureBlack, embedded, active, onBack, onNavigate,
                 initialTrain = android.net.Uri.parse(location).getQueryParameter("train").orEmpty(),

@@ -506,4 +506,12 @@
     <string name="search_error">Gagal memuat hasil kereta dan stasiun. Ketuk untuk mencoba lagi</string>
     <string name="visits_empty">Belum ada stasiun yang dikunjungi</string>
     <string name="visits_description">Kunjungan pertama ke setiap stasiun</string>
+    <string name="routing_query_description">Cari semua kereta dalam peredaran rangkaian</string>
+    <string name="routing_query_hint">Nomor kereta</string>
+    <string name="routing_query_invalid">Masukkan nomor kereta yang valid</string>
+    <string name="routing_query_welcome">Masukkan nomor kereta untuk melihat peredaran lengkap</string>
+    <string name="routing_query_empty">Peredaran kereta ini tidak ditemukan</string>
+    <string name="routing_query_error">Gagal memuat peredaran. Coba lagi.</string>
+    <string name="train_query_next_routing">Kereta berikutnya dalam peredaran</string>
+    <string name="routing_disclaimer">Data peredaran hanya untuk referensi</string>
 </resources>

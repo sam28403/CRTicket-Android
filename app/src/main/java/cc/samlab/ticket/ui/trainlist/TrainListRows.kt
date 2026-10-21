@@ -18,7 +18,9 @@ internal fun parseTrainListRows(context: Context, data: JSONArray): List<TrainLi
             null
         }
         TrainListRow(
-            row.optString("train"), row.optString("from"), row.optString("to"),
+            row.optString("train"),
+            row.optString("from").ifBlank { unavailable },
+            row.optString("to").ifBlank { unavailable },
             duration.takeIf { it.isNotBlank() && it != "null" } ?: unavailable,
             if (row.isNull("stationCount")) unavailable else row.optString("stationCount"),
             if (distance == null) unavailable else row.optString("mileage"),
