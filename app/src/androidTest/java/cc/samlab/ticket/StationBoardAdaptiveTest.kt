@@ -108,7 +108,7 @@ class StationBoardAdaptiveTest {
         }
         compose.onNodeWithTag("station-query").assertIsDisplayed()
         compose.onNodeWithTag("station-submit").assertIsDisplayed()
-        compose.onNodeWithText("定位到当前时间").assertIsDisplayed()
+        compose.onNodeWithText("定位到当前时间").assertDoesNotExist()
         compose.onNodeWithText("跟随当前时间").assertIsDisplayed()
         fixture.capture("station-compact-$name")
         fixture.instrumentation.sendStatus(2, Bundle().apply {

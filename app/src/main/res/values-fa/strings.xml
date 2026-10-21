@@ -482,8 +482,8 @@
     <string name="settings_language">زبان</string>
     <string name="language_system">پیش‌فرض سیستم</string>
     <string name="language_native_name">فارسی</string>
-    <string name="station_busy_expand">نمایش رتبه‌های ۴ تا ۱۰</string>
-    <string name="station_busy_collapse">پنهان کردن رتبه‌های ۴ تا ۱۰</string>
+    <string name="station_busy_expand">باز کردن</string>
+    <string name="station_busy_collapse">جمع کردن</string>
     <string name="train_list_sort_duration">مدت سفر</string>
     <string name="settings_import_settings_confirmation">نمایه و تنظیمات از این نسخه پشتیبان بازیابی می‌شوند. کارهای در حال اجرا از سر گرفته نمی‌شوند.</string>
 </resources>

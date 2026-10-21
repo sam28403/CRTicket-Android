@@ -482,8 +482,8 @@
     <string name="settings_language">تىل</string>
     <string name="language_system">سىستېما تىلى</string>
     <string name="language_native_name">ئۇيغۇرچە</string>
-    <string name="station_busy_expand">4–10-ئورۇننى كۆرسىتىش</string>
-    <string name="station_busy_collapse">4–10-ئورۇننى يوشۇرۇش</string>
+    <string name="station_busy_expand">كېڭەيتىش</string>
+    <string name="station_busy_collapse">يىغىش</string>
     <string name="train_list_sort_duration">سەپەر ۋاقتى</string>
     <string name="settings_import_settings_confirmation">بۇ زاپاستىن شەخسىي ئۇچۇر ۋە تەڭشەكلەر ئەسلىگە كەلتۈرۈلىدۇ. ئىجرا بولۇۋاتقان ۋەزىپىلەر قايتا باشلانمايدۇ.</string>
 </resources>

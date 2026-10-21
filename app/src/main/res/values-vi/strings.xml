@@ -482,8 +482,8 @@
     <string name="settings_language">Ngôn ngữ</string>
     <string name="language_system">Mặc định hệ thống</string>
     <string name="language_native_name">Tiếng Việt</string>
-    <string name="station_busy_expand">Hiện hạng 4–10</string>
-    <string name="station_busy_collapse">Ẩn hạng 4–10</string>
+    <string name="station_busy_expand">Mở rộng</string>
+    <string name="station_busy_collapse">Thu gọn</string>
     <string name="train_list_sort_duration">Thời gian hành trình</string>
     <string name="settings_import_settings_confirmation">Hồ sơ và cài đặt sẽ được khôi phục từ bản sao lưu này. Các tác vụ đang chạy sẽ không được tiếp tục.</string>
 </resources>

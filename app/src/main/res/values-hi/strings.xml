@@ -482,8 +482,8 @@
     <string name="settings_language">भाषा</string>
     <string name="language_system">सिस्टम की भाषा</string>
     <string name="language_native_name">हिन्दी</string>
-    <string name="station_busy_expand">स्थान 4–10 दिखाएँ</string>
-    <string name="station_busy_collapse">स्थान 4–10 छिपाएँ</string>
+    <string name="station_busy_expand">विस्तार करें</string>
+    <string name="station_busy_collapse">समेटें</string>
     <string name="train_list_sort_duration">यात्रा की अवधि</string>
     <string name="settings_import_settings_confirmation">इस बैकअप से प्रोफ़ाइल और सेटिंग्स बहाल होंगी। चल रहे कार्य दोबारा शुरू नहीं होंगे।</string>
 </resources>

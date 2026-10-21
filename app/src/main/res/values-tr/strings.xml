@@ -482,8 +482,8 @@
     <string name="settings_language">Dil</string>
     <string name="language_system">Sistem varsayılanı</string>
     <string name="language_native_name">Türkçe</string>
-    <string name="station_busy_expand">4–10. sıraları göster</string>
-    <string name="station_busy_collapse">4–10. sıraları gizle</string>
+    <string name="station_busy_expand">Genişlet</string>
+    <string name="station_busy_collapse">Daralt</string>
     <string name="train_list_sort_duration">Yolculuk süresi</string>
     <string name="settings_import_settings_confirmation">Profil ve ayarlar bu yedekten geri yüklenecek. Çalışan görevler sürdürülmeyecek.</string>
 </resources>

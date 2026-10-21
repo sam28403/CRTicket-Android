@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.ui.home.homeColorScheme
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -35,7 +34,6 @@ internal fun ExpressiveStationBoardScreen(
             if (interaction is DragInteraction.Start) controller.follow = false
         }
     }
-    val scope = rememberCoroutineScope()
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
         Surface(Modifier.fillMaxSize().testTag("station-screen"), color = colors.surfaceContainer) {
@@ -56,13 +54,6 @@ internal fun ExpressiveStationBoardScreen(
                             total = if (tab == StationTab.MAP) {
                                 controller.tabs[StationTab.ALL].orEmpty().size
                             } else rows.size,
-                            onLocate = {
-                                val alreadyFollowing = controller.follow
-                                controller.follow = true
-                                if (alreadyFollowing && rows.isNotEmpty()) {
-                                    scope.launch { list.animateToCurrentTrain(index) }
-                                }
-                            },
                         )
                     }
                 }

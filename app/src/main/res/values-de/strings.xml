@@ -482,8 +482,8 @@
     <string name="settings_language">Sprache</string>
     <string name="language_system">Systemstandard</string>
     <string name="language_native_name">Deutsch</string>
-    <string name="station_busy_expand">Plätze 4–10 anzeigen</string>
-    <string name="station_busy_collapse">Plätze 4–10 ausblenden</string>
+    <string name="station_busy_expand">Aufklappen</string>
+    <string name="station_busy_collapse">Zuklappen</string>
     <string name="train_list_sort_duration">Fahrtdauer</string>
     <string name="settings_import_settings_confirmation">Profil und Einstellungen werden aus dieser Sicherung wiederhergestellt. Laufende Aufgaben werden nicht fortgesetzt.</string>
 </resources>

@@ -482,8 +482,8 @@
     <string name="settings_language">Langue</string>
     <string name="language_system">Langue du système</string>
     <string name="language_native_name">Français</string>
-    <string name="station_busy_expand">Afficher les rangs 4–10</string>
-    <string name="station_busy_collapse">Masquer les rangs 4–10</string>
+    <string name="station_busy_expand">Développer</string>
+    <string name="station_busy_collapse">Réduire</string>
     <string name="train_list_sort_duration">Durée du trajet</string>
     <string name="settings_import_settings_confirmation">Le profil et les paramètres seront restaurés depuis cette sauvegarde. Les tâches en cours ne reprendront pas.</string>
 </resources>

@@ -50,12 +50,15 @@ class ExpressiveStationBoardTest {
         compose.onNodeWithTag("station-tab-all").assertDoesNotExist()
         compose.onNodeWithTag("station-query").performTextInput("beijingnan")
         compose.waitUntil(10_000) { compose.onAllNodesWithText("北京南").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("北京南", useUnmergedTree = true).performClick()
+        compose.onNode(
+            hasText("北京南") and hasAnyAncestor(isPopup()),
+            useUnmergedTree = true,
+        ).performClick()
         compose.onNodeWithTag("station-submit").performClick()
         compose.waitUntil(120_000) {
             compose.onAllNodesWithTag("station-tab-all").fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onNodeWithText("定位到当前时间").assertIsDisplayed()
+        compose.onNodeWithText("定位到当前时间").assertDoesNotExist()
         compose.onNodeWithText("跟随当前时间").assertIsDisplayed()
         compose.onNodeWithText("绿色：即将到发").assertDoesNotExist()
         assertEquals("true", evaluate("document.querySelector('.station-page') === null"))
@@ -64,7 +67,7 @@ class ExpressiveStationBoardTest {
         compose.onNodeWithText("终到站").assertDoesNotExist()
         compose.onNodeWithTag("station-board").performTouchInput { swipeUp() }
         compose.onNodeWithTag("station-follow").assertIsOff()
-        compose.onNodeWithText("定位到当前时间").performClick()
+        compose.onNodeWithTag("station-follow").performClick()
         compose.onNodeWithTag("station-follow").assertIsOn()
         compose.onNodeWithTag("station-tab-departure").performClick()
         compose.onNodeWithText("始发站").assertDoesNotExist()

@@ -482,8 +482,8 @@
     <string name="settings_language">Bahasa</string>
     <string name="language_system">Default sistem</string>
     <string name="language_native_name">Bahasa Indonesia</string>
-    <string name="station_busy_expand">Tampilkan peringkat 4–10</string>
-    <string name="station_busy_collapse">Sembunyikan peringkat 4–10</string>
+    <string name="station_busy_expand">Perluas</string>
+    <string name="station_busy_collapse">Ciutkan</string>
     <string name="train_list_sort_duration">Durasi perjalanan</string>
     <string name="settings_import_settings_confirmation">Profil dan pengaturan akan dipulihkan dari cadangan ini. Tugas yang berjalan tidak akan dilanjutkan.</string>
 </resources>

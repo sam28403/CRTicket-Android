@@ -482,8 +482,8 @@
     <string name="settings_language">Lingua</string>
     <string name="language_system">Predefinita di sistema</string>
     <string name="language_native_name">Italiano</string>
-    <string name="station_busy_expand">Mostra posizioni 4–10</string>
-    <string name="station_busy_collapse">Nascondi posizioni 4–10</string>
+    <string name="station_busy_expand">Espandi</string>
+    <string name="station_busy_collapse">Comprimi</string>
     <string name="train_list_sort_duration">Durata del viaggio</string>
     <string name="settings_import_settings_confirmation">Profilo e impostazioni verranno ripristinati da questo backup. Le attività in corso non verranno riprese.</string>
 </resources>

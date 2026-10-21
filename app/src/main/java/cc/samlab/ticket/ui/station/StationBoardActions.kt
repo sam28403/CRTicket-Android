@@ -16,7 +16,6 @@ internal fun StationBoardActions(
     total: Int,
     follow: Boolean,
     onFollow: (Boolean) -> Unit,
-    onLocate: () -> Unit,
     map: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -30,10 +29,6 @@ internal fun StationBoardActions(
     ) {
         Text(textResources(R.string.train_list_total, total), style = MaterialTheme.typography.labelLarge)
         if (!map) {
-            TextButton(
-                onClick = onLocate,
-                contentPadding = PaddingValues(horizontal = 8.dp),
-            ) { Text(textResources(R.string.station_board_locate_now), style = MaterialTheme.typography.labelMedium) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(textResources(R.string.station_board_follow_now), style = MaterialTheme.typography.labelMedium)
                 AppSwitch(

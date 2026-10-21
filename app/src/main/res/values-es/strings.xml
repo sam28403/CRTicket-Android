@@ -482,8 +482,8 @@
     <string name="settings_language">Idioma</string>
     <string name="language_system">Predeterminado del sistema</string>
     <string name="language_native_name">Español</string>
-    <string name="station_busy_expand">Mostrar puestos 4–10</string>
-    <string name="station_busy_collapse">Ocultar puestos 4–10</string>
+    <string name="station_busy_expand">Expandir</string>
+    <string name="station_busy_collapse">Contraer</string>
     <string name="train_list_sort_duration">Duración del viaje</string>
     <string name="settings_import_settings_confirmation">Se restaurarán el perfil y los ajustes de esta copia. No se reanudarán las tareas en curso.</string>
 </resources>

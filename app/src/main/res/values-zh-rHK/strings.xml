@@ -415,8 +415,8 @@
     <string name="station_board_follow_now">跟隨目前時間</string>
     <string name="action_query">查詢</string>
     <string name="station_discovery_busy">繁忙車站</string>
-    <string name="station_busy_expand">展開第 4～10 名</string>
-    <string name="station_busy_collapse">收起第 4～10 名</string>
+    <string name="station_busy_expand">展開</string>
+    <string name="station_busy_collapse">收折</string>
     <string name="discovery_today">今日隨機推薦</string>
     <string name="station_discovery_error">車站推薦暫時無法載入，點按重試</string>
     <string name="station_discovery_empty">今日暫無可展示車站</string>

@@ -1,10 +1,16 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useElementSize } from '@vueuse/core'
+import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 
 const props = defineProps({ discovery: { type: Object, required: true } })
 const busyExpanded = ref(false)
+const container = ref(null)
+const { width } = useElementSize(container)
+const columns = computed(() => Math.max(1, Math.floor((width.value + 12) / 292)))
+const collapsedCount = computed(() => columns.value === 1 ? 3 : columns.value * 2)
 function visibleRows(key) {
-  const limit = key === 'busy' && !busyExpanded.value ? 3 : 10
+  const limit = key === 'busy' && !busyExpanded.value ? collapsedCount.value : 10
   return props.discovery[key].value.slice(0, limit)
 }
 function prepareCardLeave(element) {
@@ -21,7 +27,7 @@ const sections = [
 </script>
 
 <template>
-  <section class="discovery">
+  <section ref="container" class="discovery" :style="{ '--columns': columns }">
     <Transition name="history-collapse">
       <div v-if="discovery.history.value.length" class="history-wrapper">
         <div class="history" aria-label="历史查询">
@@ -68,11 +74,14 @@ const sections = [
         </button>
       </TransitionGroup>
       <el-button
-        v-if="section.key === 'busy' && discovery.busy.value.length > 3 &&
+        v-if="section.key === 'busy' && discovery.busy.value.length > collapsedCount &&
           !discovery.loading.value && !discovery.error.value"
         class="busy-toggle" text :aria-expanded="busyExpanded"
         @click="busyExpanded = !busyExpanded"
-      >{{ busyExpanded ? '收起第 4～10 名' : '展开第 4～10 名' }}</el-button>
+      >
+        <el-icon><ArrowUp v-if="busyExpanded" /><ArrowDown v-else /></el-icon>
+        <span>{{ busyExpanded ? '收折' : '展开' }}</span>
+      </el-button>
     </section>
   </section>
 </template>
@@ -90,7 +99,9 @@ const sections = [
 h2 { margin: 24px 0 16px; font-size: 20px; }
 .recommendations {
   position: relative;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 12px;
 }
 .station-reveal-move { transition: transform 300ms ease; }
 .station-reveal-enter-active { transition: opacity 220ms ease, transform 300ms ease; }
@@ -129,6 +140,7 @@ h2 { margin: 24px 0 16px; font-size: 20px; }
   background: color-mix(in srgb, #4caf50 22%, var(--el-bg-color));
 }
 .busy-toggle { width: 100%; margin-top: 8px; }
+.busy-toggle .el-icon { margin-right: 4px; }
 .counts { margin: 16px 0 10px; }
 small { color: var(--el-text-color-secondary); }
 </style>

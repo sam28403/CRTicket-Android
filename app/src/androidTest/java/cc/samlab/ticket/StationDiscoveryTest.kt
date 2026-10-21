@@ -56,7 +56,12 @@ class StationDiscoveryTest {
             compose.onNodeWithTag("station-query-history").assertIsDisplayed()
             compose.onAllNodesWithText("已接发：100 / 100，在站过路车：1").onFirst().assertIsDisplayed()
             compose.onAllNodesWithText("广铁").onFirst().assertIsDisplayed()
-            compose.onNodeWithTag("station-busy-card:4").assertDoesNotExist()
+            val density = fixture.activity.resources.displayMetrics.density
+            val width = compose.onNodeWithTag("station-discovery")
+                .fetchSemanticsNode().boundsInRoot.width / density
+            val columns = ((width - 32 + 8) / 328).toInt().coerceAtLeast(1)
+            val collapsedCount = if (columns == 1) 3 else columns * 2
+            compose.onNodeWithTag("station-busy-card:${collapsedCount + 1}").assertDoesNotExist()
             val before = compose.onNodeWithTag("station-busy-title").fetchSemanticsNode().boundsInWindow.top
             compose.onNodeWithTag("station-clear-history").performClick()
             compose.waitUntil(5_000) {
@@ -69,6 +74,7 @@ class StationDiscoveryTest {
             fixture.capture("station-discovery-busy")
             compose.onNodeWithTag("station-discovery")
                 .performScrollToNode(hasTestTag("station-busy-toggle"))
+            compose.onNodeWithText("展开").assertIsDisplayed()
             compose.onNodeWithTag("station-busy-toggle").performClick()
             compose.onNodeWithTag("station-discovery")
                 .performScrollToNode(hasTestTag("station-busy-card:10"))
@@ -76,8 +82,9 @@ class StationDiscoveryTest {
             fixture.capture("station-discovery-expanded")
             compose.onNodeWithTag("station-discovery")
                 .performScrollToNode(hasTestTag("station-busy-toggle"))
+            compose.onNodeWithText("收折").assertIsDisplayed()
             compose.onNodeWithTag("station-busy-toggle").performClick()
-            compose.onNodeWithTag("station-busy-card:4").assertDoesNotExist()
+            compose.onNodeWithTag("station-busy-card:${collapsedCount + 1}").assertDoesNotExist()
             compose.onNodeWithTag("station-discovery")
                 .performScrollToNode(hasTestTag("station-recommendations-title"))
             compose.onNodeWithText("今日随机推荐").assertIsDisplayed()

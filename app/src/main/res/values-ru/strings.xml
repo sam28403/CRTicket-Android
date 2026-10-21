@@ -482,8 +482,8 @@
     <string name="settings_language">Язык</string>
     <string name="language_system">Как в системе</string>
     <string name="language_native_name">Русский</string>
-    <string name="station_busy_expand">Показать места 4–10</string>
-    <string name="station_busy_collapse">Скрыть места 4–10</string>
+    <string name="station_busy_expand">Развернуть</string>
+    <string name="station_busy_collapse">Свернуть</string>
     <string name="train_list_sort_duration">Время в пути</string>
     <string name="settings_import_settings_confirmation">Профиль и настройки будут восстановлены из этой копии. Текущие задачи не будут возобновлены.</string>
 </resources>

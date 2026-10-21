@@ -15,7 +15,6 @@ const { station, clock, loading, result, error, query } = board
 const nativeBoard = useNativeStationBoard(board)
 const activeTab = ref('all')
 const follow = ref(true)
-const table = ref(null)
 // 时间更新不重新遍历和排序车次；仅查询结果和标签变化时重算。
 const rows = computed(() => activeTab.value === 'map'
   ? []
@@ -30,11 +29,6 @@ const warningSummary = computed(() => {
     ? '12306 未取得数据，当前为离线参考；请以车站公告为准。'
     : result.value.warnings.join(' ')
 })
-
-function locateCurrent() {
-  follow.value = true
-  table.value?.locateCurrent()
-}
 
 function queryOnEnter(event) {
   if (event.isComposing || event.keyCode === 229) return
@@ -101,7 +95,6 @@ function queryOnEnter(event) {
             </div>
             <div class="board-actions">
               <el-switch v-model="follow" active-text="跟随当前时间" />
-              <el-button @click="locateCurrent">定位当前时间</el-button>
             </div>
           </div>
           <div v-if="activeTab !== 'map'" class="result-summary">
@@ -148,7 +141,6 @@ function queryOnEnter(event) {
           </el-empty>
           <StationBoardTable
             v-else
-            ref="table"
             :rows="rows"
             :tab="activeTab"
             :current-seconds="clock.seconds"

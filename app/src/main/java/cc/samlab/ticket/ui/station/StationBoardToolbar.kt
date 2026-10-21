@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 internal fun StationBoardToolbar(
     controller: StationBoardState,
     total: Int,
-    onLocate: () -> Unit,
 ) {
     val tab = controller.selectedTab
     val actions: @Composable (Modifier) -> Unit = { modifier ->
@@ -18,7 +17,6 @@ internal fun StationBoardToolbar(
             total = total,
             follow = controller.follow,
             onFollow = { controller.follow = it },
-            onLocate = onLocate,
             map = tab == StationTab.MAP,
             modifier = modifier,
         )
