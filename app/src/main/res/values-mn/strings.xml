@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Хураах</string>
     <string name="train_list_sort_duration">Аяллын хугацаа</string>
     <string name="settings_import_settings_confirmation">Энэ нөөцөөс хувийн мэдээлэл болон тохиргоог сэргээнэ. Ажиллаж буй ажлуудыг үргэлжлүүлэхгүй.</string>
+    <string name="settings_advanced">Нарийвчилсан</string>
+    <string name="railfan_tools">Төмөр зам сонирхогчийн хэрэгслүүд</string>
+    <string name="railfan_tools_description">Нүүр хуудсанд төмөр зам сонирхогчийн хэрэгслүүдийг харуулах</string>
+    <string name="railfan_vehicle">Хөдлөх бүрэлдэхүүн хайх</string>
+    <string name="railfan_routing">Галт тэрэгний эргэлт хайх</string>
+    <string name="railfan_visits">Зочилсон өртөөний статистик</string>
+    <string name="railfan_speedometer">Хурд хэмжигч</string>
+    <string name="railfan_placeholder">Тун удахгүй</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Галт тэрэг</string>
+    <string name="search_stations">Өртөө</string>
+    <string name="search_expand">Бүгдийг дэлгэх</string>
+    <string name="search_collapse">Хураах</string>
+    <string name="search_empty">Галт тэрэг, өртөө болон тохиргоо хайх</string>
+    <string name="search_empty_hint">Галт тэрэгний дугаар, өртөө эсвэл тохиргоо оруулна уу</string>
+    <string name="search_no_results">Илэрц алга</string>
+    <string name="search_no_results_hint">Өөр түлхүүр үг ашиглана уу</string>
+    <string name="search_error">Галт тэрэг болон өртөөний илэрцийг ачаалж чадсангүй. Дахин оролдохын тулд товшино уу</string>
+    <string name="visits_empty">Одоогоор очсон өртөө алга</string>
+    <string name="visits_description">Өртөө бүрд анх очсон цаг</string>
 </resources>

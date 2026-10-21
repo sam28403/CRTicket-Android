@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Daralt</string>
     <string name="train_list_sort_duration">Yolculuk süresi</string>
     <string name="settings_import_settings_confirmation">Profil ve ayarlar bu yedekten geri yüklenecek. Çalışan görevler sürdürülmeyecek.</string>
+    <string name="settings_advanced">Gelişmiş</string>
+    <string name="railfan_tools">Demiryolu meraklısı araçları</string>
+    <string name="railfan_tools_description">Ana ekranda demiryolu meraklısı araçlarını göster</string>
+    <string name="railfan_vehicle">Araç sorgulama</string>
+    <string name="railfan_routing">Tren dolaşım sorgulama</string>
+    <string name="railfan_visits">Ziyaret edilen istasyon istatistikleri</string>
+    <string name="railfan_speedometer">Hız göstergesi</string>
+    <string name="railfan_placeholder">Yakında</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Trenler</string>
+    <string name="search_stations">İstasyonlar</string>
+    <string name="search_expand">Tümünü göster</string>
+    <string name="search_collapse">Daralt</string>
+    <string name="search_empty">Tren, istasyon ve ayar ara</string>
+    <string name="search_empty_hint">Tren numarası, istasyon veya ayar girin</string>
+    <string name="search_no_results">Sonuç yok</string>
+    <string name="search_no_results_hint">Başka bir anahtar kelime deneyin</string>
+    <string name="search_error">Demiryolu sonuçları yüklenemedi. Yeniden denemek için dokunun</string>
+    <string name="visits_empty">Henüz ziyaret edilen istasyon yok</string>
+    <string name="visits_description">Her istasyonun ilk ziyaret zamanı</string>
 </resources>

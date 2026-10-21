@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Runtuhkan</string>
     <string name="train_list_sort_duration">Tempoh perjalanan</string>
     <string name="settings_import_settings_confirmation">Profil dan tetapan akan dipulihkan daripada sandaran ini. Tugas yang sedang berjalan tidak akan disambung.</string>
+    <string name="settings_advanced">Lanjutan</string>
+    <string name="railfan_tools">Alat peminat kereta api</string>
+    <string name="railfan_tools_description">Paparkan alat peminat kereta api di halaman utama</string>
+    <string name="railfan_vehicle">Carian kenderaan</string>
+    <string name="railfan_routing">Carian pusingan tren</string>
+    <string name="railfan_visits">Statistik stesen yang dilawati</string>
+    <string name="railfan_speedometer">Meter kelajuan</string>
+    <string name="railfan_placeholder">Akan datang</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Kereta api</string>
+    <string name="search_stations">Stesen</string>
+    <string name="search_expand">Kembangkan semua</string>
+    <string name="search_collapse">Runtuhkan</string>
+    <string name="search_empty">Cari kereta api, stesen dan tetapan</string>
+    <string name="search_empty_hint">Masukkan nombor kereta api, stesen atau tetapan</string>
+    <string name="search_no_results">Tiada hasil</string>
+    <string name="search_no_results_hint">Cuba kata kunci lain</string>
+    <string name="search_error">Gagal memuatkan hasil kereta api dan stesen. Ketik untuk cuba lagi</string>
+    <string name="visits_empty">Belum ada stesen dilawati</string>
+    <string name="visits_description">Lawatan pertama ke setiap stesen</string>
 </resources>

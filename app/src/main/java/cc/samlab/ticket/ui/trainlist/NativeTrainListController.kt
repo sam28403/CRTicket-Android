@@ -10,6 +10,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.ExecutorService
 import org.json.JSONObject
+import org.json.JSONArray
+import cc.samlab.ticket.ui.railfan.VehicleHistory
 
 class NativeTrainListController(
     private val activity: ComponentActivity,
@@ -34,6 +36,9 @@ class NativeTrainListController(
     var revision by mutableStateOf(0)
         private set
     private val generation = java.util.concurrent.atomic.AtomicInteger()
+    internal var vehicleRows by mutableStateOf<Map<String, TrainListRow>>(emptyMap())
+        private set
+    private var vehicleRequestId = 0
     @Volatile private var closed = false
 
     fun request(selected: String = date) {
@@ -48,6 +53,10 @@ class NativeTrainListController(
     // Called on the bridge thread. Parse and format the full snapshot off the UI thread.
     fun receive(payload: String) {
         if (payload.length > 16 * 1024 * 1024) return
+        if (payload.contains("\"vehicleCards\"")) {
+            receiveVehicleRows(payload)
+            return
+        }
         val token = generation.incrementAndGet()
         worker.execute {
             val value = runCatching { JSONObject(payload) }.getOrNull() ?: return@execute
@@ -76,6 +85,33 @@ class NativeTrainListController(
                         publishSortedRows()
                     }
                 }
+            }
+        }
+    }
+
+    internal fun requestVehicleRows(history: List<VehicleHistory>, keepExisting: Boolean = false) {
+        if (!keepExisting) vehicleRows = emptyMap()
+        val detail = JSONObject().put("requestId", ++vehicleRequestId).put(
+            "records", JSONArray().apply {
+                history.forEach { put(JSONObject().put("train", it.train).put("date", it.day)) }
+            },
+        )
+        webView.evaluateJavascript(
+            "window.dispatchEvent(new CustomEvent('crticket-vehicle-cards-request',{detail:$detail}))",
+            null,
+        )
+    }
+
+    private fun receiveVehicleRows(payload: String) {
+        worker.execute {
+            val value = runCatching { JSONObject(payload) }.getOrNull() ?: return@execute
+            val data = value.optJSONArray("rows") ?: return@execute
+            val parsed = parseTrainListRows(activity, data)
+            val result = parsed.mapIndexed { index, row ->
+                data.getJSONObject(index).getString("key") to row
+            }.toMap()
+            activity.runOnUiThread {
+                if (!closed && value.optInt("requestId") == vehicleRequestId) vehicleRows = result
             }
         }
     }

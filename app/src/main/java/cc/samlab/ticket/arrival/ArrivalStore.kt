@@ -20,6 +20,7 @@ class ArrivalStore(private val context: Context) {
 
     fun lastNotification(name: String): Long = preferences.getLong("notified:$name", 0)
     fun notified(name: String, now: Long) {
+        ArrivalHistory(context).record(name, now)
         preferences.edit().putLong("notified:$name", now).apply()
     }
 }

@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Réduire</string>
     <string name="train_list_sort_duration">Durée du trajet</string>
     <string name="settings_import_settings_confirmation">Le profil et les paramètres seront restaurés depuis cette sauvegarde. Les tâches en cours ne reprendront pas.</string>
+    <string name="settings_advanced">Avancé</string>
+    <string name="railfan_tools">Outils ferroviaires</string>
+    <string name="railfan_tools_description">Afficher les outils ferroviaires sur la page d’accueil</string>
+    <string name="railfan_vehicle">Recherche de véhicules</string>
+    <string name="railfan_routing">Recherche de roulements</string>
+    <string name="railfan_visits">Statistiques des gares visitées</string>
+    <string name="railfan_speedometer">Compteur de vitesse</string>
+    <string name="railfan_placeholder">Bientôt disponible</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Trains</string>
+    <string name="search_stations">Gares</string>
+    <string name="search_expand">Tout afficher</string>
+    <string name="search_collapse">Réduire</string>
+    <string name="search_empty">Rechercher des trains, gares et paramètres</string>
+    <string name="search_empty_hint">Saisissez un train, une gare ou un paramètre</string>
+    <string name="search_no_results">Aucun résultat</string>
+    <string name="search_no_results_hint">Essayez un autre mot-clé</string>
+    <string name="search_error">Impossible de charger les résultats ferroviaires. Appuyez pour réessayer</string>
+    <string name="visits_empty">Aucune gare visitée</string>
+    <string name="visits_description">Première visite de chaque gare</string>
 </resources>

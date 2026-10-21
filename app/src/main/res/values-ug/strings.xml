@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">يىغىش</string>
     <string name="train_list_sort_duration">سەپەر ۋاقتى</string>
     <string name="settings_import_settings_confirmation">بۇ زاپاستىن شەخسىي ئۇچۇر ۋە تەڭشەكلەر ئەسلىگە كەلتۈرۈلىدۇ. ئىجرا بولۇۋاتقان ۋەزىپىلەر قايتا باشلانمايدۇ.</string>
+    <string name="settings_advanced">ئالىي</string>
+    <string name="railfan_tools">پويىز ھەۋەسكارلىرى قوراللىرى</string>
+    <string name="railfan_tools_description">باش بەتتە پويىز ھەۋەسكارلىرى قوراللىرىنى كۆرسىتىش</string>
+    <string name="railfan_vehicle">ۋاگون ئىزدەش</string>
+    <string name="railfan_routing">پويىز ئايلىنىشىنى ئىزدەش</string>
+    <string name="railfan_visits">زىيارەت قىلىنغان بېكەتلەر ستاتىستىكىسى</string>
+    <string name="railfan_speedometer">سۈرئەت ئۆلچەش ئەسۋابى</string>
+    <string name="railfan_placeholder">پات ئارىدا</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">پويىزلار</string>
+    <string name="search_stations">ۋوگزاللار</string>
+    <string name="search_expand">ھەممىنى كۆرسىتىش</string>
+    <string name="search_collapse">يىغىش</string>
+    <string name="search_empty">پويىز، ۋوگزال ۋە تەڭشەكلەرنى ئىزدەش</string>
+    <string name="search_empty_hint">پويىز نومۇرى، ۋوگزال نامى ياكى تەڭشەك كىرگۈزۈڭ</string>
+    <string name="search_no_results">نەتىجە تېپىلمىدى</string>
+    <string name="search_no_results_hint">باشقا ئاچقۇچلۇق سۆزنى سىناڭ</string>
+    <string name="search_error">پويىز ۋە ۋوگزال نەتىجىلىرى يۈكلەنمىدى. قايتا سىناش ئۈچۈن چېكىڭ</string>
+    <string name="visits_empty">تېخى بېرىپ باققان بېكەت يوق</string>
+    <string name="visits_description">ھەر بىر بېكەتكە تۇنجى بارغان ۋاقىت</string>
 </resources>

@@ -19,9 +19,12 @@ import cc.samlab.ticket.ui.settings.NativeSettingsController
 import cc.samlab.ticket.ui.settings.SettingsDialogs
 import cc.samlab.ticket.ui.station.StationDiscoveryCard
 import cc.samlab.ticket.ui.trainlist.TrainListItem
+import cc.samlab.ticket.ui.trainlist.NativeTrainListController
 import cc.samlab.ticket.ui.trainlist.parseTrainListRows
 import kotlinx.coroutines.delay
 import org.json.JSONArray
+import cc.samlab.ticket.ui.railfan.RailfanPreferences
+import cc.samlab.ticket.ui.railfan.VehicleSearch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -33,6 +36,7 @@ internal fun ExpressiveSearchScreen(
     active: Boolean,
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
+    timetable: NativeTrainListController,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var trainsExpanded by rememberSaveable(query) { mutableStateOf(false) }
@@ -41,6 +45,13 @@ internal fun ExpressiveSearchScreen(
     val focus = remember { FocusRequester() }
     val context = LocalContext.current
     val result = controller.result
+    val railfan by RailfanPreferences.rememberEnabled()
+    var assignmentFailed by remember(query, railfan, active) { mutableStateOf(false) }
+    val trainsLoaded = !controller.loading && controller.completedQuery == query.trim()
+        && !result.optBoolean("error")
+    val assignment = if (railfan && !assignmentFailed && trainsLoaded) {
+        VehicleSearch.forTrain(query) ?: VehicleSearch.forVehicle(query)
+    } else null
     LaunchedEffect(query, active) {
         if (active) {
             // Invalidate the previous request before debouncing the next one.
@@ -103,6 +114,17 @@ internal fun ExpressiveSearchScreen(
                                 matches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
                                 SearchSettingsRow(row, settings)
                             }
+                            if (assignment != null) {
+                                item(key = "vehicle:${assignment.keyword}") {
+                                    SearchVehicleAssignment(
+                                        assignment,
+                                        active,
+                                        onNavigate,
+                                        onFailure = { assignmentFailed = true },
+                                        timetable = timetable,
+                                    )
+                                }
+                            }
                             if (controller.loading) {
                                 item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                             } else if (result.optBoolean("error")) {
@@ -111,7 +133,8 @@ internal fun ExpressiveSearchScreen(
                                         Text(stringResource(R.string.search_error))
                                     }
                                 }
-                            } else if (trains.isEmpty() && stations.isEmpty() && matches.isEmpty()) {
+                            } else if (trains.isEmpty() && stations.isEmpty() && matches.isEmpty()
+                                && assignment == null) {
                                 item {
                                     SearchEmptyState(R.string.search_no_results, R.string.search_no_results_hint,
                                         active, compactEmpty)

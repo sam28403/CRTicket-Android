@@ -107,6 +107,7 @@ internal fun SettingsPreferences(
             2, 3, true, controller.ui::openLanguage,
         )
     }
+    SettingsAdvanced()
     SettingsGroup(stringResource(R.string.settings_backup)) {
         SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,
             { controller.request("exportExcel") })

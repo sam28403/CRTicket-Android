@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Thu gọn</string>
     <string name="train_list_sort_duration">Thời gian hành trình</string>
     <string name="settings_import_settings_confirmation">Hồ sơ và cài đặt sẽ được khôi phục từ bản sao lưu này. Các tác vụ đang chạy sẽ không được tiếp tục.</string>
+    <string name="settings_advanced">Nâng cao</string>
+    <string name="railfan_tools">Công cụ cho người mê tàu</string>
+    <string name="railfan_tools_description">Hiển thị công cụ cho người mê tàu trên trang chủ</string>
+    <string name="railfan_vehicle">Tra cứu phương tiện</string>
+    <string name="railfan_routing">Tra cứu vòng quay đoàn tàu</string>
+    <string name="railfan_visits">Thống kê ga đã ghé thăm</string>
+    <string name="railfan_speedometer">Đồng hồ tốc độ</string>
+    <string name="railfan_placeholder">Sắp ra mắt</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Tàu</string>
+    <string name="search_stations">Ga</string>
+    <string name="search_expand">Mở rộng tất cả</string>
+    <string name="search_collapse">Thu gọn</string>
+    <string name="search_empty">Tìm tàu, ga và cài đặt</string>
+    <string name="search_empty_hint">Nhập số tàu, tên ga hoặc cài đặt</string>
+    <string name="search_no_results">Không có kết quả</string>
+    <string name="search_no_results_hint">Thử từ khóa khác</string>
+    <string name="search_error">Không tải được kết quả tàu và ga. Nhấn để thử lại</string>
+    <string name="visits_empty">Chưa có ga đã ghé thăm</string>
+    <string name="visits_description">Ghi lại lần đầu đến mỗi ga</string>
 </resources>

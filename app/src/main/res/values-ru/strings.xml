@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Свернуть</string>
     <string name="train_list_sort_duration">Время в пути</string>
     <string name="settings_import_settings_confirmation">Профиль и настройки будут восстановлены из этой копии. Текущие задачи не будут возобновлены.</string>
+    <string name="settings_advanced">Дополнительно</string>
+    <string name="railfan_tools">Инструменты любителя железных дорог</string>
+    <string name="railfan_tools_description">Показывать инструменты на главном экране</string>
+    <string name="railfan_vehicle">Поиск подвижного состава</string>
+    <string name="railfan_routing">Поиск оборотов составов</string>
+    <string name="railfan_visits">Статистика посещённых станций</string>
+    <string name="railfan_speedometer">Спидометр</string>
+    <string name="railfan_placeholder">Скоро</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Поезда</string>
+    <string name="search_stations">Станции</string>
+    <string name="search_expand">Показать всё</string>
+    <string name="search_collapse">Свернуть</string>
+    <string name="search_empty">Поиск поездов, станций и настроек</string>
+    <string name="search_empty_hint">Введите номер поезда, станцию или настройку</string>
+    <string name="search_no_results">Ничего не найдено</string>
+    <string name="search_no_results_hint">Попробуйте другое ключевое слово</string>
+    <string name="search_error">Не удалось загрузить данные поездов и станций. Нажмите для повтора</string>
+    <string name="visits_empty">Посещённых станций пока нет</string>
+    <string name="visits_description">Первое посещение каждой станции</string>
 </resources>

@@ -1,0 +1,388 @@
+{
+  "rules": [
+    {
+      "model": "CR200J3-B(跨国版)",
+      "prefixes": [
+        "CR200J",
+        "CR200J3B"
+      ],
+      "numbers": "4004-4005",
+      "ranges": [
+        [
+          4004,
+          4005
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CR200JK.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-10057-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH380A(港铁)",
+      "prefixes": [
+        "CRH380A"
+      ],
+      "numbers": "0251-0259",
+      "ranges": [
+        [
+          251,
+          259
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH380M.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-30003-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH1B(1E头型)",
+      "prefixes": [
+        "CRH1B"
+      ],
+      "numbers": "1076-1080",
+      "ranges": [
+        [
+          1076,
+          1080
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH1E.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-21005-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH1E(NG)",
+      "prefixes": [
+        "CRH1E"
+      ],
+      "numbers": "1229-1233",
+      "ranges": [
+        [
+          1229,
+          1233
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH1A-A.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-21007-102-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH2B(2A头型)",
+      "prefixes": [
+        "CRH2B"
+      ],
+      "numbers": "2466-2472,4096-4105",
+      "ranges": [
+        [
+          2466,
+          2472
+        ],
+        [
+          4096,
+          4105
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH2A.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-22005-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH2A(NG)",
+      "prefixes": [
+        "CRH2A"
+      ],
+      "numbers": "2460",
+      "ranges": [
+        [
+          2460,
+          2460
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH2G.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-22012-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH2E(NG高寒)",
+      "prefixes": [
+        "CRH2E"
+      ],
+      "numbers": "2461",
+      "ranges": [
+        [
+          2461,
+          2461
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH2G.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-22013-102-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH2E(NG)",
+      "prefixes": [
+        "CRH2E"
+      ],
+      "numbers": "2462",
+      "ranges": [
+        [
+          2462,
+          2462
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH2G.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-22014-102-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH2E(纵向)",
+      "prefixes": [
+        "CRH2E"
+      ],
+      "numbers": "2463-2465",
+      "ranges": [
+        [
+          2463,
+          2465
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH2E.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-22015-102-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH5G(技术提升型)",
+      "prefixes": [
+        "CRH5G"
+      ],
+      "numbers": "5218-5229",
+      "ranges": [
+        [
+          5218,
+          5229
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH5G.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-25006-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH6A(后期)",
+      "prefixes": [
+        "CRH6A"
+      ],
+      "numbers": "0624-0643",
+      "ranges": [
+        [
+          624,
+          643
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH6A-B.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-26003-201-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH6A(舒适版)",
+      "prefixes": [
+        "CRH6A"
+      ],
+      "numbers": "4132-4137,4502-4509",
+      "ranges": [
+        [
+          4132,
+          4137
+        ],
+        [
+          4502,
+          4509
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH6A-D.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-26004-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH6A(智能版)",
+      "prefixes": [
+        "CRH6A"
+      ],
+      "numbers": "0216-0218",
+      "ranges": [
+        [
+          216,
+          218
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH6A-CD.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-26006-201-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH6A-A(智能版)",
+      "prefixes": [
+        "CRH6AA"
+      ],
+      "numbers": "0213-0215,0644-0648,0652-0666",
+      "ranges": [
+        [
+          213,
+          215
+        ],
+        [
+          644,
+          648
+        ],
+        [
+          652,
+          666
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH6A-CD.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-26009-201-S.html",
+      "note": "0212 涉及由 0210 改号，0219 后续改造，均保留默认图。"
+    },
+    {
+      "model": "CRH6F-A(智能版)",
+      "prefixes": [
+        "CRH6FA"
+      ],
+      "numbers": "0667-0673",
+      "ranges": [
+        [
+          667,
+          673
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH6A-B.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-26013-201-S.html",
+      "note": ""
+    },
+    {
+      "model": "CRH6A-A(2.0)",
+      "prefixes": [
+        "CRH6AA"
+      ],
+      "numbers": "0220-0229,0233-0234",
+      "ranges": [
+        [
+          220,
+          229
+        ],
+        [
+          233,
+          234
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CR200AFs1.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-11101-201-S.html",
+      "note": "只使用明确的新造闭合号段；0219、0674~0685、0901~0912 涉及改造或改号，保留默认图。"
+    },
+    {
+      "model": "CRH6F(2.0)",
+      "prefixes": [
+        "CRH6F"
+      ],
+      "numbers": "0230-0232",
+      "ranges": [
+        [
+          230,
+          232
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CRH6A-AZ.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-11102-201-S.html",
+      "note": ""
+    },
+    {
+      "model": "CR200J1-B",
+      "prefixes": [
+        "CR200J",
+        "CR200J1B"
+      ],
+      "numbers": "2048-2084",
+      "ranges": [
+        [
+          2048,
+          2084
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CR200J2.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-10051-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CR200J2-B",
+      "prefixes": [
+        "CR200J",
+        "CR200J2B"
+      ],
+      "numbers": "3005-3007,4006-4008",
+      "ranges": [
+        [
+          3005,
+          3007
+        ],
+        [
+          4006,
+          4008
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CR200J2.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-10053-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CR200J3-B",
+      "prefixes": [
+        "CR200J",
+        "CR200J3B"
+      ],
+      "numbers": "1049-1086,1093-1110",
+      "ranges": [
+        [
+          1049,
+          1086
+        ],
+        [
+          1093,
+          1110
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CR200J2.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-10055-101-S.html",
+      "note": ""
+    },
+    {
+      "model": "CR400BF-A(纵向卧铺)",
+      "prefixes": [
+        "CR400BFA"
+      ],
+      "numbers": "0306",
+      "ranges": [
+        [
+          306,
+          306
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CR400BF-E.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-13308-102-S.html",
+      "note": ""
+    },
+    {
+      "model": "CJ6(样车)",
+      "prefixes": [
+        "CJ6"
+      ],
+      "numbers": "0701-0702",
+      "ranges": [
+        [
+          701,
+          702
+        ]
+      ],
+      "image": "/assets/imgs/Trains/Cute/CJ6s.png",
+      "source": "https://www.china-emu.cn/Trains/Model/Detail-40060-201-S.html",
+      "note": ""
+    }
+  ]
+}

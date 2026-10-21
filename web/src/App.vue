@@ -3,6 +3,11 @@ import PullToRefresh from '@/components/PullToRefresh.vue'
 import ImportantNoticeDialog from '@/components/ImportantNoticeDialog.vue'
 import { native } from '@/android/platform.js'
 import { ref } from 'vue'
+import { useVisitedStationCards } from '@/android/visitedStationCards.js'
+import { useVehicleTrainCards } from '@/android/vehicleTrainCards.js'
+
+useVisitedStationCards()
+useVehicleTrainCards()
 
 const noticeVisible = ref(!native &&
   localStorage.getItem('crticket-important-notice-hidden') !== '1' &&

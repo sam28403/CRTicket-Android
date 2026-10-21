@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">ຫຍໍ້</string>
     <string name="train_list_sort_duration">ໄລຍະເວລາເດີນທາງ</string>
     <string name="settings_import_settings_confirmation">ຈະກູ້ຄືນໂປຣໄຟລ໌ ແລະການຕັ້ງຄ່າຈາກສຳຮອງນີ້. ຈະບໍ່ເລີ່ມວຽກທີ່ກຳລັງເຮັດຄືນ.</string>
+    <string name="settings_advanced">ຂັ້ນສູງ</string>
+    <string name="railfan_tools">ເຄື່ອງມືສຳລັບແຟນລົດໄຟ</string>
+    <string name="railfan_tools_description">ສະແດງເຄື່ອງມືແຟນລົດໄຟໃນໜ້າຫຼັກ</string>
+    <string name="railfan_vehicle">ຄົ້ນຫາຍານພາຫະນະ</string>
+    <string name="railfan_routing">ຄົ້ນຫາຮອບວຽນຂະບວນລົດ</string>
+    <string name="railfan_visits">ສະຖິຕິສະຖານີທີ່ໄປຢ້ຽມຢາມ</string>
+    <string name="railfan_speedometer">ເຄື່ອງວັດຄວາມໄວ</string>
+    <string name="railfan_placeholder">ໄວໆນີ້</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">ລົດໄຟ</string>
+    <string name="search_stations">ສະຖານີ</string>
+    <string name="search_expand">ສະແດງທັງໝົດ</string>
+    <string name="search_collapse">ຫຍໍ້</string>
+    <string name="search_empty">ຄົ້ນຫາລົດໄຟ ສະຖານີ ແລະການຕັ້ງຄ່າ</string>
+    <string name="search_empty_hint">ປ້ອນເລກລົດໄຟ ຊື່ສະຖານີ ຫຼືການຕັ້ງຄ່າ</string>
+    <string name="search_no_results">ບໍ່ພົບຜົນການຄົ້ນຫາ</string>
+    <string name="search_no_results_hint">ລອງໃຊ້ຄຳຄົ້ນຫາອື່ນ</string>
+    <string name="search_error">ໂຫຼດຂໍ້ມູນລົດໄຟແລະສະຖານີບໍ່ສຳເລັດ. ແຕະເພື່ອລອງໃໝ່</string>
+    <string name="visits_empty">ຍັງບໍ່ມີສະຖານີທີ່ໄປຢ້ຽມຢາມ</string>
+    <string name="visits_description">ເວລາຢ້ຽມຢາມແຕ່ລະສະຖານີຄັ້ງທຳອິດ</string>
 </resources>

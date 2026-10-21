@@ -25,6 +25,8 @@ internal fun StationDiscoveryCard(
     row: JSONObject,
     rank: Int? = null,
     modifier: Modifier = Modifier,
+    status: String? = null,
+    tag: String? = null,
     onClick: () -> Unit,
 ) {
     val textResources = rememberAppText()
@@ -38,7 +40,7 @@ internal fun StationDiscoveryCard(
         shape = RoundedCornerShape(24.dp),
         color = colors.surfaceContainerLowest,
         modifier = modifier.fillMaxWidth().testTag(
-            if (rank != null) "station-busy-card:$rank"
+            tag ?: if (rank != null) "station-busy-card:$rank"
             else "station-random-card:${row.optString("station")}",
         ),
     ) {
@@ -67,49 +69,59 @@ internal fun StationDiscoveryCard(
                 )
                 Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
                     Text(
-                        textResources(R.string.train_list_total, row.optInt("total")),
+                        if (status == null) textResources(R.string.train_list_total, row.optInt("total"))
+                        else "—",
                         Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = colors.onSecondaryContainer,
                     )
                 }
             }
-            Row(
-                Modifier.fillMaxWidth().padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
+            if (status != null) {
                 Text(
-                    textResources(R.string.station_discovery_origin, row.optInt("origin")),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    textResources(R.string.station_discovery_terminal, row.optInt("terminal")),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-            Row(
-                Modifier.fillMaxWidth().padding(top = 10.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    textResources(
-                        R.string.station_discovery_summary,
-                        row.optInt("handled"),
-                        row.optInt("total"),
-                        row.optInt("passing"),
-                    ),
-                    Modifier.weight(1f), style = MaterialTheme.typography.bodySmall,
+                    status,
+                    Modifier.padding(top = 12.dp),
+                    style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant,
                 )
-                val bureau = row.optString("bureau")
-                if (bureau.isNotBlank()) {
+            } else {
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
                     Text(
-                        bureau,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = colors.onSurfaceVariant,
-                        maxLines = 1,
+                        textResources(R.string.station_discovery_origin, row.optInt("origin")),
+                        style = MaterialTheme.typography.titleMedium,
                     )
+                    Text(
+                        textResources(R.string.station_discovery_terminal, row.optInt("terminal")),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 10.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        textResources(
+                            R.string.station_discovery_summary,
+                            row.optInt("handled"),
+                            row.optInt("total"),
+                            row.optInt("passing"),
+                        ),
+                        Modifier.weight(1f), style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant,
+                    )
+                    val bureau = row.optString("bureau")
+                    if (bureau.isNotBlank()) {
+                        Text(
+                            bureau,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = colors.onSurfaceVariant,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
         }

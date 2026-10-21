@@ -3,6 +3,10 @@ package cc.samlab.ticket.ui.station
 import android.net.Uri
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import org.json.JSONArray
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.atomic.AtomicInteger
 import org.json.JSONObject
@@ -14,6 +18,11 @@ class NativeStationBoardController(
 ) {
     private val boards = linkedMapOf<String, StationBoardState>()
     private var discovery = JSONObject()
+    internal var visitCards by mutableStateOf<Map<String, JSONObject>>(emptyMap())
+        private set
+    internal var visitsLoading by mutableStateOf(false)
+        private set
+    private var visitsRequestId = 0
     private var suggestionTarget: StationBoardState? = null
     private var suggestionQuery = ""
     private val generation = AtomicInteger()
@@ -21,6 +30,17 @@ class NativeStationBoardController(
 
     internal fun stateFor(location: String): StationBoardState =
         board(Uri.parse(location).getQueryParameter("station").orEmpty())
+
+    internal fun requestVisitCards(stations: List<String>) {
+        visitsRequestId++
+        visitsLoading = true
+        val detail = JSONObject().put("stations", JSONArray(stations))
+            .put("requestId", visitsRequestId)
+        webView.evaluateJavascript(
+            "window.dispatchEvent(new CustomEvent('crticket-visited-stations-request',{detail:$detail}))",
+            null,
+        )
+    }
 
     private fun board(station: String): StationBoardState = boards.getOrPut(station) {
         StationBoardState(station, ::dispatch).also { it.discovery = discovery }
@@ -39,6 +59,19 @@ class NativeStationBoardController(
     fun receive(payload: String) {
         if (closed || payload.length > 16 * 1024 * 1024) return
         val value = runCatching { JSONObject(payload) }.getOrNull() ?: return
+        if (value.optString("kind") == "visits") {
+            activity.runOnUiThread {
+                if (!closed && value.optInt("requestId") == visitsRequestId) {
+                    val rows = value.optJSONArray("stations") ?: JSONArray()
+                    visitCards = (0 until rows.length()).associate { index ->
+                        val row = rows.getJSONObject(index)
+                        row.getString("station") to row
+                    }
+                    visitsLoading = false
+                }
+            }
+            return
+        }
         if (value.optString("kind") == "discovery") {
             activity.runOnUiThread {
                 if (!closed) {

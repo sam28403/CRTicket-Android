@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">سمیٹیں</string>
     <string name="train_list_sort_duration">سفر کا دورانیہ</string>
     <string name="settings_import_settings_confirmation">اس بیک اپ سے پروفائل اور ترتیبات بحال ہوں گی۔ جاری کام دوبارہ شروع نہیں ہوں گے۔</string>
+    <string name="settings_advanced">اعلیٰ ترتیبات</string>
+    <string name="railfan_tools">ریل شائقین کے اوزار</string>
+    <string name="railfan_tools_description">ہوم اسکرین پر ریل شائقین کے اوزار دکھائیں</string>
+    <string name="railfan_vehicle">گاڑی کی تلاش</string>
+    <string name="railfan_routing">ٹرین کی گردش کی تلاش</string>
+    <string name="railfan_visits">دورہ کردہ اسٹیشنوں کے اعداد و شمار</string>
+    <string name="railfan_speedometer">رفتار پیما</string>
+    <string name="railfan_placeholder">جلد دستیاب</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">ٹرینیں</string>
+    <string name="search_stations">اسٹیشن</string>
+    <string name="search_expand">سب دکھائیں</string>
+    <string name="search_collapse">سمیٹیں</string>
+    <string name="search_empty">ٹرینیں، اسٹیشن اور ترتیبات تلاش کریں</string>
+    <string name="search_empty_hint">ٹرین نمبر، اسٹیشن کا نام یا ترتیب درج کریں</string>
+    <string name="search_no_results">کوئی نتیجہ نہیں</string>
+    <string name="search_no_results_hint">دوسرا لفظ آزمائیں</string>
+    <string name="search_error">ٹرین اور اسٹیشن کے نتائج لوڈ نہیں ہو سکے۔ دوبارہ کوشش کے لیے دبائیں</string>
+    <string name="visits_empty">ابھی تک کسی اسٹیشن کا دورہ نہیں کیا</string>
+    <string name="visits_description">ہر اسٹیشن کے پہلے دورے کا وقت</string>
 </resources>

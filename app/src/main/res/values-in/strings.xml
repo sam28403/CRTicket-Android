@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Ciutkan</string>
     <string name="train_list_sort_duration">Durasi perjalanan</string>
     <string name="settings_import_settings_confirmation">Profil dan pengaturan akan dipulihkan dari cadangan ini. Tugas yang berjalan tidak akan dilanjutkan.</string>
+    <string name="settings_advanced">Lanjutan</string>
+    <string name="railfan_tools">Alat penggemar kereta</string>
+    <string name="railfan_tools_description">Tampilkan alat penggemar kereta di beranda</string>
+    <string name="railfan_vehicle">Pencarian kendaraan</string>
+    <string name="railfan_routing">Pencarian peredaran rangkaian</string>
+    <string name="railfan_visits">Statistik stasiun yang dikunjungi</string>
+    <string name="railfan_speedometer">Speedometer</string>
+    <string name="railfan_placeholder">Segera hadir</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Kereta</string>
+    <string name="search_stations">Stasiun</string>
+    <string name="search_expand">Tampilkan semua</string>
+    <string name="search_collapse">Ciutkan</string>
+    <string name="search_empty">Cari kereta, stasiun, dan pengaturan</string>
+    <string name="search_empty_hint">Masukkan nomor kereta, stasiun, atau pengaturan</string>
+    <string name="search_no_results">Tidak ada hasil</string>
+    <string name="search_no_results_hint">Coba kata kunci lain</string>
+    <string name="search_error">Gagal memuat hasil kereta dan stasiun. Ketuk untuk mencoba lagi</string>
+    <string name="visits_empty">Belum ada stasiun yang dikunjungi</string>
+    <string name="visits_description">Kunjungan pertama ke setiap stasiun</string>
 </resources>

@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">समेटें</string>
     <string name="train_list_sort_duration">यात्रा की अवधि</string>
     <string name="settings_import_settings_confirmation">इस बैकअप से प्रोफ़ाइल और सेटिंग्स बहाल होंगी। चल रहे कार्य दोबारा शुरू नहीं होंगे।</string>
+    <string name="settings_advanced">उन्नत</string>
+    <string name="railfan_tools">रेल प्रेमियों के उपकरण</string>
+    <string name="railfan_tools_description">होम स्क्रीन पर रेल प्रेमियों के उपकरण दिखाएँ</string>
+    <string name="railfan_vehicle">वाहन खोज</string>
+    <string name="railfan_routing">ट्रेन रेक चक्र खोज</string>
+    <string name="railfan_visits">देखे गए स्टेशनों के आँकड़े</string>
+    <string name="railfan_speedometer">गतिमापी</string>
+    <string name="railfan_placeholder">जल्द आ रहा है</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">ट्रेनें</string>
+    <string name="search_stations">स्टेशन</string>
+    <string name="search_expand">सभी दिखाएँ</string>
+    <string name="search_collapse">समेटें</string>
+    <string name="search_empty">ट्रेन, स्टेशन और सेटिंग खोजें</string>
+    <string name="search_empty_hint">ट्रेन नंबर, स्टेशन का नाम या सेटिंग दर्ज करें</string>
+    <string name="search_no_results">कोई परिणाम नहीं</string>
+    <string name="search_no_results_hint">कोई दूसरा शब्द आज़माएँ</string>
+    <string name="search_error">ट्रेन और स्टेशन के परिणाम लोड नहीं हुए। फिर से प्रयास करने के लिए टैप करें</string>
+    <string name="visits_empty">अभी तक कोई स्टेशन नहीं देखा गया</string>
+    <string name="visits_description">हर स्टेशन पर पहली यात्रा का समय</string>
 </resources>

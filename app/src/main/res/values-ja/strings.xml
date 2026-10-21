@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">折りたたむ</string>
     <string name="train_list_sort_duration">所要時間</string>
     <string name="settings_import_settings_confirmation">このバックアップからプロフィールと設定を復元します。実行中のタスクは再開されません。</string>
+    <string name="settings_advanced">詳細設定</string>
+    <string name="railfan_tools">鉄道ファン向けツール</string>
+    <string name="railfan_tools_description">ホームに鉄道ファン向けツールを表示</string>
+    <string name="railfan_vehicle">車両検索</string>
+    <string name="railfan_routing">運用検索</string>
+    <string name="railfan_visits">訪問駅の統計</string>
+    <string name="railfan_speedometer">速度計</string>
+    <string name="railfan_placeholder">近日公開</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">列車</string>
+    <string name="search_stations">駅</string>
+    <string name="search_expand">すべて展開</string>
+    <string name="search_collapse">折りたたむ</string>
+    <string name="search_empty">列車・駅・設定を検索</string>
+    <string name="search_empty_hint">列車番号、駅名、設定項目を入力</string>
+    <string name="search_no_results">結果が見つかりません</string>
+    <string name="search_no_results_hint">別のキーワードをお試しください</string>
+    <string name="search_error">列車と駅の読み込みに失敗しました。タップして再試行</string>
+    <string name="visits_empty">訪問記録はまだありません</string>
+    <string name="visits_description">各駅への初訪問を記録</string>
 </resources>

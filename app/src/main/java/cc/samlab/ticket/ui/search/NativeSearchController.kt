@@ -13,11 +13,16 @@ internal class NativeSearchController(
         private set
     var loading by mutableStateOf(false)
         private set
+    var completedQuery by mutableStateOf("")
+        private set
+    private var pendingQuery = ""
     private var requestId = 0
     private var closed = false
 
     fun search(query: String, dispatch: Boolean = true) {
         requestId++
+        pendingQuery = query.trim()
+        completedQuery = ""
         result = JSONObject()
         loading = query.isNotBlank()
         if (!loading || !dispatch) return
@@ -34,6 +39,7 @@ internal class NativeSearchController(
         activity.runOnUiThread {
             if (!closed && value.optInt("requestId") == requestId) {
                 result = value
+                completedQuery = pendingQuery
                 loading = false
             }
         }

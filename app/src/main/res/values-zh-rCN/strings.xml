@@ -486,4 +486,24 @@
     <string name="language_system">跟随系统</string>
     <string name="language_native_name">简体中文（中国）</string>
     <string name="settings_import_settings_confirmation">个人资料和设置将恢复为备份中的内容，不会恢复正在运行的任务。</string>
+    <string name="settings_advanced">高级</string>
+    <string name="railfan_tools">车迷工具</string>
+    <string name="railfan_tools_description">在首页显示车迷工具入口</string>
+    <string name="railfan_vehicle">车辆查询</string>
+    <string name="railfan_routing">交路查询</string>
+    <string name="railfan_visits">到访车站统计</string>
+    <string name="railfan_speedometer">车速表</string>
+    <string name="railfan_placeholder">敬请期待</string>
+    <string name="search_trains">车次</string>
+    <string name="search_stations">车站</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_expand">展开全部</string>
+    <string name="search_collapse">收起</string>
+    <string name="search_empty">搜索车次、车站和设置</string>
+    <string name="search_empty_hint">输入车次、车站名称或设置项</string>
+    <string name="search_no_results">没有找到相关结果</string>
+    <string name="search_no_results_hint">试试其他关键词</string>
+    <string name="search_error">车次和车站加载失败，点击重试</string>
+    <string name="visits_empty">还没有到访记录</string>
+    <string name="visits_description">记录每个车站的首次到访时间</string>
 </resources>

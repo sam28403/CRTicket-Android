@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">طي</string>
     <string name="train_list_sort_duration">مدة الرحلة</string>
     <string name="settings_import_settings_confirmation">ستتم استعادة الملف الشخصي والإعدادات من هذه النسخة الاحتياطية. لن يتم استئناف المهام الجارية.</string>
+    <string name="settings_advanced">متقدم</string>
+    <string name="railfan_tools">أدوات هواة القطارات</string>
+    <string name="railfan_tools_description">إظهار أدوات هواة القطارات في الشاشة الرئيسية</string>
+    <string name="railfan_vehicle">البحث عن المركبات</string>
+    <string name="railfan_routing">البحث عن دورات القطارات</string>
+    <string name="railfan_visits">إحصاءات المحطات التي تمت زيارتها</string>
+    <string name="railfan_speedometer">عداد السرعة</string>
+    <string name="railfan_placeholder">قريبًا</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">القطارات</string>
+    <string name="search_stations">المحطات</string>
+    <string name="search_expand">عرض الكل</string>
+    <string name="search_collapse">طي</string>
+    <string name="search_empty">البحث عن القطارات والمحطات والإعدادات</string>
+    <string name="search_empty_hint">أدخل رقم قطار أو اسم محطة أو إعداد</string>
+    <string name="search_no_results">لا توجد نتائج</string>
+    <string name="search_no_results_hint">جرّب كلمة بحث أخرى</string>
+    <string name="search_error">تعذر تحميل نتائج القطارات والمحطات. اضغط لإعادة المحاولة</string>
+    <string name="visits_empty">لا توجد محطات تمت زيارتها بعد</string>
+    <string name="visits_description">وقت الزيارة الأولى لكل محطة</string>
 </resources>

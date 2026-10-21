@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">བསྡུ།</string>
     <string name="train_list_sort_duration">འགྲུལ་བཞུད་དུས་ཡུན།</string>
     <string name="settings_import_settings_confirmation">གྲབས་ཉར་ལས་མི་སྒེར་གྱི་གནས་ཚུལ་དང་སྒྲིག་འགོད་སླར་གསོ་བྱེད། འགྲོ་བཞིན་པའི་ལས་ཀ་སླར་འགོ་མི་འཛུགས།</string>
+    <string name="settings_advanced">མཐོ་རིམ།</string>
+    <string name="railfan_tools">མེ་འཁོར་དགའ་མཁན་གྱི་ལག་ཆ།</string>
+    <string name="railfan_tools_description">གཙོ་ངོས་སུ་མེ་འཁོར་དགའ་མཁན་གྱི་ལག་ཆ་སྟོན།</string>
+    <string name="railfan_vehicle">འཁོར་རིགས་འཚོལ་བ།</string>
+    <string name="railfan_routing">མེ་འཁོར་འཁོར་སྐྱོད་འཚོལ་བ།</string>
+    <string name="railfan_visits">བསྐྱོད་ཟིན་པའི་འབབ་ཚུགས་ཀྱི་བསྡོམས་རྩིས།</string>
+    <string name="railfan_speedometer">མྱུར་ཚད་འཇལ་ཆས།</string>
+    <string name="railfan_placeholder">མགྱོགས་པོར་ཡོང་རྒྱུ།</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">མེ་འཁོར།</string>
+    <string name="search_stations">འབབ་ཚུགས།</string>
+    <string name="search_expand">ཚང་མ་སྟོན།</string>
+    <string name="search_collapse">བསྡུ།</string>
+    <string name="search_empty">མེ་འཁོར་དང་འབབ་ཚུགས། སྒྲིག་འགོད་འཚོལ།</string>
+    <string name="search_empty_hint">མེ་འཁོར་ཨང་དང་འབབ་ཚུགས་མིང་ངམ་སྒྲིག་འགོད་འཇུག་རོགས།</string>
+    <string name="search_no_results">འཚོལ་འབྲས་མི་འདུག</string>
+    <string name="search_no_results_hint">གནད་ཚིག་གཞན་ཞིག་ཚོད་ལྟ་གནང་།</string>
+    <string name="search_error">མེ་འཁོར་དང་འབབ་ཚུགས་ཀྱི་གཞི་གྲངས་འགེལ་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱེད་པར་མནན།</string>
+    <string name="visits_empty">ད་དུང་འབབ་ཚུགས་སུ་བསྐྱོད་པའི་ཟིན་ཐོ་མེད།</string>
+    <string name="visits_description">འབབ་ཚུགས་རེར་ཐོག་མར་སླེབས་པའི་དུས་ཚོད།</string>
 </resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- First iteration: other languages fall back to English. -->
+    <string name="vehicle_query_hint">Vehicle / service number</string>
+    <string name="vehicle_query_description">Search vehicle and service history</string>
+    <string name="vehicle_query_search_assignment">Search %1$s vehicle assignments</string>
+    <string name="vehicle_query_latest_assignment">Latest assignment · %1$s</string>
+    <string name="vehicle_query_refresh">Refresh vehicle results</string>
+    <string name="vehicle_query_refreshing">Refreshing vehicle results</string>
+    <string name="vehicle_query_clear">Clear search</string>
+    <string name="vehicle_query_invalid">Enter a vehicle number, part of one, or a G / D / C service number</string>
+    <string name="vehicle_query_explore">Explore a trainset’s history</string>
+    <string name="vehicle_query_history">Search history</string>
+    <string name="vehicle_query_history_clear">Clear search history</string>
+    <string name="vehicle_query_history_empty">Your recent searches will appear here</string>
+    <string name="vehicle_query_error">Search failed. Check your connection and try again.</string>
+    <string name="vehicle_query_empty">No matching history recorded</string>
+    <string name="vehicle_query_retry">Retry</string>
+    <string name="vehicle_query_vehicle_count">Found %1$d records</string>
+    <string name="vehicle_query_train_count">Found %1$d records</string>
+    <string name="vehicle_query_image_unavailable">Image unavailable</string>
+</resources>

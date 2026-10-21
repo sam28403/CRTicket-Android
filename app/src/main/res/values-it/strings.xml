@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Comprimi</string>
     <string name="train_list_sort_duration">Durata del viaggio</string>
     <string name="settings_import_settings_confirmation">Profilo e impostazioni verranno ripristinati da questo backup. Le attività in corso non verranno riprese.</string>
+    <string name="settings_advanced">Avanzate</string>
+    <string name="railfan_tools">Strumenti ferroviari</string>
+    <string name="railfan_tools_description">Mostra gli strumenti ferroviari nella schermata iniziale</string>
+    <string name="railfan_vehicle">Ricerca veicoli</string>
+    <string name="railfan_routing">Ricerca turni dei treni</string>
+    <string name="railfan_visits">Statistiche delle stazioni visitate</string>
+    <string name="railfan_speedometer">Tachimetro</string>
+    <string name="railfan_placeholder">Prossimamente</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Treni</string>
+    <string name="search_stations">Stazioni</string>
+    <string name="search_expand">Mostra tutto</string>
+    <string name="search_collapse">Comprimi</string>
+    <string name="search_empty">Cerca treni, stazioni e impostazioni</string>
+    <string name="search_empty_hint">Inserisci un treno, una stazione o una impostazione</string>
+    <string name="search_no_results">Nessun risultato</string>
+    <string name="search_no_results_hint">Prova un altro termine</string>
+    <string name="search_error">Impossibile caricare i risultati ferroviari. Tocca per riprovare</string>
+    <string name="visits_empty">Nessuna stazione visitata</string>
+    <string name="visits_description">Prima visita a ogni stazione</string>
 </resources>

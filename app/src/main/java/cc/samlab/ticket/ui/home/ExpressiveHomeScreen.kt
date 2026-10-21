@@ -65,6 +65,7 @@ internal fun ExpressiveHomeScreen(
                 HomeHeader()
                 HomeSearchField { onNavigate("/search") }
                 HomeDestinations(ticketDestinations, 0, onNavigate, selectedRoute)
+                HomeRailfanTools(onNavigate, selectedRoute)
                 HomeUtilities(onNavigate, selectedRoute)
             }
         }

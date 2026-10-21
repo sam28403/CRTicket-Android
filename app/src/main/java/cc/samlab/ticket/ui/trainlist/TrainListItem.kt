@@ -21,9 +21,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.projectTitleFont
+import cc.samlab.ticket.ui.railfan.VehicleNumberBadge
 
 @Composable
-internal fun TrainListItem(row: TrainListRow, onClick: () -> Unit) {
+internal fun TrainListItem(
+    row: TrainListRow,
+    vehicle: String? = null,
+    onVehicleClick: (() -> Unit)? = null,
+    onClick: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     Surface(
         onClick = onClick,
@@ -47,7 +53,13 @@ internal fun TrainListItem(row: TrainListRow, onClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
+                if (vehicle != null) {
+                    VehicleNumberBadge(vehicle, onVehicleClick ?: onClick)
+                }
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = colors.secondaryContainer,
+                ) {
                     Text(
                         stringResource(R.string.train_list_station_count, row.stations),
                         Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
@@ -56,24 +68,40 @@ internal fun TrainListItem(row: TrainListRow, onClick: () -> Unit) {
                     )
                 }
             }
-            Row(
-                Modifier.fillMaxWidth().padding(top = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Text(row.from, Modifier.weight(1f), maxLines = 1,
-                    overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium)
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = colors.onSurfaceVariant)
-                Text(row.to, Modifier.weight(1f), maxLines = 1,
-                    overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium)
-            }
-            Text(
-                stringResource(R.string.train_list_metrics, row.duration, row.mileage, row.speed),
-                Modifier.padding(top = 10.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.onSurfaceVariant,
-                maxLines = 2,
-            )
+            TrainListDetails(row)
         }
     }
+}
+
+@Composable
+private fun TrainListDetails(row: TrainListRow) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier.fillMaxWidth().padding(top = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            row.from,
+            Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = colors.onSurfaceVariant)
+        Text(
+            row.to,
+            Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
+    Text(
+        stringResource(R.string.train_list_metrics, row.duration, row.mileage, row.speed),
+        Modifier.padding(top = 10.dp),
+        style = MaterialTheme.typography.bodySmall,
+        color = colors.onSurfaceVariant,
+        maxLines = 2,
+    )
 }

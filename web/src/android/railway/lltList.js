@@ -62,25 +62,29 @@ export function listLltTrains(database, date) {
   const rows = []
   for (const item of database.trains.values()) {
     if (!runsOnDate(item.schedule, date)) continue
-    const first = item.stops[0]
-    const last = item.stops.at(-1)
-    const elapsed = first.departure && last.arrival
-      ? (last.arrivalDay - (first.departureDay || 0)) * 1440
-        + clockMinutes(last.arrival) - clockMinutes(first.departure)
-      : null
-    const duration = elapsed == null || elapsed < 0
-      ? null
-      : `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
-    rows.push({
-      train: item.train,
-      from: first.station,
-      to: last.station,
-      duration,
-      stationCount: item.stops.length,
-      mileage: last.mileage,
-    })
+    rows.push(lltTrainSummary(item))
   }
   rows.sort(compareTrains)
   return { date, version: database.version, total: rows.length, trains: rows }
+}
+
+export function lltTrainSummary(item) {
+  const first = item.stops[0]
+  const last = item.stops.at(-1)
+  const elapsed = first.departure && last.arrival
+    ? (last.arrivalDay - (first.departureDay || 0)) * 1440
+      + clockMinutes(last.arrival) - clockMinutes(first.departure)
+    : null
+  const duration = elapsed == null || elapsed < 0
+    ? null
+    : `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
+  return {
+    train: item.train,
+    from: first.station,
+    to: last.station,
+    duration,
+    stationCount: item.stops.length,
+    mileage: last.mileage,
+  }
 }
 

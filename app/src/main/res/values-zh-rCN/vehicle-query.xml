@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vehicle_query_hint">车号 / 车次号</string>
+    <string name="vehicle_query_description">查询车号与车次的历史记录</string>
+    <string name="vehicle_query_search_assignment">搜索%1$s配车</string>
+    <string name="vehicle_query_latest_assignment">最近配车 · %1$s</string>
+    <string name="vehicle_query_refresh">刷新车辆查询结果</string>
+    <string name="vehicle_query_refreshing">正在刷新车辆查询结果</string>
+    <string name="vehicle_query_clear">清空搜索</string>
+    <string name="vehicle_query_invalid">请输入车号、车号片段或 G / D / C 开头的车次号</string>
+    <string name="vehicle_query_explore">查找动车组的足迹</string>
+    <string name="vehicle_query_history">搜索历史</string>
+    <string name="vehicle_query_history_clear">清空搜索历史</string>
+    <string name="vehicle_query_history_empty">最近搜索过的车号和车次会出现在这里</string>
+    <string name="vehicle_query_error">查询失败，请检查网络后重试</string>
+    <string name="vehicle_query_empty">暂未收录相关历史记录</string>
+    <string name="vehicle_query_retry">重试</string>
+    <string name="vehicle_query_vehicle_count">查询到%1$d个记录</string>
+    <string name="vehicle_query_train_count">查询到%1$d个记录</string>
+    <string name="vehicle_query_image_unavailable">暂无车头图片</string>
+</resources>

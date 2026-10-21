@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">접기</string>
     <string name="train_list_sort_duration">소요 시간</string>
     <string name="settings_import_settings_confirmation">이 백업에서 프로필과 설정을 복원합니다. 실행 중인 작업은 재개되지 않습니다.</string>
+    <string name="settings_advanced">고급</string>
+    <string name="railfan_tools">철도 팬 도구</string>
+    <string name="railfan_tools_description">홈 화면에 철도 팬 도구 표시</string>
+    <string name="railfan_vehicle">차량 조회</string>
+    <string name="railfan_routing">차량 운용 조회</string>
+    <string name="railfan_visits">방문 역 통계</string>
+    <string name="railfan_speedometer">속도계</string>
+    <string name="railfan_placeholder">출시 예정</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">열차</string>
+    <string name="search_stations">역</string>
+    <string name="search_expand">모두 펼치기</string>
+    <string name="search_collapse">접기</string>
+    <string name="search_empty">열차, 역 및 설정 검색</string>
+    <string name="search_empty_hint">열차 번호, 역 이름 또는 설정을 입력하세요</string>
+    <string name="search_no_results">검색 결과가 없습니다</string>
+    <string name="search_no_results_hint">다른 검색어를 사용해 보세요</string>
+    <string name="search_error">철도 정보를 불러오지 못했습니다. 눌러서 다시 시도하세요</string>
+    <string name="visits_empty">아직 방문 기록이 없습니다</string>
+    <string name="visits_description">각 역의 첫 방문 시간 기록</string>
 </resources>

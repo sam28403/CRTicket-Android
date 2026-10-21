@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">Zuklappen</string>
     <string name="train_list_sort_duration">Fahrtdauer</string>
     <string name="settings_import_settings_confirmation">Profil und Einstellungen werden aus dieser Sicherung wiederhergestellt. Laufende Aufgaben werden nicht fortgesetzt.</string>
+    <string name="settings_advanced">Erweitert</string>
+    <string name="railfan_tools">Werkzeuge für Bahnfreunde</string>
+    <string name="railfan_tools_description">Werkzeuge für Bahnfreunde auf der Startseite anzeigen</string>
+    <string name="railfan_vehicle">Fahrzeugsuche</string>
+    <string name="railfan_routing">Umlaufsuche</string>
+    <string name="railfan_visits">Statistik besuchter Bahnhöfe</string>
+    <string name="railfan_speedometer">Tachometer</string>
+    <string name="railfan_placeholder">Demnächst verfügbar</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">Züge</string>
+    <string name="search_stations">Bahnhöfe</string>
+    <string name="search_expand">Alle anzeigen</string>
+    <string name="search_collapse">Einklappen</string>
+    <string name="search_empty">Züge, Bahnhöfe und Einstellungen suchen</string>
+    <string name="search_empty_hint">Zugnummer, Bahnhof oder Einstellung eingeben</string>
+    <string name="search_no_results">Keine Ergebnisse</string>
+    <string name="search_no_results_hint">Anderen Suchbegriff versuchen</string>
+    <string name="search_error">Bahndaten konnten nicht geladen werden. Zum Wiederholen tippen</string>
+    <string name="visits_empty">Noch keine Bahnhöfe besucht</string>
+    <string name="visits_description">Erster Besuch an jedem Bahnhof</string>
 </resources>

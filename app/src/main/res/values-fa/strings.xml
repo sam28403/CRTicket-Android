@@ -486,4 +486,24 @@
     <string name="station_busy_collapse">جمع کردن</string>
     <string name="train_list_sort_duration">مدت سفر</string>
     <string name="settings_import_settings_confirmation">نمایه و تنظیمات از این نسخه پشتیبان بازیابی می‌شوند. کارهای در حال اجرا از سر گرفته نمی‌شوند.</string>
+    <string name="settings_advanced">پیشرفته</string>
+    <string name="railfan_tools">ابزارهای علاقه‌مندان قطار</string>
+    <string name="railfan_tools_description">نمایش ابزارهای علاقه‌مندان قطار در صفحه اصلی</string>
+    <string name="railfan_vehicle">جستجوی ناوگان</string>
+    <string name="railfan_routing">جستجوی گردش قطار</string>
+    <string name="railfan_visits">آمار ایستگاه‌های بازدیدشده</string>
+    <string name="railfan_speedometer">سرعت‌سنج</string>
+    <string name="railfan_placeholder">به‌زودی</string>
+    <string name="search_group_count">%1$s · %2$d</string>
+    <string name="search_trains">قطارها</string>
+    <string name="search_stations">ایستگاه‌ها</string>
+    <string name="search_expand">نمایش همه</string>
+    <string name="search_collapse">جمع کردن</string>
+    <string name="search_empty">جستجوی قطار، ایستگاه و تنظیمات</string>
+    <string name="search_empty_hint">شماره قطار، نام ایستگاه یا تنظیم را وارد کنید</string>
+    <string name="search_no_results">نتیجه‌ای یافت نشد</string>
+    <string name="search_no_results_hint">واژه دیگری را امتحان کنید</string>
+    <string name="search_error">بارگیری نتایج قطار و ایستگاه ناموفق بود. برای تلاش دوباره بزنید</string>
+    <string name="visits_empty">هنوز ایستگاهی بازدید نشده است</string>
+    <string name="visits_description">زمان اولین بازدید از هر ایستگاه</string>
 </resources>

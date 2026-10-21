@@ -7,9 +7,11 @@ import cc.samlab.ticket.i18n.appString
 object TrainNumberRules {
     private val currentRule = Regex("(?:\\d{4}|5\\d{4}|[GCDZTKLYS]\\d{1,4})", RegexOption.IGNORE_CASE)
 
+    fun isValid(value: String): Boolean = currentRule.matches(value)
+
     fun error(value: String): String = when {
         value.isEmpty() -> appString(R.string.train_error_required)
-        currentRule.matches(value) -> ""
+        isValid(value) -> ""
         else -> appString(R.string.train_error_invalid)
     }
 }

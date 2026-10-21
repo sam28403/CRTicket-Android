@@ -48,8 +48,24 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/railfan/vehicle" -> cc.samlab.ticket.ui.railfan.VehicleQueryScreen(
+                trainList, dark, pureBlack, embedded, active, onBack, onNavigate,
+                initialTrain = android.net.Uri.parse(location).getQueryParameter("train").orEmpty(),
+                initialVehicle = android.net.Uri.parse(location).getQueryParameter("vehicle").orEmpty(),
+            )
+            "/railfan/visits" -> cc.samlab.ticket.ui.railfan.VisitedStationsScreen(
+                station, dark, pureBlack, embedded, active, onBack, onNavigate,
+            )
+            in railfanDestinations.map { it.route } -> {
+                val destination = railfanDestinations.first {
+                    it.route == ExpressiveRoutes.path(location)
+                }
+                cc.samlab.ticket.ui.railfan.RailfanPlaceholderScreen(
+                    destination.title, dark, pureBlack, embedded, onBack,
+                )
+            }
             "/search" -> cc.samlab.ticket.ui.search.ExpressiveSearchScreen(
-                search, settings, dark, pureBlack, active, onBack, onNavigate,
+                search, settings, dark, pureBlack, active, onBack, onNavigate, trainList,
             )
             "/" -> ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, embedded, active)
             "/home" -> if (embedded) {
