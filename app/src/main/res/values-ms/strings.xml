@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Sejarah tiket</string>
+    <string name="backup_content_search">Sejarah carian</string>
+    <string name="backup_content_settings">Tetapan</string>
+    <string name="backup_content_profile">Profil</string>
+    <string name="backup_content_visits">Stesen yang dilawati</string>
+    <string name="backup_content_speed">Rekod kelajuan dan laluan</string>
+    <string name="backup_content_draft">Draf tiket</string>
+    <string name="backup_content_monitor">Konfigurasi pemantauan tiket</string>
+    <string name="backup_start_export">Mula eksport</string>
 </resources>

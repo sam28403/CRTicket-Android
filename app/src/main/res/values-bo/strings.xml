@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">འཛིན་བྱང་གི་ལོ་རྒྱུས།</string>
+    <string name="backup_content_search">འཚོལ་བཤེར་ལོ་རྒྱུས།</string>
+    <string name="backup_content_settings">སྒྲིག་འགོད།</string>
+    <string name="backup_content_profile">མི་སྒེར་གྱི་གནས་ཚུལ།</string>
+    <string name="backup_content_visits">འབྱོར་ཟིན་པའི་འབབ་ཚུགས།</string>
+    <string name="backup_content_speed">མྱུར་ཚད་དང་འགྲོ་ལམ་ཟིན་ཐོ།</string>
+    <string name="backup_content_draft">འཛིན་བྱང་ཟིན་བྲིས།</string>
+    <string name="backup_content_monitor">འཛིན་བྱང་ལྷག་མའི་ལྟ་ཞིབ་སྒྲིག་འགོད།</string>
+    <string name="backup_start_export">ཕྱིར་འདྲེན་འགོ་འཛུགས།</string>
 </resources>

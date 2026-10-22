@@ -3,6 +3,7 @@ import { normalizeUsername } from './username.js'
 import { TICKET_FIELDS } from './ticketFields.js'
 import { validSpeedRecordings, validGeneratorDraft } from './appBackupSpeedometer.js'
 import { validRailfanBackup } from './appBackupRailfan.js'
+import { selectBackupContents, BACKUP_CONTENTS } from './backupContents.js'
 
 export const BACKUP_STORAGE_KEYS = [
   'crticket-important-notice-hidden',
@@ -60,7 +61,7 @@ export function validateAppSettings(settings) {
   return settings
 }
 
-export function buildAppBackup(tickets, user, { theme, storage, native } = {}) {
+export function buildAppBackup(tickets, user, { theme, storage, native, contents } = {}) {
   const payload = buildBackupPayload([], user)
   const settings = {
     profile: { username: user.username, avatar: user.avatar || null },
@@ -72,8 +73,7 @@ export function buildAppBackup(tickets, user, { theme, storage, native } = {}) {
     settings.storage['crticket-generator-draft'] = native.generatorDraft === null
       ? null : JSON.stringify(native.generatorDraft)
   }
-  validateAppSettings(settings)
-  return {
+  const backup = selectBackupContents({
     ...payload,
     schemaVersion: 2,
     settings,
@@ -81,7 +81,9 @@ export function buildAppBackup(tickets, user, { theme, storage, native } = {}) {
       ...Object.fromEntries(TICKET_FIELDS.map(field => [field, ticket[field] ?? null])),
       ...(ticket.created_at ? { created_at: ticket.created_at } : {}),
     })),
-  }
+  }, contents)
+  validateAppSettings(backup.settings)
+  return backup
 }
 
 export function parseAppBackup(text, messages = {}) {
@@ -93,5 +95,10 @@ export function parseAppBackup(text, messages = {}) {
   if (value.app !== 'CRTicket' || value.schemaVersion !== 2) {
     throw new Error('不支持此备份版本')
   }
-  return { tickets, settings: validateAppSettings(value.settings) }
+  if (value.contents !== undefined && (!Array.isArray(value.contents) || !value.contents.length
+      || value.contents.some(id => !BACKUP_CONTENTS.some(item => item.id === id)))) {
+    throw new Error('备份内容格式无效')
+  }
+  return { tickets, settings: validateAppSettings(value.settings),
+    ...(value.contents ? { contents: value.contents } : {}) }
 }

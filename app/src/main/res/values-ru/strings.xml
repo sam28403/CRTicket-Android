@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">История билетов</string>
+    <string name="backup_content_search">История поиска</string>
+    <string name="backup_content_settings">Настройки</string>
+    <string name="backup_content_profile">Профиль</string>
+    <string name="backup_content_visits">Посещённые станции</string>
+    <string name="backup_content_speed">Записи скорости и маршруты</string>
+    <string name="backup_content_draft">Черновик билета</string>
+    <string name="backup_content_monitor">Настройки мониторинга билетов</string>
+    <string name="backup_start_export">Начать экспорт</string>
 </resources>

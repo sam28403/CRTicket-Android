@@ -54,9 +54,13 @@ export async function restoreDeviceBackup(backup, {
     counts.imported++
   }
   try {
-    storage.setItem(TICKETS_KEY, JSON.stringify(tickets))
-    storage.setItem(OWNER_KEY, JSON.stringify(user))
-    updateUser(user)
+    if (!backup.contents || backup.contents.includes('tickets')) {
+      storage.setItem(TICKETS_KEY, JSON.stringify(tickets))
+    }
+    if (settings.profile) {
+      storage.setItem(OWNER_KEY, JSON.stringify(user))
+      updateUser(user)
+    }
     for (const key of BACKUP_STORAGE_KEYS) {
       if (!Object.hasOwn(settings.storage || {}, key)) continue
       const value = settings.storage[key]
@@ -82,8 +86,8 @@ export async function restoreDeviceBackup(backup, {
         error.rollbackErrors.push(rollbackError)
       }
     }
-    undo(() => applyTheme(saved.get('crticket-theme') || 'classic-system'))
-    undo(() => updateUser({ id: 'device', username: '默认用户', avatar: null, ...oldUser }))
+    if (settings.theme !== undefined) undo(() => applyTheme(saved.get('crticket-theme') || 'classic-system'))
+    if (settings.profile) undo(() => updateUser({ id: 'device', username: '默认用户', avatar: null, ...oldUser }))
     for (const [key, value] of saved) {
       undo(() => {
         if (value === null) storage.removeItem(key)

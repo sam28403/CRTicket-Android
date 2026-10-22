@@ -66,13 +66,13 @@ export async function performSettingsAction(action, payload = {}) {
       limit: settingsText('backup_limit'),
       failed: settingsText('import_failed'),
       complete: (...counts) => settingsText('import_complete', ...counts),
-    })
+    }, payload.contents)
   }
   const stamp = getExportFileStamp()
   let blob
   let filename
   if (action === 'exportBackup') {
-    blob = new Blob([JSON.stringify(exportSettingsBackup(records, user), null, 2)], {
+    blob = new Blob([JSON.stringify(exportSettingsBackup(records, user, payload.contents), null, 2)], {
       type: 'application/json;charset=utf-8',
     })
     filename = settingsText('backup_filename', stamp)

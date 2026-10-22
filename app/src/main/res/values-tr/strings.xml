@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Bilet geçmişi</string>
+    <string name="backup_content_search">Arama geçmişi</string>
+    <string name="backup_content_settings">Ayarlar</string>
+    <string name="backup_content_profile">Profil</string>
+    <string name="backup_content_visits">Ziyaret edilen istasyonlar</string>
+    <string name="backup_content_speed">Hız kayıtları ve rotalar</string>
+    <string name="backup_content_draft">Bilet taslağı</string>
+    <string name="backup_content_monitor">Bilet izleme yapılandırması</string>
+    <string name="backup_start_export">Dışa aktarmayı başlat</string>
 </resources>

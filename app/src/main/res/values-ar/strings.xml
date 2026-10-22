@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">سجل التذاكر</string>
+    <string name="backup_content_search">سجل البحث</string>
+    <string name="backup_content_settings">الإعدادات</string>
+    <string name="backup_content_profile">الملف الشخصي</string>
+    <string name="backup_content_visits">المحطات التي تمت زيارتها</string>
+    <string name="backup_content_speed">سجلات السرعة والمسارات</string>
+    <string name="backup_content_draft">مسودة التذكرة</string>
+    <string name="backup_content_monitor">إعدادات مراقبة التذاكر</string>
+    <string name="backup_start_export">بدء التصدير</string>
 </resources>

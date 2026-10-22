@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Lịch sử vé</string>
+    <string name="backup_content_search">Lịch sử tìm kiếm</string>
+    <string name="backup_content_settings">Cài đặt</string>
+    <string name="backup_content_profile">Hồ sơ</string>
+    <string name="backup_content_visits">Các ga đã ghé thăm</string>
+    <string name="backup_content_speed">Bản ghi tốc độ và lộ trình</string>
+    <string name="backup_content_draft">Bản nháp vé</string>
+    <string name="backup_content_monitor">Cấu hình theo dõi vé</string>
+    <string name="backup_start_export">Bắt đầu xuất</string>
 </resources>

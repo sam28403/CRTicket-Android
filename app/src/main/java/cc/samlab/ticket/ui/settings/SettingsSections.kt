@@ -112,7 +112,7 @@ internal fun SettingsPreferences(
         SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,
             { controller.request("exportExcel") })
         SettingsRow(stringResource(R.string.settings_export_backup), "", 1, 3, enabled,
-            { controller.request("exportBackup") })
+            controller::chooseExportBackup)
         SettingsRow(stringResource(R.string.settings_import_backup), "", 2, 3, enabled,
             controller::chooseBackup)
     }

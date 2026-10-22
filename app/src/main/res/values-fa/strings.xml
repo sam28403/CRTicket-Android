@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">تاریخچه بلیت‌ها</string>
+    <string name="backup_content_search">تاریخچه جستجو</string>
+    <string name="backup_content_settings">تنظیمات</string>
+    <string name="backup_content_profile">نمایه</string>
+    <string name="backup_content_visits">ایستگاه‌های بازدیدشده</string>
+    <string name="backup_content_speed">رکوردهای سرعت و مسیرها</string>
+    <string name="backup_content_draft">پیش‌نویس بلیت</string>
+    <string name="backup_content_monitor">تنظیمات پایش بلیت</string>
+    <string name="backup_start_export">شروع برون‌بری</string>
 </resources>

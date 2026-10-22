@@ -5,19 +5,21 @@ import { createNativeCalls } from './nativeCalls.js'
 import { native } from './platform.js'
 import { useTheme } from '../composables/useTheme.js'
 import { useUserStore } from '../stores/user.js'
+import { selectBackupContents } from '../utils/backupContents.js'
 
 const calls = createNativeCalls('crticketBackupResult')
 
-export function exportSettingsBackup(records, user) {
+export function exportSettingsBackup(records, user, contents) {
   return buildAppBackup(records, user, {
     theme: useTheme().preference.value,
     storage: localStorage,
+    contents,
     native: native?.backupSettings ? JSON.parse(native.backupSettings()) : undefined,
   })
 }
 
-export async function importSettingsBackup(text, records, user, api, messages) {
-  const backup = parseAppBackup(text, messages)
+export async function importSettingsBackup(text, records, user, api, messages, contents) {
+  const backup = selectBackupContents(parseAppBackup(text, messages), contents)
   const restoredEvent = () => new CustomEvent('crticket-backup-restored', { detail: {
     generatorDraftRestored: Object.hasOwn(backup.settings?.native || {}, 'generatorDraft')
       || Object.hasOwn(backup.settings?.storage || {}, 'crticket-generator-draft'),

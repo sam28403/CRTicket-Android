@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Тасалбарын түүх</string>
+    <string name="backup_content_search">Хайлтын түүх</string>
+    <string name="backup_content_settings">Тохиргоо</string>
+    <string name="backup_content_profile">Хувийн мэдээлэл</string>
+    <string name="backup_content_visits">Зочилсон өртөөнүүд</string>
+    <string name="backup_content_speed">Хурдны бичлэг ба замнал</string>
+    <string name="backup_content_draft">Тасалбарын ноорог</string>
+    <string name="backup_content_monitor">Тасалбарын хяналтын тохиргоо</string>
+    <string name="backup_start_export">Экспорт эхлүүлэх</string>
 </resources>

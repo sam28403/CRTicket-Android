@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">بېلەت تارىخى</string>
+    <string name="backup_content_search">ئىزدەش تارىخى</string>
+    <string name="backup_content_settings">تەڭشەكلەر</string>
+    <string name="backup_content_profile">شەخسىي ئۇچۇرلار</string>
+    <string name="backup_content_visits">زىيارەت قىلىنغان بېكەتلەر</string>
+    <string name="backup_content_speed">سۈرئەت خاتىرىسى ۋە يول ئىزى</string>
+    <string name="backup_content_draft">بېلەت دەسلەپكى نۇسخىسى</string>
+    <string name="backup_content_monitor">بېلەت كۆزىتىش تەڭشەكلىرى</string>
+    <string name="backup_start_export">چىقىرىشنى باشلاش</string>
 </resources>

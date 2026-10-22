@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">ประวัติตั๋ว</string>
+    <string name="backup_content_search">ประวัติการค้นหา</string>
+    <string name="backup_content_settings">การตั้งค่า</string>
+    <string name="backup_content_profile">โปรไฟล์</string>
+    <string name="backup_content_visits">สถานีที่เคยเยี่ยมชม</string>
+    <string name="backup_content_speed">บันทึกความเร็วและเส้นทาง</string>
+    <string name="backup_content_draft">แบบร่างตั๋ว</string>
+    <string name="backup_content_monitor">การตั้งค่าติดตามตั๋ว</string>
+    <string name="backup_start_export">เริ่มส่งออก</string>
 </resources>

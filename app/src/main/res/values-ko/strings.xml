@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">승차권 기록</string>
+    <string name="backup_content_search">검색 기록</string>
+    <string name="backup_content_settings">설정</string>
+    <string name="backup_content_profile">프로필</string>
+    <string name="backup_content_visits">방문한 역 기록</string>
+    <string name="backup_content_speed">속도 기록 및 경로</string>
+    <string name="backup_content_draft">승차권 초안</string>
+    <string name="backup_content_monitor">잔여 승차권 모니터링 설정</string>
+    <string name="backup_start_export">내보내기 시작</string>
 </resources>

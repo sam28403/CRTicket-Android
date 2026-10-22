@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">チケット履歴</string>
+    <string name="backup_content_search">検索履歴</string>
+    <string name="backup_content_settings">設定</string>
+    <string name="backup_content_profile">プロフィール</string>
+    <string name="backup_content_visits">訪問駅の記録</string>
+    <string name="backup_content_speed">速度記録と軌跡</string>
+    <string name="backup_content_draft">チケットの下書き</string>
+    <string name="backup_content_monitor">空席監視の設定</string>
+    <string name="backup_start_export">エクスポート開始</string>
 </resources>

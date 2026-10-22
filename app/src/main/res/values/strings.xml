@@ -559,4 +559,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Ticket history</string>
+    <string name="backup_content_search">Search history</string>
+    <string name="backup_content_settings">Settings</string>
+    <string name="backup_content_profile">Profile</string>
+    <string name="backup_content_visits">Visited stations</string>
+    <string name="backup_content_speed">Speed recordings and tracks</string>
+    <string name="backup_content_draft">Ticket draft</string>
+    <string name="backup_content_monitor">Ticket monitor configuration</string>
+    <string name="backup_start_export">Start export</string>
 </resources>

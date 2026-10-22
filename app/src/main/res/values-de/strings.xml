@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Ticketverlauf</string>
+    <string name="backup_content_search">Suchverlauf</string>
+    <string name="backup_content_settings">Einstellungen</string>
+    <string name="backup_content_profile">Profil</string>
+    <string name="backup_content_visits">Besuchte Bahnhöfe</string>
+    <string name="backup_content_speed">Geschwindigkeitsaufzeichnungen und Strecken</string>
+    <string name="backup_content_draft">Ticketentwurf</string>
+    <string name="backup_content_monitor">Konfiguration der Ticketüberwachung</string>
+    <string name="backup_start_export">Export starten</string>
 </resources>

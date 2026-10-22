@@ -60,7 +60,7 @@ internal class BackupDeviceFixture(
         """.trimIndent())
     }
 
-    fun export(): JSONObject {
+    fun export(excluded: Set<String> = emptySet()): JSONObject {
         evaluate("""
             window.__backupTestResult = null;
             window.__originalBlob = window.Blob;
@@ -80,6 +80,11 @@ internal class BackupDeviceFixture(
         )
         try {
             compose.onNodeWithText("导出备份").performScrollTo().performClick()
+            capture("export-selection.png")
+            excluded.forEach { label ->
+                compose.onNode(hasText(label) and isToggleable()).assertIsOn().performScrollTo().performClick()
+            }
+            compose.onNodeWithText("开始导出").performClick()
             result()
             return JSONObject(stringValue(evaluate("window.__backupExport")))
         } finally {
@@ -88,7 +93,7 @@ internal class BackupDeviceFixture(
         }
     }
 
-    fun import(value: String, settings: Boolean): JSONObject {
+    fun import(value: String, settings: Boolean, excluded: Set<String> = emptySet()): JSONObject {
         val file = File(activity.cacheDir, "full-backup-device-test.json").apply { writeText(value) }
         val monitor = instrumentation.addMonitor(
             IntentFilter(Intent.ACTION_GET_CONTENT).apply {
@@ -104,9 +109,10 @@ internal class BackupDeviceFixture(
                 compose.onAllNodesWithText("开始导入").fetchSemanticsNodes().isNotEmpty()
             }
             if (settings) {
-                compose.onNodeWithText("个人资料和设置将恢复为备份中的内容，不会恢复正在运行的任务。")
-                    .assertIsDisplayed()
                 capture()
+            }
+            excluded.forEach { label ->
+                compose.onNode(hasText(label) and isToggleable()).assertIsOn().performScrollTo().performClick()
             }
             compose.onNodeWithText("开始导入").performClick()
             return result()
@@ -133,12 +139,12 @@ internal class BackupDeviceFixture(
 
     fun stringValue(value: String): String = JSONTokener(value).nextValue() as String
 
-    private fun capture() {
+    private fun capture(filename: String = "confirmation.png") {
         compose.waitForIdle()
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         val folder = File(activity.getExternalFilesDir(null), "full-backup-scenes").apply { mkdirs() }
         val image = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
-        File(folder, "confirmation.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        File(folder, filename).outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
         image.recycle()
     }
 }

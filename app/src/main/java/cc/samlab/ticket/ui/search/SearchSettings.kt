@@ -53,7 +53,7 @@ internal fun searchSettings(
             controller.request("exportExcel")
         },
         SearchSetting("export", stringResource(R.string.settings_export_backup), "", enabled) {
-            controller.request("exportBackup")
+            controller.chooseExportBackup()
         },
         SearchSetting("import", stringResource(R.string.settings_import_backup), "", enabled,
             controller::chooseBackup),

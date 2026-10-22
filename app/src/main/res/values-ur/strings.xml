@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">ٹکٹ کی تاریخ</string>
+    <string name="backup_content_search">تلاش کی تاریخ</string>
+    <string name="backup_content_settings">ترتیبات</string>
+    <string name="backup_content_profile">پروفائل</string>
+    <string name="backup_content_visits">دورہ کیے گئے اسٹیشن</string>
+    <string name="backup_content_speed">رفتار کے ریکارڈ اور راستے</string>
+    <string name="backup_content_draft">ٹکٹ کا مسودہ</string>
+    <string name="backup_content_monitor">ٹکٹ کی نگرانی کی ترتیبات</string>
+    <string name="backup_start_export">برآمد شروع کریں</string>
 </resources>

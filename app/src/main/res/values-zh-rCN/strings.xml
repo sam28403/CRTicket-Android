@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">车号（选填）</string>
     <string name="speed_deleted">已删除</string>
     <string name="speed_undo">撤销</string>
+    <string name="backup_content_tickets">车票历史记录</string>
+    <string name="backup_content_search">搜索记录</string>
+    <string name="backup_content_settings">设置项</string>
+    <string name="backup_content_profile">个人资料</string>
+    <string name="backup_content_visits">到访车站记录</string>
+    <string name="backup_content_speed">测速记录与轨迹</string>
+    <string name="backup_content_draft">车票生成草稿</string>
+    <string name="backup_content_monitor">余票监控配置</string>
+    <string name="backup_start_export">开始导出</string>
 </resources>

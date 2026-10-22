@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">टिकट इतिहास</string>
+    <string name="backup_content_search">खोज इतिहास</string>
+    <string name="backup_content_settings">सेटिंग्स</string>
+    <string name="backup_content_profile">प्रोफ़ाइल</string>
+    <string name="backup_content_visits">देखे गए स्टेशन</string>
+    <string name="backup_content_speed">गति रिकॉर्ड और मार्ग</string>
+    <string name="backup_content_draft">टिकट का मसौदा</string>
+    <string name="backup_content_monitor">टिकट निगरानी सेटिंग्स</string>
+    <string name="backup_start_export">निर्यात शुरू करें</string>
 </resources>

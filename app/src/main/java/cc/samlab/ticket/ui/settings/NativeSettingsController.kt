@@ -55,6 +55,12 @@ class NativeSettingsController(
         private set
     var importIncludesSettings by mutableStateOf(false)
         private set
+    internal var exportSelection by mutableStateOf(false)
+        private set
+    internal var backupAvailable by mutableStateOf(BackupContent.entries.toSet())
+        private set
+    internal var backupSelected by mutableStateOf(BackupContent.entries.toSet())
+        private set
     private var requestId = 0
     private var pendingAction = "snapshot"
     private var pickingFile = false
@@ -75,7 +81,11 @@ class NativeSettingsController(
             val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
             requireNotNull(records) { activity.getString(R.string.settings_backup_no_tickets) }
             require(records.length() <= 10000) { activity.getString(R.string.settings_backup_limit) }
+            val available = availableBackupContents(value)
+            require(available.isNotEmpty()) { activity.getString(R.string.settings_backup_no_tickets) }
             activity.runOnUiThread {
+                backupAvailable = available
+                backupSelected = available
                 importText = text
                 importCount = records.length()
                 importIncludesSettings = (value as? JSONObject)?.optInt("schemaVersion") == 2
@@ -85,7 +95,7 @@ class NativeSettingsController(
 
     fun refresh() {
         permissions.refresh()
-        if (!busy && !pickingFile && cropBitmap == null && importText == null) request("snapshot")
+        if (!busy && !pickingFile && !exportSelection && cropBitmap == null && importText == null) request("snapshot")
     }
 
     fun request(action: String, payload: JSONObject = JSONObject()) {
@@ -156,6 +166,32 @@ class NativeSettingsController(
     fun dismissCrop() { cropBitmap = null }
     fun dismissImport() { importText = null }
 
+    fun chooseExportBackup() {
+        if (busy) return
+        backupAvailable = BackupContent.entries.toSet()
+        backupSelected = backupAvailable
+        exportSelection = true
+    }
+
+    internal fun toggleBackupContent(item: BackupContent) {
+        backupSelected = if (item in backupSelected) backupSelected - item else backupSelected + item
+    }
+
+    fun dismissBackup() {
+        exportSelection = false
+        dismissImport()
+    }
+
+    fun confirmBackup() {
+        if (backupSelected.isEmpty()) return
+        if (!exportSelection) {
+            confirmImport()
+            return
+        }
+        exportSelection = false
+        request("exportBackup", JSONObject().put("contents", JSONArray(backupSelected.map { it.id })))
+    }
+
     fun saveAvatar(zoom: Float, x: Float, y: Float) {
         val bitmap = cropBitmap ?: return
         busy = true
@@ -178,7 +214,8 @@ class NativeSettingsController(
     fun confirmImport() {
         val text = importText ?: return
         importText = null
-        request("import", JSONObject().put("text", text))
+        request("import", JSONObject().put("text", text)
+            .put("contents", JSONArray(backupSelected.map { it.id })))
     }
 
     private fun readFile(action: () -> Unit) {

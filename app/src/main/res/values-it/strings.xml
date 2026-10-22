@@ -556,4 +556,13 @@
     <string name="speed_vehicle_optional">Vehicle number (optional)</string>
     <string name="speed_deleted">Deleted</string>
     <string name="speed_undo">Undo</string>
+    <string name="backup_content_tickets">Cronologia biglietti</string>
+    <string name="backup_content_search">Cronologia ricerche</string>
+    <string name="backup_content_settings">Impostazioni</string>
+    <string name="backup_content_profile">Profilo</string>
+    <string name="backup_content_visits">Stazioni visitate</string>
+    <string name="backup_content_speed">Registrazioni velocità e percorsi</string>
+    <string name="backup_content_draft">Bozza biglietto</string>
+    <string name="backup_content_monitor">Configurazione monitoraggio biglietti</string>
+    <string name="backup_start_export">Avvia esportazione</string>
 </resources>
