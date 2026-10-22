@@ -14,6 +14,12 @@ const ticket = {
 const profile = { id: 'device', username: '备份用户', avatar: 'data:image/png;base64,YQ==' }
 const preferences = {
   language: 'en', arrivalEnabled: true, importantNoticeSuppressed: true,
+  railfanToolsEnabled: true,
+  stationVisits: [
+    { station: '北京南', time: 1790000000000, historical: false },
+    { station: '上海虹桥', time: 1780000000000, historical: true },
+  ],
+  vehicleSearchHistory: ['CR200JB2201', 'G1'],
   monitorConfig: {
     from: 'VNP', to: 'AOH', fromName: '北京南', toName: '上海虹桥',
     date: '2026-10-10', interval: 60, filters: { trainFilters: ['G1'], timeRange: [0, 24] },
@@ -117,12 +123,30 @@ test('unsupported schemas and malformed settings fail before any restore', () =>
     { schemaVersion: 3 }, { app: 'Other' }, { settings: null },
     { settings: { theme: 'invalid' } }, { settings: { profile: { username: '\n', avatar: null } } },
     { settings: { native: { arrivalEnabled: 'true' } } },
+    { settings: { native: { railfanToolsEnabled: 'true' } } },
+    { settings: { native: { stationVisits: [{ station: '北京南', time: -1 }] } } },
+    { settings: { native: { stationVisits: [{ station: '北京南', time: '1790000000000' }] } } },
+    { settings: { native: { stationVisits: [{ station: '北京南', time: 1.5 }] } } },
+    { settings: { native: { stationVisits: [{ station: '', time: 1790000000000 }] } } },
+    { settings: { native: { stationVisits: [{ station: '北京南', time: 1, historical: 1 }] } } },
+    { settings: { native: { stationVisits: null } } },
+    { settings: { native: { vehicleSearchHistory: ['../G1'] } } },
+    { settings: { native: { vehicleSearchHistory: Array(11).fill('G1') } } },
     { settings: { storage: { 'crticket-train-query-history': '[123]' } } },
   ]) {
     assert.throws(() => parseAppBackup(JSON.stringify({
       app: 'CRTicket', schemaVersion: 2, tickets: [], settings: {}, ...change,
     })))
   }
+})
+
+test('older full backups can omit all railfan fields without adding defaults', () => {
+  const saved = buildAppBackup([], profile, {
+    theme: 'classic-system', storage: fixture().storage,
+    native: { arrivalEnabled: false },
+  })
+  const restored = parseAppBackup(JSON.stringify(saved))
+  assert.deepEqual(restored.settings.native, { arrivalEnabled: false })
 })
 
 test('native validation and ticket quota failures leave all data unchanged', async () => {

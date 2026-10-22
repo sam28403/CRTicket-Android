@@ -1,8 +1,6 @@
 package cc.samlab.ticket.ui.railfan
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -14,6 +12,7 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.QueryResultEmptyState
 import cc.samlab.ticket.ui.trainlist.TrainListRefreshIndicator
 import cc.samlab.ticket.ui.trainlist.TrainListRow
 
@@ -31,6 +30,7 @@ internal fun VehicleQueryResults(
     onRetry: () -> Unit,
     onVehicle: (String) -> Unit,
     onNavigate: (String) -> Unit,
+    active: Boolean = true,
 ) {
     val pull = rememberPullToRefreshState()
     val description = stringResource(R.string.vehicle_query_refresh)
@@ -57,12 +57,14 @@ internal fun VehicleQueryResults(
             }
             if (rows.isNotEmpty()) VehicleHistoryGrid(
                 rows, query.byTrain, trainRows, Modifier.weight(1f), onVehicle, onNavigate,
-            ) else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                when {
-                    error -> VehicleQueryMessage(R.string.vehicle_query_error, onRetry)
-                    !loading -> VehicleQueryMessage(R.string.vehicle_query_empty)
-                }
-            }
+            ) else if (!loading) QueryResultEmptyState(
+                message = stringResource(
+                    if (error) R.string.vehicle_query_error else R.string.vehicle_query_empty,
+                ),
+                active = active,
+                modifier = Modifier.weight(1f).testTag("vehicle-query-empty"),
+                onRetry = if (error) onRetry else null,
+            )
         }
     }
 }

@@ -54,7 +54,7 @@ class ArrivalHistory(context: Context) {
         preferences.edit().putString("firstVisits", rows.toString()).apply()
     }
 
-    private companion object {
+    internal companion object {
         val lock = Any()
     }
 }

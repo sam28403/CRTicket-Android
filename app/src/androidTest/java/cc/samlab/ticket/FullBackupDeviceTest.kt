@@ -99,9 +99,11 @@ class FullBackupDeviceTest {
         val arrival = context.getSharedPreferences("station-arrival", Context.MODE_PRIVATE)
         val monitor = context.getSharedPreferences("ticket-monitor", Context.MODE_PRIVATE)
         val original = mapOf(
-            android to listOf(IMPORTANT_NOTICE_SUPPRESSED, "themePreference", "appearanceDark", "appearancePureBlack"),
-            arrival to listOf("enabled", "message", "registered"),
+            android to listOf(IMPORTANT_NOTICE_SUPPRESSED, "themePreference", "appearanceDark", "appearancePureBlack",
+                "railfanToolsEnabled"),
+            arrival to listOf("enabled", "message", "registered", "firstVisits"),
             monitor to listOf("state"),
+            context.getSharedPreferences("vehicle-query", Context.MODE_PRIVATE) to listOf("history"),
         ).mapValues { (preferences, keys) -> keys.associateWith { preferences.all[it] } }
         android.edit().putBoolean(IMPORTANT_NOTICE_SUPPRESSED, true).commit()
         try {
@@ -123,6 +125,9 @@ class FullBackupDeviceTest {
                     assertTrue(native.has("language"))
                     assertTrue(native.has("arrivalEnabled"))
                     assertTrue(native.has("monitorConfig"))
+                    assertTrue(native.has("railfanToolsEnabled"))
+                    assertTrue(native.has("stationVisits"))
+                    assertTrue(native.has("vehicleSearchHistory"))
                     assertFalse(native.has("active"))
                     settings.getJSONObject("profile").put("username", "完整备份验证")
                     settings.put("theme", "contrast-dark")

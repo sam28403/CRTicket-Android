@@ -145,6 +145,7 @@ internal fun VehicleQueryScreen(
                         onRetry = { search(submitted, submittedByTrain, refresh = rows.isNotEmpty()) },
                         onVehicle = { search(it) },
                         onNavigate = onNavigate,
+                        active = active,
                     )
                 }
             }

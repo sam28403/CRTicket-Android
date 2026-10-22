@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.QueryResultEmptyState
 import cc.samlab.ticket.ui.components.AppSwitch
 import cc.samlab.ticket.i18n.rememberAppText
 import cc.samlab.ticket.ui.home.homeColorScheme
@@ -39,6 +40,7 @@ internal fun ExpressiveTrainQueryScreen(
     val result = state.optJSONObject("result")
     val stops = result?.optJSONArray("stops")
     val count = stops?.length() ?: 0
+    val error = state.optString("error")
     val timing by rememberQueryTiming(result, active)
     var datePicker by remember { mutableStateOf(false) }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
@@ -59,7 +61,17 @@ internal fun ExpressiveTrainQueryScreen(
                     controller, state, controller.state.optString("location") == location,
                     onDate = { datePicker = true },
                 )
-                LazyVerticalGrid(
+                if (!loading && count == 0 && (error.isNotEmpty() || result != null)) {
+                    QueryResultEmptyState(
+                        message = if (error.isNotEmpty()) error
+                            else textResources(R.string.train_query_empty),
+                        active = active,
+                        modifier = Modifier.weight(1f).testTag("train-query-empty"),
+                        onRetry = if (error.isNotEmpty()) {
+                            { controller.dispatch("query") }
+                        } else null,
+                    )
+                } else LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 320.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 28.dp),

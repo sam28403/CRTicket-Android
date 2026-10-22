@@ -70,7 +70,9 @@ class VehicleQueryRulesTest {
     @Test
     fun cr200ImageAliasesUseTheRequestedModels() {
         assertEquals("CR200J1A", vehicleImageModel("CR200J"))
+        assertEquals("CR200J1B", vehicleImageModel("CR200JB"))
         assertEquals("CR200J1C", vehicleImageModel("CR200JC"))
+        assertEquals("CR200J1D", vehicleImageModel("CR200JD"))
         assertEquals("CR400BFA", vehicleImageModel("CR400BFA"))
     }
     @Test

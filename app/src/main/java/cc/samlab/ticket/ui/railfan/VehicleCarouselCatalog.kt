@@ -19,6 +19,8 @@ internal fun readVehicleCarouselCatalog(context: Context): List<VehicleCarouselM
 
 internal fun vehicleImageModel(model: String): String = when (model) {
     "CR200J" -> "CR200J1A"
+    "CR200JB" -> "CR200J1B"
     "CR200JC" -> "CR200J1C"
+    "CR200JD" -> "CR200J1D"
     else -> model
 }

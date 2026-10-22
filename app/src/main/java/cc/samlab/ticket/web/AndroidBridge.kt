@@ -5,6 +5,7 @@ import android.net.Uri
 import android.webkit.JavascriptInterface
 import cc.samlab.ticket.arrival.StationArrivalBridge
 import cc.samlab.ticket.backup.BackupPreferences
+import cc.samlab.ticket.backup.MAX_BACKUP_NATIVE_LENGTH
 import cc.samlab.ticket.files.DocumentFiles
 import cc.samlab.ticket.monitor.TicketMonitorBridge
 import cc.samlab.ticket.network.PhoneHttp
@@ -50,7 +51,7 @@ class AndroidBridge(
 
     @JavascriptInterface
     fun validateBackupSettings(payload: String): String = runCatching {
-        require(payload.length <= 200_000)
+        require(payload.length <= MAX_BACKUP_NATIVE_LENGTH)
         backupPreferences.validate(JSONObject(payload))
         ""
     }.getOrElse { it.message ?: "Invalid backup settings" }
@@ -58,7 +59,7 @@ class AndroidBridge(
     @JavascriptInterface
     fun restoreBackupSettings(id: String, payload: String) = onUi {
         val result = runCatching {
-            require(payload.length <= 200_000)
+            require(payload.length <= MAX_BACKUP_NATIVE_LENGTH)
             backupPreferences.restore(JSONObject(payload))
             JSONObject().put("success", true)
         }.getOrElse {

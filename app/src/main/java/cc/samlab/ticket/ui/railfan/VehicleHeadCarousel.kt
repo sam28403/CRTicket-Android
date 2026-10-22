@@ -37,7 +37,9 @@ import kotlin.math.absoluteValue
 internal fun VehicleHeadCarousel(active: Boolean, modifier: Modifier = Modifier) {
     val context = LocalContext.current.applicationContext
     val models by produceState<List<VehicleCarouselModel>>(emptyList(), context) {
-        value = withContext(Dispatchers.IO) { readVehicleCarouselCatalog(context) }
+        value = withContext(Dispatchers.IO) {
+            readVehicleCarouselCatalog(context).shuffled()
+        }
     }
     if (models.isEmpty()) {
         Box(modifier.height(248.dp), contentAlignment = Alignment.Center) {

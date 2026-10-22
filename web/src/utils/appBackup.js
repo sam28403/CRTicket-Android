@@ -1,6 +1,7 @@
 import { buildBackupPayload, parseTicketBackup } from './ticketBackup.js'
 import { normalizeUsername } from './username.js'
 import { TICKET_FIELDS } from './ticketFields.js'
+import { validRailfanBackup } from './appBackupRailfan.js'
 
 export const BACKUP_STORAGE_KEYS = [
   'crticket-important-notice-hidden',
@@ -40,6 +41,7 @@ export function validateAppSettings(settings) {
   }
   if (native !== undefined) {
     if (!object(native)) invalid()
+    if (!validRailfanBackup(native)) invalid()
     if (native.language !== undefined && (typeof native.language !== 'string'
         || native.language.length > 35)) invalid()
     for (const key of ['arrivalEnabled', 'importantNoticeSuppressed']) {
