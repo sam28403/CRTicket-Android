@@ -113,11 +113,21 @@ export function useTicketGenerator({ ticket, credit, conditioner, ticketRef, own
     }
   }
 
+  function restoreDraft(event) {
+    if (!event.detail?.generatorDraftRestored) return
+    const saved = nativePage ? native.generatorDraft() : localStorage.getItem(DRAFT_KEY)
+    apply(saved ? JSON.parse(saved) : createDefaultTicket())
+    localStorage.removeItem(RECEIPT_KEY)
+    send({ draft: snapshot(), reset: true })
+    if (nativePage) schedulePreview()
+  }
+
   onMounted(() => {
+    window.addEventListener('crticket-backup-restored', restoreDraft)
     if (!nativePage) return
     window.addEventListener('crticket-generator-action', handleAction)
     send({
-      draft: snapshot(), seats: seatOptions,
+      draft: snapshot(), reset: true, seats: seatOptions,
       themes: themeOptions.map(theme => ({ ...theme, value: theme.id })),
       airDisabledSeats: disableAirSeats,
       stations: stations.map(station => [station.name, station.abbr, station.en]),
@@ -129,6 +139,7 @@ export function useTicketGenerator({ ticket, credit, conditioner, ticketRef, own
     revision++
     clearTimeout(timer)
     window.removeEventListener('crticket-generator-action', handleAction)
+    window.removeEventListener('crticket-backup-restored', restoreDraft)
   })
   return { busy, saveFormat, clear }
 }

@@ -41,7 +41,11 @@ internal fun ExpressiveAppLayout(
             }) { destination, active -> latestContent(destination, active, embedded) }
         }
     }
-    MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
+    MaterialExpressiveTheme(colorScheme = homeColorScheme(
+        LocalContext.current,
+        dark || location == "/railfan/speedometer/live",
+        pureBlack || location == "/railfan/speedometer/live",
+    )) {
         ImportantNoticeDialog()
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
             CompositionLocalProvider(LocalFoldingFeatures provides folds) {
@@ -63,6 +67,7 @@ internal fun ExpressiveAppLayout(
                                         location.startsWith("/settings") -> "/settings"
                                         location.startsWith("/monitor") -> "/monitor"
                                         location.startsWith("/history") -> "/history"
+                                        location.startsWith("/railfan/speedometer") -> "/railfan/speedometer"
                                         location == "/home" -> "/"
                                         else -> ExpressiveRoutes.path(location)
                                     }

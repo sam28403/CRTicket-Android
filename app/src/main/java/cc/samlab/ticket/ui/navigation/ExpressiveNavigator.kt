@@ -80,6 +80,7 @@ internal class ExpressiveNavigator {
             } else if (target == "/home") {
                 nav.popBackStack(nav.graph.startDestinationId, false)
             } else if (replace ||
+                (target == "/railfan/speedometer/live" && currentLocation?.startsWith("/railfan/speedometer/guide") == true) ||
                 (fromWeb && currentLocation?.let { ExpressiveRoutes.addsDefaultDate(it, target) } == true)) {
                 nav.navigate(ExpressiveRoutes.graphRoute(target)) {
                     popUpTo(nav.currentDestination!!.id) { inclusive = true }
@@ -87,7 +88,8 @@ internal class ExpressiveNavigator {
             } else if (previous == target ||
                 (fromWeb && previous?.let(ExpressiveRoutes::webLocation) == target)) nav.popBackStack()
             else if ((target == "/settings" && currentLocation?.startsWith("/settings/") == true) ||
-                (target == "/history" && currentLocation == "/history/editor")) {
+                (target == "/history" && currentLocation == "/history/editor") ||
+                (target == "/railfan/speedometer" && currentLocation?.startsWith("/railfan/speedometer/") == true)) {
                 if (!nav.popBackStack(ExpressiveRoutes.graphRoute(target), false)) {
                     nav.navigate(ExpressiveRoutes.graphRoute(target))
                 }

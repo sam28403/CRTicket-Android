@@ -10,6 +10,7 @@ internal object ExpressiveRoutes {
         "/history", "/history/editor", "/list", "/station", "/train", "/user",
         "/monitor", "/monitor/settings", "/about/report",
         "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
+        "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
     )
 
     fun path(location: String): String = Uri.parse(location).path.orEmpty()
@@ -29,6 +30,7 @@ internal object ExpressiveRoutes {
 
     fun webLocation(location: String): String = when (path(location)) {
         "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
+        "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"
         "/about/report" -> "/about"
         "/settings/arrival", "/settings/permissions", "/settings/language" -> "/settings"
         "/history/editor" -> "/history"

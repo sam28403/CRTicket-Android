@@ -58,6 +58,8 @@ class VehicleQueryRulesTest {
         val examples = mapOf(
             VehicleSeriesTone.RED to listOf("CR400AF-Z-2251", "CR400AFAS1234", "CR300AF-1001"),
             VehicleSeriesTone.ORANGE to listOf("CR400BFA-5066", "CR400BF-GZ-1001", "CR300BF-1001"),
+            VehicleSeriesTone.OLIVE to listOf("YW25G-123", "RW25T-123", "YZ25G-123", "RZ25K-123",
+                "SYW25B-123", "SYZ25B-123", "SRW25T-123", " syw-123 "),
             VehicleSeriesTone.GREEN to listOf("CR200J-1001", "CR200JC-1001", "CR200JS-G-1001"),
             VehicleSeriesTone.BLACK to listOf("CRH1A-1001", "CRH1E-1001"),
             VehicleSeriesTone.BLUE to listOf("CRH380A-1001", "CRH380AL-1001", "CRH2A-1001", "CR450AF-1001"),

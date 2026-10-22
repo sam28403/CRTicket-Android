@@ -33,6 +33,7 @@ internal fun TrainListItem(
     onVehicleClick: (() -> Unit)? = null,
     highlighted: Boolean = false,
     enabled: Boolean = true,
+    showStationCount: Boolean = true,
     onClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -65,7 +66,7 @@ internal fun TrainListItem(
                 if (vehicle != null) {
                     VehicleNumberBadge(vehicle, onVehicleClick ?: onClick)
                 }
-                Surface(
+                if (showStationCount) Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = colors.secondaryContainer,
                 ) {

@@ -8,8 +8,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
     <queries>
         <intent>
             <action android:name="android.settings.APP_PERMISSIONS_SETTINGS" />
@@ -35,6 +37,8 @@
             android:exported="false">
             <meta-data android:name="autoStoreLocales" android:value="true" />
         </service>
+        <service android:name=".speedometer.SpeedometerService"
+            android:exported="false" android:foregroundServiceType="location" />
         <service android:name=".tracking.TrainTrackingService"
             android:exported="false" android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"

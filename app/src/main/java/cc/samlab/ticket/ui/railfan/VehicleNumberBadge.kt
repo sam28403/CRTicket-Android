@@ -17,6 +17,7 @@ internal fun VehicleNumberBadge(number: String, onClick: () -> Unit) {
     val background = when (tone) {
         VehicleSeriesTone.RED -> Color(0xFFC62828)
         VehicleSeriesTone.ORANGE -> Color(0xFFB84D00)
+        VehicleSeriesTone.OLIVE -> Color(0xFF6B732C)
         VehicleSeriesTone.GREEN -> Color(0xFF2E7D32)
         VehicleSeriesTone.BLACK -> Color(0xFF212121)
         VehicleSeriesTone.BLUE -> Color(0xFF1565C0)

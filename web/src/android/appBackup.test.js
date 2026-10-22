@@ -198,6 +198,48 @@ test('backup import cannot overwrite unrelated keys or inject a different device
   value.settings.profile.id = 'remote-account'
   await restoreDeviceBackup(value, target.options)
   assert.equal(target.storage.getItem('token'), 'original')
-  assert.equal(target.storage.getItem('crticket-generator-receipt'), 'keep')
+  assert.equal(target.storage.getItem('crticket-generator-receipt'), null)
   assert.equal(target.result().user.id, 'device')
+})
+
+const speedRecording = {
+  id: 'track-1', train: 'G1', from: '北京南', to: '上海虹桥', vehicle: 'YW25G-123456',
+  started: 1790000000000, elapsed: 60000, meters: 1111.95,
+  points: [[39.86, 116.37, 1000, 0], [39.87, 116.37, 2000, 0], [39.88, 116.37, 3000, 2]],
+}
+
+test('complete backups preserve GPS points, pause segments and unfinished drafts', async () => {
+  const source = fixture()
+  const draft = { trainNo: 'G1', from: '北京南', price: '', message: '草稿', useCredit: 0, hasConditioner: 1 }
+  const exported = buildAppBackup([], profile, {
+    theme: 'classic-system', storage: source.storage,
+    native: { speedRecordings: [speedRecording], generatorDraft: draft },
+  })
+  const parsed = parseAppBackup(JSON.stringify(exported))
+  assert.deepEqual(parsed.settings.native.speedRecordings, [speedRecording])
+  assert.equal(parsed.settings.storage['crticket-generator-draft'], JSON.stringify(draft))
+  const target = fixture({ 'crticket-generator-receipt': 'outdated' })
+  await restoreDeviceBackup(parsed, target.options)
+  assert.deepEqual(target.result().native.generatorDraft, draft)
+  assert.equal(target.storage.getItem('crticket-generator-receipt'), null)
+})
+
+test('malformed GPS and draft payloads fail validation before changing data', () => {
+  for (const change of [
+    { elapsed: 59999 }, { elapsed: '60000' }, { meters: -1 }, { id: '' },
+    { points: [[91, 116, 1, 0]] }, { points: [[39, 181, 1, 0]] },
+    { points: [[39, 116, 2, 0], [39, 116, 1, 0]] },
+    { points: [[39, 116, 1, 2], [39, 116, 2, 1]] },
+    { points: [[39, 116, 1, -1]] }, { vehicle: [] },
+  ]) {
+    assert.throws(() => parseAppBackup(JSON.stringify({
+      app: 'CRTicket', schemaVersion: 2, tickets: [],
+      settings: { native: { speedRecordings: [{ ...speedRecording, ...change }] } },
+    })))
+  }
+  for (const draft of [[], { unknown: 1 }, { useCredit: 2 }, { message: 'a'.repeat(2001) }]) {
+    assert.throws(() => parseAppBackup(JSON.stringify({
+      app: 'CRTicket', schemaVersion: 2, tickets: [], settings: { native: { generatorDraft: draft } },
+    })))
+  }
 })

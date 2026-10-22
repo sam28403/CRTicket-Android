@@ -9,6 +9,9 @@ internal object WideNavigationPolicy {
         "/settings/language",
         "/history/editor",
         "/monitor/settings",
+        "/railfan/speedometer/guide",
+        "/railfan/speedometer/live",
+        "/railfan/speedometer/track",
     )
 
     fun startsJourney(location: String): Boolean {

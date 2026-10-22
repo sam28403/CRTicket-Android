@@ -6,7 +6,7 @@ import { normalizeUsername } from '../utils/username.js'
 const TICKETS_KEY = 'crticket-device-tickets-v1'
 const OWNER_KEY = 'crticket-device-owner-v1'
 const keys = [TICKETS_KEY, OWNER_KEY, 'crticket-default-owner:device', 'user', 'login',
-  'crticket-theme', ...BACKUP_STORAGE_KEYS]
+  'crticket-theme', 'crticket-generator-receipt', ...BACKUP_STORAGE_KEYS]
 const fingerprint = ticket => JSON.stringify(comparableTicketValues(ticket))
 
 export async function restoreDeviceBackup(backup, {
@@ -62,6 +62,14 @@ export async function restoreDeviceBackup(backup, {
       const value = settings.storage[key]
       if (value === null) storage.removeItem(key)
       else storage.setItem(key, value)
+    }
+    if (Object.hasOwn(settings.native || {}, 'generatorDraft')) {
+      if (settings.native.generatorDraft === null) storage.removeItem('crticket-generator-draft')
+      else storage.setItem('crticket-generator-draft', JSON.stringify(settings.native.generatorDraft))
+    }
+    if (Object.hasOwn(settings.native || {}, 'generatorDraft')
+        || Object.hasOwn(settings.storage || {}, 'crticket-generator-draft')) {
+      storage.removeItem('crticket-generator-receipt')
     }
     if (settings.theme !== undefined) applyTheme(settings.theme)
     // Native restoration validates and commits before replying; runtime effects wait for completion.

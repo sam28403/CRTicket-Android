@@ -48,6 +48,11 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/railfan/speedometer", "/railfan/speedometer/guide",
+            "/railfan/speedometer/live", "/railfan/speedometer/track" ->
+                cc.samlab.ticket.ui.speedometer.SpeedometerScreen(
+                    location, dark, pureBlack, embedded, active, onBack, onNavigate,
+                )
             "/railfan/routing" -> cc.samlab.ticket.ui.railfan.RoutingQueryScreen(
                 trainList.routing, dark, pureBlack, embedded, active, onBack, onNavigate,
             )

@@ -1,12 +1,14 @@
 import { buildBackupPayload, parseTicketBackup } from './ticketBackup.js'
 import { normalizeUsername } from './username.js'
 import { TICKET_FIELDS } from './ticketFields.js'
+import { validSpeedRecordings, validGeneratorDraft } from './appBackupSpeedometer.js'
 import { validRailfanBackup } from './appBackupRailfan.js'
 
 export const BACKUP_STORAGE_KEYS = [
   'crticket-important-notice-hidden',
   'crticket-train-query-history',
   'crticket-station-query-history',
+  'crticket-generator-draft',
 ]
 
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -30,7 +32,9 @@ export function validateAppSettings(settings) {
       const value = storage[key]
       if (value === undefined || value === null) continue
       if (typeof value !== 'string' || value.length > 20000) invalid()
-      if (key === 'crticket-important-notice-hidden') {
+      if (key === 'crticket-generator-draft') {
+        if (!validGeneratorDraft(JSON.parse(value))) invalid()
+      } else if (key === 'crticket-important-notice-hidden') {
         if (value !== '1') invalid()
       } else {
         const history = JSON.parse(value)
@@ -42,6 +46,9 @@ export function validateAppSettings(settings) {
   if (native !== undefined) {
     if (!object(native)) invalid()
     if (!validRailfanBackup(native)) invalid()
+    if (native.speedRecordings !== undefined && !validSpeedRecordings(native.speedRecordings)) invalid()
+    if (native.generatorDraft !== undefined && native.generatorDraft !== null
+        && !validGeneratorDraft(native.generatorDraft)) invalid()
     if (native.language !== undefined && (typeof native.language !== 'string'
         || native.language.length > 35)) invalid()
     for (const key of ['arrivalEnabled', 'importantNoticeSuppressed']) {
@@ -60,6 +67,10 @@ export function buildAppBackup(tickets, user, { theme, storage, native } = {}) {
     theme,
     storage: Object.fromEntries(BACKUP_STORAGE_KEYS.map(key => [key, storage.getItem(key)])),
     ...(native ? { native } : {}),
+  }
+  if (native && Object.hasOwn(native, 'generatorDraft')) {
+    settings.storage['crticket-generator-draft'] = native.generatorDraft === null
+      ? null : JSON.stringify(native.generatorDraft)
   }
   validateAppSettings(settings)
   return {

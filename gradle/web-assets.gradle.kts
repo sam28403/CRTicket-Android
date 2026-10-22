@@ -16,9 +16,11 @@ val buildWebAssets = tasks.register<Exec>("buildWebAssets") {
         rootProject.file("web/vite.config.js"),
         rootProject.file("tools/package-web-assets.mjs"),
         rootProject.file("tools/package-arrival-stations.mjs"),
+        rootProject.file("tools/package-speedometer-assets.mjs"),
     )
     outputs.dir(project.file("src/main/assets/web"))
     outputs.file(project.file("src/main/assets/arrival-stations.json"))
+    outputs.dir(project.file("src/main/assets/speedometer-lib"))
 }
 
 tasks.matching { it.name == "preBuild" || it.name.contains("lint", ignoreCase = true) }.configureEach {

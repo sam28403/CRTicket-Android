@@ -80,7 +80,8 @@ class AppearanceController(
         home.dark = dark
         home.pureBlack = pureBlack
         val colors = homeColorScheme(activity, dark, pureBlack)
-        val color = if (dark && pureBlack) Color.BLACK else colors.surfaceContainer.toArgb()
+        val liveSpeedometer = home.route == "/railfan/speedometer/live"
+        val color = if (liveSpeedometer || dark && pureBlack) Color.BLACK else colors.surfaceContainer.toArgb()
         root.setBackgroundColor(color)
         webView.setBackgroundColor(color)
         if (webPalette !== colors) {
@@ -91,13 +92,14 @@ class AppearanceController(
                 null,
             )
         }
-        if (systemBarDark == dark) return
-        systemBarDark = dark
+        val barsDark = dark || liveSpeedometer
+        if (systemBarDark == barsDark) return
+        systemBarDark = barsDark
         if (Build.VERSION.SDK_INT >= 30) {
             val flags = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
                 WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
             activity.window.insetsController?.setSystemBarsAppearance(
-                if (dark) 0 else flags,
+                if (barsDark) 0 else flags,
                 flags
             )
         } else {
@@ -107,7 +109,7 @@ class AppearanceController(
             @Suppress("DEPRECATION")
             val current = activity.window.decorView.systemUiVisibility
             @Suppress("DEPRECATION")
-            activity.window.decorView.systemUiVisibility = if (dark) {
+            activity.window.decorView.systemUiVisibility = if (barsDark) {
                 current and flags.inv()
             } else {
                 current or flags

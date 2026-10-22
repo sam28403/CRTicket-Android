@@ -118,7 +118,8 @@ class MainActivity : AppCompatActivity() {
         files.restore(savedInstanceState)
         if (savedInstanceState == null || route != "#/home" ||
             webView.restoreState(savedInstanceState) == null) {
-            webView.loadUrl("$ORIGIN/index.html$route")
+            val webRoute = ExpressiveRoutes.webLocation(route.removePrefix("#"))
+            webView.loadUrl("$ORIGIN/index.html#$webRoute")
         }
         clearNotificationRoute()
     }
@@ -198,7 +199,9 @@ class MainActivity : AppCompatActivity() {
     private fun initialNotificationRoute(): String {
         val station = intent.getStringExtra(ArrivalNotifications.OPEN_STATION)
         val tracking = intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)
+        val speed = intent.getStringExtra(cc.samlab.ticket.speedometer.SpeedometerService.OPEN_RECORDING)
         return when {
+            speed != null -> "#$speed"
             station != null -> "#${stationRoute(station)}"
             tracking != null -> "#$tracking"
             intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false) -> "#/monitor"
@@ -209,6 +212,7 @@ class MainActivity : AppCompatActivity() {
     private fun clearNotificationRoute() {
         intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         intent.removeExtra(TrainTrackingNotifications.OPEN_TRACKING)
+        intent.removeExtra(cc.samlab.ticket.speedometer.SpeedometerService.OPEN_RECORDING)
         intent.removeExtra(MonitorNotifications.OPEN_MONITOR)
     }
 
@@ -277,6 +281,9 @@ class MainActivity : AppCompatActivity() {
             intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         }
         if (intent.getBooleanExtra(MonitorNotifications.OPEN_MONITOR, false)) navigateTo("/monitor")
+        intent.getStringExtra(cc.samlab.ticket.speedometer.SpeedometerService.OPEN_RECORDING)?.let {
+            navigateTo(it, notification = true)
+        }
         intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)?.let {
             navigateTo(it, notification = true)
         }

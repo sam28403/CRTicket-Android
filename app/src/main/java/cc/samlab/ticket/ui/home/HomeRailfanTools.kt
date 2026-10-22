@@ -2,6 +2,9 @@ package cc.samlab.ticket.ui.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import android.content.pm.PackageManager
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.railfan.RailfanPreferences
 
@@ -19,7 +22,7 @@ internal val railfanDestinations = listOf(
         R.drawable.ic_home_visits, "/railfan/visits",
     ),
     HomeDestination(
-        R.string.railfan_speedometer, R.string.railfan_placeholder,
+        R.string.railfan_speedometer, R.string.speed_description,
         R.drawable.ic_home_speedometer, "/railfan/speedometer",
     ),
 )
@@ -28,5 +31,10 @@ internal val railfanDestinations = listOf(
 internal fun HomeRailfanTools(onNavigate: (String) -> Unit, selectedRoute: String) {
     val enabled by RailfanPreferences.rememberEnabled()
     if (!enabled) return
-    HomeDestinations(railfanDestinations, ticketDestinations.size, onNavigate, selectedRoute)
+    val context = LocalContext.current
+    val destinations = remember(context) {
+        val hasGps = context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)
+        railfanDestinations.filter { hasGps || it.route != "/railfan/speedometer" }
+    }
+    HomeDestinations(destinations, ticketDestinations.size, onNavigate, selectedRoute)
 }

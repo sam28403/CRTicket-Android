@@ -2,6 +2,7 @@ package cc.samlab.ticket.backup
 
 import android.content.Context
 import android.content.SharedPreferences
+import cc.samlab.ticket.speedometer.SpeedometerStore
 import cc.samlab.ticket.arrival.ArrivalStore
 import cc.samlab.ticket.arrival.ArrivalHistory
 import cc.samlab.ticket.arrival.StationArrivalMonitor
@@ -18,8 +19,11 @@ internal class BackupPreferences(private val context: Context) {
     private val monitor = context.getSharedPreferences("ticket-monitor", Context.MODE_PRIVATE)
     private var pending: JSONObject? = null
     private val railfan = BackupRailfanData(context)
+    private val generator = context.getSharedPreferences("ticket-generator", Context.MODE_PRIVATE)
 
     fun snapshot(): JSONObject = railfan.snapshot(JSONObject()
+        .put("speedRecordings", SpeedometerStore.backup(context))
+        .put("generatorDraft", generator.getString("draft", null)?.let(::JSONObject) ?: JSONObject.NULL)
         .put("language", AppLanguages.selectedTag())
         .put("arrivalEnabled", ArrivalStore(context).enabled)
         .put("importantNoticeSuppressed", android.getBoolean(IMPORTANT_NOTICE_SUPPRESSED, false))
@@ -27,6 +31,10 @@ internal class BackupPreferences(private val context: Context) {
 
     fun validate(value: JSONObject) {
         railfan.validate(value)
+        if (value.has("speedRecordings")) validateSpeedometerBackup(value.getJSONArray("speedRecordings"))
+        if (value.has("generatorDraft") && !value.isNull("generatorDraft")) {
+            validateGeneratorDraft(value.getJSONObject("generatorDraft"))
+        }
         if (value.has("language")) {
             val language = value.get("language")
             require(language is String && (language.isEmpty() ||
@@ -57,11 +65,17 @@ internal class BackupPreferences(private val context: Context) {
         railfan.changes(value).forEach { (preferences, values) ->
             changes[preferences] = changes[preferences].orEmpty() + values
         }
+        if (value.has("generatorDraft")) {
+            changes[generator] = mapOf("draft" to value.optJSONObject("generatorDraft")?.toString())
+        }
         val original = changes.mapValues { (preferences, values) ->
             values.mapValues { (key, _) -> preferences.all[key] }
         }
         try {
             changes.forEach { (preferences, values) -> write(preferences, values) }
+            if (value.has("speedRecordings")) {
+                SpeedometerStore.importHistory(context, value.getJSONArray("speedRecordings"))
+            }
         } catch (error: Exception) {
             original.forEach { (preferences, values) ->
                 runCatching { write(preferences, values) }.onFailure { error.addSuppressed(it) }

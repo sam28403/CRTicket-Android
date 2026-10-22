@@ -25,6 +25,7 @@ internal class BackupDeviceFixture(
         "crticket-device-tickets-v1", "crticket-device-owner-v1", "crticket-default-owner:device",
         "user", "login", "crticket-theme", "crticket-important-notice-hidden",
         "crticket-train-query-history", "crticket-station-query-history",
+        "crticket-generator-draft", "crticket-generator-receipt",
     )
 
     fun ready() {
