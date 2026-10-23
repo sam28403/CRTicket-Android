@@ -86,6 +86,7 @@ internal class ExpressivePageContent(
                 ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, true, active)
             }
                 else ExpressiveHomeScreen(dark, active, onNavigate, pureBlack, navigation)
+            "/about/credits" -> ExpressiveCreditsScreen(dark, pureBlack, onBack, onExternal)
             "/about" -> About(dark, pureBlack, embedded)
             "/about/report" -> cc.samlab.ticket.ui.report.ExpressiveReportScreen(
                 dark, pureBlack, onBack, onExternal,
@@ -148,7 +149,10 @@ internal class ExpressivePageContent(
 
     @Composable
     private fun About(dark: Boolean, pureBlack: Boolean, embedded: Boolean) {
-        ExpressiveAboutScreen(dark, onBack, onExternal, pureBlack, embedded, dataVersions) {
+        ExpressiveAboutScreen(
+            dark, onBack, onExternal, pureBlack, embedded, dataVersions,
+            onCredits = { onNavigate("/about/credits") },
+        ) {
             onNavigate("/about/report")
         }
     }

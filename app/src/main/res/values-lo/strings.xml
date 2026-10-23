@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">ໂມງປຸກທີ່ກົງເວລາ</string>
     <string name="permissions_dnd">ການເຂົ້າເຖິງຫ້າມລົບກວນ</string>
     <string name="backup_permissions_review">ນຳເຂົ້າສຳຮອງແລ້ວ. ຍັງຂາດສິດສຳລັບ: %1$s. ກະລຸນາອະນຸຍາດກ່ອນໃຊ້.</string>
+    <string name="about_credits">ຂອບໃຈໂຄງການໂອເພນຊອດ</string>
 </resources>

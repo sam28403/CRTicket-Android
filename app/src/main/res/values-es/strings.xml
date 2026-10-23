@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Alarmas exactas</string>
     <string name="permissions_dnd">Acceso a No molestar</string>
     <string name="backup_permissions_review">Copia importada. Faltan permisos para: %1$s. Concédelos antes de usar estas funciones.</string>
+    <string name="about_credits">Agradecimientos de código abierto</string>
 </resources>

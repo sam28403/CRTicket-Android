@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">منبهات دقيقة</string>
     <string name="permissions_dnd">الوصول إلى عدم الإزعاج</string>
     <string name="backup_permissions_review">تم استيراد النسخة الاحتياطية. أذونات مفقودة للميزات التالية: %1$s. امنح الأذونات قبل استخدامها.</string>
+    <string name="about_credits">شكر للمصادر المفتوحة</string>
 </resources>

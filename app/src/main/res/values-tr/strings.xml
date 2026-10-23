@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Kesin alarmlar</string>
     <string name="permissions_dnd">Rahatsız Etmeyin erişimi</string>
     <string name="backup_permissions_review">Yedek içe aktarıldı. Şu özelliklerin izinleri eksik: %1$s. Kullanmadan önce erişim izni verin.</string>
+    <string name="about_credits">Açık kaynak teşekkürleri</string>
 </resources>

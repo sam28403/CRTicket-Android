@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">زنگ‌های دقیق</string>
     <string name="permissions_dnd">دسترسی به مزاحم نشوید</string>
     <string name="backup_permissions_review">پشتیبان وارد شد. مجوزهای این قابلیت‌ها موجود نیست: %1$s. پیش از استفاده دسترسی بدهید.</string>
+    <string name="about_credits">سپاس از متن‌باز</string>
 </resources>

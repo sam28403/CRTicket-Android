@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">นาฬิกาปลุกตรงเวลา</string>
     <string name="permissions_dnd">การเข้าถึงโหมดห้ามรบกวน</string>
     <string name="backup_permissions_review">นำเข้าข้อมูลสำรองแล้ว ยังไม่มีสิทธิ์สำหรับ: %1$s โปรดอนุญาตก่อนใช้งาน</string>
+    <string name="about_credits">ขอบคุณโครงการโอเพนซอร์ส</string>
 </resources>

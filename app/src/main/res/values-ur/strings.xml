@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">درست وقت کے الارم</string>
     <string name="permissions_dnd">ڈسٹرب نہ کریں تک رسائی</string>
     <string name="backup_permissions_review">بیک اپ درآمد ہو گیا۔ ان خصوصیات کی اجازتیں موجود نہیں: %1$s۔ استعمال سے پہلے رسائی دیں۔</string>
+    <string name="about_credits">اوپن سورس کا شکریہ</string>
 </resources>

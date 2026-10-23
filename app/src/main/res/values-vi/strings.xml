@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Báo thức chính xác</string>
     <string name="permissions_dnd">Quyền truy cập Không làm phiền</string>
     <string name="backup_permissions_review">Đã nhập bản sao lưu. Thiếu quyền cho: %1$s. Hãy cấp quyền trước khi sử dụng.</string>
+    <string name="about_credits">Lời cảm ơn mã nguồn mở</string>
 </resources>

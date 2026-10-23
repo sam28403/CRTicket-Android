@@ -8,7 +8,7 @@ internal object ExpressiveRoutes {
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
         "/settings/language", "/settings/sale-reminders", "/search", "/sale-time/reminders",
         "/history", "/history/editor", "/list", "/station", "/sale-time", "/train", "/user",
-        "/monitor", "/monitor/settings", "/about/report",
+        "/monitor", "/monitor/settings", "/about/report", "/about/credits",
         "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
     )
@@ -32,7 +32,7 @@ internal object ExpressiveRoutes {
         "/sale-time", "/sale-time/reminders" -> "/home"
         "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"
-        "/about/report" -> "/about"
+        "/about/report", "/about/credits" -> "/about"
         "/settings/arrival", "/settings/permissions", "/settings/language", "/settings/sale-reminders" -> "/settings"
         "/history/editor" -> "/history"
         else -> location

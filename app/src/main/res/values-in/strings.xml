@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Alarm tepat waktu</string>
     <string name="permissions_dnd">Akses Jangan Ganggu</string>
     <string name="backup_permissions_review">Cadangan diimpor. Izin belum tersedia untuk: %1$s. Berikan izin sebelum menggunakannya.</string>
+    <string name="about_credits">Penghargaan sumber terbuka</string>
 </resources>

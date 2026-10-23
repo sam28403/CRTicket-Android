@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">সঠিক সময়ের অ্যালার্ম</string>
     <string name="permissions_dnd">বিরক্ত করবেন না অ্যাক্সেস</string>
     <string name="backup_permissions_review">ব্যাকআপ আমদানি হয়েছে। এই বৈশিষ্ট্যগুলির অনুমতি নেই: %1$s। ব্যবহারের আগে অনুমতি দিন।</string>
+    <string name="about_credits">ওপেন সোর্স কৃতজ্ঞতা</string>
 </resources>

@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">精確鬧鐘</string>
     <string name="permissions_dnd">勿擾存取</string>
     <string name="backup_permissions_review">備份已匯入。以下功能仍缺少所需權限：%1$s。請授權後再使用相關功能。</string>
+    <string name="about_credits">開源致謝</string>
 </resources>

@@ -1,0 +1,38 @@
+package cc.samlab.ticket.ui.home
+
+internal data class ProjectCredit(val name: String, val url: String)
+
+internal val projectCredits = listOf(
+    ProjectCredit("Kotlin", "https://kotlinlang.org/"),
+    ProjectCredit("Android Jetpack", "https://developer.android.com/jetpack"),
+    ProjectCredit("Jetpack Compose", "https://developer.android.com/compose"),
+    ProjectCredit("Material 3", "https://m3.material.io/"),
+    ProjectCredit("OkHttp", "https://square.github.io/okhttp/"),
+    ProjectCredit("AndroidFastScroll", "https://github.com/zhanghai/AndroidFastScroll"),
+    ProjectCredit("Vue", "https://vuejs.org/"),
+    ProjectCredit("Vue Router", "https://router.vuejs.org/"),
+    ProjectCredit("Pinia", "https://pinia.vuejs.org/"),
+    ProjectCredit("VueUse", "https://vueuse.org/"),
+    ProjectCredit("Element Plus", "https://element-plus.org/"),
+    ProjectCredit("Axios", "https://axios-http.com/"),
+    ProjectCredit("Day.js", "https://day.js.org/"),
+    ProjectCredit("Apache ECharts", "https://echarts.apache.org/"),
+    ProjectCredit("Leaflet", "https://leafletjs.com/"),
+    ProjectCredit("html2canvas", "https://html2canvas.hertzen.com/"),
+    ProjectCredit("jsPDF", "https://github.com/parallax/jsPDF"),
+    ProjectCredit("pdf-lib", "https://pdf-lib.js.org/"),
+    ProjectCredit("fontkit", "https://github.com/Hopding/fontkit"),
+    ProjectCredit("SheetJS", "https://sheetjs.com/"),
+    ProjectCredit("fflate", "https://github.com/101arrowz/fflate"),
+    ProjectCredit("node-qrcode", "https://github.com/soldair/node-qrcode"),
+    ProjectCredit("Vite", "https://vite.dev/"),
+    ProjectCredit("moerail", "https://github.com/Arnie97/moerail"),
+    ProjectCredit("12306", "https://www.12306.cn/"),
+    ProjectCredit("路路通", "http://www.lltskb.com/"),
+    ProjectCredit("rail.re", "https://rail.re/"),
+    ProjectCredit("中国动车组", "https://www.china-emu.cn/"),
+    ProjectCredit("OpenStreetMap", "https://www.openstreetmap.org/"),
+    ProjectCredit("HOT", "https://www.hotosm.org/"),
+    ProjectCredit("OpenStreetMap France", "https://www.openstreetmap.fr/"),
+    ProjectCredit("Thunderforest", "https://www.thunderforest.com/"),
+)

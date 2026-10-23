@@ -600,4 +600,5 @@
     <string name="permissions_exact_alarms">Exact alarms</string>
     <string name="permissions_dnd">Do Not Disturb access</string>
     <string name="backup_permissions_review">Backup imported. Permissions are missing for: %1$s. Grant access before using these features.</string>
+    <string name="about_credits">Open source credits</string>
 </resources>

@@ -43,6 +43,7 @@ internal fun ExpressiveAboutScreen(
     pureBlack: Boolean = false,
     embedded: Boolean = false,
     dataVersions: AboutDataVersions,
+    onCredits: () -> Unit = {},
     onReport: () -> Unit = {},
 ) {
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
@@ -73,14 +74,14 @@ internal fun ExpressiveAboutScreen(
                         AboutPanel {
                             AboutLogo()
                             AboutDescription(dataVersions)
-                            AboutLinks(onExternal, onReport)
+                            AboutLinks(onExternal, onReport, onCredits)
                         }
                     },
                     first = { AboutPanel { AboutLogo() } },
                     second = {
                         AboutPanel {
                             AboutDescription(dataVersions)
-                            AboutLinks(onExternal, onReport)
+                            AboutLinks(onExternal, onReport, onCredits)
                         }
                     },
                 )
@@ -141,10 +142,15 @@ private fun AboutDescription(dataVersions: AboutDataVersions) {
 }
 
 @Composable
-private fun AboutLinks(onExternal: (String) -> Unit, onReport: () -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+private fun AboutLinks(
+    onExternal: (String) -> Unit,
+    onReport: () -> Unit,
+    onCredits: () -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         AboutGithubLink(onExternal)
         AboutReportLink(onReport)
+        AboutCreditsLink(onCredits)
     }
 }
 

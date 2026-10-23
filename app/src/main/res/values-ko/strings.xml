@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">정확한 알람</string>
     <string name="permissions_dnd">방해 금지 접근</string>
     <string name="backup_permissions_review">백업을 가져왔습니다. 다음 기능에 필요한 권한이 없습니다: %1$s. 사용 전에 권한을 허용해 주세요.</string>
+    <string name="about_credits">오픈 소스 감사</string>
 </resources>

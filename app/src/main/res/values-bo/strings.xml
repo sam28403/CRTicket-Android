@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">དུས་ཚོད་ཏག་ཏག་གི་དྲིལ་བུ།</string>
     <string name="permissions_dnd">བར་ཆད་མེད་པའི་ཆོག་མཆན།</string>
     <string name="backup_permissions_review">གྲབས་ཉར་ནང་འདྲེན་བྱས་ཟིན། བྱེད་ནུས་འདི་དག་ལ་ཆོག་མཆན་མེད། %1$s། སྤྱོད་པའི་སྔོན་ལ་ཆོག་མཆན་གནང་རོགས།</string>
+    <string name="about_credits">ཁུངས་འབྱེད་ལ་ཐུགས་རྗེ་ཆེ།</string>
 </resources>

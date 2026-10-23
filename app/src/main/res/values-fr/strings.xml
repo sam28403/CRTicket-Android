@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Alarmes exactes</string>
     <string name="permissions_dnd">Accès à Ne pas déranger</string>
     <string name="backup_permissions_review">Sauvegarde importée. Autorisations manquantes pour : %1$s. Accordez-les avant utilisation.</string>
+    <string name="about_credits">Remerciements open source</string>
 </resources>

@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">सटीक अलार्म</string>
     <string name="permissions_dnd">परेशान न करें का ऐक्सेस</string>
     <string name="backup_permissions_review">बैकअप आयात हो गया। इन सुविधाओं की अनुमतियाँ नहीं हैं: %1$s। इस्तेमाल से पहले अनुमति दें।</string>
+    <string name="about_credits">ओपन सोर्स आभार</string>
 </resources>

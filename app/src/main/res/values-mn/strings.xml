@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Нарийн цагийн сэрүүлэг</string>
     <string name="permissions_dnd">Бүү саад бол горимын хандалт</string>
     <string name="backup_permissions_review">Нөөц хуулбар импортлогдлоо. Дараах боломжийн зөвшөөрөл дутуу: %1$s. Ашиглахаас өмнө зөвшөөрнө үү.</string>
+    <string name="about_credits">Нээлттэй эхийн талархал</string>
 </resources>

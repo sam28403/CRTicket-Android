@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Exakte Alarme</string>
     <string name="permissions_dnd">Zugriff auf Nicht stören</string>
     <string name="backup_permissions_review">Sicherung importiert. Berechtigungen fehlen für: %1$s. Vor der Nutzung Zugriff erlauben.</string>
+    <string name="about_credits">Open-Source-Danksagungen</string>
 </resources>

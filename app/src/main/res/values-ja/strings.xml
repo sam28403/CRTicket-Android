@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">正確なアラーム</string>
     <string name="permissions_dnd">サイレントモードへのアクセス</string>
     <string name="backup_permissions_review">バックアップを読み込みました。次の機能に必要な権限がありません：%1$s。使用前に許可してください。</string>
+    <string name="about_credits">オープンソースへの謝辞</string>
 </resources>

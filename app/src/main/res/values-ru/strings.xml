@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Точные будильники</string>
     <string name="permissions_dnd">Доступ к режиму Не беспокоить</string>
     <string name="backup_permissions_review">Резервная копия импортирована. Нет разрешений для: %1$s. Предоставьте их перед использованием.</string>
+    <string name="about_credits">Благодарности открытому ПО</string>
 </resources>

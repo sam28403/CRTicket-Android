@@ -597,4 +597,5 @@
     <string name="permissions_exact_alarms">Penggera tepat</string>
     <string name="permissions_dnd">Akses Jangan Ganggu</string>
     <string name="backup_permissions_review">Sandaran diimport. Kebenaran belum diberikan untuk: %1$s. Benarkan akses sebelum menggunakannya.</string>
+    <string name="about_credits">Penghargaan sumber terbuka</string>
 </resources>
