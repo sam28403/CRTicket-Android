@@ -33,6 +33,12 @@ android {
         compose = true
     }
     buildTypes {
+        create("ci") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".ci"
+            versionNameSuffix = "-ci"
+            matchingFallbacks += "debug"
+        }
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(

@@ -62,6 +62,8 @@ CRTicket 是独立运行的 Android 车票工具，提供车票制作、历史�
 
 ## 开发与构建
 
+GitHub Actions 的 CI 构建、签名密钥设置和发布审批见 [自动构建与正式发布](docs/releases.md)。
+
 使用 Android Studio 打开项目并完成 Gradle 同步。工具链要求以
 `gradle/libs.versions.toml`、`gradle/wrapper/gradle-wrapper.properties` 和
 `gradle/gradle-daemon-jvm.properties` 为准；Node.js 要求见 `web/package.json`。

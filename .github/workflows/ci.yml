@@ -1,0 +1,45 @@
+name: Android CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-android
+      - name: Test web code
+        run: npm run test:android --prefix web
+      - name: Test and build Android
+        run: >-
+          bash gradlew :app:testDebugUnitTest :app:lintCi :app:assembleCi
+          --max-workers=2 --console=plain
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CRTicket-ci-${{ github.sha }}
+          path: app/build/outputs/apk/ci/*.apk
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            app/build/reports/
+            app/build/test-results/
+          retention-days: 14
