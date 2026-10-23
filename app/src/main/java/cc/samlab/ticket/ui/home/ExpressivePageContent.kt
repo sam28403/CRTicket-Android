@@ -86,6 +86,13 @@ internal class ExpressivePageContent(
                 ExpressiveGeneratorScreen(generator, dark, pureBlack, onBack, true, active)
             }
                 else ExpressiveHomeScreen(dark, active, onNavigate, pureBlack, navigation)
+            "/help", "/help/tickets", "/help/query",
+            "/help/backup", "/help/arrival", "/help/monitor",
+            "/help/sale", "/help/speed", "/help/vehicle",
+            "/help/general" ->
+                cc.samlab.ticket.ui.help.ExpressiveHelpScreen(
+                    location, dark, pureBlack, embedded, active, onBack, onNavigate,
+                )
             "/about/credits" -> ExpressiveCreditsScreen(dark, pureBlack, onBack, onExternal)
             "/about" -> About(dark, pureBlack, embedded)
             "/about/report" -> cc.samlab.ticket.ui.report.ExpressiveReportScreen(

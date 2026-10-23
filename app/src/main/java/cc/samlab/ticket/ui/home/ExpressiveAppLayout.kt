@@ -63,6 +63,7 @@ internal fun ExpressiveAppLayout(
                             CompositionLocalProvider(LocalSinglePane provides true) {
                                 Box(Modifier.fillMaxSize().testTag("navigation-menu")) {
                                     val selected = when {
+                                        location.startsWith("/help") -> "/help"
                                         location.startsWith("/about") -> "/about"
                                         location.startsWith("/settings") -> "/settings"
                                         location.startsWith("/monitor") -> "/monitor"

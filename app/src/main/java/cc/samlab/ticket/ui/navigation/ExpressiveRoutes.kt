@@ -8,6 +8,10 @@ internal object ExpressiveRoutes {
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
         "/settings/language", "/settings/sale-reminders", "/search", "/sale-time/reminders",
         "/history", "/history/editor", "/list", "/station", "/sale-time", "/train", "/user",
+        "/help", "/help/tickets", "/help/query",
+        "/help/backup", "/help/arrival", "/help/monitor",
+        "/help/sale", "/help/speed", "/help/vehicle",
+        "/help/general",
         "/monitor", "/monitor/settings", "/about/report", "/about/credits",
         "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
@@ -29,6 +33,11 @@ internal object ExpressiveRoutes {
     }
 
     fun webLocation(location: String): String = when (path(location)) {
+        "/help/tickets", "/help/query",
+        "/help/backup", "/help/arrival", "/help/monitor",
+        "/help/sale", "/help/speed", "/help/vehicle",
+        "/help/general",
+        "/help" -> "/home"
         "/sale-time", "/sale-time/reminders" -> "/home"
         "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"

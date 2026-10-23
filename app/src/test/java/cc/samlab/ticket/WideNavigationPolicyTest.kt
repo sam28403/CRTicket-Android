@@ -8,7 +8,7 @@ import org.junit.Test
 class WideNavigationPolicyTest {
     @Test fun switchingFeaturesStartsANewJourney() {
         listOf(
-            "/", "/history", "/settings", "/about", "/user", "/monitor",
+            "/help", "/", "/history", "/settings", "/about", "/user", "/monitor",
             "/list?from=BJP&to=SHH", "/train", "/station", "/train?train=",
         ).forEach { assertTrue(it, WideNavigationPolicy.startsJourney(it)) }
     }
@@ -19,6 +19,7 @@ class WideNavigationPolicyTest {
             "/train?date=2026-10-19&train=G3",
             "/station?station=%E5%8C%97%E4%BA%AC%E5%8D%97",
             "/settings/arrival", "/settings/permissions", "/settings/language",
+            "/help/tickets", "/help/backup?section=rules",
             "/history/editor", "/monitor/settings", "/about/report", "/about/credits",
         ).forEach { assertFalse(it, WideNavigationPolicy.startsJourney(it)) }
     }

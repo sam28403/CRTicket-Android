@@ -16,6 +16,27 @@ class ExpressiveNavigationTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val fixture = MonitorLifecycleDeviceFixture(InstrumentationRegistry.getInstrumentation())
 
+    @Test fun helpTopicsReturnToIndexInTheNativeStack() = fixture.withSnapshot {
+        fixture.await("Router was not ready") {
+            fixture.evaluate("typeof window.crticketNavigate === 'function'") == "true"
+        }
+        fixture.evaluate("window.crticketNavigate('/help')")
+        compose.waitUntil(20_000) {
+            compose.onAllNodesWithTag("help-index").fetchSemanticsNodes().isNotEmpty()
+        }
+        listOf(
+            "tickets" to "车票制作与历史记录",
+            "backup" to "备份、恢复与本机数据",
+            "speed" to "车速表与轨迹",
+        ).forEach { (id, title) ->
+            compose.onNodeWithText(title).performScrollTo().performClick()
+            compose.onNodeWithTag("help-$id").assertExists()
+            compose.onNodeWithText("使用规则").assertExists()
+            pressBack()
+            compose.onNodeWithTag("help-index").assertExists()
+        }
+    }
+
     @Test fun everyExpressivePageUsesTheSameNavigationGraph() = fixture.withSnapshot {
         listOf("/about", "/settings", "/history", "/list", "/station", "/train", "/user", "/monitor")
             .forEach { route ->

@@ -19,7 +19,7 @@ internal object WideNavigationPolicy {
 
     fun startsJourney(location: String): Boolean {
         val path = location.substringBefore('?')
-        if (path in children) return false
+        if (path in children || path.startsWith("/help/")) return false
         val argument = when (path) {
             "/train" -> "train"
             "/station" -> "station"

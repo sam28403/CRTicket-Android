@@ -30,6 +30,10 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         private set
     val route: String
         get() = when (val path = ExpressiveRoutes.path(location)) {
+            "/help/tickets", "/help/query",
+            "/help/backup", "/help/arrival", "/help/monitor",
+            "/help/sale", "/help/speed", "/help/vehicle",
+            "/help/general" -> "/help"
             "/about/report", "/about/credits" -> "/about"
             "/sale-time/reminders" -> "/sale-time"
             "/settings/arrival", "/settings/permissions", "/settings/language", "/settings/sale-reminders" -> "/settings"
