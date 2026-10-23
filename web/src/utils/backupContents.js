@@ -15,8 +15,9 @@ const storageGroups = {
   draft: ['crticket-generator-draft'],
 }
 const nativeGroups = {
-  search: ['vehicleSearchHistory'],
-  settings: ['language', 'arrivalEnabled', 'importantNoticeSuppressed', 'railfanToolsEnabled'],
+  search: ['vehicleSearchHistory', 'saleSearchHistory'],
+  settings: ['language', 'arrivalEnabled', 'importantNoticeSuppressed', 'railfanToolsEnabled',
+    'saleAlarmEnabled', 'saleSameCity'],
   visits: ['stationVisits'],
   speed: ['speedRecordings'],
   draft: ['generatorDraft'],

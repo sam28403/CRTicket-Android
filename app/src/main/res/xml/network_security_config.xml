@@ -4,6 +4,8 @@
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="false">search.12306.cn</domain>
         <domain includeSubdomains="false">kyfw.12306.cn</domain>
+        <domain includeSubdomains="false">mobile.12306.cn</domain>
+        <domain includeSubdomains="false">www.12306.cn</domain>
         <trust-anchors>
             <certificates src="system" />
             <certificates src="@raw/cfca_ev_root" />

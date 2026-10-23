@@ -22,6 +22,9 @@ internal data class PermissionSettingsState(
     val backgroundLocation: Boolean,
     val promotedNotifications: Boolean?,
     val unrestrictedBattery: Boolean,
+    val fullScreen: Boolean = true,
+    val exactAlarms: Boolean = true,
+    val doNotDisturb: Boolean = false,
 )
 
 /** The system owns permission grants and revocations; these entries open its management UI. */
@@ -51,6 +54,9 @@ internal class PermissionSettingsController(private val activity: ComponentActiv
             } else null,
             unrestrictedBattery = activity.getSystemService(PowerManager::class.java)
                 .isIgnoringBatteryOptimizations(activity.packageName),
+            fullScreen = Build.VERSION.SDK_INT < 34 || notifications.canUseFullScreenIntent(),
+            exactAlarms = cc.samlab.ticket.sale.SaleReminderAlarms.allowed(activity),
+            doNotDisturb = notifications.isNotificationPolicyAccessGranted,
         )
     }
 
@@ -81,6 +87,18 @@ internal class PermissionSettingsController(private val activity: ComponentActiv
     }
 
     fun openBatteryOptimization() = launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+
+    fun openFullScreen() {
+        if (Build.VERSION.SDK_INT >= 34) launch(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+            Uri.parse("package:${activity.packageName}"))) else openNotifications()
+    }
+
+    fun openExactAlarms() {
+        if (Build.VERSION.SDK_INT >= 31) launch(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+            Uri.parse("package:${activity.packageName}"))) else openAppPermissions()
+    }
+
+    fun openDoNotDisturb() = launch(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
 
     private fun appDetails() = Intent(
         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

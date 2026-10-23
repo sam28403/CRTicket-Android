@@ -59,7 +59,8 @@ class BackupSelectionDeviceTest {
                     val settings = partial.getJSONObject("settings")
                     assertFalse(settings.has("profile"))
                     assertFalse(settings.has("theme"))
-                    assertEquals(setOf("vehicleSearchHistory"), settings.getJSONObject("native").keys().asSequence().toSet())
+                    assertEquals(setOf("vehicleSearchHistory", "saleSearchHistory"),
+                        settings.getJSONObject("native").keys().asSequence().toSet())
                     assertEquals(2, settings.getJSONObject("storage").length())
 
                     val source = full.getJSONObject("settings")

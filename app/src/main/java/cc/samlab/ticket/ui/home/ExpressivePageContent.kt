@@ -48,6 +48,12 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/sale-time" -> cc.samlab.ticket.ui.sale.SaleTimeScreen(
+                station, dark, pureBlack, embedded, active, onBack, onNavigate,
+            )
+            "/sale-time/reminders" -> cc.samlab.ticket.ui.sale.SaleRemindersScreen(
+                dark, pureBlack, active, onBack,
+            )
             "/railfan/speedometer", "/railfan/speedometer/guide",
             "/railfan/speedometer/live", "/railfan/speedometer/track" ->
                 cc.samlab.ticket.ui.speedometer.SpeedometerScreen(
@@ -84,14 +90,17 @@ internal class ExpressivePageContent(
             "/about/report" -> cc.samlab.ticket.ui.report.ExpressiveReportScreen(
                 dark, pureBlack, onBack, onExternal,
             )
-            "/settings", "/settings/arrival", "/settings/permissions", "/settings/language" -> {
+            "/settings", "/settings/arrival", "/settings/permissions", "/settings/language", "/settings/sale-reminders" -> {
                 val page = when (ExpressiveRoutes.path(location)) {
+                    "/settings/sale-reminders" -> SettingsPage.SALE_REMINDERS
                     "/settings/arrival" -> SettingsPage.ARRIVAL
                     "/settings/permissions" -> SettingsPage.PERMISSIONS
                     "/settings/language" -> SettingsPage.LANGUAGE
                     else -> SettingsPage.MAIN
                 }
-                ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, active, embedded, page)
+                ExpressiveSettingsScreen(dark, settings, onBack, pureBlack, active, embedded, page) {
+                    onNavigate("/sale-time/reminders")
+                }
             }
             "/monitor", "/monitor/settings" -> ExpressiveTicketMonitorScreen(
                 monitor, dark, pureBlack, location == "/monitor/settings", onBack,

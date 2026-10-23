@@ -35,6 +35,9 @@ internal fun searchSettings(
             stringResource(R.string.settings_avatar_description), enabled) { controller.ui.open("avatar") },
         SearchSetting("arrival", stringResource(R.string.settings_arrival),
             stringResource(R.string.settings_arrival_description), enabled) { onNavigate("/settings/arrival") },
+        SearchSetting("sale-reminders", stringResource(R.string.settings_sale_reminders), "") {
+            onNavigate("/settings/sale-reminders")
+        },
         SearchSetting("monitor", stringResource(R.string.monitor_settings_title),
             stringResource(R.string.monitor_settings_description)) { onNavigate("/monitor/settings") },
         SearchSetting("permissions", stringResource(R.string.settings_permissions),

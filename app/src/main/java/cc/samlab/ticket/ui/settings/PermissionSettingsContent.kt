@@ -46,6 +46,17 @@ internal fun PermissionSettingsContent(controller: PermissionSettingsController,
                     )
                 }
             }
+            SettingsGroup(stringResource(R.string.settings_sale_reminders)) {
+                listOf(
+                    Triple(R.string.sale_mode_alarm, state.fullScreen, controller::openFullScreen),
+                    Triple(R.string.permissions_exact_alarms, state.exactAlarms, controller::openExactAlarms),
+                    Triple(R.string.permissions_dnd, state.doNotDisturb, controller::openDoNotDisturb),
+                ).forEachIndexed { index, (label, allowed, open) ->
+                    SettingsRow(stringResource(label),
+                        stringResource(if (allowed) R.string.permissions_allowed else R.string.permissions_not_allowed_settings),
+                        index, 3, true, open)
+                }
+            }
             SettingsGroup(stringResource(R.string.permissions_location_group)) {
                 val location = when {
                     state.fineLocation -> stringResource(R.string.permissions_location_precise)

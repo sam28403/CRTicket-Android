@@ -4,6 +4,8 @@ package cc.samlab.ticket.ui.navigation
 internal object WideNavigationPolicy {
     private val children = setOf(
         "/about/report",
+        "/sale-time/reminders",
+        "/settings/sale-reminders",
         "/settings/arrival",
         "/settings/permissions",
         "/settings/language",

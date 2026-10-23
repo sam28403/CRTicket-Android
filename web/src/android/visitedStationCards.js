@@ -3,6 +3,8 @@ import { native } from './platform.js'
 import { stationClock } from '../utils/stationBoard.js'
 import { stationSummaryNow } from '../utils/stationDiscovery.js'
 import { stationQueryName } from '../utils/stationName.js'
+import { parseStations } from '../utils/stations.js'
+import { stationBureau } from '../utils/stationBureau.js'
 
 export function useVisitedStationCards() {
   if (typeof native?.stationBoardResult !== 'function') return
@@ -27,11 +29,25 @@ export function useVisitedStationCards() {
     return cachedRows
   }
   async function request(event) {
-    const { stations, requestId } = event.detail || {}
-    if (!Array.isArray(stations) || !Number.isInteger(requestId)) return
+    const { stations, requestId, saleCatalog } = event.detail || {}
+    if ((!saleCatalog && !Array.isArray(stations)) || !Number.isInteger(requestId)) return
+    const names = saleCatalog ? parseStations().map(row => ({
+      ...row, bureau: stationBureau(row.name),
+    })) : undefined
+    if (saleCatalog) native.stationBoardResult(JSON.stringify({
+      kind: 'saleCatalog', names, loading: true,
+    }))
     try {
       const clock = stationClock(Date.now())
       const rows = await rowsFor(clock.date)
+      if (saleCatalog) {
+        native.stationBoardResult(JSON.stringify({
+          kind: 'saleCatalog', date: clock.date,
+          names,
+          stations: [...rows.values()].map(row => ({ station: row.station, total: row.total })),
+        }))
+        return
+      }
       const now = stationClock(Date.now())
       if (now.date !== clock.date) return request(event)
       native.stationBoardResult(JSON.stringify({
@@ -47,7 +63,7 @@ export function useVisitedStationCards() {
       }))
     } catch (error) {
       if (error.code !== 'ERR_CANCELED') native.stationBoardResult(JSON.stringify({
-        kind: 'visits', requestId, error: true, stations: [],
+        kind: saleCatalog ? 'saleCatalog' : 'visits', names, requestId, error: true, stations: [],
       }))
     }
   }

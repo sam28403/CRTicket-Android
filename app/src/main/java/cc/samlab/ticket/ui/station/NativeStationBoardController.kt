@@ -18,6 +18,17 @@ class NativeStationBoardController(
 ) {
     private val boards = linkedMapOf<String, StationBoardState>()
     private var discovery = JSONObject()
+    internal val saleTimes = cc.samlab.ticket.ui.sale.SaleTimeRepository(activity.applicationContext)
+    internal val saleSchedule = cc.samlab.ticket.ui.sale.SaleScheduleSource(activity.applicationContext)
+    internal var saleCatalog by mutableStateOf(JSONObject())
+        private set
+
+    internal fun requestSaleCatalog() {
+        webView.evaluateJavascript(
+            "window.dispatchEvent(new CustomEvent('crticket-visited-stations-request'," +
+                "{detail:{saleCatalog:true,requestId:0}}))", null,
+        )
+    }
     internal var visitCards by mutableStateOf<Map<String, JSONObject>>(emptyMap())
         private set
     internal var visitsLoading by mutableStateOf(false)
@@ -59,6 +70,10 @@ class NativeStationBoardController(
     fun receive(payload: String) {
         if (closed || payload.length > 16 * 1024 * 1024) return
         val value = runCatching { JSONObject(payload) }.getOrNull() ?: return
+        if (value.optString("kind") == "saleCatalog") {
+            activity.runOnUiThread { if (!closed) saleCatalog = value }
+            return
+        }
         if (value.optString("kind") == "visits") {
             activity.runOnUiThread {
                 if (!closed && value.optInt("requestId") == visitsRequestId) {

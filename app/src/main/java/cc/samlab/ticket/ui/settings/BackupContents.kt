@@ -14,12 +14,13 @@ internal enum class BackupContent(
     SEARCH(
         "search", R.string.backup_content_search,
         listOf("crticket-train-query-history", "crticket-station-query-history"),
-        listOf("vehicleSearchHistory"),
+        listOf("vehicleSearchHistory", "saleSearchHistory"),
     ),
     SETTINGS(
         "settings", R.string.backup_content_settings,
         listOf("crticket-important-notice-hidden"),
-        listOf("language", "arrivalEnabled", "importantNoticeSuppressed", "railfanToolsEnabled"),
+        listOf("language", "arrivalEnabled", "importantNoticeSuppressed", "railfanToolsEnabled",
+            "saleAlarmEnabled", "saleSameCity"),
     ),
     PROFILE("profile", R.string.backup_content_profile),
     VISITS("visits", R.string.backup_content_visits, nativeKeys = listOf("stationVisits")),

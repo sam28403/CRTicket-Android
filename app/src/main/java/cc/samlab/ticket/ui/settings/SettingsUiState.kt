@@ -11,6 +11,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
     MAIN(R.string.home_settings),
     PERMISSIONS(R.string.settings_permissions),
     ARRIVAL(R.string.settings_arrival),
+    SALE_REMINDERS(R.string.settings_sale_reminders),
     LANGUAGE(R.string.settings_language),
 }
 
@@ -28,6 +29,10 @@ internal class SettingsUiState {
     fun openPermissions() {
         permissionsParent = if (page == SettingsPage.ARRIVAL) SettingsPage.ARRIVAL else SettingsPage.MAIN
         showPage(SettingsPage.PERMISSIONS)
+    }
+
+    fun openSaleReminders() {
+        showPage(SettingsPage.SALE_REMINDERS)
     }
 
     fun openArrival() {

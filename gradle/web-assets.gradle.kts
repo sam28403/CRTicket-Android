@@ -17,9 +17,12 @@ val buildWebAssets = tasks.register<Exec>("buildWebAssets") {
         rootProject.file("tools/package-web-assets.mjs"),
         rootProject.file("tools/package-arrival-stations.mjs"),
         rootProject.file("tools/package-speedometer-assets.mjs"),
+        rootProject.file("tools/update-sale-times.mjs"),
+        project.file("src/main/res/raw/cfca_ev_root.pem"),
     )
     outputs.dir(project.file("src/main/assets/web"))
     outputs.file(project.file("src/main/assets/arrival-stations.json"))
+    outputs.file(project.file("src/main/assets/sale-times.json"))
     outputs.dir(project.file("src/main/assets/speedometer-lib"))
 }
 

@@ -31,7 +31,8 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
     val route: String
         get() = when (val path = ExpressiveRoutes.path(location)) {
             "/about/report" -> "/about"
-            "/settings/arrival", "/settings/permissions", "/settings/language" -> "/settings"
+            "/sale-time/reminders" -> "/sale-time"
+            "/settings/arrival", "/settings/permissions", "/settings/language", "/settings/sale-reminders" -> "/settings"
             "/history/editor" -> "/history"
             else -> path.takeIf { ExpressiveRoutes.isNative(location) }.orEmpty()
         }
@@ -77,6 +78,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         settings.ui.onPageChanged = { page, back ->
             if (back) navigator.pop()
             else navigator.navigate(when (page) {
+                SettingsPage.SALE_REMINDERS -> "/settings/sale-reminders"
                 SettingsPage.ARRIVAL -> "/settings/arrival"
                 SettingsPage.PERMISSIONS -> "/settings/permissions"
                 SettingsPage.LANGUAGE -> "/settings/language"
@@ -120,6 +122,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
         val previous = location
         location = destination
         val page = when (ExpressiveRoutes.path(destination)) {
+            "/settings/sale-reminders" -> SettingsPage.SALE_REMINDERS
             "/settings/arrival" -> SettingsPage.ARRIVAL
             "/settings/permissions" -> SettingsPage.PERMISSIONS
             "/settings/language" -> SettingsPage.LANGUAGE

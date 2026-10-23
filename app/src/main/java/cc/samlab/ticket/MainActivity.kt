@@ -201,6 +201,8 @@ class MainActivity : AppCompatActivity() {
         val tracking = intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)
         val speed = intent.getStringExtra(cc.samlab.ticket.speedometer.SpeedometerService.OPEN_RECORDING)
         return when {
+            intent.getBooleanExtra(cc.samlab.ticket.sale.SaleReminderReceiver.OPEN_REMINDERS, false) ->
+                "#/sale-time/reminders"
             speed != null -> "#$speed"
             station != null -> "#${stationRoute(station)}"
             tracking != null -> "#$tracking"
@@ -210,6 +212,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clearNotificationRoute() {
+        intent.removeExtra(cc.samlab.ticket.sale.SaleReminderReceiver.OPEN_REMINDERS)
         intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         intent.removeExtra(TrainTrackingNotifications.OPEN_TRACKING)
         intent.removeExtra(cc.samlab.ticket.speedometer.SpeedometerService.OPEN_RECORDING)
@@ -276,6 +279,9 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (intent.getBooleanExtra(cc.samlab.ticket.sale.SaleReminderReceiver.OPEN_REMINDERS, false)) {
+            navigateTo("/sale-time/reminders", notification = true)
+        }
         intent.getStringExtra(ArrivalNotifications.OPEN_STATION)?.let { station ->
             navigateTo(stationRoute(station))
             intent.removeExtra(ArrivalNotifications.OPEN_STATION)

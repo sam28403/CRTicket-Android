@@ -46,7 +46,7 @@ internal fun SettingsProfile(
         SettingsRow(
             stringResource(R.string.settings_arrival),
             stringResource(R.string.settings_arrival_description),
-            0, 1, enabled, controller.ui::openArrival,
+            0, 2, enabled, controller.ui::openArrival,
         ) {
             SettingsChevron()
             VerticalDivider(Modifier.height(40.dp))
@@ -58,6 +58,10 @@ internal fun SettingsProfile(
                 controller.request("arrival", JSONObject().put("enabled", it))
             }
         }
+        SettingsRow(
+            stringResource(R.string.settings_sale_reminders), "",
+            1, 2, true, controller.ui::openSaleReminders,
+        )
     }
     SettingsGroup(textResources(R.string.home_monitor)) {
         SettingsRow(

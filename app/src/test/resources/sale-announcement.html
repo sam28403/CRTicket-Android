@@ -1,0 +1,644 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>中国铁路12306网站</title>
+<link href="global_1.css" rel="stylesheet">
+<link href="../../images/public_2.css" rel="stylesheet">
+
+<link href="iconfont_1.css" rel="stylesheet">
+
+
+
+</head>
+<body>
+<link href="../../images/iconfont.css" rel="stylesheet">
+<link href="https://www.12306.cn/index/css/index_y_v50001.css" rel="stylesheet">
+
+
+<div class="header-wrap">
+<div class="header">
+    <div class="wrapper">
+
+        <div class="header-con">
+            <h1 class="logo">
+                <a name="g_href" data-type="1" data-href="index.html" data-redirect="Y" href="javascript:;">中国铁路12306</a>
+            </h1>
+            <div class="header-right">
+
+                <div class="header-search" style="width: 380px">
+                    <div class="search-bd" style="width: 350px">
+                        <input type="password" value="" style="display:none" />
+                        <input type="text" class="search-input" id="search-input" value="" placeholder="搜索车票/餐饮/常旅客/相关规章" auto-complete="new-password" />
+
+                        <div class="search-down">
+                            <a href="javascript:;" class="close">关闭</a>
+                            <ul class="search-down-list"></ul>
+                        </div>
+
+                        <div class="search-history">
+                            <a href="javascript:;" class="history-clear">清除</a>
+                            <h3 class="search-history-tit">搜索历史</h3>
+                            <ul class="search-history-list">
+
+                            </ul>
+                        </div>
+                    </div>
+                    <a class="search-btn" href="javascript:;">
+                        <i class="icon icon-search"></i>
+                    </a>
+                </div>
+
+                <ul class="header-menu">
+                    <li class="menu-item"><a id="toolbarSwitch" href="javascript:;" class="menu-nav-hd">无障碍</a></li>
+          <li class="menu-item menu-line">|</li>
+          <li class="menu-item"><a id="caring_a" href="javascript:;" onclick="$.changebigslh();" class="menu-nav-hd">爱心版</a></li>
+          <li class="menu-item menu-line">|</li>
+          <li class="menu-item menu-nav" role="menuitem">
+            <a href="https://www.12306.cn/en/index.html" class="menu-nav-hd"
+               aria-controls="megamenu-1"
+               aria-expanded="false"
+               aria-haspopup="true">English
+              <i class="caret"></i>
+            </a>
+            <ul class="menu-nav-bd"
+                role="menu"
+                aria-hidden="true"
+                id="megamenu-1" style="width: 90px;">
+              <li>
+                <a href="https://www.12306.cn/index/index.html">简体中文</a>
+              </li>
+              <li>
+                <a href="https://www.12306.cn/en/index.html">English</a>
+              </li>
+            </ul>
+          </li>
+          <li class="menu-item menu-line">|</li>
+                    <li class="menu-item menu-nav">
+                        <a name="g_href" data-type="2" data-href="view/index.html" data-redirect="Y" href="javascript:;" class="menu-nav-hd">我的12306
+                            <i class="caret"></i>
+                        </a>
+                        <ul class="menu-nav-bd">
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/train_order.html" data-redirect="Y" href="javascript:;">火车票订单</a>
+                            </li>
+
+                            <li class="nav-line"></li>
+                            <li>
+                                <a name="g_href" data-type="10" data-href="queryMyOrder.html" data-redirect="Y" href="javascript:;">我的餐饮?特产</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/my_insurance.html" data-redirect="Y"
+                                    href="javascript:;">我的保险</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="3" data-href="welcome.html" data-redirect="Y" href="javascript:;">我的会员</a>
+                            </li>
+                            <li class="nav-line"></li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/information.html" data-redirect="Y" href="javascript:;">查看个人信息</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/userSecurity.html" data-redirect="Y"
+                                    href="javascript:;">账户安全</a>
+                            </li>
+                            <li class="nav-line"></li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/passengers.html" data-redirect="Y" href="javascript:;">常用联系人</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/address_init.html" data-redirect="Y"
+                                    href="javascript:;">车票快递地址</a>
+                            </li>
+                            <li class="nav-line"></li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/icentre_serviceQuery.html" data-redirect="Y"
+                                    href="javascript:;">温馨服务查询</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item menu-line">|</li>
+                    <li id="J-header-login" class="menu-item menu-login">
+                        <a name="g_href" data-type="2" data-href="resources/login.html" data-redirect="Y" href="javascript:;">登录</a><a
+                            name="g_href" data-type="2" data-href="regist/init" data-redirect="Y" href="javascript:;"
+                            class="ml">注册</a>
+                    </li>
+                    <li id="J-header-logout" style="display: none;" class="menu-item menu-nav menu-login">
+                        您好，<a name="g_href" data-type="2" data-href="view/index.html" data-redirect="Y" href="javascript:;" class="txt-primary menu-nav-my-hd"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-box">
+        <ul class="nav">
+            <li id="J-index" class="nav-item nav-item-w1">
+                <a name="g_href" data-type="1" data-href="index.html" data-redirect="Y" href="javascript:;" class="nav-hd">首页</a>
+            </li>
+            <li id="J-chepiao" class="nav-item nav-item-w1">
+                <a href="javascript:void(0)" class="nav-hd">车票
+                    <i class="icon icon-down"></i>
+                </a>
+                <div class="nav-bd">
+                    <div class="nav-bd-item nav-col2">
+                        <h3 class="nav-tit">购买</h3>
+                        <ul class="nav-con">
+                            <li class="nav_dan">
+                                <a name="g_href" data-type="2" data-href="leftTicket/init?linktypeid=dc" data-redirect="Y"
+                                    href="javascript:;">单程</a>
+                            </li>
+                            <li class="nav_wang">
+                                <a name="g_href" data-type="2" data-href="leftTicket/init?linktypeid=wf" data-redirect="Y"
+                                    href="javascript:;">往返</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="lcQuery/init" data-redirect="Y" href="javascript:;">中转换乘</a>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="nav-bd-item nav-col2">
+                        <h3 class="nav-tit">变更</h3>
+                        <ul class="nav-con">
+                            <li class="nav_ref">
+                                <a name="g_href" data-type="2" data-href="view/train_order.html?type=2&typefilt=4"
+                                    data-redirect="Y" href="javascript:;">退票</a>
+                            </li>
+                            <li class="nav_res">
+                                <a name="g_href" data-type="2" data-href="view/train_order.html?type=2&typefilt=2"
+                                    data-redirect="Y" href="javascript:;">改签</a>
+                            </li>
+                            <li class="nav_chg">
+                                <a name="g_href" data-type="2" data-href="view/train_order.html?type=2&typefilt=3"
+                                    data-redirect="Y" href="javascript:;">变更到站</a>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="nav-bd-item nav-col2">
+                        <h3 class="nav-tit border-none">更多</h3>
+                        <ul class="nav-con">
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/ticket/zt_card.html" data-redirect="Y"
+                                    href="javascript:;">中铁银通卡</a>
+                            </li>
+                            <li class="border-none">
+                                <a name="g_href" data-type="1" data-href="view/ticket/through_train.html" data-redirect="Y"
+                                    href="javascript:;">广九直通车</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/ticket/railway.html" data-redirect="Y"
+                                    href="javascript:;">市郊快速铁路</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/ticket/international_train.html"
+                                    data-redirect="Y" href="javascript:;">国际列车</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li id="J-tuangoufuwu" class="nav-item ">
+                <a href="javascript:void(0) " class="nav-hd ">团购服务
+                    <i class="icon icon-down "></i>
+                </a>
+                <div class="nav-bd ">
+                    <div class="nav-bd-item nav-col6 ">
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/group/group_management.html?type=1" data-redirect="Y"
+                                    href="javascript:;">务工人员</a>
+                            </li>
+
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/group/group_management.html?type=2"
+                                    data-redirect="Y" href="javascript:;">学生团体</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li id="J-huiyuanfuwu" class="nav-item ">
+                <a href="javascript:void(0) " class="nav-hd ">会员服务
+                    <i class="icon icon-down "></i>
+                </a>
+                <div class="nav-bd ">
+                    <div class="nav-bd-item nav-col6">
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="3" data-href="index.html" data-redirect="Y" href="javascript:;">会员管理</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="3" data-href="index.html" data-redirect="Y" href="javascript:;">积分账户</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="3" data-href="index.html" data-redirect="Y" href="javascript:;">积分兑换</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="3" data-href="index.html" data-redirect="Y" href="javascript:;">会员专享</a>
+                            </li>
+                            <li class="border-none ">
+                                <a name="g_href" data-type="3" data-href="welcome.html" data-redirect="Y" href="javascript:;">会员中心</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li id="J-zhanchefuwu" class="nav-item ">
+                <a href="javascript:void(0) " class="nav-hd ">站车服务
+                    <i class="icon icon-down "></i>
+                </a>
+                <div class="nav-bd ">
+                    <div class="nav-bd-item nav-col4 ">
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/icentre_qxyyInfo.html" data-redirect="Y" href="javascript:;">重点旅客预约</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/station/hand.html" data-redirect="Y"
+                                    href="javascript:;">便民托运</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/station/shared_Car.html" data-redirect="Y"
+                                    href="javascript:;">共享汽车</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="4" data-href="czyd_2143/" data-redirect="Y" href="javascript:;">车站引导</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/icentre_lostInfo.html" data-redirect="Y" href="javascript:;">遗失物品查找</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/station/train_intro.html" data-redirect="Y"
+                                    href="javascript:;">动车组介绍</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/station/custom_PickUp.html"
+                                    data-redirect="Y" href="javascript:;">定制接送</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="4" data-href="zcfc_2548/" data-redirect="Y" href="javascript:;">站车风采</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </li>
+            <li id="J-shanlvfuwu" class="nav-item ">
+                <a href="javascript:void(0) " class="nav-hd ">商旅服务
+                    <i class="icon icon-down "></i>
+                </a>
+                <div class="nav-bd ">
+                    <div class="nav-bd-item nav-col6 ">
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="10" data-href="index.html" data-redirect="Y" href="javascript:;">餐饮?特产</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="view/my_insurance.html" data-redirect="Y" href="javascript:;">保险</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li id="J-chuxingzhinan" class="nav-item ">
+                <a href="javascript:void(0) " class="nav-hd ">出行指南
+                    <i class="icon icon-down "></i>
+                </a>
+                <div class="nav-bd ">
+                    <div class="nav-bd-item nav-col2 ">
+                        <h3 class="nav-tit ">常见问题</h3>
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/ticketType.html" data-redirect="Y"
+                                    href="javascript:;">车票</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/ticketWindow.html" data-redirect="Y"
+                                    href="javascript:;">购票</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/windowEndorse.html" data-redirect="Y"
+                                    href="javascript:;">改签</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/windowRefund.html" data-redirect="Y"
+                                    href="javascript:;">退票</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/help.html" data-redirect="Y" href="javascript:;"
+                                    class="txt-lighter">更多>></a>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="nav-bd-item nav-col2 ">
+                        <h3 class="nav-tit ">旅客须知</h3>
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/usersNeedToKnow.html?linktypeid=txt"
+                                    data-redirect="Y" href="javascript:;">铁路电子客票</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/saleTicketMeans.html?linktypeid=means5"
+                                    data-redirect="Y" href="javascript:;">身份核验</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/help.html" data-redirect="Y" href="javascript:;"
+                                    class="txt-lighter">更多>></a>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="nav-bd-item nav-col2 ">
+                        <h3 class="nav-tit border-none ">相关章程</h3>
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/saleTicketMeans.html?linktypeid=means2"
+                                    data-redirect="Y" href="javascript:;">铁路旅客运输规程</a>
+                            </li>
+                            <li class="border-none">
+                                <a name="g_href" data-type="2" data-href="gonggao/saleTicketMeans.html?linktypeid=means7"
+                                    data-redirect="Y" href="javascript:;">广深港高速铁路跨境旅客运输组织规则</a>
+                            </li>
+                            <li style="text-overflow:ellipsis;white-space:nowrap;">
+                                <a name="g_href" data-type="2" data-href="gonggao/saleTicketMeans.html?linktypeid=means6"
+                                    data-redirect="Y" href="javascript:;">铁路进站乘车禁止和限制携带品公告</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="gonggao/help.html" data-redirect="Y" href="javascript:;"
+                                    class="txt-lighter">更多>></a>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li id="J-xinxichaxun" class="nav-item last ">
+                <a href="javascript:void(0) " class="nav-hd ">信息查询
+                    <i class="icon icon-down "></i>
+                </a>
+                <div class="nav-bd ">
+                    <div class="nav-bd-item nav-col5 ">
+                        <h3 class="nav-tit border-none ">常用查询</h3>
+                        <ul class="nav-con ">
+                            <li>
+                                <a name="g_href" data-type="2" data-href="zwdch/init" data-redirect="Y" href="javascript:;">正晚点</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="queryTrainInfo/init" data-redirect="Y" href="javascript:;">时刻表</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="leftTicketPrice/initPublicPrice"
+                                    data-redirect="Y" href="javascript:;">公布票价</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/infos/ticket_check.html" data-redirect="Y"
+                                    href="javascript:;">检票口</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/infos/sale_time.html" data-redirect="Y"
+                                    href="javascript:;">起售时间</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-href="https://forecast.lytq.com/pc.html" data-redirect="N"
+                                    data-target="_blank" href="javascript:;">天气</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/infos/jiaotong.html" data-redirect="Y"
+                                    href="javascript:;">交通查询</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="2" data-href="queryAgencySellTicket/init" data-redirect="Y"
+                                    href="javascript:;">代售点</a>
+                            </li>
+                            <li>
+                                <a name="g_href" data-type="1" data-href="view/infos/service_number.html" data-redirect="Y"
+                                    href="javascript:;">客服电话</a>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="nav-bd-item ">
+                        <ul class="nav-con nav-con-pt ">
+                            <li class="border-none">
+                                <a id="gLink" href="javascript:void(0)">最新发布</a>
+                            </li>
+                            <li class="border-none">
+                                <a name="g_href" data-type="6" data-href="queryDishonest/init" data-redirect="Y" href="javascript:;">信用信息</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+
+
+<div class="wrapper content">
+
+  <div class="breadcrumb">
+    当前位置：<a href="https://www.12306.cn/index/">首页</a>><a href="">最新动态</a>  </div>
+
+  <div class="main-panel">
+
+    <div class="panel-bd">
+
+      <div class="article-box">
+        <h3 class="title">关于铁路车站起售时间的公告  </h3>
+
+        <div class="cont">
+<div class=TRS_Editor><b><span lang="EN-US">
+<p align="justify"><b><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;铁路各车站新票起售时间共<span lang="EN-US">41</span>个，即<span lang="EN-US">8:00</span>至<span lang="EN-US">18:00</span>期间，每隔<span lang="EN-US">15</span>分钟均有新票起售，具体如下：</span></b>&nbsp;</p>
+</span></b>
+<p align="justify">&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>北京西、北京丰台、香港西九龙。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8:</span></b><b><span><span lang="EN-US">15 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>南京、南京南。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>白城、东莞、东莞东、惠州、济宁、南充、南充北、日照、山海关、汕头、汕头南、松原、乌兰浩特、乌鲁木齐南、乌鲁木齐、岚山西、日照西、锦州、锦州南、锦州北、济宁东、济宁北、无锡、无锡东、无锡新区、惠山、罗浮山、博罗、惠州南、惠东、江阴、长清、茌平南、聊城西、莘县、潮南、五华、兴宁南、镇江、镇江南、丹徒、丹阳、丹阳北、大港南、苏州、苏州北、苏州新区、苏州园区、昆山、昆山南、阳澄湖、张家港、常熟、太仓、太仓南、盛泽、苏州南</span><span><span>、常州</span></span><span><span><span>、常州北</span></span></span><span><span><span><span>、戚墅堰</span></span></span></span><span><span><span><span><span>、武进</span></span></span></span></span><span><span><span><span><span><span>、金坛</span></span></span></span></span>。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span></span></p>
+<p align="justify"><span>成都东。</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>阿克苏、阿勒泰、阿克陶、阿拉山口、阿图什、巴楚、北屯市、博乐东、布列开、成都、大庆、大庆西、福海、哈密、和静、和什托洛盖、和田、霍尔果斯、精河、精河南、喀什、克拉玛依、库车、库尔勒、奎屯、兰州、兰州西、柳园、柳园南、轮台、玛纳斯、玛纳斯湖、墨玉、尼勒克、皮山、萍乡、萍乡北、齐齐哈尔、沙湾市、莎车、鄯善、鄯善北、深圳西、沈阳北、石河子、疏勒、吐哈、吐鲁番、吐鲁番北、尉犁、英库勒、成都西、富蕴、铁干里克、库尔木依、若羌、依吞布拉克、米兰、魏家泉、乌西、五五、新和、焉耆、叶城、伊宁、伊宁东、宜春、英吉沙、泽普、成都南、和硕、马兰、大庆东、齐齐哈尔南、福利区、西固、兰州新区、宾西北、宾州、胜利镇、双龙湖、方正、得莫利、高楞、达连河、依兰、宏克力、佳木斯西、达坂城、新香坊北、阿城北、帽儿山西、尚志南、一面坡北、苇河西、亚布力西、横道河子东、海林北、乌苏、昆玉、四棵树、塔城、额敏、铁厂沟、博乐、双河市、图木舒克、林口南、鸡西西、七台河西、桦南东、双鸭山西、阿拉尔、阿瓦提、瓦石峡、且末、金山、南屯、民丰、于田、玉泉镇、策勒、洛浦、铁门关、准东。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>深圳北、深圳、深圳东。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>平阳、苍南、德清、德清西、奉化、海宁、海宁西、湖州、加格达奇、嘉善南、嘉兴、嘉兴南、绍兴、绍兴北、绍兴东、台州西、温州北、乐清、临海、漠河、讷河、宁海、瑞安、三门县、上虞、上虞南、乐清东、城阳、沈阳、沈阳南、台州、桐乡、温岭、温州南、雁荡山、临平南、余姚、余姚北、长兴、长兴南、庄桥、安吉、宁波、温州、缙云、永康、武义、壶镇、磐安南、仙居南、临海南、杜桥、头门港、嵊州北、嵊州新昌、天台山、红岛、新昌北、溪口、楠溪江、仙居、湖州东、湖州南浔、伯官、新宾</span><span><span>、</span></span><span><span>温岭西</span></span><span><span><span><span>、玉环</span></span></span>。</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>南昌、南昌东、南昌南、南昌西、青岛、青岛北、青岛机场、青岛西。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>北京、哈尔滨西、哈尔滨北、芜湖、芜湖南、芜湖北、东至、宣城、广德、黄山、池州、绩溪县、铜陵北、南陵、泾县、宁国、歙县北、绩溪北、旌德、黄山北、马鞍山、马鞍山东、歙县、当涂东、繁昌西、祁门、铜陵、霍城、三阳、含山南、广德南、郎溪南、湾沚南、哈尔滨、哈尔滨东、香坊、北京朝阳、祁门南、黟县东、九华山、黄山西、宁国南</span><span><span>、北京通州</span>。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>广州南。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>敦煌、嘉峪关、威海、西安北、烟台、银川、嘉峪关南、荣成、文登、文登东、威海北、牟平、烟台南、桃村、桃村北、海阳北、徐家店、莱阳、莱西、莱西南、即墨北、福山北、富阳、桐庐、建德、千岛湖、夏格庄、富阳西、桐庐东、莱阳南、海阳、乳山南、威海南海、文登南、乳山、龙口市、蓬莱、芝罘、烟台西、灰埠、莱州、招远、福山</span><span style="font-size: 12pt;">、建德南</span><span style="font-size: 12pt;">、大洋。</span><span style="font-size: 12pt;">&nbsp;</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10:</span></b><b><span><span lang="EN-US">45</span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>杭州、杭州东、杭州南、杭州西。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11:</span></b><b><span><span lang="EN-US">00</span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>滨江、九江、重庆、重庆北、重庆西、沙坪坝、庐山、广州新塘、增城</span><span><span><span><span>、</span></span>重庆东</span>。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>贵阳、贵阳北、贵阳东。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>白银市、白银西、大武口、低窝铺、定边、定西、甘谷、皋兰、高台、古浪、固原、瓜州、河口南、红寺堡、惠农、金昌、景泰、靖远、镜铁山、酒泉、临泽、灵武、陇西、绿化、平凉、青铜峡、清水、山丹、石嘴山南、疏勒河、太阳山、谭家井、天水、天祝、同心、渭南镇、武山、武威、武威南、西安、夏官营、新阳镇、盐池、永登、玉门、张掖、长征、中宁、中宁东、中卫、民乐、张掖西、临泽南、高台南、清水北、酒泉南、长庆桥、泾川、宁东、宁东南、渭源、漳县、岷县、哈达铺、陇南、姚渡、榆中、定西北、通渭、秦安、天水南、东岔、张家川、清水县、河东机场、灵武北、吴忠、红寺堡北、肃州、林泽南、河东里、东风南、金塔、中卫南、肃北、阿克塞、宁县、庆阳、庆城、曲子、环县、惠安堡、甜水堡、石牌、山丹马场、秦王川、白银南、靖远北、平川西、北滩、永登北、天祝西、武威东、古浪北、惠农南、石嘴山、沙湖、中川机场东。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>广州、广州北、广州东、广州白云。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安阳、安阳东、宝鸡、宝鸡南、北京北、江山、金华、金华南、兰溪、临汾、临汾西、龙游、衢州、新乡、新乡东、义乌、运城、运城北、长春、长春西、诸暨、武义北、永康南、缙云西、濮阳、开化、常山、龙泉市、龙游南、遂昌、松阳、庆元、青田、丽水、内黄、滑浚、卫辉南、卫辉、新乡南、濮阳东、红旗渠、南乐、东阳北、横店、磐安、浦江</span><span style="font-size: 12pt;">、衢州西</span><span style="font-size: 12pt;">、龙游北</span><span style="font-size: 12pt;">、兰溪东。</span><span style="font-size: 12pt;">&nbsp;</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>汉口。</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安庆、安庆西、巢湖、肥东、广元、汉中、合肥、合肥北城、合肥南、黄梅、金寨、六安、庐江、绵阳、全椒、舒城、太湖、天柱山、桐城、宿松、合肥西、长临河、巢湖东、无为、无为南、龙桥、柘皋、怀宁、蜀山东、肥西、庐江西、舒城东、桐城东、桐城南、潜山、太湖南、宿松东、黄梅东、宝华山、句容西、句容、叶集、亦庄</span><span><span>、</span>西安东。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>北京南。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>许昌、许昌东、许昌北、长葛、亳州、赤峰、达州、大连、大连北、阜南、阜阳、淮南、淮南东、霍邱、内江、三堂集、水家湖、通辽、昭通、内江北、颍上、周口东、淮阳南、长葛北、禹州、郏县、鄢陵、扶沟南、西华、沈丘北、阜阳西、亳州南、太和东、临泉、界首南、芦庙、古城东、颍上北、凤台南、寿县、淮南南、赤峰南、自贡、泸州、金州。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>武昌。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>博鳌、大同、东方、海口、海口东、吉林、陵水、六盘水、美兰、琼海、三亚、神州、万宁、白马井、临高南、黄流、凤凰机场、尖峰、棋子湾、乐东、崖州、福山镇、老城镇、银滩、文昌、武汉、亚龙湾、遵义西、金月湾、遵义、长流、秀英、城西、大同南、六盘水东、武汉东、海头、和乐、南山北、天涯海角、崖州湾。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>上海虹桥。</span>&nbsp;、</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>北滘、碧江、常平、潮汕、潮阳、福田、潮州、春湾、大埔、丹霞山、东升、丰顺、佛山、高州、古镇、光明城、和平、河源、鲘门、呼和浩特、呼和浩特东、虎门、华城、惠东南、惠阳、惠州西、大明湖、江门、葵潭、乐昌、雷州、龙川、陆丰、茂名东、梅州、梅州西、畲江北、建桥、丰顺东、揭阳、揭阳机场、明珠、南朗、南头、南雄、平湖、坪石、普宁、前山、清远、南沙北、饶平、容桂、三水、汕尾、韶关、韶关东、深圳坪山、始兴、顺德、顺德学院、唐家湾、小榄、新会、新兴县、信宜、兴宁、徐闻、阳春、英德、英德西、源潭、湛江、湛江西、樟木头、肇庆、中山、中山北、珠海、珠海北、茂名、郁南、南江口、云浮东、怀集、广宁、三水南、肇庆东、佛山西、道滘、西平西、东城南、寮步、松山湖北、大朗镇、常平南、吴川、双水镇、台山、开平南、恩平、阳东、阳江、阳西、马踏、电白、新塘南、厚街、东莞港、洪梅、深圳机场、东莞西、望牛墩、深圳机场北、中堂、福海西、沙井西、长安、长安西、虎门东、虎门北、湾仔、湾仔北、十字门、横琴北、横琴、珠海长隆、龙丰、鼎湖山、西湖东、河源北、狮山北、狮山、三灶东、东莞南、四会、仲恺、和平北、博罗北、河源东、揭阳南、江门东、珠海机场、龙川西、翠亨、云东海、端州、云山、常平东、小金口、惠州北、银瓶、井湾、大旺、樟木头东、沥林北、惠环、三水北、鼎湖东、花都、乐同、狮岭、银盏、龙塘镇、清城、花城街、花山镇、白云机场北、陈江南、历城、章丘南、雪野、莱芜北、钢城、陆丰南、陆丰东、惠来、江海、礼乐、黄河景区、张槎、顺德北、北滘西、陈村、番禺、广州长隆、东环、官桥北、广州莲花山、麻涌、贾鲁河、南曹、孟庄、飞霞、燕湖、洲心、潮安、绿博园</span>、大石东<span style="font-size: 12pt;">、</span>广州大学城<span style="font-size: 12pt;">、</span>琶洲、科韵路、岑村、龙洞、竹料、大源、帽峰山、白云机场东、白云机场南、深井、化龙南、新兴南、阳春东、阳江北、茂名南、湛江北、广州&nbsp; 白云、白云湖、江高、神山<span style="font-size: 12pt;">、钟落潭东、佛塱、九佛、新龙、镇龙、永宁北、永宁南。</span><span style="font-size: 12pt;">&nbsp;</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>石家庄、石家庄北、太原南、济南、济南东、济南西。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>包头、包头东、德州、德州东、邯郸、邯郸东、安亭北、安亭西、昆明、昆明南、攀枝花、太原、西昌、西昌西、宜昌、宜昌东、</span><span><span>宜昌北、</span>乐昌东、南翔北、攀枝花南。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>上海、上海南、上海松江、上海西、练塘、金山北。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安塘、巴彦高勒、白壁关、白音察干、白云鄂博、柏果、查布嘎、察素齐、岔江、柴沟堡、楚雄南、达拉特旗、达拉特西、大板、大营、代县、岱岳、德令哈、甸心、定襄、宋城路、东胜、东胜西、东淤地、东镇、东庄、豆罗、兑镇、额济纳、二连、发耳、繁峙、汾阳、丰镇、风陵渡、富源、高村、格尔木、公庙子、古东、古交、广安、广水、广通北、海石湾、河边、河津、鹤庆、黑井、红果、洪洞、洪洞西、侯马、侯马西、化德、怀仁、怀仁东、湟源、霍州、霍州东、集宁南、稷山、建水、江所田、交城、介休、介休东、晋中、经棚、开鲁、岢岚、昆阳、拉萨、老羊壕、乐都、林东、林西、临河、灵丘、灵石、灵石东、柳林南、鲁番、陆良、禄丰南、罗平、吕梁、麻城、麻城北、茅草坪、蒙自北、明安、那曲、尼木、宁武、盘关、平安驿、平关、平社、平田、平旺、平型关、平遥、平遥古城、祁县、祁县东、旗下营、秦家庄、沁县、清徐、曲靖、曲水县、仁布、日喀则、萨拉齐、赛汗塔拉、三家寨、桑根达来、厦门高崎、山阴、商都、商丘、商丘南、商丘东、神池、神头、师宗、十堰、石林、寿阳、朔州、松河、遂宁、太谷、太谷西、太原北、太原东、天镇、通海、土贵乌拉、土牧尔台、万州、威箐、威舍、文水、闻喜、闻喜西、乌海西、乌拉山西、五台山北、刘召、五寨、武乡、西斗铺、西小召、锡林浩特、下社、襄汾、襄汾西、祥云、小雨谷、孝南、孝西、忻州、新绛、信阳、信阳东、兴和西、宝拉格、乌拉山、贲红、武乡东、原平西、厦门、玉溪西、忻州西、茫崖、大陆号、乌兰哈达、阳曲西、轩岗、宣威、延安、阳高、阳明堡、阳曲、阳泉曲、宜良北、营盘湾、应县、永济、永济北、榆次、榆社、雨格、玉溪、元谋、原平、月亮田、枣林、张兰、赵城、哲里木、镇城底、正镶白旗、朱日和、卓资东、卓资山、蒙自、屏边、河口北、杨林、小新街、西宁、民和南、乐都南、海东西、大通西、门源、鄂尔多斯、杭锦后旗、汾河、茶卡、苏尼特左旗、阿巴嘎旗、昆独仑召、万州北、广安南、嵩明、曲靖北、富源北、富宁、广南县、普者黑、弥勒、石林西、树木岭、香樟路、湘府路、洞井、先锋、芙蓉南、暮云、九郎山、田心东、大丰、株洲南、昭山、荷塘、板塘、乌兰察布、旗下营南、准格尔、东胜东、娄烦、岚县、白文东、蔡家崖、楚雄、南华、云南驿、珠琳、托克托东、十堰东、元谋西、永仁、阳高南、兴和北、乌审旗、太谷东、榆社西、临沧、云县、巍山、开封、开封北、兰考、兰考南、民权北、民权、宁陵县、个旧、林芝、贡嘎、扎囊、山南、桑日、加查、朗县、米林、岗嘎、小湾东、峨山、化念、元江、墨江、宁洱、普洱、野象谷、橄榄坝、勐腊、磨憨、漾濞、保山、永平县、竹园、朋普、开远南、红河、乌兰、海晏、安多、小中甸、香格里拉、巴彦淖尔、运粮河、临县、石楼县、隰县、蒲县、洪洞北、浮山、安泽、丰镇北、雁门关、朔州东、山阴南、应县西、府谷、神木北</span><span style="font-size: 12pt;">、</span>乌海<span style="font-size: 12pt;">、</span>乌丹<span style="font-size: 12pt;">、白彦花西</span><span style="font-size: 12pt;">、乌拉特前旗</span><span style="font-size: 12pt;">、五原</span><span style="font-size: 12pt;">、磴口</span><span style="font-size: 12pt;">、碱柜</span><span style="font-size: 12pt;">、乌海南</span><span style="font-size: 12pt;"><span>、阳宗、蒲缥</span></span><span style="font-size: 12pt;">、红安西</span><span style="font-size: 12pt;">。</span><span style="font-size: 12pt;">&nbsp;</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>南宁、南宁东、南宁北、南阳寨、新郑机场、郑州、郑州东、郑州航空港、郑州西</span><span><span>、新郑</span>。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安德、安顺、鞍山、鞍山西、巴中、白沙、白山市、草海、承德、大英东、丹东、德昌、德阳、都江堰、都匀、独山、峨边、峨眉、丰都、涪陵、涪陵北、福泉、抚顺、阜新、阜新南、甘洛、高兴、贵定、汉源、合川、红光镇、华蓥、潢川、吉安、江油、井冈山、开江南、凯里、乐山北、离堆公园、梁平、六枝、隆昌、罗江、麻尾、眉山、冕宁、盘锦、盘锦北、彭山、彭水、彭州、蓬安、郫县、郫县西、平顶山西、平顶山、宝丰、普雄、黔江、青城山、渠县、三汇镇、施秉、石柱县、水富、通化、潼南、图们、土溪、武隆、西昌南、息烽、犀浦东、喜德、秀山、延吉、燕岗、翠屏、迎宾路、营山、酉阳、玉屏、岳池、岳阳、岳阳东、乃托、长寿、长寿北、镇远、织金、重庆南、周口、朱杨溪、株洲西、驻马店、驻马店西、青莲、罗江东、广汉北、青白江东、新都东、双流机场、新津、彭山北、眉山东、青神、峨眉山、龙里、龙里北、贵定县、三都县、榕江、从江、都匀东、铜仁南、三穗、凯里南、贵定北、普定、简阳、简阳南、资阳、资阳北、资中北、隆昌北、荣昌北、永川东、大足南、苍溪、阆中、南部、武胜、曾口、平昌、石桥、石梯、织金北、长寿湖、垫江、梁平南、平坝南、安顺西、关岭、普安县、盘州、大方南、法启、八步、新津南、双流西、璧山、安靖、朝天、剑门关、青川、江油北、珞璜南、綦江东、赶水东、桐梓北、桐梓东、娄山关南、乌江寨、修文县、蓬溪、朱砂古镇、步行街、彭州南、犍为、泥溪、屏山、长宁、兴文、威信、镇雄、毕节、大方、黔西、清镇西、白云北、吉安西、赣县北、长箐、冷坝、六枝南、黄桶北、开阳、广元南、贵安、龙洞堡、纳雍、南江、百宜、洛湾三江、延吉西、图们北、内江东、白马北、富顺、泸县、德昌西、双龙南、孟关、金阳、金阳南、花溪南、花溪西、花溪大学城、党武、天河潭、湖潮东、芦官、金华镇、白云西、奉节、云阳、巫山、峨边南、甘洛南、金口河南、沙湾南、越西、喜德西、江北机场、古路、统景、龙兴、珞璜东、水土、银花、迎龙、黄水、三星堆、绵竹南、什邡西、安州、高川、茂县、镇江关、果珠、以勒、叙永北、兴文南、三岔湖、盐边、米易、米易东、天府机场、资阳西、资中西、威远、沿滩、南彭、南溪北、宜宾东、宜宾、仪陇、巴中西、巴中东、马鞍、蓬安西、松潘、黄龙九寨、黄胜关、江津北、永川南、泸州东、南溪、月华、桐梓、永川、羊马、名山、复盛、崇州、赶水、北碚、綦江、彝良、荔波、温江、荣昌、西来、蒲江、大邑、邛崃、雅安、贵定南、江津、独山东、夹江、朝阳湖、武隆南、彭水西、水江西、巴南、南川北、淮口南、白山东</span><span style="font-size: 12pt;">、兴义南</span><span style="font-size: 12pt;">、保田</span><span style="font-size: 12pt;">。</span><span style="font-size: 12pt;">&nbsp;</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>长沙、长沙南。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安康、八达岭、霸州、白涧、宝坻北、保定、保定东、北戴河、北京东、北马圈子、滨海西、滨海北、泊头、沧州、沧州西、昌黎、昌平、昌平北、承德东、磁山、磁县、大营镇、定州、定州东、东光、抚宁、高碑店、高碑店东、高邑、高邑西、藁城、固安、官厅、官厅西、郭磊庄、海拉尔、汉沽、菏泽、衡水、衡阳、衡阳东、虎什哈、花桥、怀柔、怀柔北、黄村、蓟州北、晋州、井店、井陉、井南、静海、军粮城北、康城、康庄、涞源、廊坊、广阳、黎城、临沂、临沂东、龙华、隆化、卢龙、芦台、潞城、滦河、滦平、滦县、满洲里、密云北、南宫东、南口、南峪、娘子关、潘家店、平泉、迁安、青县、清河、清河城、清华园、饶阳、任丘、三河县、三家店、沙城、沙河、沙河市、沙岭子、张家口南、上板城、上板城南、涉县、深州、十渡、石景山南、顺义、肃宁、绥芬河、天津南、唐山北、塘沽、通州西、王瞳、望都、文安、吴桥、武安、武清、下板城、下花园、下台子、襄阳、襄阳东、襄州、小寺沟、辛集、新乐、新杖子、邢台、邢台东、兴隆县、徐水、宣化、延庆、岩会、燕郊、燕山、阳泉、阳泉北、阳泉东、广平、阳邑、杨村、杨柳青、野三坡、鹰手营子、榆林、玉田县、元氏、枣强、正定机场、涿州、涿州东、正定、滨海、胜芳、霸州西、白沟、白洋淀、伊敏、阿尔山北、临城、黄土店、中仓、石家庄东、藁城南、辛集南、衡水北、景州、西渡、南堡北、唐海南、曹妃甸港、曹妃甸东、承德南、承德县北、平泉北、蓟州、黑山寺、古北口、雁栖湖、乔庄东、北京大兴、大兴机场、平邑、蒙山、费县、费县北、临沂北、莒南、莒南北、厉家寨、八达岭长城、东花园北、怀来、下花园北、宣化北、太子城、怀安、良乡、牛栏山、固安东、霸州北、雄安、顺义西、密云、怀柔南、安匠、兴隆县西、新安县、偃师、菏泽东、崇礼、北辰、宝坻南、大厂、香河、宝坻、玉田南、唐山西、安次、永清东、冠县、廊坊北、廊坊西、礼贤、左权、昔阳、和顺县、平定</span><span><span>、</span>衙门口东</span><span><span>、</span>后吕村</span><span><span>、</span>房山东</span><span>、任丘西、肃宁河间、深州东、衡水南、枣强南、清河西</span><span><span>、安康西</span>。</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>天津、天津北、天津西、柳州、丽江、大理、西双版纳。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>洛阳、洛阳东、洛阳龙门、阿城、阿尔山、阿里河、阿龙山、阿木尔、安达、安广、安家、安图、昂昂溪、敖力布告、八角台、八面城、八面通、八仙筒、巴林、鲅鱼圈、白河、白奎堡、白狼、白泉、白音胡硕、白音他拉、宝林、宝龙山、宝清、宝泉岭、保康、北安、背荫河、本溪、本溪湖、笔架山、勃利、博克图、蔡家沟、草河口、柴岗、柴河、昌图、昌图西、常德、朝阳南、朝阳镇、辰清、陈相屯、晨明、成高子、成吉思汗、楚山、嵯岗、大安、大安北、大巴、大成、大官屯、大虎山、大林、大平房、大石桥、大石寨、大兴、大雁、大杨树、带岭、到保、道清、得耳布尔、德伯斯、德惠、德惠西、灯塔、登沙河、滴道、东边井、东戴河、东二道河、东方红、东丰、东海、东津、东京城、东来、东明村、对青山、敦化、恩施、二道湾、二龙山屯、二密河、丰乐镇、冯屯、凤凰城、扶余、扶余北、福利屯、抚远、富海、富锦、富拉尔基、富裕、盖州、盖州西、甘河、甘旗卡、干沟、大连西、葛根庙、根河、公营子、公主岭、公主岭南、沟帮子、孤家子、菇园、古城镇、古莲、官字井、灌水、广宁寺、哈拉海、哈拉苏、海北、海城、海城西、海林、海伦、寒葱沟、浩良河、和龙、鹤北、鹤岗、鹤立、黑河、黑水、黑台、横道河子、红山、红星、红兴隆、红彦、洪河、呼兰、葫芦岛、葫芦岛北、虎林、华家、桦林、桦南、换新天、皇姑屯、黄花筒、浑河、霍林郭勒、西乌旗、白音华南、鸡东、鸡冠山、鸡西、吉舒、吉文、集安、纪家沟、夹心子、建昌、建三江、建设、江桥、蛟河、金宝屯、金河、金山屯、锦河、九三、九台、九台南、开安、开原、开原西、康金井、克东、克山、克一河、库都尔、库伦、宽甸、奎山、拉古、拉哈、拉林、兰岗、兰棱、朗乡、老莱、老营、梨树镇、李家、李石寨、利川、连山关、莲江口、两家、亮甲店、辽阳、辽源、辽中、林海、林口、临江、凌海、凌源、凌源东、刘家河、柳河、六合镇、龙嘉、龙江、龙井、龙镇、鹿道、漯河、漯河西、旅顺、麻山、马莲河、马桥河、马三家、满归、茂林、帽儿山、梅河口、美溪、孟家岗、密山、免渡河、明城、明水河、磨刀石、莫尔道嘎、木里图、穆棱、乃林、奈曼、南岔、南芬、南口前、南木、南杂木、嫩江、能家、泥河子、碾子山、宁安、宁家、牛家、农安、磐石、泡子、裴德、皮口、瓢儿屯、平安镇、平房、平山、平台、平洋、平庄南、普兰店、七里河、七台河、祁家堡、蕲春、前锋、前进镇、乾安、秦家、青山、清原、庆安、曲阜、曲阜东、三间房、三江口、三十家、三义井、三源浦、沙海、沙河口、山城镇、山市、上园、尚家、尚志、舍力虎、深井子、神树、沈家、沈阳东、石磷、石桥子、石人、石人城、石头、石岘、世博园、舒兰、双城堡、双城北、双丰、双辽、双鸭山、水洞、水泉、四道湾、四方台、四合永、四平、四平东、长白山西、宋、苏家屯、绥化、绥棱、绥阳、绥中、绥中北、孙家、孙吴、索伦、塔尔气、塔哈、塔河、台安、太平川、太平镇、太阳升、泰安、泰来、泰山、汤池、汤山城、汤旺河、汤原、洮南、桃山、陶赖昭、天义、田师府、铁力、铁岭、铁岭西、通北、通沟、通化县、通途、通远堡、图里河、图强、吐列毛杜、团结、瓦房店、瓦房店西、万发屯、万乐、汪清、王府、王岗、王兆屯、潍坊、苇河、苇子沟、卫东、卫星、魏杖子、温春、倭肯、乌尔旗汗、乌奴耳、乌伊岭、五叉沟、五常、五大连池、五家、五棵树、五龙背、五女山、五营、西丰、西岗子、西林、西柳、西麻山、西哲里木、下城子、下马塘、香兰、襄河、向阳、小河沿、小市、小扬气、新绰源、新立屯、新林、新民、新青、新邱、新松浦、新窝铺、新友谊、新肇、兴城、兴凯、兴隆镇、杏树、杏树屯、熊岳城、徐家、鸭园、牙克石、亚布力、亚布力南、烟筒山、烟筒屯、敖汉、杨岗、杨树岭、叶柏寿、一面坡、一面山、伊春、伊尔施、伊拉哈、伊林、伊图里河、依安、义县、益阳、银浪、迎春、营城子、营口、营口东、永安乡、友好、榆树、榆树台、榆树屯、玉泉、元宝山、咋子、扎赉诺尔西、扎兰屯、扎鲁特、张家界、张维屯、章古台、彰武、长春南、长甸、长岭子、长山屯、长汀镇、赵光、肇东、镇赉、镇西、治安、周家、周家屯、周水子、朱家沟、淄博、本溪新城、南芬北、通远堡西、凤城东、五龙背东、蛟河西、威虎岭北、大石头南、安图西、珲春、青龙、靖宇、三道湖、抚松、丹东西、东港北、北井子、大孤山、青堆、庄河北、花园口、城子坦、珠斯花、查干湖、双阳、伊通、建安、高花、近海、台安南、盘山、义县西、淄博北、潍坊北、岫岩、桃源、牛车河、张家界西、桑植、龙山北、来凤、咸丰、平庄、宁城、建平、辽宁朝阳、同江、凌海南、巴图营、长白山、永庆、曲阜南、蕲春南、益阳南、北票、黑山北、喀左、牛河梁、奈林皋、沈阳西、双吉、乌兰木图、新民北、兴城西、桓台、关林、杜尔伯特、清河门北、昌邑、平庄北、革镇堡、羊场、金普、通榆、江源东、呼兰北、兴隆镇西、绥化南、庆安西、日月峡、伊春西。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>唐山、张家口、秦皇岛、厦门、厦门北、赣州、赣州西、佳木斯、牡丹江、株洲、乐山、宜宾西、犀浦、雅安。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17:</span></b><b><span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>栟茶、东台、阜宁、海安、淮安、建湖、江都、江宁、姜堰、晋城、晋城北、荆门、荆州、景德镇、鹰潭北、溧水、溧阳、龙岩、娄底、南通、潜江、如东、如皋、上饶、邵阳、沭阳、泗洪、泗阳、随州、泰州、天门南、瓦屋山、仙林、扬州、扬州东、洋河、宜兴、鹰潭、永州、枣阳、长治、长治北、江宁西、景德镇北、邵阳西、隆回、洞口、安江东、随州南、随县、高邮、高邮北、宝应、淮安东、宿迁、阜宁南、启东、海门、涟水、南通西、长治东、长治南、晋城东、如皋南、方城、邓州、邓州东、襄垣、襄垣东、高平、高平东、沙洋西、荆门西。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17:</span></b><b><span><span lang="EN-US">15 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>盐城、盐城北、盐城大丰、桂林、桂林北、桂林西、福州、福州南、南阳、南阳东。</span>&nbsp;</p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17:</span></b><b><span><span lang="EN-US">30 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安化、安龙、安仁、百色、北海、北流、册亨、岑溪、郴州、郴州西、辰溪、崇左、慈利、砀山、道州、德安、低庄、定南、东安东、东海县、东明县、东乡、防城港北、分宜、丰城、丰城南、扶绥、抚州、富川、高安、巩义、巩义南、共青城、贵港、贵溪、桂平、韩城、汉寿南、合浦、河唇、贺州、鹤壁、鹤壁东、横峰、衡南、衡山、衡山西、湖口、化州、黄口、会同、获嘉、吉首、济源、嘉峰、江华、江永、焦作、焦作东、金城江、进贤、靖州、来宾、来宾北、濑湍、乐平市、耒阳、耒阳西、冷水江东、黎塘、澧县北、醴陵、醴陵东、涟源、廉江、临澧西、临湘、临颍、灵宝、灵宝西、零陵、龙南、龙市、芦溪、鲁山、陆川、鹿寨、路口铺、罗城、麻阳、猛洞河、汨罗、汨罗东、渑池、渑池南、南城、南丹、南丰、南召、内乡、宁明、宁乡、彭泽、邳州、平果、平南南、凭祥、祁东、祁阳、钦州、钦州东、沁阳、渠旧、渠黎、全州南、容县、融安、融水、汝阳、汝州、瑞昌、瑞金、三江县、赣榆、滨海港、阜宁东、射阳、三门峡、三门峡南、三门峡西、韶山、神木、神木西、神木南、石门县北、双牌、松桃、遂溪、泰和、汤阴、唐河、藤县、田东、田林、田阳、亭亮、通道、桐柏、铜仁、万年、文地、梧州、梧州南、西峡、峡江、夏石、夏邑县、湘潭、湘乡、向塘、新干、新化、新晃、新沂、新余、新余北、信丰、兴安北、兴国、兴业、兴义、修武、溆浦、牙屯堡、炎陵、阳城、宜春西、宜州、弋阳、义马、永福南、永修、攸县、攸县南、于都、于都北、余江、虞城县、响水县、玉林、玉山、月山、樟树、樟树东、长垣、镇平、资溪、抚州东、进贤南、玉山南、湘潭北、韶山南、娄底南、邵阳北、新化南、溆浦南、新晃西、芷江、大余、三江南、恭城、鹿寨北、南宁西、吴圩机场、隆安东、田东北、会昌北、德保、靖西、阳朔、邵东、双峰北、博白、砀山南、永城北、萧县北、宾阳、柳江、瑞昌西、长沙西、麓谷、尖山、开福寺、观沙岭、八方山、谷山、德兴东、鄱阳北、都昌、杨桥、观音机场、睢宁、茶陵、茶陵南、灌南、灌云、丰城东、新干东、吉水西、万安县、兴国西、焦作西、邳州东、新沂南、宁都、石城东、芙蓉镇、古丈西、吉首东、凤凰古城、麻阳西、定南南、龙南东、信丰西、宁乡西、崇左南、扶绥南、汉寿、马山县、都安、永安镇、河池西、环江、东兴市、浮梁东、鄱阳、余干、进贤北、乐平北、武陟、修武西、岳阳南、横州、兴业南、玉林北、黔城、茂名西、五府山、德兴、婺源、钟山西</span><span style="font-size: 12pt;">、龙州</span><span style="font-size: 12pt;">、凭祥东</span><span style="font-size: 12pt;">、宁明东</span><span style="font-size: 12pt;">。</span><span style="font-size: 12pt;">&nbsp;</span></p>
+<p align="justify"><b><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17:</span></b><b><span><span lang="EN-US">45 </span>起售车站</span></b>&nbsp;</p>
+<p align="justify"><span>徐州、徐州东、连云港、连云港东、怀化、怀化南。</span></p>
+<p align="justify"><b><span><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;18:</span><span lang="EN-US">00 </span>起售车站<span lang="EN-US/">&nbsp;</span></span></b></p>
+<p align="justify"><span>安口窑、安陆、安溪、野三关、巴山、白河东、白河县、白水江、蚌埠、蚌埠南、博山、博兴、蔡家坡、曹县、昌乐、城固、赤壁、赤壁北、滁州、滁州北、磁窑、大荔、大冶北、大竹园、丹凤、当阳、定陶、定远、东营、鄂州、鄂州东、凤县、凤阳、凤州、福安、福鼎、福清、富县、富县东、甘泉、甘泉北、高密、高滩、葛店南、古田、谷城、固始、固镇、冠豸山南、冠豸山、光泽、海湾、涵江、汉川、汉阴、合阳、贺胜桥东、百里峡、横沟桥东、红安、宏庆、花湖、花山南、花园、华容、华容东、华容南、孟塬、华山北、淮北、淮滨、黄冈、黄冈东、黄冈西、黄陵东、黄石、黄石北、黄石东、黄州、徽县、嘉善、嘉祥、建宁县北、建宁南、建瓯、建始、建阳、将乐、胶州、胶州北、角美、界首市、晋江、京山、靖边、莒县、巨野、鄄城、来舟、莱芜东、蓝村、连江、梁山、聊城、临清、临淄、灵璧、龙山镇、陇县、芦潮港、罗山、罗源、略阳、毛坝、毛坝关、米脂、勉县、庙山、闽清、明港、明港东、明光、南仇、南湖东、南靖、南平、南平南、宁德、平原、莆田、蒲城、蒲城东、普安、岐山、千河、千阳、秦岭、青龙山、青州市、清涧县、泉州、确山、三元区、三明北、三原、山坡东、商城、商洛、商南、上杭、邵武、沈丘、石泉县、顺昌、泗水、泗县、松滋西、绥德、遂平、孙镇、台前、太姥山、泰宁、郯城、汤逊湖、滕州、滕州东、潼关、土地堂东、万源、韦庄、渭南、渭南北、渭南南、涡阳、乌龙泉南、吴堡、五莲、武当山、武功、武穴、武夷山、引镇、西平、西乡、浠水、霞浦、仙桃西、咸宁、咸宁北、咸宁东、咸宁南、咸阳、咸阳西、项城、小河镇、孝感、孝感北、新县、兴平、宿州、宿州东、宣汉、旬阳、旬阳北、阎良、兖州、砚川、燕子砭、阳谷、阳平关、阳新、杨陵、杨陵南、沂南、沂水、宜城南、应城、永安、永定、永乐店、永泰、尤溪、禹城、云梦、云霄、郓城、枣庄、枣庄西、柞水、张桥、章丘、漳平、漳浦、漳州、漳州东、长汀、长阳、诏安、镇安、枝城、枝江北、纸坊东、钟家村、钟祥、诸城、子长、子洲、紫阳、棕溪、邹城、左岭、晏城、仙游、惠安、礼泉、乾县、永寿、长武、彬州、息县、两当、平度、坪上、陵城、临邑、商河北、阳信、滨州、利津南、东营南、长汀南、古田会址、黄陵南、虢镇、光山、枣庄东、枫林、太和北、西安西、鄠邑、佛坪、洋县西、城固北、宁强南、平原东、禹城东、淮北北、锦界、蜀河、五通、朝天南、章丘北、邹平、临淄北、青州市北、高密北、董家口、齐河、双洋、三明、雁石南、永安南、延平、延平西、延平东、南平市、漳平西、云梦东、安陆西、丹江口、武当山西、萧县、渭南西、洛川北、松溪、政和、建瓯东、屏南、周宁、支提山、高坪、兰陵北、彬州东、永寿西、礼泉南、咸阳北、仙桃、长乐、长乐东、长乐南、平潭、蒲石、陈庄、铜川东、耀州、富平县、庄里、华山、华州、临潼、卧龙寺、眉县东、宁化、清流、水茜、杨源、治江、嘉祥北、巨野北、庄寨、浠水南、武穴北、南漳、保康县、神农架、兴山、巴东、绛账、明溪、三元西、大田北、德化、永春、安溪东、南安北、宁强、商洛北、福清西、泉港、泉州东、泉州南、武平、利辛西、槐荫、谷城北、澄城、盘龙城、富平、泗水南、天门北、武夷山北、天河机场、闵集、麻柳、金银潭、毛陈、古田北、建瓯西、闽清北、绛帐、蛟洋、白沙铺、天河街、白水县、后湖、孝感东、平度西、合阳北、宜城</span><span><span>、</span>汉川北</span><span>、</span>天门<span>、当阳西、钟祥南、京山南</span><span style="font-size: 12pt;">、富县北</span><span style="font-size: 12pt;">、洛川</span><span style="font-size: 12pt;">、黄陵</span><span style="font-size: 12pt;">、宜君</span><span style="font-size: 12pt;">、铜川北</span><span style="font-size: 12pt;">、铜川</span><span style="font-size: 12pt;">、富平南</span><span style="font-size: 12pt;">、高陵</span><span style="font-size: 12pt;">、明光西</span><span style="font-size: 12pt;">、泗县东</span><span style="font-size: 12pt;">、五河</span><span style="font-size: 12pt;">、定远东</span><span style="font-size: 12pt;">、郧西</span><span style="font-size: 12pt;">、蓝田</span><span style="font-size: 12pt;">、商洛西</span><span style="font-size: 12pt;">、</span><span style="font-size: 12pt;">山阳、</span><span style="font-size: 12pt;">漫川关</span><span style="font-size: 12pt;">、镇安西</span><span style="font-size: 12pt;">、柞水西</span><span style="font-size: 12pt;">、牛背梁</span><span style="font-size: 12pt;">、临清东</span><span style="font-size: 12pt;">、阳谷东</span><span style="font-size: 12pt;">、台前东</span><span style="font-size: 12pt;">、曹县西</span><span style="font-size: 12pt;">。</span></p>
+<p align="justify">&nbsp;</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="footer">
+<div class="footer-con wrapper">
+    <div class="foot-links" style="margin-right:20px;">
+        <h2 class="foot-con-tit">友情链接</h2>
+        <ul class="foot-links-list">
+            <li>
+                <a name="g_href" data-href="http://www.china-railway.com.cn/" data-redirect="N" href="javascript:;" data-target="_blank">
+                    <img src="https://www.12306.cn/index/images/link05.png" />
+                </a>
+            </li>
+            <li>
+                <a name="g_href" data-href="http://www.china-ric.com/" data-redirect="N" href="javascript:;" data-target="_blank">
+                    <img src="http://www.12306.cn/mormhweb/images/link02.png" />
+                </a>
+            </li>
+            <li>
+                <a name="g_href" data-href="http://www.95306.cn/" data-redirect="N" href="javascript:;" data-target="_blank">
+                    <img src="https://www.12306.cn/index/images/link03.png" />
+                </a>
+            </li>
+            <li>
+                <a name="g_href" data-href="http://www.95572.com/" data-redirect="N" href="javascript:;" data-target="_blank">
+                    <img src="http://www.12306.cn/mormhweb/images/link04.png" />
+                </a>
+            </li>
+        </ul>
+    </div>
+    <ul class="foot-code">
+        <li style="width: 140px;">
+            <h2 class="foot-con-tit">中国铁路官方微信</h2>
+            <div class="code-pic">
+                <img src="https://www.12306.cn/mormhweb/images/zgtlwb.png" />
+            </div>
+        </li>
+        <li style="width: 140px;">
+            <h2 class="foot-con-tit">中国铁路官方微博</h2>
+            <div class="code-pic">
+                <img src="https://www.12306.cn/mormhweb/images/zgtlwx.png" />
+            </div>
+        </li>
+        <li style="width: 110px;">
+            <h2 class="foot-con-tit">12306 公众号</h2>
+            <div class="code-pic">
+                <img src="http://www.12306.cn/mormhweb/images/public.png" />
+            </div>
+        </li>
+        <li style="width: 110px;">
+            <h2 class="foot-con-tit">铁路12306</h2>
+            <div class="code-pic">
+                <img src="http://www.12306.cn/mormhweb/images/download.png" />
+                <div class="code-tips">官方APP下载，目前铁路未授权其他网站或APP开展类似服务内容，敬请广大用户注意。</div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="footer-txt" style="position: relative;">
+    <p>
+      <span class="mr">版权所有？2008-2025</span>
+      <span>中国铁道科学研究院集团有限公司</span>
+      <span>技术支持：铁旅科技有限公司</span>
+    </p>
+    <p>
+      <span class="mr">
+        <img src="https://www.12306.cn/index/images/gongan.png" alt="公安" style="width: 13px" />
+        <a
+          target="blank"
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802038392"
+          style="color: #c1c1c1"
+          >京公网安备 11010802038392号</a
+        >
+      </span>
+      <span class="mr">|</span>
+      <span class="mr">京ICP备05020493号-4</span>
+      <span class="mr">|</span>
+      <span>ICP证：京B2-20202537</span>
+    </p>
+    <div style="position: absolute;top: 17px;left: 50%;margin-left: 465px;">
+       <img src="https://www.12306.cn/index/images/footer-slh.jpg" style="display: block;width: 130px;height: 46px;" alt="适老化无障碍服务" />
+    </div>
+
+</div>
+</div>
+
+
+
+
+
+<div class="gototop js-top">
+  <a href="javascript:;" class="js-gotop" title="返回顶部"><i class="icon icon-gotop"></i></a>
+</div>
+
+
+</body>
+</html>

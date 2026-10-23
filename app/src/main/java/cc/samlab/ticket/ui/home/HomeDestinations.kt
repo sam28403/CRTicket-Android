@@ -42,6 +42,10 @@ internal val ticketDestinations = listOf(
         R.string.home_station, R.string.home_station_description,
         R.drawable.ic_home_station, "/station",
     ),
+    HomeDestination(
+        R.string.sale_title, R.string.sale_description,
+        R.drawable.ic_home_sale_time, "/sale-time",
+    ),
 )
 
 internal fun homeEntryShape(index: Int, count: Int) = RoundedCornerShape(

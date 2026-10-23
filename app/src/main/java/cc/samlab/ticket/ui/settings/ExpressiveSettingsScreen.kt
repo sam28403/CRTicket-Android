@@ -38,6 +38,7 @@ internal fun ExpressiveSettingsScreen(
     visible: Boolean = true,
     embedded: Boolean = false,
     page: SettingsPage = controller.ui.page,
+    onOpenSaleReminders: () -> Unit = {},
 ) {
     val scroll = rememberScrollState()
     val collapseRange = with(LocalDensity.current) {
@@ -69,6 +70,7 @@ internal fun ExpressiveSettingsScreen(
                 Box(Modifier.weight(1f)) {
                     when (page) {
                         SettingsPage.PERMISSIONS -> PermissionSettingsContent(controller.permissions, embedded)
+                        SettingsPage.SALE_REMINDERS -> SaleReminderSettingsContent(visible, onOpenSaleReminders)
                         SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
                         SettingsPage.LANGUAGE -> LanguageSettingsContent()
                         SettingsPage.MAIN -> AdaptivePanes(
@@ -97,6 +99,7 @@ internal fun ExpressiveSettingsScreen(
         if (visible && page == SettingsPage.MAIN) {
             SettingsDialogs(controller.ui.dialog, controller.ui::dismiss, controller)
         }
+        if (visible) BackupPermissionDialog(controller)
     }
 }
 
