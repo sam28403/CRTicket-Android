@@ -50,6 +50,10 @@ keytool -list -v -keystore 'D:\安全目录\release.jks' -alias '你的别名'
 
 ## CI 版本
 
+CI 和发布环境使用 Android Command-line Tools 22.0（构建号 15859902），
+平台包为 `platforms;android-37.0`，Build Tools 为 `build-tools;37.0.0`。
+平台包名与 `compileSdk` 的整数写法不同，更新 SDK 时应先核对 Google SDK 仓库中的实际包名。
+
 每次分支推送、Pull Request 和手动运行 Android CI 都会执行网页测试、
 Android 单元测试、Lint 并构建 CI APK，产物在 Actions 的 Artifacts 中保留 14 天。
 只在本地提交而没有推送不会触发构建。
