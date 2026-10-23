@@ -25,6 +25,8 @@ jobs:
       - uses: ./.github/actions/setup-android
       - name: Test web code
         run: npm run test:android --prefix web
+      - name: Test signing certificate verification
+        run: bash tools/ci/signing-certificates.test.sh
       - name: Test and build Android
         run: >-
           bash gradlew :app:testDebugUnitTest :app:lintCi :app:assembleCi

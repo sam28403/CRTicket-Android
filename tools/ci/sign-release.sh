@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/signing-certificates.sh"
 
 for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD \
   ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD ANDROID_SIGNING_CERT_SHA256 RELEASE_TAG; do
@@ -45,10 +46,9 @@ java -jar "$signing_dir/bundletool.jar" build-apks \
 expected=$(printf '%s' "$ANDROID_SIGNING_CERT_SHA256" | tr -d ':[:space:]' | tr '[:upper:]' '[:lower:]')
 [[ "$expected" =~ ^[0-9a-f]{64}$ ]]
 verify_apk() {
-  local report actual
+  local report
   report=$("$build_tools/apksigner" verify --verbose --print-certs "$1")
-  actual=$(printf '%s\n' "$report" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | tr -d '\r')
-  test "$actual" = "$expected" || { echo 'Signing certificate mismatch' >&2; exit 1; }
+  verify_signing_certificates "$report" "$expected"
 }
 verify_apk "$apk"
 unzip -q "$apks_archive" -d "$signing_dir/apks"
