@@ -1,0 +1,10 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_icon">
+    <target android:name="mark" android:animation="@animator/splash_mark_enter" />
+    <target android:name="paper" android:animation="@animator/splash_ticket_enter" />
+    <target android:name="line_top" android:animation="@animator/splash_line_top" />
+    <target android:name="line_middle" android:animation="@animator/splash_line_middle" />
+    <target android:name="line_bottom" android:animation="@animator/splash_line_bottom" />
+    <target android:name="stub" android:animation="@animator/splash_stub_enter" />
+    <target android:name="stub_ink" android:animation="@animator/splash_stub_ink" />
+</animated-vector>

@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="432dp"
+    android:height="432dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108"
+    tools:ignore="VectorRaster">
+    <!-- Platform splash AVDs use the official 432dp canvas and a central safe area. -->
+    <group android:name="mark" android:pivotX="54" android:pivotY="54"
+        android:scaleX="0.94" android:scaleY="0.94">
+        <path android:fillColor="#1677FF"
+            android:pathData="M54,18a36,36 0,1 0,0 72a36,36 0,0 0,0 -72" />
+        <group android:pivotX="54" android:pivotY="54"
+            android:scaleX="0.78" android:scaleY="0.78">
+            <group android:name="paper" android:pivotX="54" android:pivotY="54"
+                android:scaleX="0.18" android:scaleY="0.64">
+                <path android:fillColor="#FFFFFF"
+                    android:pathData="M20,30h68v48h-68z" />
+                <path android:name="line_top" android:strokeColor="#1677FF"
+                    android:trimPathEnd="0" android:strokeWidth="6" android:pathData="M29,41h31" />
+                <path android:name="line_middle" android:strokeColor="#1677FF"
+                    android:trimPathEnd="0" android:strokeWidth="5" android:pathData="M29,53.5h22" />
+                <path android:name="line_bottom" android:strokeColor="#1677FF"
+                    android:trimPathEnd="0" android:strokeWidth="5" android:pathData="M29,66.5h31" />
+                <group android:name="stub" android:translateY="-8">
+                    <path android:name="stub_ink" android:fillAlpha="0" android:fillColor="#1677FF"
+                        android:pathData="M69,38h8v31h-8z" />
+                </group>
+            </group>
+        </group>
+    </group>
+</vector>

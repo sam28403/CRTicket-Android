@@ -7,4 +7,5 @@
         <item name="android:windowBackground">#FFFFFF</item>
     </style>
     <style name="Theme.CRTicket" parent="Base.CRTicket" />
+    <style name="Theme.CRTicket.Starting" parent="Theme.CRTicket" />
 </resources>

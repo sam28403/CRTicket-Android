@@ -82,7 +82,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_CRTicket)
         super.onCreate(savedInstanceState)
+        cc.samlab.ticket.ui.startup.NativeSplashScreen.install(this)
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         webView = WebView(this)
         if (preferences.getString("assetVersion", "") != BuildConfig.VERSION_NAME) {
