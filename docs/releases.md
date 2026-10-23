@@ -64,16 +64,18 @@ CI 和 PR 不读取正式签名 Secrets。设备测试不包含在此流程内�
 
 ## 发布版本
 
-1. 在 `gradle.properties` 修改 `crticket.version`，例如 `0.9.4`。
+1. 在 `gradle.properties` 设置 `crticket.version`，并准备 `changelogs/X.Y.Z.md`。
 2. 完成提交并推送，确保 CI 通过。
 3. 在同一个提交创建并推送版本标签：
 
 ```powershell
-git tag v0.9.4
-git push origin v0.9.4
+git tag v0.9.3
+git push origin v0.9.3
 ```
 
 标签须为 `vX.Y.Z`，并与该提交的 `crticket.version` 相同。
+对应的 `changelogs/X.Y.Z.md` 必须存在且非空，Release 正文直接使用该文件的全部 Markdown 内容，
+不使用 GitHub 自动生成的提交记录。推送标签前先确认版本日志内容已经定稿。
 Android Release 先执行测试、Lint，构建未签名 APK、AAB 并保存混淆映射。
 构建成功后，进入 Actions 中对应的运行，点击 Review deployments，批准 `release`。
 获批后才读取签名密钥，签名 APK，并用固定版本 bundletool 从 AAB 生成 APKS。
@@ -95,3 +97,12 @@ versionCode 根据完整 Git 历史计数，因此 checkout 使用 `fetch-depth:
 
 签名步骤结束后会删除 Runner 临时目录中的密钥和密码文件。
 保护主分支、版本标签和工作流文件的修改权限，仅批准自己信任的发布提交。
+
+## 工具和 IDE 配置
+
+网页构建使用 Node.js 24，JavaScript Actions 也使用 Node.js 24 运行时。
+`node-version` 控制项目构建版本，Action 自身的运行时由所引用的 Action 版本决定。
+
+`.idea` 仅跟踪 `codeStyles` 和 `inspectionProfiles`，其他 IDE 状态和本机 JDK 配置被忽略。
+已经跟踪的本地配置需从 Git 索引移除，单独添加忽略规则不会停止跟踪。
+本机文件保留，由 Android Studio 继续管理；共享启动配置位于 `.run`，继续纳入版本管理。

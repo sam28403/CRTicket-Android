@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -27,6 +27,7 @@ jobs:
           version=$(sed -n 's/^crticket.version=//p' gradle.properties | tr -d '\r')
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           test "$RELEASE_TAG" = "v$version"
+          test -s "changelogs/$version.md"
       - uses: ./.github/actions/setup-android
       - name: Test web code
         run: npm run test:android --prefix web
@@ -34,7 +35,7 @@ jobs:
         run: >-
           bash gradlew :app:testDebugUnitTest :app:lintRelease
           :app:assembleRelease :app:bundleRelease --max-workers=2 --console=plain
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: unsigned-release
           path: |
@@ -43,7 +44,7 @@ jobs:
             app/build/outputs/mapping/release/mapping.txt
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: release-reports-${{ github.run_id }}-${{ github.run_attempt }}
@@ -60,7 +61,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: actions/setup-java@v5
@@ -72,7 +73,7 @@ jobs:
           cmdline-tools-version: '15859902'
           packages: platform-tools
       - run: sdkmanager 'build-tools;37.0.0'
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: unsigned-release
           path: unsigned
@@ -90,7 +91,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
+          notes="changelogs/${RELEASE_TAG#v}.md"
+          test -s "$notes"
           gh release create "$RELEASE_TAG" dist/* \
             --verify-tag --title "CRTicket $RELEASE_TAG" \
-            --generate-notes --draft
+            --notes-file "$notes" --draft
           gh release edit "$RELEASE_TAG" --draft=false
