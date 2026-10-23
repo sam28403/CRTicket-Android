@@ -1,6 +1,5 @@
 package cc.samlab.ticket.ui.report
 
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,11 +57,13 @@ internal fun ExpressiveReportScreen(
     var steps by rememberSaveable { mutableStateOf("") }
     var expected by rememberSaveable { mutableStateOf("") }
     var includeDevice by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val deviceInfo = remember(context, includeDevice) {
+        if (includeDevice) reportDeviceInfo(context) else null
+    }
     val report = IssueReport(
         kind, title, description, steps, expected, BuildConfig.VERSION_NAME,
-        if (includeDevice) {
-            "${Build.MANUFACTURER} ${Build.MODEL}\nAndroid ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})"
-        } else null,
+        deviceInfo,
     )
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         Surface(color = MaterialTheme.colorScheme.surfaceContainer) {

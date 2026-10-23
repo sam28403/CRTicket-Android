@@ -3,6 +3,9 @@ package cc.samlab.ticket
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.PowerManager
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -20,8 +23,10 @@ import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.ui.notice.IMPORTANT_NOTICE_SUPPRESSED
+import cc.samlab.ticket.ui.welcome.WelcomeState
 import java.io.File
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,8 +40,15 @@ class IssueReportDeviceTest {
         .getSharedPreferences("android", Context.MODE_PRIVATE)
     private var originalNotice: Boolean? = null
     private var wasInteractive = false
+    private val welcome = instrumentation.targetContext
+        .getSharedPreferences("welcome", Context.MODE_PRIVATE)
+    private var originalTerms = 0
+    private var originalVersion: String? = null
 
     @Before fun prepare() {
+        originalTerms = welcome.getInt("terms", 0)
+        originalVersion = welcome.getString("version", null)
+        WelcomeState.complete(instrumentation.targetContext)
         wasInteractive = instrumentation.targetContext
             .getSystemService(PowerManager::class.java).isInteractive
         instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_WAKEUP").close()
@@ -47,6 +59,8 @@ class IssueReportDeviceTest {
     }
 
     @After fun restore() {
+        welcome.edit().putInt("terms", originalTerms)
+            .putString("version", originalVersion).commit()
         val editor = preferences.edit()
         originalNotice?.let { editor.putBoolean(IMPORTANT_NOTICE_SUPPRESSED, it) }
             ?: editor.remove(IMPORTANT_NOTICE_SUPPRESSED)
@@ -82,7 +96,14 @@ class IssueReportDeviceTest {
             compose.onNodeWithTag("report-expected").assertIsDisplayed()
             capture("keyboard-expected")
             closeSoftKeyboard()
+            compose.onNodeWithTag("report-device").performScrollTo().performClick()
             compose.onNodeWithText("前往 GitHub 提交").performScrollTo().assertIsEnabled()
+            scenario.onActivity { activity ->
+                val preview = textViews(activity.window.decorView)
+                    .map { it.text.toString() }.first { it.contains("GMS:") }
+                assertTrue(preview.contains("\nGMS: "))
+                assertTrue(preview.contains("\nWebView: "))
+            }
             capture("preview")
             compose.onNodeWithTag("report-title").performScrollTo()
             capture("form")
@@ -103,6 +124,12 @@ class IssueReportDeviceTest {
             }.getOrDefault(false)
         }
         compose.waitForIdle()
+    }
+
+    private fun textViews(view: View): List<TextView> = when (view) {
+        is TextView -> listOf(view)
+        is ViewGroup -> (0 until view.childCount).flatMap { textViews(view.getChildAt(it)) }
+        else -> emptyList()
     }
 
     private fun capture(name: String) {

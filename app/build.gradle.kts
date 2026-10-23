@@ -23,6 +23,7 @@ android {
         buildConfigField("String", "STATION_DATA_VERSION", "\"$stationDataVersion\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    sourceSets.getByName("main").assets.directories.add(layout.buildDirectory.dir("welcome-assets").get().asFile.path)
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -49,6 +50,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.tables)
+    implementation(libs.markwon.strikethrough)
     constraints {
         implementation(libs.androidx.fragment) {
             because("Play services brings Fragment 1.1.0; Activity Result requires 1.3.0 or newer")
@@ -73,3 +77,13 @@ dependencies {
     androidTestImplementation(libs.compose.ui.test)
     androidTestImplementation(libs.androidx.window.testing)
 }
+
+val packageChangelogs = tasks.register<Sync>("packageChangelogs") {
+    from(rootProject.file("changelogs")) {
+        include("*.md")
+        exclude("README.md")
+        into("changelogs")
+    }
+    into(layout.buildDirectory.dir("welcome-assets"))
+}
+tasks.named("preBuild") { dependsOn(packageChangelogs) }

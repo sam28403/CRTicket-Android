@@ -84,6 +84,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CRTicket)
         super.onCreate(savedInstanceState)
+        if (cc.samlab.ticket.ui.welcome.WelcomeState.required(this)) {
+            startActivity(Intent(this, cc.samlab.ticket.ui.welcome.WelcomeActivity::class.java).apply {
+                intent.extras?.let { putExtras(it) }
+            })
+            finish()
+            return
+        }
         cc.samlab.ticket.ui.startup.NativeSplashScreen.install(this)
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         webView = WebView(this)
@@ -362,6 +369,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        if (!::webView.isInitialized) return
         webView.saveState(outState)
         outState.putString("nativePage", home.location)
         outState.putString("pendingRoute", pendingRoute)
@@ -372,6 +380,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
+        if (!::webView.isInitialized) {
+            super.onPause()
+            return
+        }
         stationArrival.onPause()
         webView.onPause()
         super.onPause()
@@ -379,6 +391,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (!::webView.isInitialized) return
         webView.onResume()
         appearance.updateSystem(resources.configuration)
         stationArrival.onResume()
@@ -389,10 +402,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        appearance.updateSystem(newConfig)
+        if (::appearance.isInitialized) appearance.updateSystem(newConfig)
     }
 
     override fun onDestroy() {
+        if (!::webView.isInitialized) {
+            worker.shutdownNow()
+            super.onDestroy()
+            return
+        }
         home.close()
         stationArrival.close()
         refresh.close()

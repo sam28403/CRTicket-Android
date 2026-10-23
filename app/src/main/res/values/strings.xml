@@ -227,7 +227,7 @@
     <string name="report_steps">Steps to reproduce (optional)</string>
     <string name="report_expected">Expected behaviour (optional)</string>
     <string name="report_device">Include device information</string>
-    <string name="report_device_hint">Device model and Android version only</string>
+    <string name="report_device_hint">Device model, Android, GMS and WebView versions</string>
     <string name="report_preview">Report preview</string>
     <string name="report_copy">Copy report</string>
     <string name="report_copied">Report copied</string>
@@ -641,4 +641,18 @@
     <string name="help_general_question">How do I change appearance or report an issue?</string>
     <string name="help_general_answer">Change language, theme and pure black mode in Settings. Layout adapts to window size; some features depend on hardware and system capabilities. Use Report an issue in About with steps, expected and actual results. Device and system details are optional; confirm publication on GitHub.</string>
     <string name="help_general_rules">Tickets, profile and settings are stored locally; network queries contact their respective providers. Backups may contain avatars, tickets and full GPS tracks; keep them secure. Back up before clearing data or uninstalling. No desktop backend is required. Data, photographs, fonts and assets retain their source licences; see credits in About.</string>
+    <string name="welcome_title">Welcome to\nSam-Lab CRTicket</string>
+    <string name="welcome_updated_title">Thank you for using\nSam-Lab CRTicket</string>
+    <string name="welcome_subtitle">Your companion for railway travel in China</string>
+    <string name="welcome_version">App updated to %1$s</string>
+    <string name="welcome_next">Continue</string>
+    <string name="welcome_start">Get started</string>
+    <string name="welcome_terms_title">Terms of use</string>
+    <string name="welcome_changes_title">What is new</string>
+    <string name="welcome_agree">Agree and get started</string>
+    <string name="welcome_decline">Disagree and exit</string>
+    <string name="welcome_read_all">Please read all terms</string>
+    <string name="welcome_terms_end">You have reached the end of the terms</string>
+    <string name="welcome_changes_fallback">No release notes are available for this version.</string>
+    <string name="welcome_terms">Welcome to\nSam-Lab CRTicket. Read these terms in full before accepting and using the app.\n\n1. Open source and free\nThis app is open source and free of charge. Use, modification and redistribution of its source code must comply with the licence included in the project repository.\n\n2. Ticket use\nTickets created, displayed or exported by this app are for personal collections, learning and souvenirs only. They are not valid railway tickets and cannot be used for travel, station entry or exit, reimbursement or identity verification. Do not use them for fraud, impersonation or other unlawful purposes. Purchase valid tickets through official channels for actual travel.\n\n3. Mini map coverage\nThe mini map only covers railway operating areas in China. It may not include every line, station or recent change. Maps, station locations, train information, availability and visit records are for reference. Follow official railway information and instructions at stations.\n\n4. Permissions\nInternet access retrieves station, train, ticket availability and related service data. Location supports features you enable, including maps, speed recording and station visits; background location supports background station arrival detection. Notifications and foreground services display enabled ticket monitoring, journey tracking, speed recording, arrival and reminder status. Exact alarms, full-screen reminders and Do Not Disturb access support sale reminders you configure. Boot events restore enabled reminders and arrival tasks. Wake locks support running tasks. Import and export use the system file picker to access files you select.\n\nPermissions are requested when needed. You may deny or revoke them in system settings; the related features may then be unavailable. Accepting these terms does not grant system permissions. Continuous location and monitoring may increase battery and data use.\n\n5. Data and third-party services\nKeep names, identity details, exported tickets and backup files secure. Hide personal details before sharing. Network queries send information required for the query to the relevant services. Third-party availability and accuracy may change. Uninstalling the app or clearing its data may delete local records. Back up as needed.\n\n6. Responsible use\nComply with applicable laws and third-party service requirements. The app is provided as is and may contain errors or experience interruptions. Verify important travel information independently.\n\nSelecting Agree and get started confirms that you have read and accepted these terms. Selecting Disagree and exit closes the app.</string>
 </resources>

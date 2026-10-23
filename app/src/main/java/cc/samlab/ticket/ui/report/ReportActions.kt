@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.MarkdownText
 
 @Composable
 internal fun ReportActions(report: IssueReport, onExternal: (String) -> Unit) {
@@ -32,13 +32,12 @@ internal fun ReportActions(report: IssueReport, onExternal: (String) -> Unit) {
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        SelectionContainer {
-            Text(
-                report.body(),
-                modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+        MarkdownText(
+            markdown = report.body(),
+            modifier = Modifier.padding(20.dp),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            selectable = true,
+        )
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(

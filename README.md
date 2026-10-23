@@ -105,6 +105,9 @@ USB 或无线调试设备，然后点击 **Run**。配置执行 `:app:installBen
 ### 版本规则
 
 在 `gradle.properties` 中修改 `crticket.version` 管理语义版本。
+仅在升级版本号时撰写更新日志，将上一版本以来的全部更新汇总至
+`changelogs/x.x.x.md`；日常开发不持续改写版本日志，已发布的日志保持不变。
+更新欢迎页会读取对应版本的 Markdown 文件，详见 [更新日志维护](changelogs/README.md)。
 构建会附加 Git 提交短哈希及上游版本日期，内部版本号随提交数递增。
 版本计算需要完整 Git 历史；可通过以下任务查看构建版本：
 
