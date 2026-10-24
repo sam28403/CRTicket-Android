@@ -42,6 +42,10 @@ internal fun ExpressiveTrainQueryScreen(
     val count = stops?.length() ?: 0
     val error = state.optString("error")
     val timing by rememberQueryTiming(result, active)
+    val operatingCalendar by rememberOperatingCalendar(
+        train = if (count > 0) result!!.optString("train") else "",
+        date = result?.optString("date").orEmpty(),
+    )
     var datePicker by remember { mutableStateOf(false) }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
@@ -124,6 +128,11 @@ internal fun ExpressiveTrainQueryScreen(
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
                                     .testTag("train-query-export"),
                             ) { Text(textResources(R.string.train_query_export)) }
+                        }
+                        if (operatingCalendar.days != null) item(span = { GridItemSpan(maxLineSpan) }) {
+                            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                                TrainOperatingCalendar(operatingCalendar, result!!.optString("date"), dark)
+                            }
                         }
                         state.optJSONObject("route")?.let { route ->
                             item(span = { GridItemSpan(maxLineSpan) }) { TrainQueryRouteMap(route, result!!.optString("train")) }

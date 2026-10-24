@@ -12,6 +12,10 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.click
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performScrollTo
@@ -53,6 +57,42 @@ class ExpressiveHomeTest {
 
     @After fun close() {
         instrumentation.runOnMainSync { activity.finish() }
+    }
+
+    @Test fun homeTitleOpensReleaseNotesAndReturnsToTheSameHome() {
+        val title = activity.getString(R.string.home_title)
+        val changesTitle = activity.getString(R.string.welcome_changes_title)
+        val start = activity.getString(R.string.welcome_start)
+        fun awaitText(text: String) {
+            compose.waitUntil(10_000) {
+                runCatching {
+                    compose.onNodeWithText(text).assertIsDisplayed()
+                    true
+                }.getOrDefault(false)
+            }
+        }
+
+        compose.onNodeWithText(title).performClick()
+        awaitText(changesTitle)
+        android.os.SystemClock.sleep(400)
+        capture("home-release-notes")
+        compose.onNodeWithText(start).performClick()
+        awaitText(title)
+        compose.onNodeWithContentDescription(activity.getString(R.string.home_search))
+            .assertIsDisplayed()
+        instrumentation.runOnMainSync { assertFalse(activity.isFinishing) }
+        awaitRoute("/home")
+
+        compose.onNodeWithText(title).performTouchInput {
+            click(Offset(22.dp.toPx(), center.y))
+        }
+        awaitText(changesTitle)
+        pressBack()
+        awaitText(title)
+        compose.onNodeWithContentDescription(activity.getString(R.string.home_search))
+            .assertIsDisplayed()
+        instrumentation.runOnMainSync { assertFalse(activity.isFinishing) }
+        awaitRoute("/home")
     }
 
     @Test fun compactHomeSearchOpensSecondLevelAndKeepsNavigation() {

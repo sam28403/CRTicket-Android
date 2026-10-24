@@ -21,11 +21,12 @@ internal fun WelcomeScreen(
     firstUse: Boolean,
     changes: String,
     onExit: () -> Unit,
+    releaseNotesOnly: Boolean = false,
     onComplete: () -> Unit,
 ) {
-    var page by rememberSaveable { mutableIntStateOf(0) }
+    var page by rememberSaveable { mutableIntStateOf(if (releaseNotesOnly) 1 else 0) }
     val scroll = rememberScrollState()
-    BackHandler { if (page == 1) page = 0 else onExit() }
+    BackHandler { if (page == 1 && !releaseNotesOnly) page = 0 else onExit() }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(Modifier.safeDrawingPadding(), contentAlignment = Alignment.Center) {
             Column(
@@ -66,6 +67,7 @@ internal fun WelcomeScreen(
                     Text(
                         stringResource(if (firstUse) R.string.welcome_terms_title else R.string.welcome_changes_title),
                         style = MaterialTheme.typography.headlineLarge,
+                        fontFamily = if (firstUse) null else cc.samlab.ticket.ui.home.projectTitleFont,
                     )
                     Column(
                         Modifier.weight(1f).fillMaxWidth()
