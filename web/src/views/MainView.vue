@@ -186,7 +186,7 @@
         </el-form-item>
 
       </el-form>
-      <h3 style="font-family: Consolas, 'Courier New', monospace">Version 261019</h3>
+      <h3 style="font-family: Consolas, 'Courier New', monospace">Version 261024</h3>
       <h3 style="font-family: Consolas, 'Courier New', monospace">Station Version 10118</h3>
 
       <div class="home-tools">

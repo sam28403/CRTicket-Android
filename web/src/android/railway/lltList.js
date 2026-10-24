@@ -1,7 +1,9 @@
 import { clockMinutes } from './clock.js'
 
 const dayMs = 86400000
-const categories = ['G', 'D', 'C', 'S', 'Z', 'T', 'K', 'L']
+const categories = [
+  'G', 'D', 'C', 'S', 'Z', 'N', 'V', 'T', 'K', 'L', 'numeric', 'Y',
+]
 // 新规则 1：启用时替换上方 categories 定义。
 // const categories = ['G', 'D', 'C', 'S', 'Z', 'N', 'V', 'Y']
 // 新规则 2：启用时替换上方 categories 定义。
@@ -41,11 +43,11 @@ export function findLltTrainCandidates(database, train, date) {
 function sortKey(train) {
   const first = train.split('/')[0]
   const prefix = first.match(/^[A-Z]/)?.[0]
-  const category = categories.indexOf(prefix)
+  const category = categories.indexOf(
+    /^\d{4}[A-Z]*$/.test(first) ? 'numeric' : prefix,
+  )
   return [
-    category >= 0
-      ? category
-      : categories.length + (/^\d{4}[A-Z]*$/.test(first) ? 0 : 1),
+    category >= 0 ? category : categories.length,
     Number(first.match(/\d+/)?.[0] || 0),
   ]
 }
