@@ -24,6 +24,11 @@ internal fun StationBoardItem(
 ) {
     val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
+    fun timeColor(offset: Int, normal: Color): Color = when {
+        offset > 0 -> if (dark) Color(0xFFFFB4AB) else Color(0xFFBA1A1A)
+        offset < 0 -> if (dark) Color(0xFF85D99A) else Color(0xFF196D35)
+        else -> normal
+    }
     val accent = when (highlight) {
         StationHighlight.IN_STATION -> if (dark) Color(0xFFFFC078) else Color(0xFF975009)
         StationHighlight.UPCOMING -> if (dark) Color(0xFF70DF97) else Color(0xFF18763B)
@@ -52,8 +57,14 @@ internal fun StationBoardItem(
             }
             StationRoute(row.from, row.to, onStation)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StationTimeField(textResources(R.string.station_arrival), row.arrival, Modifier.weight(1f), accent)
-                StationTimeField(textResources(R.string.station_departure), row.departure, Modifier.weight(1f), accent)
+                StationTimeField(
+                    textResources(R.string.station_arrival), row.arrival,
+                    Modifier.weight(1f), timeColor(row.arrivalOffset, accent),
+                )
+                StationTimeField(
+                    textResources(R.string.station_departure), row.departure,
+                    Modifier.weight(1f), timeColor(row.departureOffset, accent),
+                )
                 StationTimeField(textResources(R.string.station_stay), row.stay, Modifier.weight(1f))
             }
         } else Row(
@@ -77,7 +88,8 @@ internal fun StationBoardItem(
             StationTimeField(
                 if (tab == StationTab.DEPARTURE) textResources(R.string.station_departure) else textResources(R.string.station_arrival),
                 if (tab == StationTab.DEPARTURE) row.departure else row.arrival,
-                Modifier.widthIn(min = 64.dp), accent,
+                Modifier.widthIn(min = 64.dp),
+                timeColor(if (tab == StationTab.DEPARTURE) row.departureOffset else row.arrivalOffset, accent),
                 prominent = true,
             )
         }

@@ -1,5 +1,6 @@
 import { trainQueryRange } from './trainQueryDate.js'
 import { stationRowTiming } from './stationBoardTime.js'
+import { stationDelayLabel } from './stationDelay.js'
 
 export const boardTabs = [
   { name: 'all', label: '全部信息' },
@@ -24,6 +25,8 @@ export function stationBoardRows(trains, tab) {
     .map(row => ({
       ...row,
       ...stationRowTiming(row, tab),
+      arrivalLabel: stationDelayLabel(row, 'arrival'),
+      departureLabel: stationDelayLabel(row, 'departure'),
       status: tab === 'arrival'
         ? row.arrivalStatus : row.departureStatus || row.arrivalStatus,
       stayLabel: row.stay == null ? '—' : `${row.stay} 分钟`,

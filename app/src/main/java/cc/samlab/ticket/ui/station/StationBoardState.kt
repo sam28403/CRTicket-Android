@@ -46,6 +46,13 @@ internal class StationBoardState(
         dispatch(this, "query", station)
     }
 
+    fun refresh() {
+        if (loading || resultStation.isEmpty()) return
+        follow = false
+        suggestions = emptyList()
+        dispatch(this, "refresh", resultStation)
+    }
+
     fun discoveryAction(action: String) {
         dispatch(this, action, station)
     }

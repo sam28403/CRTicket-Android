@@ -56,6 +56,11 @@ const columns = computed(() => {
       }
       return h('span', {
         class: 'board-cell',
+        style: ['arrivalLabel', 'departureLabel'].includes(column.key)
+          ? { color: rowData[column.key === 'arrivalLabel' ? 'arrivalOffset' : 'departureOffset'] > 0
+              ? 'var(--el-color-danger)'
+              : rowData[column.key === 'arrivalLabel' ? 'arrivalOffset' : 'departureOffset'] < 0
+                ? 'var(--el-color-success)' : undefined } : undefined,
         title: String(cellData || '—'),
       }, cellData || '—')
     },
@@ -97,7 +102,9 @@ function browseKey(event) {
   }
 }
 
-watch(() => [props.rows, props.tab], locateCurrent, { flush: 'post' })
+watch(() => [props.rows, props.tab], () => {
+  if (props.follow) locateCurrent()
+}, { flush: 'post' })
 watch([table, width, height, currentIndex, () => props.follow], () => {
   if (props.follow) locateCurrent()
 }, { flush: 'post' })

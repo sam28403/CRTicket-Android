@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">미운행</string>
     <string name="train_calendar_unknown">데이터 없음</string>
     <string name="train_query_delay">정시 운행</string>
+    <string name="station_refresh">새로고침</string>
 </resources>

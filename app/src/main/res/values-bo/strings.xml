@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">འགྲོ་འོང་མེད།</string>
     <string name="train_calendar_unknown">གཞི་གྲངས་མེད།</string>
     <string name="train_query_delay">དུས་ཚོད།</string>
+    <string name="station_refresh">གསར་སྒྱུར།</string>
 </resources>

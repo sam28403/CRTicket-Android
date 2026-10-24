@@ -28,6 +28,8 @@ internal data class StationBoardRow(
     val highlightStart: Double,
     val highlightEnd: Double,
     val highlightLabel: String,
+    val arrivalOffset: Int = 0,
+    val departureOffset: Int = 0,
 ) {
     fun inStation(seconds: Int) = arrivalSeconds.isFinite() && departureSeconds.isFinite() &&
         seconds >= arrivalSeconds && seconds < departureSeconds
@@ -51,6 +53,8 @@ internal fun parseStationRow(row: JSONObject) = StationBoardRow(
     highlightStart = row.optDouble("highlightStartSeconds", Double.POSITIVE_INFINITY),
     highlightEnd = row.optDouble("highlightEndSeconds", Double.POSITIVE_INFINITY),
     highlightLabel = row.optString("highlightLabel"),
+    arrivalOffset = row.optInt("arrivalOffset"),
+    departureOffset = row.optInt("departureOffset"),
 )
 
 internal fun stationCurrentIndex(rows: List<StationBoardRow>, seconds: Int): Int {

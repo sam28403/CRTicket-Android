@@ -68,11 +68,17 @@ internal fun StationTimeField(
     color: Color = MaterialTheme.colorScheme.onSurface,
     prominent: Boolean = false,
 ) {
+    if (prominent) {
+        Box(modifier, contentAlignment = Alignment.CenterEnd) {
+            StationProminentTime(label, value, color)
+        }
+        return
+    }
     Column(modifier) {
         Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
             if (value == "始发站" || value == "终到站") "—" else value,
-            style = if (prominent) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleMedium,
             color = color,
         )
     }

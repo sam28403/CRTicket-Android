@@ -35,6 +35,11 @@ defineProps({
           <span
             v-else
             :class="{ 'time-value': ['arrivalLabel', 'departureLabel'].includes(field.key) }"
+            :style="['arrivalLabel', 'departureLabel'].includes(field.key) ? {
+              color: row[field.key === 'arrivalLabel' ? 'arrivalOffset' : 'departureOffset'] > 0
+                ? 'var(--el-color-danger)' : row[field.key === 'arrivalLabel' ? 'arrivalOffset' : 'departureOffset'] < 0
+                  ? 'var(--el-color-success)' : undefined,
+            } : undefined"
           >
             {{ row[field.key] || '—' }}
           </span>

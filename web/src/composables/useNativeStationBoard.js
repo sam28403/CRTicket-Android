@@ -16,6 +16,7 @@ export function useNativeStationBoard(board) {
       })))
     } else if (action === 'clearHistory') discovery.clearHistory()
     else if (action === 'recommendations') discovery.refresh()
+    else if (action === 'refresh' && !loading.value) board.refresh()
     else if (!loading.value) query(name)
   }
   window.addEventListener('crticket-station-request', request)

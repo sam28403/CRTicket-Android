@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">不開行</string>
     <string name="train_calendar_unknown">暫無資料</string>
     <string name="train_query_delay">正晚點</string>
+    <string name="station_refresh">重新整理</string>
 </resources>

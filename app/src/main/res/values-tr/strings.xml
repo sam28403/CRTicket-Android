@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">Sefer yok</string>
     <string name="train_calendar_unknown">Veri yok</string>
     <string name="train_query_delay">Dakiklik</string>
+    <string name="station_refresh">Yenile</string>
 </resources>

@@ -36,6 +36,11 @@ function queryOnEnter(event) {
   if (event.repeat || loading.value) return
   query()
 }
+
+function refresh() {
+  follow.value = false
+  board.refresh()
+}
 </script>
 
 <template>
@@ -68,6 +73,7 @@ function queryOnEnter(event) {
         <div class="heading-actions">
           <time class="system-clock">北京时间 {{ clock.date }} {{ clock.time }}</time>
           <el-button @click="$router.push('/train')">车次查询</el-button>
+          <el-button :disabled="loading || !result" @click="refresh">刷新</el-button>
         </div>
       </div>
 

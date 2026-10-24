@@ -5,6 +5,7 @@ import { stationQueryName } from '@/utils/stationName.js'
 import { stationClock } from '@/utils/stationBoard.js'
 import { stationLocation } from '@/utils/stationNavigation.js'
 import { useStationDiscovery } from './useStationDiscovery.js'
+import { useStationDelay } from './useStationDelay.js'
 
 export function useStationBoard() {
   const route = useRoute()
@@ -14,14 +15,15 @@ export function useStationBoard() {
   const clock = computed(() => stationClock(now.value))
   const discovery = useStationDiscovery(clock)
   const loading = ref(false)
-  const result = shallowRef(null)
+  const schedule = shallowRef(null)
+  const { result } = useStationDelay(schedule)
   const error = ref('')
   let controller
   let requestId = 0
   const snapshots = new Map()
   const timer = setInterval(() => { now.value = Date.now() }, 1000)
 
-  async function query(name = station.value) {
+  async function query(name = station.value, preserve = false) {
     const selected = stationQueryName(name)
     if (!selected) {
       error.value = '请输入车站名称（不超过 30 个字）'
@@ -38,7 +40,7 @@ export function useStationBoard() {
     const date = clock.value.date
     station.value = selected
     loading.value = true
-    result.value = null
+    if (!preserve) schedule.value = null
     error.value = ''
     try {
       const { data } = await api.get('/station', {
@@ -54,7 +56,7 @@ export function useStationBoard() {
         query(selected)
         return
       }
-      result.value = data
+      schedule.value = data
       discovery.record(selected)
       snapshots.delete(selected)
       snapshots.set(selected, data)
@@ -81,12 +83,12 @@ export function useStationBoard() {
     controller?.abort()
     requestId++
     loading.value = false
-    result.value = null
+    schedule.value = null
     error.value = ''
     station.value = selected
     const previous = snapshots.get(selected)
     if (previous?.date === clock.value.date) {
-      result.value = previous
+      schedule.value = previous
       return
     }
     if (station.value) query()
@@ -95,7 +97,7 @@ export function useStationBoard() {
   watch(() => clock.value.date, () => {
     if (route.path !== '/station') return
     const selected = result.value?.station || station.value
-    result.value = null
+    schedule.value = null
     controller?.abort()
     requestId++
     loading.value = false
@@ -108,5 +110,6 @@ export function useStationBoard() {
     controller?.abort()
   })
 
-  return { station, clock, loading, result, error, query, discovery }
+  const refresh = () => query(result.value?.station || station.value, true)
+  return { station, clock, loading, result, error, query, refresh, discovery }
 }

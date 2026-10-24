@@ -115,6 +115,9 @@ class AndroidBridge(
     fun queryTrainDelay(id: String, payload: String) = trainTracking.queryDelay(id, payload)
 
     @JavascriptInterface
+    fun queryStationDelay(id: String, payload: String) = trainTracking.queryStationDelay(id, payload)
+
+    @JavascriptInterface
     fun trainQueryResult(payload: String) = receiveTrainQuery(payload)
 
     @JavascriptInterface

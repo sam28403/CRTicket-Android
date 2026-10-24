@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">Não circula</string>
     <string name="train_calendar_unknown">Sem dados</string>
     <string name="train_query_delay">Pontualidade</string>
+    <string name="station_refresh">Atualizar</string>
 </resources>

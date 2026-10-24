@@ -39,6 +39,15 @@ class TrainTrackingBridge(
         }.start()
     }
 
+    fun queryStationDelay(id: String, payload: String) {
+        Thread {
+            val result = runCatching {
+                JSONObject().put("success", true).put("rows", StationDelayRepository.query(payload))
+            }.getOrElse { JSONObject().put("success", false) }
+            reply(id, result)
+        }.start()
+    }
+
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) =
         permission.onRequestPermissionsResult(requestCode, grantResults)
 

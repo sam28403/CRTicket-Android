@@ -41,7 +41,7 @@ internal object TrainDelayRepository {
         }
     }
 
-    private fun initSession() {
+    internal fun initSession() {
         runCatching {
             val url = "https://kyfw.12306.cn/otn/zwdch/init"
             client.newCall(Request.Builder().url(url).build()).execute().use { response ->
@@ -51,6 +51,23 @@ internal object TrainDelayRepository {
             }
         }
     }
+
+    internal fun prediction(code: String, station: String, clock: String, direction: Int): Int? {
+        val response = JSONObject(post(primary, mapOf(
+            "cc" to code, "cz" to station, "cxlx" to direction.toString(),
+            "czEn" to station.toByteArray(Charsets.UTF_8).joinToString("") {
+                "-%02X".format(it.toInt() and 255)
+            },
+        )))
+        require(response.optBoolean("status"))
+        val message = response.optJSONObject("data")?.optString("message").orEmpty()
+        return TrainDelayTimes.predictionOffset(clock, message)
+    }
+
+    internal fun fallbackStops(code: String, date: String): org.json.JSONArray? =
+        JSONObject(post(fallback, mapOf(
+            "trainCode" to code, "startDay" to date.replace("-", ""),
+        ))).optJSONObject("data")?.optJSONObject("trainDetail")?.optJSONArray("stopTime")
 
     fun query(payload: String): JSONObject {
         require(payload.length <= 200_000)

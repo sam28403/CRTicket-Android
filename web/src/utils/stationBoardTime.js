@@ -19,8 +19,8 @@ function eventSeconds(time, label) {
 }
 
 export function stationRowTiming(row, tab) {
-  const arrivalSeconds = eventSeconds(row.arrival, row.arrivalLabel)
-  const departureSeconds = eventSeconds(row.departure, row.departureLabel)
+  const arrivalSeconds = eventSeconds(row.arrival, row.arrivalLabel) + (row.arrivalDay || 0) * daySeconds
+  const departureSeconds = eventSeconds(row.departure, row.departureLabel) + (row.departureDay || 0) * daySeconds
   const terminal = Number.isFinite(arrivalSeconds) && !Number.isFinite(departureSeconds)
   const code = displayTrainCode(row.train).split('/')[0].toUpperCase()
   const fastTrain = /^[GDCS]\d+$/.test(code)
@@ -34,7 +34,7 @@ export function stationRowTiming(row, tab) {
   return {
     arrivalSeconds,
     departureSeconds,
-    timeSeconds: timeSeconds(tab === 'arrival' ? row.arrival : row.departure || row.arrival),
+    timeSeconds: tab === 'arrival' ? arrivalSeconds : row.departure ? departureSeconds : arrivalSeconds,
     highlightStartSeconds: leadMinutes
       ? highlightEndSeconds - leadMinutes * 60 : Infinity,
     highlightEndSeconds,

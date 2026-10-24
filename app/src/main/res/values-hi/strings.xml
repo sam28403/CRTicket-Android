@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">नहीं चलती</string>
     <string name="train_calendar_unknown">डेटा उपलब्ध नहीं</string>
     <string name="train_query_delay">समयपालन</string>
+    <string name="station_refresh">रीफ़्रेश</string>
 </resources>

@@ -661,4 +661,5 @@
     <string name="train_calendar_stopped">Tidak beroperasi</string>
     <string name="train_calendar_unknown">Tiada data</string>
     <string name="train_query_delay">Ketepatan masa</string>
+    <string name="station_refresh">Muat semula</string>
 </resources>

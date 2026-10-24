@@ -3,10 +3,12 @@ package cc.samlab.ticket.ui.station
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.rememberAppText
@@ -33,6 +35,7 @@ internal fun StationBoardHeader(
                     fontFamily = projectTitleFont,
                 )
                 StationBoardSearch(controller, Modifier.weight(1f))
+                StationBoardRefreshButton(controller)
             }
         } else Column {
             TopAppBar(
@@ -42,6 +45,7 @@ internal fun StationBoardHeader(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back))
                     }
                 },
+                actions = { StationBoardRefreshButton(controller) },
                 expandedHeight = 48.dp,
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -50,5 +54,17 @@ internal fun StationBoardHeader(
             )
             StationBoardSearch(controller)
         }
+    }
+}
+
+@Composable
+private fun StationBoardRefreshButton(controller: StationBoardState) {
+    val text = rememberAppText()
+    IconButton(
+        onClick = controller::refresh,
+        enabled = !controller.loading && controller.resultStation.isNotEmpty(),
+        modifier = Modifier.testTag("station-refresh"),
+    ) {
+        Icon(Icons.Default.Refresh, text(R.string.station_refresh))
     }
 }
