@@ -48,6 +48,7 @@ class TicketFormValidationDeviceTest {
             assertError("trainNo", true)
             checkPickers()
             assertTicketNumericInputs(compose)
+            assertUppercaseInputs()
         } finally {
             fixture.evaluate("""
                 if ($previousStorage === null) localStorage.removeItem('crticket-generator-draft');
@@ -98,6 +99,7 @@ class TicketFormValidationDeviceTest {
                 fixture.capture("history-$mode-field-errors")
                 org.junit.Assert.assertEquals("0", fixture.evaluate("window.validationSaveCalls"))
                 assertTicketNumericInputs(compose)
+                assertUppercaseInputs()
                 compose.onNodeWithContentDescription("返回").performClick()
             }
         } finally {
@@ -113,6 +115,16 @@ class TicketFormValidationDeviceTest {
         for (key in keys) {
             assertError(key, true)
         }
+    }
+
+    private fun assertUppercaseInputs() {
+        compose.onNodeWithTag("history-field-trainNo").performScrollTo()
+            .performTextReplacement("g25")
+        compose.onNodeWithTag("history-field-trainNo").assertTextContains("G25")
+        compose.onNodeWithTag("history-field-number").performScrollTo()
+            .performTextReplacement("e351822734")
+        compose.onNodeWithTag("history-field-number").assertTextContains("E351822734")
+        closeSoftKeyboard()
     }
 
     private fun assertValidationToast(fixture: TabletPageFixture, save: () -> Unit) {

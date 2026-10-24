@@ -76,8 +76,12 @@ internal fun SaleTimeCard(
                         }
                         Spacer(Modifier.width(8.dp))
                     }
-                    Text(bureau.ifBlank { text(R.string.sale_bureau_unknown) },
-                        style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+                    Text(
+                        if (row.name == "香港西九龙") text(R.string.station_bureau_mtr)
+                        else bureau.ifBlank { text(R.string.sale_bureau_unknown) },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.onSurfaceVariant,
+                    )
                 }
             }
         }

@@ -2,14 +2,86 @@ package cc.samlab.ticket
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import cc.samlab.ticket.ui.sale.SaleTime
+import cc.samlab.ticket.ui.sale.SaleTimeCard
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
 import org.junit.Rule
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SaleTimeDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
+
+    @Before fun wakeDevice() {
+        InstrumentationRegistry.getInstrumentation().uiAutomation
+            .executeShellCommand("input keyevent KEYCODE_WAKEUP").close()
+    }
+
+    @Test fun westKowloonCardCorrectsPreviouslySavedBureau() {
+        val fixture = TabletPageFixture(compose)
+        try {
+            fixture.navigate("/sale-time")
+            compose.waitUntil(20_000) {
+                compose.onAllNodesWithTag("sale-query").fetchSemanticsNodes().isNotEmpty()
+            }
+            fixture.instrumentation.runOnMainSync {
+                fixture.activity.findViewById<ComposeView>(R.id.expressive_navigation_view).setContent {
+                    MaterialTheme {
+                        SaleTimeCard(
+                            row = SaleTime("香港西九龙", LocalTime.of(8, 0)),
+                            bureau = "广铁",
+                            now = Instant.now(),
+                            date = LocalDate.now(),
+                        )
+                    }
+                }
+            }
+            compose.onNodeWithText(fixture.activity.getString(R.string.station_bureau_mtr))
+                .assertIsDisplayed()
+            compose.onNodeWithText("广铁").assertDoesNotExist()
+            fixture.capture("sale-time-west-kowloon-bureau")
+        } finally {
+            fixture.close()
+        }
+    }
+
+    @Test fun vientianeWithoutSaleTimesShowsExpressiveEmptyState() {
+        val fixture = TabletPageFixture(compose)
+        val preferences = fixture.activity.getSharedPreferences("sale-time-query", 0)
+        val savedHistory = preferences.getString("history", null)
+        try {
+            fixture.navigate("/sale-time")
+            compose.waitUntil(20_000) {
+                compose.onAllNodesWithTag("sale-query").fetchSemanticsNodes().isNotEmpty()
+            }
+            compose.onNodeWithTag("sale-query").performTextReplacement("万象")
+            compose.waitUntil(20_000) {
+                compose.onAllNodes(hasText("万象") and hasClickAction())
+                    .fetchSemanticsNodes().isNotEmpty()
+            }
+            compose.onAllNodes(hasText("万象") and hasClickAction()).onLast().performClick()
+            compose.onNodeWithTag("sale-search").assertIsEnabled().performClick()
+            compose.waitUntil(40_000) {
+                compose.onAllNodesWithTag("sale-empty").fetchSemanticsNodes().isNotEmpty()
+            }
+            compose.onNodeWithTag("sale-empty-artwork", useUnmergedTree = true).assertIsDisplayed()
+            compose.onNodeWithText(fixture.activity.getString(R.string.sale_empty)).assertIsDisplayed()
+            fixture.capture("sale-time-vientiane-empty")
+        } finally {
+            preferences.edit().apply {
+                if (savedHistory == null) remove("history") else putString("history", savedHistory)
+            }.commit()
+            fixture.close()
+        }
+    }
 
     @Test fun queryValidationCityToggleAndHistory() {
         val fixture = TabletPageFixture(compose)

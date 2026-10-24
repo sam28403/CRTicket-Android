@@ -29,6 +29,7 @@ let stationCodes
 
 export function bureauForTelecode(telecode) {
   if (!/^[A-Z]{3}$/.test(telecode || '')) return ''
+  if (telecode === 'XJA') return '港铁'
   return bureaus.get(telecode.slice(-1)) || ''
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.ui.components.AppSwitch
 
@@ -22,10 +23,13 @@ internal fun HistoryTextField(
     enabled: Boolean = true,
 ) {
     val decimal = numeric && key == "price" && !draft.credit
+    val uppercase = key == "trainNo" || key == "number"
     OutlinedTextField(
         value = draft.value(key),
         onValueChange = {
-            if (!numeric || acceptsTicketNumberInput(it, decimal)) draft.fields[key] = it
+            if (!numeric || acceptsTicketNumberInput(it, decimal)) {
+                draft.fields[key] = if (uppercase) it.uppercase(java.util.Locale.ROOT) else it
+            }
         },
         label = { Text(label) },
         placeholder = { Text(placeholder) },
@@ -37,7 +41,12 @@ internal fun HistoryTextField(
         singleLine = !multiline,
         minLines = if (multiline) 3 else 1,
         keyboardOptions = KeyboardOptions(
+            capitalization = if (uppercase) {
+                KeyboardCapitalization.Characters
+            } else KeyboardCapitalization.None,
+            autoCorrectEnabled = if (uppercase) false else null,
             keyboardType = when {
+                uppercase -> KeyboardType.Ascii
                 decimal -> KeyboardType.Decimal
                 numeric -> KeyboardType.Number
                 else -> KeyboardType.Text

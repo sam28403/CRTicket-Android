@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.rememberAppText
@@ -53,7 +55,12 @@ internal fun TrainQueryControls(
                 singleLine = true,
                 enabled = !loading,
                 shape = RoundedCornerShape(28.dp),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Characters,
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Ascii,
+                    imeAction = ImeAction.Search,
+                ),
                 keyboardActions = KeyboardActions(onSearch = { submit() }),
                 modifier = Modifier.weight(1f).testTag("train-query-code"),
             )

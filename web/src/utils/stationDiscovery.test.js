@@ -25,6 +25,9 @@ test('bureau labels follow rail.re telecodes and do not guess unknown stations',
   assert.equal(stationBureau(' 北京南 '), '京局')
   assert.equal(stationBureau('上海虹桥'), '上局')
   assert.equal(stationBureau('广州南'), '广铁')
+  assert.equal(stationBureau(' 香港西九龙 '), '港铁')
+  assert.equal(bureauForTelecode('XJA'), '港铁')
+  assert.equal(bureauForTelecode('GZA'), '广铁')
   assert.equal(bureauForTelecode('COE'), '成局')
   assert.equal(bureauForTelecode('AAX'), '哈局')
   assert.equal(bureauForTelecode('AAS'), '南局')
@@ -42,6 +45,14 @@ test('card progress handles zero, partial and fully handled days', () => {
   assert.equal(stationSummaryNow(row, '23:59').bureau, '京局')
   assert.equal(stationSummaryNow({ ...row, total: 0 }, '12:00').handledRatio, 0)
   assert.equal(stationSummaryNow({ ...row, total: 1 }, '12:00').handledRatio, 1)
+})
+
+test('West Kowloon cards replace upstream bureau labels with MTR', () => {
+  const row = {
+    station: '香港西九龙', bureau: '广铁', total: 0,
+    completionTimes: [], passingWindows: [],
+  }
+  assert.equal(stationSummaryNow(row, '12:00').bureau, '港铁')
 })
 
 test('daily picks are stable, unique, and only contain stations with trains', () => {

@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.rememberAppText
+import cc.samlab.ticket.ui.ExpressiveEmptyState
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
 import cc.samlab.ticket.ui.station.NativeStationBoardController
@@ -191,8 +192,13 @@ internal fun SaleTimeScreen(
                     }
                         else rows.filter { sameCity || it.name == submitted }
                     if (!dayComplete && !loading && !error && visible.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(text(if (submitted.isEmpty()) R.string.sale_no_upcoming else R.string.sale_empty),
-                            color = colors.onSurfaceVariant)
+                        ExpressiveEmptyState(
+                            message = text(if (submitted.isEmpty()) R.string.sale_no_upcoming else R.string.sale_empty),
+                            visible = active,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 320.dp)
+                                .testTag("sale-empty"),
+                            artworkModifier = Modifier.testTag("sale-empty-artwork"),
+                        )
                     }
                     items(visible, key = {
                         "${if (submitted.isEmpty()) recommendationSlot.toLocalDate() else date}:${it.time}:${it.name}"

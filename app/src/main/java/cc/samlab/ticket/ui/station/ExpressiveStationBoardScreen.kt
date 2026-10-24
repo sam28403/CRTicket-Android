@@ -71,14 +71,15 @@ internal fun ExpressiveStationBoardScreen(
                         onRetry = controller::request,
                     )
                 } else if (controller.date.isNotEmpty()) {
-                    if (!hasTrains && !controller.loading) {
-                        StationBoardEmptyState(
-                            controller.resultStation, Modifier.weight(1f), active,
-                        )
-                    } else if (tab == StationTab.MAP) {
+                    if (tab == StationTab.MAP) {
                         if (active) StationBoardMap(
                             controller.resultStation, dark,
-                            Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp, vertical = 8.dp),
+                            Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp, vertical = 8.dp)
+                                .testTag("station-map"),
+                        )
+                    } else if (!hasTrains && !controller.loading) {
+                        StationBoardEmptyState(
+                            controller.resultStation, Modifier.weight(1f), active,
                         )
                     } else if (rows.isEmpty() && !controller.loading) {
                         QueryResultEmptyState(

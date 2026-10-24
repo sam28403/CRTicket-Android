@@ -36,7 +36,8 @@ class QueryEmptyStateDeviceTest {
                 fixture.evaluate("location.hash.includes('source=llt')") == "true"
             }
             awaitTag("train-query-code")
-            compose.onNodeWithTag("train-query-code").performTextReplacement("G1")
+            compose.onNodeWithTag("train-query-code").performTextReplacement("g1")
+            compose.onNodeWithTag("train-query-code").assertTextContains("G1")
             compose.onNodeWithTag("train-query-submit").performClick()
             awaitTag("train-query-empty")
             compose.onNodeWithText(fixture.activity.getString(R.string.action_retry))
@@ -83,8 +84,11 @@ class QueryEmptyStateDeviceTest {
                 .assertIsDisplayed()
             fixture.capture("station-query-no-results")
             compose.onNodeWithTag("station-tab-map").performClick()
-            compose.onNodeWithTag("station-no-trains").assertIsDisplayed()
+            compose.onNodeWithTag("station-no-trains").assertDoesNotExist()
+            compose.onNodeWithTag("station-map").assertIsDisplayed()
             fixture.capture("station-map-no-results")
+            compose.onNodeWithTag("station-tab-all").performClick()
+            compose.onNodeWithTag("station-no-trains").assertIsDisplayed()
         } finally {
             fixture.restoreEmptyStateHistory()
             fixture.close()

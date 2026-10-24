@@ -32,7 +32,7 @@ class NativeTrainQueryController(
     }
 
     fun edit(code: String = train, day: String = date) {
-        train = code.uppercase().take(40)
+        train = code.uppercase(java.util.Locale.ROOT).take(40)
         date = day
         dispatch("edit")
     }
