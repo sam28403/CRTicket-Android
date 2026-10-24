@@ -660,4 +660,5 @@
     <string name="train_calendar_running">Verkehrt</string>
     <string name="train_calendar_stopped">Verkehrt nicht</string>
     <string name="train_calendar_unknown">Keine Daten</string>
+    <string name="train_query_delay">Pünktlichkeit</string>
 </resources>

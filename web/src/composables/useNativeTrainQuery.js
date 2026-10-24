@@ -12,6 +12,8 @@ export function useNativeTrainQuery(state) {
     if (action === 'clearHistory') return state.discovery.clearHistory()
     if (action === 'recommendations') return state.discovery.refresh()
     if (action === 'tracking') return trackingButton.value?.toggle()
+    if (action === 'delay' && !offlineMode.value) return state.delay.toggle()
+    if (action === 'refresh') return state.refresh()
     if (loading.value) return
     if (action === 'edit') {
       train.value = code
@@ -23,6 +25,7 @@ export function useNativeTrainQuery(state) {
   window.addEventListener('crticket-train-query-request', request)
   const stop = watch([
     train, date, loading, error, result, offlineMode, state.exporting, nextRouting,
+    state.delay.enabled, state.refreshing,
     () => trackingButton.value?.tracking,
     () => trackingButton.value?.busy,
     () => trackingButton.value?.ready,
@@ -40,6 +43,8 @@ export function useNativeTrainQuery(state) {
       route: result.value ? buildTrainRouteData(result.value.stops) : null,
       nextRouting: nextRouting.value,
       tracking: Boolean(trackingButton.value?.tracking),
+      delayEnabled: !offlineMode.value && state.delay.enabled.value,
+      refreshing: state.refreshing.value,
       trackingReady: Boolean(trackingButton.value?.ready && !trackingButton.value?.busy),
       exporting: state.exporting.value,
       history: state.discovery.history.value,

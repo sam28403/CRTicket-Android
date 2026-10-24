@@ -144,7 +144,7 @@ export async function queryTrainInfo(train, date, fetchImpl = fetch, loadDatabas
   if (candidates.length === 1) {
     const offline = candidates[0]
     return { ...offline, date, from: offline.stops[0].station, to: offline.stops.at(-1).station,
-      source: '路路通（离线参考）', mileageVersion: database.version,
+      source: '路路通（离线参考）', offlineFallback: true, mileageVersion: database.version,
       warnings: [`12306 未提供时刻表，现显示路路通离线数据（${database.version}），不能确认所选日期是否开行。`] }
   }
   if (onlineError) throw onlineError

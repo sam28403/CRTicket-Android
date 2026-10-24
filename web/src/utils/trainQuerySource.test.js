@@ -1,9 +1,23 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { trainQuerySourceLocation } from './trainQuerySource.js'
+import { trainQuerySourceLocation, requiresOfflineTrainQuery } from './trainQuerySource.js'
 import { trainQueryRange } from './trainQueryDate.js'
 
 const date = trainQueryRange().today
+
+test('S2101 的路路通备用结果必须切换离线模式，而不是保留在线通道', () => {
+  assert.equal(requiresOfflineTrainQuery(undefined, {
+    train: 'S2101', source: '路路通（离线参考）', stops: [{ station: '甲' }],
+  }), true)
+  assert.equal(requiresOfflineTrainQuery(undefined, {
+    offlineFallback: true, stops: [{ station: '甲' }],
+  }), true)
+  assert.equal(requiresOfflineTrainQuery(undefined, { stops: [] }), true)
+  assert.equal(requiresOfflineTrainQuery('llt', { stops: [] }), false)
+  assert.equal(requiresOfflineTrainQuery(undefined, {
+    source: '12306', stops: [{ station: '甲' }],
+  }), false)
+})
 
 test('切换离线来源保留车次和日期，并设置路路通参数', () => {
   assert.deepEqual(trainQuerySourceLocation({ train: ' d7976 ', date, offline: true }), {

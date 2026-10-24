@@ -2,8 +2,28 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { queryLeftTicket, parseTrains } from './leftTicket.js'
 import { normalizeStops, matchesTrain, queryTrainInfo } from './trainInfo.js'
+import { requiresOfflineTrainQuery } from '../../utils/trainQuerySource.js'
 
 const date = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10)
+
+test('S2101 enters offline mode for empty and inaccessible 12306 results', async () => {
+    const database = { version: '20261024', trains: new Map([['S2101', {
+        train: 'S2101', stops: [
+            { station: '甲', arrival: null, departure: '08:00', mileage: 0 },
+            { station: '乙', arrival: '09:00', departure: null, mileage: 50 },
+        ],
+    }]]) }
+    const queries = [
+        async () => Response.json({ data: [] }),
+        async () => { throw new Error('12306 unavailable') },
+    ]
+    for (const fetchImpl of queries) {
+        const result = await queryTrainInfo('S2101', date, fetchImpl, async () => database)
+        assert.equal(result.offlineFallback, true)
+        assert.equal(requiresOfflineTrainQuery(undefined, result), true)
+        assert.equal(result.stops.length, 2)
+    }
+})
 
 test('phone queries the current 12306 endpoint and preserves seat meanings', async () => {
     const fields = Array(56).fill('')

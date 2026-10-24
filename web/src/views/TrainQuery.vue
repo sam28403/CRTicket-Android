@@ -7,14 +7,16 @@ import AppBrand from '@/components/AppBrand.vue'
 import TrainRouteMap from '@/components/TrainRouteMap.vue'
 import StationLink from '@/components/StationLink.vue'
 import TrainTrackingButton from '@/components/TrainTrackingButton.vue'
+import TrainDelayTime from '@/components/TrainDelayTime.vue'
 import api, { timetableTimeout } from '@/api.js'
 import { isTrainQueryDateInRange, trainQueryRange } from '@/utils/trainQueryDate.js'
 import { displayTrainCode, trainInfoForDisplay } from '@/utils/trainDisplay.js'
-import { trainQuerySourceLocation } from '@/utils/trainQuerySource.js'
+import { trainQuerySourceLocation, requiresOfflineTrainQuery } from '@/utils/trainQuerySource.js'
 import { getTrainQueryNumberError } from '@/utils/trainQueryValidation.js'
 import { useTrainDiscovery } from '@/composables/useTrainDiscovery.js'
 import TrainQueryDiscovery from '@/components/TrainQueryDiscovery.vue'
 import { createTrainQueryCache } from '@/utils/trainQueryCache.js'
+import { useTrainDelay } from '@/composables/useTrainDelay.js'
 
 defineOptions({ name: 'TrainQuery' })
 
@@ -24,11 +26,14 @@ const loading = ref(false)
 const switchingSource = ref(false)
 const exporting = ref(false)
 const error = ref('')
-const result = ref(null)
+const schedule = ref(null)
 const route = useRoute()
 const router = useRouter()
 const discovery = useTrainDiscovery(route, router)
 const offlineMode = computed(() => route.query.source === 'llt')
+const delay = useTrainDelay(schedule, undefined, computed(() => !offlineMode.value))
+const result = delay.result
+const refreshing = ref(false)
 const offlineRecord = ref('')
 const trainNumberError = computed(() => getTrainQueryNumberError(
   train.value, offlineMode.value, offlineRecord.value,
@@ -39,7 +44,8 @@ const trackingButton = ref(null)
 const queryCache = createTrainQueryCache()
 const nativeQuery = useNativeTrainQuery({
   train, date, loading, error, result, offlineMode, trackingButton, exporting,
-  query, switchSource, exportData, discovery, location: () => route.fullPath,
+  query, refresh, refreshing, switchSource, exportData, discovery, delay,
+  location: () => route.fullPath,
 })
 function toast(message) {
   if (!trainQueryToast(message)) ElMessage.info(message)
@@ -47,6 +53,17 @@ function toast(message) {
 let controller
 let requestId = 0
 let previousRouteQuery
+
+async function refresh() {
+  if (offlineMode.value || refreshing.value || loading.value) return
+  refreshing.value = true
+  try {
+    if (schedule.value?.stops.length) await delay.refresh()
+    else await query()
+  } finally {
+    refreshing.value = false
+  }
+}
 
 async function switchSource() {
   if (switchingSource.value) return
@@ -115,7 +132,7 @@ async function query() {
   train.value = displayTrainCode(code)
   loading.value = true
   error.value = ''
-  result.value = null
+  schedule.value = null
   controller = new AbortController()
   const id = ++requestId
   try {
@@ -133,11 +150,17 @@ async function query() {
     })
     if (!data.success) throw new Error(data.message || '查询失败')
     if (id === requestId) {
-      result.value = trainInfoForDisplay(data)
+      if (requiresOfflineTrainQuery(source, data)) {
+        toast('在线查询不可用，已切换为路路通离线查询')
+        loading.value = false
+        await switchSource()
+        return
+      }
+      schedule.value = trainInfoForDisplay(data)
       resultQueryCode.value = code
       resultQuerySource.value = source === 'llt' ? 'llt' : ''
       queryCache.set(code, selectedDate, source, {
-        result: result.value,
+        result: schedule.value,
         queryCode: resultQueryCode.value,
         querySource: resultQuerySource.value,
       })
@@ -175,7 +198,7 @@ watch(
     controller?.abort()
     requestId++
     loading.value = false
-    result.value = null
+    schedule.value = null
     error.value = ''
     const record = typeof code === 'string' ? code.trim().toUpperCase() : ''
     if (offlineMode.value) offlineRecord.value = record
@@ -183,7 +206,7 @@ watch(
     date.value = typeof selectedDate === 'string' ? selectedDate : trainQueryRange().today
     const saved = queryCache.get(record, date.value, source)
     if (saved) {
-      result.value = saved.result
+      schedule.value = saved.result
       resultQueryCode.value = saved.queryCode
       resultQuerySource.value = saved.querySource
       return
@@ -264,6 +287,7 @@ onBeforeUnmount(() => {
               <strong>
                 {{ result.train }}　<StationLink :name="result.from" /> → <StationLink :name="result.to" />
               </strong>
+              <el-switch v-if="!offlineMode" v-model="delay.enabled.value" active-text="正晚点" />
               <TrainTrackingButton
                 ref="trackingButton"
                 :key="`${resultQuerySource}-${resultQueryCode}-${result.date}`"
@@ -281,7 +305,7 @@ onBeforeUnmount(() => {
             </el-table-column>
             <el-table-column label="到达时间" min-width="150">
               <template #default="{ row, $index }">
-                {{ $index === 0 ? '始发站' : row.arrival || '—' }}
+                <TrainDelayTime :stop="row" field="arrival" :placeholder="$index === 0 ? '始发站' : ''" />
                 <el-tag
                   v-if="$index > 0 && row.arrival && row.arrivalDay > 0"
                   size="small"
@@ -294,7 +318,7 @@ onBeforeUnmount(() => {
             </el-table-column>
             <el-table-column label="出发时间" min-width="100">
               <template #default="{ row, $index }">
-                {{ $index === result.stops.length - 1 ? '终到站' : row.departure || '—' }}
+                <TrainDelayTime :stop="row" field="departure" :placeholder="$index === result.stops.length - 1 ? '终到站' : ''" />
               </template>
             </el-table-column>
             <el-table-column label="停留时长" min-width="100">
@@ -317,7 +341,7 @@ onBeforeUnmount(() => {
                 <div>
                   <dt>到达时间</dt>
                   <dd>
-                    {{ index === 0 ? '始发站' : stop.arrival || '—' }}
+                    <TrainDelayTime :stop="stop" field="arrival" :placeholder="index === 0 ? '始发站' : ''" />
                     <el-tag
                       v-if="index > 0 && stop.arrival && stop.arrivalDay > 0"
                       size="small"
@@ -328,7 +352,12 @@ onBeforeUnmount(() => {
                     </el-tag>
                   </dd>
                 </div>
-                <div><dt>出发时间</dt><dd>{{ index === result.stops.length - 1 ? '终到站' : stop.departure || '—' }}</dd></div>
+                <div>
+                  <dt>出发时间</dt>
+                  <dd>
+                    <TrainDelayTime :stop="stop" field="departure" :placeholder="index === result.stops.length - 1 ? '终到站' : ''" />
+                  </dd>
+                </div>
                 <div><dt>停留时长</dt><dd>{{ stop.stay == null ? '—' : `${stop.stay} 分钟` }}</dd></div>
                 <div><dt>里程</dt><dd>{{ stop.mileage == null ? '暂无' : `${stop.mileage} km` }}</dd></div>
               </dl>

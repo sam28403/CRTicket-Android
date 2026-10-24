@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { trainQueryToast } from '@/composables/useNativeTrainQuery.js'
 import { ElMessage } from 'element-plus'
 import {
@@ -57,6 +57,7 @@ async function refresh() {
 async function toggle() {
   if (busy.value || !ready.value) return
   const wasTracking = tracking.value
+  const requestedResult = props.result
   // Keep the selected schedule stable if the user navigates during a permission prompt.
   const payload = trackingPayload(props.result, props.queryTrain, props.querySource)
   busy.value = true
@@ -81,8 +82,28 @@ async function toggle() {
     if (error.code !== 'ERR_CANCELED') toast(error.message || '列车追踪操作失败')
   } finally {
     busy.value = false
+    if (props.result !== requestedResult) synchronizeSchedule()
   }
 }
+
+// Refresh an existing journey when predictions arrive or the switch is turned off.
+async function synchronizeSchedule() {
+  if (!tracking.value || busy.value) return
+  const snapshot = props.result
+  busy.value = true
+  try {
+    await startTrainTracking(trackingPayload(props.result, props.queryTrain, props.querySource), controller.signal)
+    active.value = await getTrainTrackingState(controller.signal)
+    scheduleExpiryRefresh()
+  } catch {
+    // The next successful prediction can retry; the running journey remains available.
+  } finally {
+    busy.value = false
+    if (props.result !== snapshot) synchronizeSchedule()
+  }
+}
+
+watch(() => props.result, synchronizeSchedule)
 
 onMounted(() => {
   refresh()

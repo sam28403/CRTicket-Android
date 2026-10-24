@@ -660,4 +660,5 @@
     <string name="train_calendar_running">เดินรถ</string>
     <string name="train_calendar_stopped">ไม่เดินรถ</string>
     <string name="train_calendar_unknown">ไม่มีข้อมูล</string>
+    <string name="train_query_delay">ตรงเวลา</string>
 </resources>

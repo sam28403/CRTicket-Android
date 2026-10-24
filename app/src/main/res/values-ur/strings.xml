@@ -660,4 +660,5 @@
     <string name="train_calendar_running">چلتی ہے</string>
     <string name="train_calendar_stopped">نہیں چلتی</string>
     <string name="train_calendar_unknown">کوئی ڈیٹا نہیں</string>
+    <string name="train_query_delay">وقت کی پابندی</string>
 </resources>

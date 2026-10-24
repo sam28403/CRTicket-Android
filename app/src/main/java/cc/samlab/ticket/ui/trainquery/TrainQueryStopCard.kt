@@ -80,14 +80,16 @@ internal fun TrainQueryStopCard(
                 val day = stop.optInt("arrivalDay")
                 StopDetail(
                     textResources(R.string.station_arrival_time),
-                    if (index == 0) textResources(R.string.station_origin) else stop.text("arrival"),
+                    if (index == 0) textResources(R.string.station_origin) else stop.delayText("arrival"),
                     Modifier.weight(1f),
                     day = if (index > 0 && !stop.isNull("arrival")) day else 0,
+                    valueColor = stop.delayColor("arrival", dark),
                 )
                 StopDetail(
                     textResources(R.string.station_departure_time),
-                    if (index == total - 1) textResources(R.string.station_terminal) else stop.text("departure"),
+                    if (index == total - 1) textResources(R.string.station_terminal) else stop.delayText("departure"),
                     Modifier.weight(1f),
+                    valueColor = stop.delayColor("departure", dark),
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -108,7 +110,13 @@ internal fun TrainQueryStopCard(
 }
 
 @Composable
-private fun StopDetail(label: String, value: String, modifier: Modifier, day: Int = 0) {
+private fun StopDetail(
+    label: String,
+    value: String,
+    modifier: Modifier,
+    day: Int = 0,
+    valueColor: Color = Color.Unspecified,
+) {
     val content = LocalContentColor.current
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(label, style = MaterialTheme.typography.labelMedium, color = content.copy(alpha = 0.88f))
@@ -116,7 +124,7 @@ private fun StopDetail(label: String, value: String, modifier: Modifier, day: In
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Text(value, style = MaterialTheme.typography.titleMedium)
+            Text(value, style = MaterialTheme.typography.titleMedium, color = valueColor)
             if (day > 0) Surface(
                 shape = RoundedCornerShape(6.dp),
                 color = content.copy(alpha = 0.12f),
@@ -134,3 +142,14 @@ private fun StopDetail(label: String, value: String, modifier: Modifier, day: In
 }
 
 private fun JSONObject.text(key: String) = if (isNull(key) || optString(key).isBlank()) "—" else optString(key)
+
+private fun JSONObject.delayText(key: String): String {
+    val offset = optInt("${key}Offset")
+    return text(key) + if (offset == 0) "" else " (${if (offset > 0) "+" else ""}$offset')"
+}
+
+private fun JSONObject.delayColor(key: String, dark: Boolean): Color = when {
+    optInt("${key}Offset") > 0 -> if (dark) Color(0xFFFFB4AB) else Color(0xFFBA1A1A)
+    optInt("${key}Offset") < 0 -> if (dark) Color(0xFF85D99A) else Color(0xFF196D35)
+    else -> Color.Unspecified
+}

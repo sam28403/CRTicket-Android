@@ -30,6 +30,15 @@ class TrainTrackingBridge(
 
     fun requestPermission(id: String) = permission.requestPermission(id)
 
+    fun queryDelay(id: String, payload: String) {
+        Thread {
+            val result = runCatching {
+                JSONObject().put("success", true).put("result", TrainDelayRepository.query(payload))
+            }.getOrElse { JSONObject().put("success", false) }
+            reply(id, result)
+        }.start()
+    }
+
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) =
         permission.onRequestPermissionsResult(requestCode, grantResults)
 

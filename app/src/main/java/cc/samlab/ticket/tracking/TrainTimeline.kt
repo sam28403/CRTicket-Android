@@ -38,6 +38,7 @@ class TrainTimeline(
     schedules: List<TrainStopSchedule>,
     val queryTrain: String = train,
     val querySource: String = "",
+    corrections: List<Pair<Int?, Int?>> = emptyList(),
 ) {
     val stops: List<TimedTrainStop>
     val start: Long
@@ -73,7 +74,7 @@ class TrainTimeline(
             return value
         }
 
-        stops = schedules.mapIndexed { index, stop ->
+        val plannedStops = schedules.mapIndexed { index, stop ->
             require(stop.station.isNotBlank() && stop.station.length <= 80) { appString(R.string.tracking_error_station) }
             val arrival = if (index == 0) null else timestamp(stop.arrival, stop.arrivalDay)
             val departure = if (index == schedules.lastIndex) null
@@ -83,6 +84,21 @@ class TrainTimeline(
                 currentTrain = code
             }
             TimedTrainStop(stop.station, arrival, departure, currentTrain)
+        }
+        var lastEvent = Long.MIN_VALUE
+        stops = plannedStops.mapIndexed { index, stop ->
+            val correction = corrections.getOrNull(index)
+            val arrival = stop.arrival?.let {
+                (it + (correction?.first ?: 0) * 60_000L).coerceAtLeast(lastEvent)
+            }
+            val departure = stop.departure?.let {
+                val predicted = it + (correction?.second ?: 0) * 60_000L
+                if (arrival != null && predicted <= arrival) {
+                    arrival + (it - stop.arrival!!)
+                } else predicted.coerceAtLeast(lastEvent)
+            }
+            lastEvent = departure ?: arrival ?: lastEvent
+            stop.copy(arrival = arrival, departure = departure)
         }
         start = stops.first().departure!!
         end = stops.last().arrival!!

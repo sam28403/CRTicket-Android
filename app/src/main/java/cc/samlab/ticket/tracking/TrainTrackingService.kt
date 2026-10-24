@@ -41,6 +41,9 @@ class TrainTrackingService : Service() {
     private lateinit var notifications: TrainTrackingNotifications
     private var timeline: TrainTimeline? = null
     private var session: TrainTrackingSession? = null
+    private var schedulePayload: String? = null
+    private var delayRefreshAt = 0L
+    private var refreshingDelay = false
     private val tick = Runnable { update() }
     private val clockChanges = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -97,6 +100,8 @@ class TrainTrackingService : Service() {
                 startForeground(TrainTrackingNotifications.NOTIFICATION_ID, notification)
             }
             timeline = next
+            schedulePayload = payload
+            delayRefreshAt = now + 10 * 60_000L
             session = nextSession
             runningSession = nextSession.id
             TrainTrackingStore.save(this, payload, nextSession)
@@ -127,6 +132,7 @@ class TrainTrackingService : Service() {
                 return
             }
             val now = System.currentTimeMillis()
+            refreshDelay(now)
             val currentSession = session ?: return
             if (currentSession.expired(now)) {
                 stop(this)
@@ -168,6 +174,36 @@ class TrainTrackingService : Service() {
         handler.removeCallbacks(tick)
         unregisterReceiver(clockChanges)
         super.onDestroy()
+    }
+
+    private fun refreshDelay(now: Long) {
+        val payload = schedulePayload ?: return
+        val data = org.json.JSONObject(payload)
+        if (refreshingDelay || now < delayRefreshAt ||
+            data.optString("querySource") == "llt" || !data.optBoolean("delayEnabled")) return
+        refreshingDelay = true
+        delayRefreshAt = now + 10 * 60_000L
+        Thread {
+            val result = runCatching { TrainDelayRepository.query(payload) }.getOrNull()
+            handler.post {
+                refreshingDelay = false
+                val currentSession = session
+                if (schedulePayload != payload || timeline == null || currentSession == null) return@post
+                val updated = result ?: org.json.JSONObject(payload).apply {
+                    optJSONArray("scheduledStops")?.let { put("stops", it) }
+                    put("delayEnabled", false)
+                    put("delayAvailable", false)
+                }
+                runCatching { TrainTrackingStore.parse(updated.toString()) }.onSuccess { next ->
+                    val previousEnd = timeline!!.end
+                    timeline = next
+                    schedulePayload = updated.toString()
+                    session = currentSession.copy(expiresAt = currentSession.expiresAt + next.end - previousEnd)
+                    TrainTrackingStore.save(this, schedulePayload!!, session)
+                    update()
+                }
+            }
+        }.start()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

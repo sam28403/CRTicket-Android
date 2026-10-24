@@ -14,6 +14,8 @@ export function trackingPayload(result, queryTrain, querySource) {
     date: result.date,
     queryTrain: queryTrain || result.train,
     querySource: querySource === 'llt' ? 'llt' : '',
+    delayEnabled: querySource !== 'llt' && result.delayEnabled === true,
+    scheduledStops: querySource === 'llt' ? undefined : result.scheduledStops,
     stops: result.stops.map(stop => ({
       station: stop.station,
       train: stop.train,
@@ -21,6 +23,9 @@ export function trackingPayload(result, queryTrain, querySource) {
       departure: stop.departure,
       arrivalDay: stop.arrivalDay,
       departureDay: stop.departureDay,
+      stay: stop.stay,
+      arrivalOffset: stop.arrivalOffset,
+      departureOffset: stop.departureOffset,
     })),
   })
 }

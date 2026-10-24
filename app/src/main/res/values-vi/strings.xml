@@ -660,4 +660,5 @@
     <string name="train_calendar_running">Có chạy</string>
     <string name="train_calendar_stopped">Không chạy</string>
     <string name="train_calendar_unknown">Chưa có dữ liệu</string>
+    <string name="train_query_delay">Đúng giờ</string>
 </resources>

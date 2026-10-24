@@ -660,4 +660,5 @@
     <string name="train_calendar_running">Явна</string>
     <string name="train_calendar_stopped">Явахгүй</string>
     <string name="train_calendar_unknown">Мэдээлэл алга</string>
+    <string name="train_query_delay">Цаг баримтлал</string>
 </resources>

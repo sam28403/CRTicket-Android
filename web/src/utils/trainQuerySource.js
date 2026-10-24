@@ -1,6 +1,13 @@
 import { displayTrainCode } from './trainDisplay.js'
 import { isTrainQueryDateInRange, trainQueryRange } from './trainQueryDate.js'
 
+export function requiresOfflineTrainQuery(source, result) {
+  return source !== 'llt' && (
+    !result.stops?.length || result.offlineFallback === true ||
+    String(result.source || '').startsWith('路路通')
+  )
+}
+
 export function trainQuerySourceLocation({ train, date, offline, offlineRecord = '' }) {
   const entered = train.trim().toUpperCase()
   const recordedTrain = displayTrainCode(offlineRecord)

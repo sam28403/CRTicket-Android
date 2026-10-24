@@ -33,6 +33,9 @@ internal fun trainQueryTiming(stops: List<TimedTrainStop>, now: Long): QueryStop
 }
 
 internal fun queryTimeline(result: JSONObject): TrainTimeline? = runCatching {
+    if (result.optBoolean("delayAvailable")) {
+        return@runCatching cc.samlab.ticket.tracking.TrainTrackingStore.parse(result.toString())
+    }
     val stops = result.getJSONArray("stops")
     TrainTimeline(result.getString("train"), result.getString("date"), List(stops.length()) { index ->
         val stop = stops.getJSONObject(index)

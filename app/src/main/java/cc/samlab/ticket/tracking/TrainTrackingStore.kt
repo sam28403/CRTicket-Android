@@ -38,7 +38,10 @@ object TrainTrackingStore {
     fun parse(payload: String): TrainTimeline {
         require(payload.length <= 100_000) { appString(R.string.tracking_error_payload_size) }
         val data = JSONObject(payload)
-        val rows = data.getJSONArray("stops")
+        val correctedRows = data.getJSONArray("stops")
+        val offline = data.optString("querySource") == "llt"
+        val useDelay = !offline && (data.optBoolean("delayEnabled") || data.optBoolean("delayAvailable"))
+        val rows = if (useDelay || offline) data.optJSONArray("scheduledStops") ?: correctedRows else correctedRows
         require(rows.length() in 2..200) { appString(R.string.tracking_error_stop_count) }
         val schedules = (0 until rows.length()).map { index ->
             val row = rows.getJSONObject(index)
@@ -55,6 +58,13 @@ object TrainTrackingStore {
             data.getString("train"), data.getString("date"), schedules,
             queryTrain = data.optString("queryTrain", data.getString("train")).take(40),
             querySource = if (data.optString("querySource") == "llt") "llt" else "",
+            corrections = if (useDelay) List(rows.length()) { index ->
+                val row = correctedRows.getJSONObject(index)
+                Pair(
+                    if (row.isNull("arrivalOffset")) null else row.getInt("arrivalOffset"),
+                    if (row.isNull("departureOffset")) null else row.getInt("departureOffset"),
+                )
+            } else emptyList(),
         )
     }
 

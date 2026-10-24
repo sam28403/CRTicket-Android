@@ -112,6 +112,9 @@ class AndroidBridge(
     fun refreshTicketMonitor(id: String) = onUi { ticketMonitor.refresh(id) }
 
     @JavascriptInterface
+    fun queryTrainDelay(id: String, payload: String) = trainTracking.queryDelay(id, payload)
+
+    @JavascriptInterface
     fun trainQueryResult(payload: String) = receiveTrainQuery(payload)
 
     @JavascriptInterface

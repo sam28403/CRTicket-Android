@@ -660,4 +660,5 @@
     <string name="train_calendar_running">Circule</string>
     <string name="train_calendar_stopped">Ne circule pas</string>
     <string name="train_calendar_unknown">Aucune donnée</string>
+    <string name="train_query_delay">Ponctualité</string>
 </resources>
