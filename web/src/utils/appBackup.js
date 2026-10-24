@@ -4,12 +4,14 @@ import { TICKET_FIELDS } from './ticketFields.js'
 import { validSpeedRecordings, validGeneratorDraft } from './appBackupSpeedometer.js'
 import { validRailfanBackup } from './appBackupRailfan.js'
 import { selectBackupContents, BACKUP_CONTENTS } from './backupContents.js'
+import { validBackupMapSource, portableMapSourceSettings } from './appBackupMapSource.js'
 
 export const BACKUP_STORAGE_KEYS = [
   'crticket-important-notice-hidden',
   'crticket-train-query-history',
   'crticket-station-query-history',
   'crticket-generator-draft',
+  'mapSource',
 ]
 
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -33,7 +35,9 @@ export function validateAppSettings(settings) {
       const value = storage[key]
       if (value === undefined || value === null) continue
       if (typeof value !== 'string' || value.length > 20000) invalid()
-      if (key === 'crticket-generator-draft') {
+      if (key === 'mapSource') {
+        if (!validBackupMapSource(value)) invalid()
+      } else if (key === 'crticket-generator-draft') {
         if (!validGeneratorDraft(JSON.parse(value))) invalid()
       } else if (key === 'crticket-important-notice-hidden') {
         if (value !== '1') invalid()
@@ -46,6 +50,7 @@ export function validateAppSettings(settings) {
   }
   if (native !== undefined) {
     if (!object(native)) invalid()
+    if (Object.hasOwn(native, 'mapSource') && !validBackupMapSource(native.mapSource)) invalid()
     if (!validRailfanBackup(native)) invalid()
     if (native.speedRecordings !== undefined && !validSpeedRecordings(native.speedRecordings)) invalid()
     if (native.generatorDraft !== undefined && native.generatorDraft !== null
@@ -62,7 +67,7 @@ export function validateAppSettings(settings) {
     if (native.monitorConfig !== undefined && native.monitorConfig !== null
         && !object(native.monitorConfig)) invalid()
   }
-  return settings
+  return portableMapSourceSettings(settings)
 }
 
 export function buildAppBackup(tickets, user, { theme, storage, native, contents } = {}) {
@@ -86,7 +91,7 @@ export function buildAppBackup(tickets, user, { theme, storage, native, contents
       ...(ticket.created_at ? { created_at: ticket.created_at } : {}),
     })),
   }, contents)
-  validateAppSettings(backup.settings)
+  backup.settings = validateAppSettings(backup.settings)
   return backup
 }
 

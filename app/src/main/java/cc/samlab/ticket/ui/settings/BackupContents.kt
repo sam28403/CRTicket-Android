@@ -18,9 +18,9 @@ internal enum class BackupContent(
     ),
     SETTINGS(
         "settings", R.string.backup_content_settings,
-        listOf("crticket-important-notice-hidden"),
+        listOf("crticket-important-notice-hidden", "mapSource"),
         listOf("language", "arrivalEnabled", "importantNoticeSuppressed", "railfanToolsEnabled",
-            "saleAlarmEnabled", "saleSameCity"),
+            "saleAlarmEnabled", "saleSameCity", "mapSource"),
     ),
     PROFILE("profile", R.string.backup_content_profile),
     VISITS("visits", R.string.backup_content_visits, nativeKeys = listOf("stationVisits")),

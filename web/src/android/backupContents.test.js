@@ -6,7 +6,7 @@ import { restoreDeviceBackup } from './deviceBackup.js'
 
 const profile = { id: 'device', username: '备份用户', avatar: null }
 const native = {
-  language: 'en', arrivalEnabled: false, importantNoticeSuppressed: true,
+  language: 'en', arrivalEnabled: false, importantNoticeSuppressed: true, mapSource: 'auto',
   railfanToolsEnabled: true, vehicleSearchHistory: ['G1'], stationVisits: [],
   speedRecordings: [], generatorDraft: null, monitorConfig: null,
 }
@@ -32,8 +32,9 @@ test('every single-category export omits all unrelated fields and personal metad
     search: { storage: {
       'crticket-train-query-history': '["G1"]', 'crticket-station-query-history': '["北京南"]',
     }, native: { vehicleSearchHistory: ['G1'] } },
-    settings: { theme: 'contrast-dark', storage: { 'crticket-important-notice-hidden': '1' },
-      native: { language: 'en', arrivalEnabled: false, importantNoticeSuppressed: true, railfanToolsEnabled: true } },
+    settings: { theme: 'contrast-dark', storage: { 'crticket-important-notice-hidden': '1', mapSource: 'auto' },
+      native: { language: 'en', arrivalEnabled: false, importantNoticeSuppressed: true,
+        railfanToolsEnabled: true, mapSource: 'auto' } },
     profile: { profile: { username: profile.username, avatar: null } },
     visits: { native: { stationVisits: [] } },
     speed: { native: { speedRecordings: [] } },

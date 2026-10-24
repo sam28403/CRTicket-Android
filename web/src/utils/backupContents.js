@@ -11,13 +11,13 @@ export const BACKUP_CONTENTS = [
 
 const storageGroups = {
   search: ['crticket-train-query-history', 'crticket-station-query-history'],
-  settings: ['crticket-important-notice-hidden'],
+  settings: ['crticket-important-notice-hidden', 'mapSource'],
   draft: ['crticket-generator-draft'],
 }
 const nativeGroups = {
   search: ['vehicleSearchHistory', 'saleSearchHistory'],
   settings: ['language', 'arrivalEnabled', 'importantNoticeSuppressed', 'railfanToolsEnabled',
-    'saleAlarmEnabled', 'saleSameCity'],
+    'saleAlarmEnabled', 'saleSameCity', 'mapSource'],
   visits: ['stationVisits'],
   speed: ['speedRecordings'],
   draft: ['generatorDraft'],

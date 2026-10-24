@@ -13,7 +13,7 @@ const ticket = {
 }
 const profile = { id: 'device', username: '备份用户', avatar: 'data:image/png;base64,YQ==' }
 const preferences = {
-  language: 'en', arrivalEnabled: true, importantNoticeSuppressed: true,
+  language: 'en', arrivalEnabled: true, importantNoticeSuppressed: true, mapSource: 'auto',
   railfanToolsEnabled: true,
   stationVisits: [
     { station: '北京南', time: 1790000000000, historical: false },
@@ -145,6 +145,8 @@ test('older full backups can omit all railfan fields without adding defaults', (
     theme: 'classic-system', storage: fixture().storage,
     native: { arrivalEnabled: false },
   })
+  delete saved.settings.storage.mapSource
+  delete saved.settings.native.mapSource
   const restored = parseAppBackup(JSON.stringify(saved))
   assert.deepEqual(restored.settings.native, { arrivalEnabled: false })
 })

@@ -10,6 +10,7 @@ import cc.samlab.ticket.i18n.AppLanguages
 import cc.samlab.ticket.monitor.TicketMonitorService
 import cc.samlab.ticket.monitor.TicketMonitorStore
 import cc.samlab.ticket.ui.notice.IMPORTANT_NOTICE_SUPPRESSED
+import cc.samlab.ticket.ui.settings.MapSource
 import org.json.JSONObject
 
 /** Portable preferences and records; permissions, caches and live sessions stay on the device. */
@@ -26,6 +27,7 @@ internal class BackupPreferences(private val context: Context) {
         .put("speedRecordings", SpeedometerStore.backup(context))
         .put("generatorDraft", generator.getString("draft", null)?.let(::JSONObject) ?: JSONObject.NULL)
         .put("language", AppLanguages.selectedTag())
+        .put("mapSource", MapSource.fromId(android.getString("mapSource", null)).id)
         .put("arrivalEnabled", ArrivalStore(context).enabled)
         .put("importantNoticeSuppressed", android.getBoolean(IMPORTANT_NOTICE_SUPPRESSED, false))
         .put("monitorConfig", TicketMonitorStore.read(context).optJSONObject("config") ?: JSONObject.NULL)))
@@ -42,6 +44,12 @@ internal class BackupPreferences(private val context: Context) {
             require(language is String && (language.isEmpty() ||
                 AppLanguages.supported(context).any { it.tag == language })) { "Invalid backup language" }
         }
+        if (value.has("mapSource")) {
+            val source = value.get("mapSource")
+            require(source is String && MapSource.entries.any { it.id == source }) {
+                "Invalid backup map source"
+            }
+        }
         for (key in listOf("arrivalEnabled", "importantNoticeSuppressed")) {
             require(!value.has(key) || value.get(key) is Boolean) { "Invalid backup preference: $key" }
         }
@@ -53,9 +61,13 @@ internal class BackupPreferences(private val context: Context) {
     fun restore(value: JSONObject) = synchronized(ArrivalHistory.lock) {
         validate(value)
         val changes = mutableMapOf<SharedPreferences, Map<String, Any?>>()
-        if (value.has("importantNoticeSuppressed")) {
-            changes[android] = mapOf(IMPORTANT_NOTICE_SUPPRESSED to value.getBoolean("importantNoticeSuppressed"))
+        val androidChanges = buildMap<String, Any?> {
+            if (value.has("importantNoticeSuppressed")) {
+                put(IMPORTANT_NOTICE_SUPPRESSED, value.getBoolean("importantNoticeSuppressed"))
+            }
+            if (value.has("mapSource")) put("mapSource", value.getString("mapSource"))
         }
+        if (androidChanges.isNotEmpty()) changes[android] = androidChanges
         if (value.has("arrivalEnabled")) {
             changes[arrival] = mapOf("enabled" to value.getBoolean("arrivalEnabled"))
         }

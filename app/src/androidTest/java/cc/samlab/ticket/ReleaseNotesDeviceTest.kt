@@ -51,7 +51,15 @@ class ReleaseNotesDeviceTest {
                 capture("updated-welcome")
                 compose.onNodeWithText(context.getString(R.string.welcome_next)).performClick()
                 compose.waitForIdle()
+                val content = compose.onNodeWithTag("welcome-content")
+                    .fetchSemanticsNode().boundsInRoot
                 scenario.onActivity { activity ->
+                    val configuration = activity.resources.configuration
+                    if (configuration.smallestScreenWidthDp < 600 &&
+                        configuration.screenWidthDp < configuration.screenHeightDp) {
+                        assertTrue("Phone welcome wastes horizontal space: $content",
+                            content.width >= activity.window.decorView.width * 0.85f)
+                    }
                     val text = textViews(activity.window.decorView)
                         .map { it.text }.filterIsInstance<Spanned>()
                         .first { it.toString().contains("Sam-Lab CRTicket") }

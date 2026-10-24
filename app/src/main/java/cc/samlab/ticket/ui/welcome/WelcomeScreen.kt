@@ -28,13 +28,14 @@ internal fun WelcomeScreen(
     val scroll = rememberScrollState()
     BackHandler { if (page == 1 && !releaseNotesOnly) page = 0 else onExit() }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        BoxWithConstraints(Modifier.safeContentPadding(), contentAlignment = Alignment.Center) {
+        BoxWithConstraints(Modifier.safeDrawingPadding(), contentAlignment = Alignment.Center) {
             val wide = maxWidth >= 840.dp
+            val horizontalPadding = if (wide) 28.dp else 16.dp
             Column(
                 Modifier.widthIn(max = if (wide) 1040.dp else 600.dp)
                     .heightIn(max = if (wide) 760.dp else androidx.compose.ui.unit.Dp.Infinity)
                     .fillMaxSize().padding(
-                        start = 28.dp, end = 28.dp,
+                        start = horizontalPadding, end = horizontalPadding,
                         top = if (wide) 24.dp else 0.dp,
                         bottom = if (wide) 64.dp else 8.dp,
                     ).testTag("welcome-content"),
@@ -63,7 +64,7 @@ internal fun WelcomeScreen(
                     Column(
                         Modifier.weight(1f).fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surfaceContainer, MaterialTheme.shapes.extraLarge)
-                            .verticalScroll(scroll).padding(24.dp),
+                            .verticalScroll(scroll).padding(if (wide) 24.dp else 16.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                     ) {
                         if (firstUse) {

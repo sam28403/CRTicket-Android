@@ -11,7 +11,7 @@ const source = () => buildAppBackup([], { username: '备份测试', avatar: null
 test('sale settings and search history belong to independent selectable categories', () => {
   const value = parseAppBackup(JSON.stringify(source()))
   assert.deepEqual(selectBackupContents(value, ['settings']).settings.native,
-    { saleAlarmEnabled: true, saleSameCity: false })
+    { saleAlarmEnabled: true, saleSameCity: false, mapSource: 'auto' })
   assert.deepEqual(selectBackupContents(value, ['search']).settings.native,
     { saleSearchHistory: ['北京南'] })
 })
@@ -28,5 +28,6 @@ test('malformed sale settings fail before restoration and older backups stay val
   }
   const old = source()
   old.settings.native = { arrivalEnabled: false }
+  delete old.settings.storage.mapSource
   assert.deepEqual(parseAppBackup(JSON.stringify(old)).settings.native, { arrivalEnabled: false })
 })
