@@ -11,6 +11,7 @@ const router = createRouter({
         { path: '/search', component: { render: () => null } },
         { path: '/about', component: () => import('@/views/AboutView.vue') },
         { path: '/settings', component: () => import('@/views/SettingsView.vue') },
+        { path: '/settings/map', component: () => import('@/views/MapSettingsView.vue') },
         { path: '/history', component: () => import('@/views/HistoryView.vue') },
         { path: '/user', component: () => import('@/views/User.vue') },
         { path: '/train', component: () => import('@/views/TrainQuery.vue') },

@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -83,6 +84,7 @@ internal fun StationBoardSearch(
 internal fun StationBoardTabs(
     selected: StationTab,
     modifier: Modifier = Modifier,
+    onMapSettings: () -> Unit = {},
     onSelect: (StationTab) -> Unit,
 ) {
     Row(
@@ -104,6 +106,18 @@ internal fun StationBoardTabs(
                 },
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             ) { Text(tab.title, style = MaterialTheme.typography.labelMedium, maxLines = 1) }
+            if (tab == StationTab.MAP) {
+                IconButton(
+                    onClick = onMapSettings,
+                    modifier = Modifier.size(36.dp).testTag("station-map-settings"),
+                ) {
+                    Icon(
+                        Icons.Default.Settings,
+                        androidx.compose.ui.res.stringResource(R.string.settings_map),
+                        Modifier.size(20.dp),
+                    )
+                }
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.components.MarkdownText
@@ -28,9 +28,16 @@ internal fun WelcomeScreen(
     val scroll = rememberScrollState()
     BackHandler { if (page == 1 && !releaseNotesOnly) page = 0 else onExit() }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Box(Modifier.safeDrawingPadding(), contentAlignment = Alignment.Center) {
+        BoxWithConstraints(Modifier.safeContentPadding(), contentAlignment = Alignment.Center) {
+            val wide = maxWidth >= 840.dp
             Column(
-                Modifier.widthIn(max = 600.dp).fillMaxSize().padding(horizontal = 28.dp),
+                Modifier.widthIn(max = if (wide) 1040.dp else 600.dp)
+                    .heightIn(max = if (wide) 760.dp else androidx.compose.ui.unit.Dp.Infinity)
+                    .fillMaxSize().padding(
+                        start = 28.dp, end = 28.dp,
+                        top = if (wide) 24.dp else 0.dp,
+                        bottom = if (wide) 64.dp else 8.dp,
+                    ).testTag("welcome-content"),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 Spacer(Modifier.height(8.dp))
@@ -39,28 +46,12 @@ internal fun WelcomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 if (page == 0) {
-                    Column(
-                        Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterVertically),
+                    WelcomeIntro(firstUse, wide, Modifier.weight(1f).fillMaxWidth())
+                    Button(
+                        onClick = { page = 1 },
+                        modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
+                            .align(Alignment.End).testTag("welcome-next"),
                     ) {
-                        WelcomeArtwork()
-                        Text(
-                            stringResource(if (firstUse) R.string.welcome_title else R.string.welcome_updated_title),
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontFamily = cc.samlab.ticket.ui.home.projectTitleFont,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        )
-                        Text(
-                            if (firstUse) stringResource(R.string.welcome_subtitle)
-                            else stringResource(R.string.welcome_version, WelcomeState.version),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        if (firstUse) WelcomeFeatures()
-                    }
-                    Button(onClick = { page = 1 }, modifier = Modifier.fillMaxWidth()) {
                         Text(stringResource(R.string.welcome_next))
                     }
                 } else {
@@ -93,7 +84,7 @@ internal fun WelcomeScreen(
                     Button(
                         onClick = onComplete,
                         enabled = !firstUse || canAccept,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f).align(Alignment.End),
                     ) {
                         Text(stringResource(
                             if (!firstUse) R.string.welcome_start

@@ -1,5 +1,9 @@
 <script setup>
 import { computed, defineAsyncComponent, ref } from 'vue'
+import { ElMessageBox } from 'element-plus'
+import { Setting } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+import { useMapSource } from '@/composables/useMapSource.js'
 import AppBrand from '@/components/AppBrand.vue'
 import StationBoardTable from '@/components/StationBoardTable.vue'
 import StationBoardDiscovery from '@/components/StationBoardDiscovery.vue'
@@ -9,6 +13,16 @@ import { boardTabs, stationBoardRows } from '@/utils/stationBoard.js'
 import { useNativeStationBoard } from '@/composables/useNativeStationBoard.js'
 
 const StationLocationMap = defineAsyncComponent(() => import('@/components/StationLocationMap.vue'))
+const mapSource = useMapSource()
+const router = useRouter()
+async function mapFailed() {
+  try {
+    await ElMessageBox.alert('当前地图源无法加载，请更换地图源。', '地图加载失败', {
+      confirmButtonText: '更换地图源',
+    })
+    router.push('/settings/map')
+  } catch { /* The user closed the warning. */ }
+}
 defineOptions({ name: 'StationBoard' })
 const board = useStationBoard()
 const { station, clock, loading, result, error, query } = board
@@ -132,12 +146,23 @@ function refresh() {
               :label="tab.label"
               :name="tab.name"
             />
-            <el-tab-pane label="地图" name="map" />
+            <el-tab-pane name="map">
+              <template #label>
+                <span>地图</span>
+                <el-button
+                  text circle :icon="Setting" aria-label="地图选择"
+                  @click.stop="$router.push('/settings/map')"
+                />
+              </template>
+            </el-tab-pane>
           </el-tabs>
           <StationLocationMap
             v-if="activeTab === 'map'"
-            :key="result.station"
+            :key="`${result.station}:${mapSource}`"
             :station="result.station"
+            :source="mapSource"
+            style="height: 60vh"
+            @failed="mapFailed"
           />
           <el-empty
             v-else-if="result.total === 0"

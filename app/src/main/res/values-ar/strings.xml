@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">لا توجد بيانات</string>
     <string name="train_query_delay">دقة المواعيد</string>
     <string name="station_refresh">تحديث</string>
+    <string name="settings_map">مصدر الخريطة</string>
+    <string name="map_source_auto">تلقائي</string>
+    <string name="map_source_failed_title">تعذر تحميل الخريطة</string>
+    <string name="map_source_failed_message">تعذر تحميل مصدر الخريطة هذا. يرجى اختيار مصدر آخر.</string>
+    <string name="map_source_change">تغيير المصدر</string>
+    <string name="map_source_dismiss">إغلاق</string>
+    <string name="map_source_transport">OSM للنقل</string>
 </resources>

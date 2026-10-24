@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">डेटा उपलब्ध नहीं</string>
     <string name="train_query_delay">समयपालन</string>
     <string name="station_refresh">रीफ़्रेश</string>
+    <string name="settings_map">मानचित्र स्रोत</string>
+    <string name="map_source_auto">स्वचालित</string>
+    <string name="map_source_failed_title">मानचित्र लोड नहीं हुआ</string>
+    <string name="map_source_failed_message">यह मानचित्र स्रोत लोड नहीं हो सका। कृपया दूसरा स्रोत चुनें।</string>
+    <string name="map_source_change">स्रोत बदलें</string>
+    <string name="map_source_dismiss">बंद करें</string>
+    <string name="map_source_transport">OSM परिवहन</string>
 </resources>

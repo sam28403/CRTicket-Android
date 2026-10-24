@@ -44,10 +44,12 @@ class IssueReportDeviceTest {
         .getSharedPreferences("welcome", Context.MODE_PRIVATE)
     private var originalTerms = 0
     private var originalVersion: String? = null
+    private var originalVersionCode: Int? = null
 
     @Before fun prepare() {
         originalTerms = welcome.getInt("terms", 0)
         originalVersion = welcome.getString("version", null)
+        originalVersionCode = if (welcome.contains("versionCode")) welcome.getInt("versionCode", -1) else null
         WelcomeState.complete(instrumentation.targetContext)
         wasInteractive = instrumentation.targetContext
             .getSystemService(PowerManager::class.java).isInteractive
@@ -60,7 +62,10 @@ class IssueReportDeviceTest {
 
     @After fun restore() {
         welcome.edit().putInt("terms", originalTerms)
-            .putString("version", originalVersion).commit()
+            .putString("version", originalVersion)
+            .apply {
+                originalVersionCode?.let { putInt("versionCode", it) } ?: remove("versionCode")
+            }.commit()
         val editor = preferences.edit()
         originalNotice?.let { editor.putBoolean(IMPORTANT_NOTICE_SUPPRESSED, it) }
             ?: editor.remove(IMPORTANT_NOTICE_SUPPRESSED)

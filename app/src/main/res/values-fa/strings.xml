@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">بدون داده</string>
     <string name="train_query_delay">وقت‌شناسی</string>
     <string name="station_refresh">تازه‌سازی</string>
+    <string name="settings_map">منبع نقشه</string>
+    <string name="map_source_auto">خودکار</string>
+    <string name="map_source_failed_title">نقشه بارگیری نشد</string>
+    <string name="map_source_failed_message">این منبع نقشه بارگیری نشد. لطفاً منبع دیگری انتخاب کنید.</string>
+    <string name="map_source_change">تغییر منبع</string>
+    <string name="map_source_dismiss">بستن</string>
+    <string name="map_source_transport">OSM حمل‌ونقل</string>
 </resources>

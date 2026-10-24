@@ -129,8 +129,8 @@ class SpeedometerDeviceTest {
                 scenario.onActivity { activity ->
                     val mapView = webViews(activity.window.decorView).first { it !== activity.webView }
                     mapView.evaluateJavascript("""
-                        JSON.stringify({leaflet: typeof L, scripts: [...document.scripts].map(s => s.src),
-                          paths: document.querySelectorAll('.leaflet-overlay-pane svg path').length,
+                        JSON.stringify({scripts: [...document.scripts].map(s => s.src),
+                          paths: document.querySelectorAll('.leaflet-overlay-pane canvas').length,
                           map: document.getElementById('map')?.getBoundingClientRect().toJSON(),
                           panePosition: getComputedStyle(document.querySelector('.leaflet-pane')).position,
                           styles: [...document.styleSheets].map(s => s.href),
@@ -138,7 +138,6 @@ class SpeedometerDeviceTest {
                     """.trimIndent()) { mapState = it }
                 }
                 compose.waitUntil(5000) { mapState.isNotEmpty() }
-                assertTrue("Map failed to draw track: $mapState", mapState.contains("leaflet\\\":\\\"object"))
                 val state = org.json.JSONObject(org.json.JSONArray("[$mapState]").getString(0))
                 assertTrue("Map contains no track: $mapState", state.getInt("paths") > 0)
                 assertTrue("Map is not visible: $mapState", state.getJSONObject("map").getDouble("height") > 100)

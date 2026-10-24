@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">Chưa có dữ liệu</string>
     <string name="train_query_delay">Đúng giờ</string>
     <string name="station_refresh">Làm mới</string>
+    <string name="settings_map">Nguồn bản đồ</string>
+    <string name="map_source_auto">Tự động</string>
+    <string name="map_source_failed_title">Không tải được bản đồ</string>
+    <string name="map_source_failed_message">Không thể tải nguồn bản đồ này. Vui lòng chọn nguồn khác.</string>
+    <string name="map_source_change">Đổi nguồn</string>
+    <string name="map_source_dismiss">Đóng</string>
+    <string name="map_source_transport">OSM Giao thông</string>
 </resources>

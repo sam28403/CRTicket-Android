@@ -1,100 +1,70 @@
 <script setup>
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { computed, onBeforeUnmount, onMounted } from 'vue'
+import StationFallbackMap from './StationFallbackMap.vue'
 import { stationMapEmbedUrl } from '@/utils/maps/stationLocationMap.js'
+import { normalizeMapSource } from '@/utils/maps/mapSources.js'
 import { canConnectTransport } from '@/utils/maps/transportConnection.js'
-import { native } from '@/android/platform.js'
-
-const StationFallbackMap = defineAsyncComponent(() => import('@/components/StationFallbackMap.vue'))
 
 const props = defineProps({
   station: { type: String, required: true },
+  source: { type: String, default: 'auto' },
 })
+const emit = defineEmits(['failed'])
+const selected = computed(() => normalizeMapSource(props.source))
 const mapUrl = computed(() => stationMapEmbedUrl(props.station))
-const source = ref('checking')
 const controller = new AbortController()
-let frameTimer
-let networkMessage
+let timer
+let reported = false
+
+function fail() {
+  if (controller.signal.aborted || reported) return
+  reported = true
+  emit('failed')
+}
 
 onMounted(async () => {
-  if (!mapUrl.value) {
-    networkMessage = ElMessage.error('未找到该车站的位置')
-    return
-  }
-  // Android 桥接页面使用本地地图组件，远程资源仅加载地图瓦片。
-  if (native) {
-    useFallback()
-    return
-  }
-  const connected = await canConnectTransport(mapUrl.value, { signal: controller.signal })
-  if (controller.signal.aborted) return
-  if (connected) {
-    source.value = 'transport'
-    frameTimer = setTimeout(useFallback, 10000)
-  } else {
-    useFallback()
+  if (selected.value !== 'transport') return
+  timer = setTimeout(fail, 15000)
+  if (!navigator.userAgent.includes('CRTicket')) {
+    const connected = await canConnectTransport(mapUrl.value, { signal: controller.signal })
+    if (!connected) fail()
   }
 })
+
+function loaded() { clearTimeout(timer) }
 
 onBeforeUnmount(() => {
   controller.abort()
-  clearTimeout(frameTimer)
-  networkMessage?.close()
+  clearTimeout(timer)
 })
-
-function useFallback() {
-  clearTimeout(frameTimer)
-  if (!controller.signal.aborted) source.value = 'fallback'
-}
-
-async function checkLoadedFrame() {
-  clearTimeout(frameTimer)
-  const connected = await canConnectTransport(mapUrl.value, { signal: controller.signal })
-  if (!connected) useFallback()
-}
 </script>
 
 <template>
-  <div
-    class="station-location-map"
-    role="region"
-    :aria-label="`${station}在OpenStreetMap上的位置`"
-  >
+  <div class="station-location-map" role="region" :aria-label="`${station}车站地图`">
     <iframe
-      v-if="source === 'transport'"
+      v-if="selected === 'transport' && mapUrl"
       :src="mapUrl"
       :title="`${station}交通地图`"
-      @load="checkLoadedFrame"
-      @error="useFallback"
+      @load="loaded"
+      @error="fail"
     />
-    <StationFallbackMap
-      v-else-if="source === 'fallback'"
-      :station="station"
-    />
+    <StationFallbackMap v-else :station="station" :source="selected" @failed="fail" />
   </div>
 </template>
 
 <style scoped>
 .station-location-map {
   width: 100%;
-  height: clamp(380px, 65vh, 640px);
+  height: 100%;
+  min-height: 240px;
   isolation: isolate;
-  border-radius: 4px;
   overflow: hidden;
   background: var(--el-fill-color-light);
 }
-
-.station-location-map iframe {
+iframe {
   display: block;
   width: 100%;
   height: 100%;
   border: 0;
-}
-
-@media (max-width: 600px) {
-  .station-location-map {
-    height: 60vh;
-    min-height: 360px;
-  }
 }
 </style>

@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">Мэдээлэл алга</string>
     <string name="train_query_delay">Цаг баримтлал</string>
     <string name="station_refresh">Шинэчлэх</string>
+    <string name="settings_map">Газрын зургийн эх сурвалж</string>
+    <string name="map_source_auto">Автомат</string>
+    <string name="map_source_failed_title">Газрын зураг ачаалж чадсангүй</string>
+    <string name="map_source_failed_message">Энэ газрын зургийн эх сурвалжийг ачаалж чадсангүй. Өөр эх сурвалж сонгоно уу.</string>
+    <string name="map_source_change">Эх сурвалж солих</string>
+    <string name="map_source_dismiss">Хаах</string>
+    <string name="map_source_transport">OSM Тээвэр</string>
 </resources>

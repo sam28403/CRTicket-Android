@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">کوئی ڈیٹا نہیں</string>
     <string name="train_query_delay">وقت کی پابندی</string>
     <string name="station_refresh">ریفریش</string>
+    <string name="settings_map">نقشے کا ماخذ</string>
+    <string name="map_source_auto">خودکار</string>
+    <string name="map_source_failed_title">نقشہ لوڈ نہیں ہو سکا</string>
+    <string name="map_source_failed_message">یہ نقشے کا ماخذ لوڈ نہیں ہو سکا۔ براہ کرم دوسرا ماخذ منتخب کریں۔</string>
+    <string name="map_source_change">ماخذ بدلیں</string>
+    <string name="map_source_dismiss">بند کریں</string>
+    <string name="map_source_transport">OSM آمدورفت</string>
 </resources>

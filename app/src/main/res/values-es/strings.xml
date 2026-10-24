@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">Sin datos</string>
     <string name="train_query_delay">Puntualidad</string>
     <string name="station_refresh">Actualizar</string>
+    <string name="settings_map">Fuente del mapa</string>
+    <string name="map_source_auto">Automático</string>
+    <string name="map_source_failed_title">No se pudo cargar el mapa</string>
+    <string name="map_source_failed_message">No se pudo cargar esta fuente. Selecciona otra fuente de mapa.</string>
+    <string name="map_source_change">Cambiar fuente</string>
+    <string name="map_source_dismiss">Cerrar</string>
+    <string name="map_source_transport">OSM Transporte</string>
 </resources>

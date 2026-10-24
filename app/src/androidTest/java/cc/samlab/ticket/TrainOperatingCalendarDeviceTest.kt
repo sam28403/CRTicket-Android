@@ -139,6 +139,7 @@ class TrainOperatingCalendarDeviceTest {
         val welcome = context.getSharedPreferences("welcome", Context.MODE_PRIVATE)
         val terms = welcome.getInt("terms", 0)
         val version = welcome.getString("version", null)
+        val code = if (welcome.contains("versionCode")) welcome.getInt("versionCode", -1) else null
         WelcomeState.complete(context)
         instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_WAKEUP").close()
         try {
@@ -155,7 +156,8 @@ class TrainOperatingCalendarDeviceTest {
                 block(activity)
             }
         } finally {
-            welcome.edit().putInt("terms", terms).putString("version", version).commit()
+            welcome.edit().putInt("terms", terms).putString("version", version)
+                .apply { if (code == null) remove("versionCode") else putInt("versionCode", code) }.commit()
         }
     }
 

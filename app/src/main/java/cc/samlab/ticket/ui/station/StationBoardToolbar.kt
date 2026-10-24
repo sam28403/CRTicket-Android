@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 internal fun StationBoardToolbar(
     controller: StationBoardState,
     total: Int,
+    onMapSettings: () -> Unit = {},
 ) {
     val tab = controller.selectedTab
     val actions: @Composable (Modifier) -> Unit = { modifier ->
@@ -24,12 +25,12 @@ internal fun StationBoardToolbar(
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         if (maxWidth >= 720.dp) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                StationBoardTabs(tab, Modifier.weight(1f)) { controller.selectedTab = it }
+                StationBoardTabs(tab, Modifier.weight(1f), onMapSettings) { controller.selectedTab = it }
                 actions(Modifier.weight(1f))
             }
         } else Column {
             actions(Modifier)
-            StationBoardTabs(tab) { controller.selectedTab = it }
+            StationBoardTabs(tab, onMapSettings = onMapSettings) { controller.selectedTab = it }
         }
     }
 }

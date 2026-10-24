@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">سانلىق مەلۇمات يوق</string>
     <string name="train_query_delay">ۋاقتىدا</string>
     <string name="station_refresh">يېڭىلاش</string>
+    <string name="settings_map">خەرىتە مەنبەسى</string>
+    <string name="map_source_auto">ئاپتوماتىك</string>
+    <string name="map_source_failed_title">خەرىتە يۈكلەنمىدى</string>
+    <string name="map_source_failed_message">بۇ خەرىتە مەنبەسىنى يۈكلىگىلى بولمىدى. باشقا مەنبە تاللاڭ.</string>
+    <string name="map_source_change">مەنبەنى ئۆزگەرتىش</string>
+    <string name="map_source_dismiss">تاقاش</string>
+    <string name="map_source_transport">OSM قاتناش</string>
 </resources>

@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -31,6 +33,7 @@ class ReleaseNotesDeviceTest {
         val preferences = context.getSharedPreferences("welcome", Context.MODE_PRIVATE)
         val terms = preferences.getInt("terms", 0)
         val version = preferences.getString("version", null)
+        val code = if (preferences.contains("versionCode")) preferences.getInt("versionCode", -1) else null
         try {
             WelcomeState.complete(context)
             ActivityScenario.launch(WelcomeActivity::class.java).use { scenario ->
@@ -41,6 +44,10 @@ class ReleaseNotesDeviceTest {
                 val title = context.getString(R.string.welcome_updated_title)
                 assertTrue(title.contains('\n'))
                 compose.onNodeWithText(title).assertExists()
+                if (context.resources.configuration.screenWidthDp >= 840) {
+                    compose.onNodeWithTag("welcome-intro-wide").assertIsDisplayed()
+                }
+                compose.onNodeWithTag("welcome-next").assertIsDisplayed()
                 capture("updated-welcome")
                 compose.onNodeWithText(context.getString(R.string.welcome_next)).performClick()
                 compose.waitForIdle()
@@ -57,7 +64,8 @@ class ReleaseNotesDeviceTest {
                 capture("release-notes")
             }
         } finally {
-            preferences.edit().putInt("terms", terms).putString("version", version).commit()
+            preferences.edit().putInt("terms", terms).putString("version", version)
+                .apply { if (code == null) remove("versionCode") else putInt("versionCode", code) }.commit()
         }
     }
 

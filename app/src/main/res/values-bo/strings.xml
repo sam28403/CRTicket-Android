@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">གཞི་གྲངས་མེད།</string>
     <string name="train_query_delay">དུས་ཚོད།</string>
     <string name="station_refresh">གསར་སྒྱུར།</string>
+    <string name="settings_map">ས་ཁྲའི་ཁུངས།</string>
+    <string name="map_source_auto">རང་འགུལ།</string>
+    <string name="map_source_failed_title">ས་ཁྲ་འཇུག་མ་ཐུབ།</string>
+    <string name="map_source_failed_message">ས་ཁྲའི་ཁུངས་འདི་འཇུག་མ་ཐུབ། ཁུངས་གཞན་ཞིག་འདེམས་རོགས།</string>
+    <string name="map_source_change">ཁུངས་བརྗེ་བ།</string>
+    <string name="map_source_dismiss">ཁ་རྒྱག</string>
+    <string name="map_source_transport">OSM འགྲིམ་འགྲུལ།</string>
 </resources>

@@ -36,7 +36,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             "/help/general" -> "/help"
             "/about/report", "/about/credits" -> "/about"
             "/sale-time/reminders" -> "/sale-time"
-            "/settings/arrival", "/settings/permissions", "/settings/language", "/settings/sale-reminders" -> "/settings"
+            "/settings/arrival", "/settings/permissions", "/settings/map", "/settings/language", "/settings/sale-reminders" -> "/settings"
             "/history/editor" -> "/history"
             else -> path.takeIf { ExpressiveRoutes.isNative(location) }.orEmpty()
         }
@@ -85,6 +85,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
                 SettingsPage.SALE_REMINDERS -> "/settings/sale-reminders"
                 SettingsPage.ARRIVAL -> "/settings/arrival"
                 SettingsPage.PERMISSIONS -> "/settings/permissions"
+                SettingsPage.MAP -> "/settings/map"
                 SettingsPage.LANGUAGE -> "/settings/language"
                 SettingsPage.MAIN -> "/settings"
             })
@@ -129,6 +130,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             "/settings/sale-reminders" -> SettingsPage.SALE_REMINDERS
             "/settings/arrival" -> SettingsPage.ARRIVAL
             "/settings/permissions" -> SettingsPage.PERMISSIONS
+            "/settings/map" -> SettingsPage.MAP
             "/settings/language" -> SettingsPage.LANGUAGE
             else -> SettingsPage.MAIN
         }

@@ -8,6 +8,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SettingsUiStateTest {
+    @Test fun mapPickerUsesTheSettingsDetailNavigation() {
+        val state = SettingsUiState()
+        state.open("theme")
+        state.openMap()
+        assertEquals(SettingsPage.MAP, state.page)
+        assertEquals("", state.dialog)
+        assertTrue(state.closeDetail())
+        assertEquals(SettingsPage.MAIN, state.page)
+    }
+
     @Test fun languageIsAnIndependentSettingsDetail() {
         val state = SettingsUiState()
         state.open("theme")

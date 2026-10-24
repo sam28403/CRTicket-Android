@@ -117,7 +117,7 @@ private fun AboutDescription(dataVersions: AboutDataVersions) {
         Text(stringResource(R.string.about_description), textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         Text(
-            stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+            stringResource(R.string.about_version, cc.samlab.ticket.ui.appVersionLabel),
             style = MaterialTheme.typography.bodyMedium,
             color = colors.onSurfaceVariant,
             textAlign = TextAlign.Center,

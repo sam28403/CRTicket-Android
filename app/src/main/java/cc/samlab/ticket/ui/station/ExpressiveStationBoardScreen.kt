@@ -60,6 +60,7 @@ internal fun ExpressiveStationBoardScreen(
                             total = if (tab == StationTab.MAP) {
                                 controller.tabs[StationTab.ALL].orEmpty().size
                             } else rows.size,
+                            onMapSettings = { onNavigate("/settings/map") },
                         )
                     }
                 }
@@ -76,6 +77,7 @@ internal fun ExpressiveStationBoardScreen(
                             controller.resultStation, dark,
                             Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp, vertical = 8.dp)
                                 .testTag("station-map"),
+                            onChooseSource = { onNavigate("/settings/map") },
                         )
                     } else if (!hasTrains && !controller.loading) {
                         StationBoardEmptyState(

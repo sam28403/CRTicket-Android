@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">暂无数据</string>
     <string name="train_query_delay">正晚点</string>
     <string name="station_refresh">刷新</string>
+    <string name="settings_map">地图选择</string>
+    <string name="map_source_auto">自动</string>
+    <string name="map_source_failed_title">地图加载失败</string>
+    <string name="map_source_failed_message">当前地图源无法加载，请更换地图源。</string>
+    <string name="map_source_change">更换地图源</string>
+    <string name="map_source_dismiss">关闭</string>
+    <string name="map_source_transport">OSM交通</string>
 </resources>

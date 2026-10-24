@@ -18,6 +18,8 @@ class LocalAssetClient(
     private val openExternal: (Uri) -> Unit,
     private val toast: (String) -> Unit,
     private val onDocumentStarted: () -> Unit = {},
+    private val allowTransport: Boolean = false,
+    private val onMapError: () -> Unit = {},
 ) : WebViewClient() {
     companion object {
         const val ORIGIN = "https://appassets.androidplatform.net"
@@ -69,6 +71,8 @@ class LocalAssetClient(
         if (MapResourcePolicy.isTile(request.url.toString()) && !request.isForMainFrame) {
             return null
         }
+        if (allowTransport && !request.isForMainFrame &&
+            MapResourcePolicy.isTransportResource(request.url.toString())) return null
         if (!isLocal(request.url)) return errorResponse(403, "Forbidden")
         val path = request.url.path.orEmpty().removePrefix("/").ifEmpty { "index.html" }
         if (path.split('/').any { it == "." || it == ".." } || path.contains('\\')) {
@@ -83,7 +87,11 @@ class LocalAssetClient(
                 mapOf(
                     "Cache-Control" to cache,
                     "X-Content-Type-Options" to "nosniff",
-                    "Content-Security-Policy" to POLICY,
+                    "Content-Security-Policy" to if (allowTransport) {
+                        POLICY.replace("frame-src 'none'", "frame-src https://www.openstreetmap.org")
+                            .replace("connect-src 'self' blob: data:",
+                                "connect-src 'self' blob: data: https://www.openstreetmap.org https://api.thunderforest.com")
+                    } else POLICY,
                 ),
                 stream,
             )
@@ -94,6 +102,10 @@ class LocalAssetClient(
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         if (isLocal(request.url)) return false
+        if (allowTransport && !request.isForMainFrame &&
+            request.url.host == "www.openstreetmap.org" &&
+            request.url.path == "/export/embed.html" &&
+            MapResourcePolicy.isTransportResource(request.url.toString())) return false
         if (request.isForMainFrame && request.url.scheme in setOf("https", "http")) {
             openExternal(request.url)
         }
@@ -106,5 +118,15 @@ class LocalAssetClient(
         error: WebResourceError,
     ) {
         if (request.isForMainFrame) toast(appString(R.string.web_error_page_load))
+        if (allowTransport && MapResourcePolicy.isTransportResource(request.url.toString())) onMapError()
+    }
+
+    override fun onReceivedHttpError(
+        view: WebView,
+        request: WebResourceRequest,
+        errorResponse: WebResourceResponse,
+    ) {
+        if (allowTransport && MapResourcePolicy.isTransportResource(request.url.toString()) &&
+            errorResponse.statusCode >= 400) onMapError()
     }
 }

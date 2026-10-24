@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">データなし</string>
     <string name="train_query_delay">運行状況</string>
     <string name="station_refresh">更新</string>
+    <string name="settings_map">地図ソース</string>
+    <string name="map_source_auto">自動</string>
+    <string name="map_source_failed_title">地図を読み込めませんでした</string>
+    <string name="map_source_failed_message">この地図ソースを読み込めません。別のソースを選択してください。</string>
+    <string name="map_source_change">ソースを変更</string>
+    <string name="map_source_dismiss">閉じる</string>
+    <string name="map_source_transport">OSM交通</string>
 </resources>

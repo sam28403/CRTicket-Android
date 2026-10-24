@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="train_query_delay">ກົງເວລາ</string>
     <string name="station_refresh">ໂຫຼດໃໝ່</string>
+    <string name="settings_map">ແຫຼ່ງແຜນທີ່</string>
+    <string name="map_source_auto">ອັດຕະໂນມັດ</string>
+    <string name="map_source_failed_title">ໂຫຼດແຜນທີ່ບໍ່ສຳເລັດ</string>
+    <string name="map_source_failed_message">ບໍ່ສາມາດໂຫຼດແຫຼ່ງແຜນທີ່ນີ້ໄດ້. ກະລຸນາເລືອກແຫຼ່ງອື່ນ.</string>
+    <string name="map_source_change">ປ່ຽນແຫຼ່ງ</string>
+    <string name="map_source_dismiss">ປິດ</string>
+    <string name="map_source_transport">OSM ຂົນສົ່ງ</string>
 </resources>

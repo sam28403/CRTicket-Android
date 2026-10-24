@@ -11,7 +11,8 @@ useVisitedStationCards()
 useVehicleTrainCards()
 useRoutingQuery()
 
-const noticeVisible = ref(!native &&
+const standaloneMap = window.location.hash.split('?')[0] === '#/station-map'
+const noticeVisible = ref(!native && !standaloneMap &&
   localStorage.getItem('crticket-important-notice-hidden') !== '1' &&
   sessionStorage.getItem('crticket-important-notice-confirmed') !== '1')
 
@@ -22,8 +23,8 @@ function confirmNotice(doNotShowAgain) {
 </script>
 
 <template>
-  <ImportantNoticeDialog v-model="noticeVisible" @confirm="confirmNotice" />
-  <PullToRefresh />
+  <ImportantNoticeDialog v-if="!standaloneMap" v-model="noticeVisible" @confirm="confirmNotice" />
+  <PullToRefresh v-if="!standaloneMap" />
   <router-view v-slot="{ Component }">
     <KeepAlive include="TrainList,TrainQuery,StationBoard,TicketMonitor">
       <component :is="Component" />

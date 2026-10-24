@@ -13,12 +13,13 @@ internal object WelcomeState {
 
     fun required(context: Context): Boolean = needsTerms(context) ||
         context.getSharedPreferences("welcome", Context.MODE_PRIVATE)
-            .getString("version", null) != version
+            .getInt("versionCode", -1) != BuildConfig.VERSION_CODE
 
     fun complete(context: Context) {
         context.getSharedPreferences("welcome", Context.MODE_PRIVATE).edit()
             .putInt("terms", TERMS_VERSION)
             .putString("version", version)
+            .putInt("versionCode", BuildConfig.VERSION_CODE)
             .apply()
     }
 }

@@ -13,6 +13,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
     ARRIVAL(R.string.settings_arrival),
     SALE_REMINDERS(R.string.settings_sale_reminders),
     LANGUAGE(R.string.settings_language),
+    MAP(R.string.settings_map),
 }
 
 internal class SettingsUiState {
@@ -41,6 +42,10 @@ internal class SettingsUiState {
 
     fun openLanguage() {
         showPage(SettingsPage.LANGUAGE)
+    }
+
+    fun openMap() {
+        showPage(SettingsPage.MAP)
     }
 
     private fun showPage(value: SettingsPage) {

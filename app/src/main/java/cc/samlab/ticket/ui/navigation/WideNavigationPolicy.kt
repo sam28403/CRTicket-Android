@@ -9,6 +9,7 @@ internal object WideNavigationPolicy {
         "/settings/sale-reminders",
         "/settings/arrival",
         "/settings/permissions",
+        "/settings/map",
         "/settings/language",
         "/history/editor",
         "/monitor/settings",

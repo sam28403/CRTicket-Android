@@ -18,6 +18,7 @@ const nativeSettings = typeof window.CRTicketAndroid?.settingsResult === 'functi
     <StationArrivalCard />
     <h2>外观</h2>
     <SettingsAppearanceCard />
+    <RouterLink to="/settings/map">地图选择</RouterLink>
     <h2>数据与备份</h2>
     <SettingsDataCard />
   </main>

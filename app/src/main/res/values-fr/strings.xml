@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">Aucune donnée</string>
     <string name="train_query_delay">Ponctualité</string>
     <string name="station_refresh">Actualiser</string>
+    <string name="settings_map">Source de la carte</string>
+    <string name="map_source_auto">Automatique</string>
+    <string name="map_source_failed_title">Échec du chargement de la carte</string>
+    <string name="map_source_failed_message">Cette source de carte ne peut pas être chargée. Choisissez une autre source.</string>
+    <string name="map_source_change">Changer de source</string>
+    <string name="map_source_dismiss">Fermer</string>
+    <string name="map_source_transport">OSM Transport</string>
 </resources>

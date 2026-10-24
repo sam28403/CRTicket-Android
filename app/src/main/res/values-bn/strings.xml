@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">তথ্য নেই</string>
     <string name="train_query_delay">সময়ানুবর্তিতা</string>
     <string name="station_refresh">রিফ্রেশ</string>
+    <string name="settings_map">মানচিত্রের উৎস</string>
+    <string name="map_source_auto">স্বয়ংক্রিয়</string>
+    <string name="map_source_failed_title">মানচিত্র লোড হয়নি</string>
+    <string name="map_source_failed_message">এই মানচিত্রের উৎস লোড করা যায়নি। অন্য উৎস বেছে নিন।</string>
+    <string name="map_source_change">উৎস পরিবর্তন</string>
+    <string name="map_source_dismiss">বন্ধ করুন</string>
+    <string name="map_source_transport">OSM পরিবহন</string>
 </resources>

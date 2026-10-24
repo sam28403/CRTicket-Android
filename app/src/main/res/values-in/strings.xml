@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">Tidak ada data</string>
     <string name="train_query_delay">Ketepatan waktu</string>
     <string name="station_refresh">Segarkan</string>
+    <string name="settings_map">Sumber peta</string>
+    <string name="map_source_auto">Otomatis</string>
+    <string name="map_source_failed_title">Peta gagal dimuat</string>
+    <string name="map_source_failed_message">Sumber peta ini tidak dapat dimuat. Pilih sumber lain.</string>
+    <string name="map_source_change">Ganti sumber</string>
+    <string name="map_source_dismiss">Tutup</string>
+    <string name="map_source_transport">OSM Transportasi</string>
 </resources>

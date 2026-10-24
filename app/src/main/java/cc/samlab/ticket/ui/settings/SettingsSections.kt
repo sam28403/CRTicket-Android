@@ -112,6 +112,12 @@ internal fun SettingsPreferences(
         )
     }
     SettingsAdvanced()
+    SettingsGroup(stringResource(R.string.station_tab_map)) {
+        SettingsRow(
+            stringResource(R.string.settings_map), stringResource(rememberMapSource().title),
+            0, 1, true, controller.ui::openMap,
+        )
+    }
     SettingsGroup(stringResource(R.string.settings_backup)) {
         SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,
             { controller.request("exportExcel") })

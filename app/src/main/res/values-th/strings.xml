@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">ไม่มีข้อมูล</string>
     <string name="train_query_delay">ตรงเวลา</string>
     <string name="station_refresh">รีเฟรช</string>
+    <string name="settings_map">แหล่งแผนที่</string>
+    <string name="map_source_auto">อัตโนมัติ</string>
+    <string name="map_source_failed_title">โหลดแผนที่ไม่สำเร็จ</string>
+    <string name="map_source_failed_message">ไม่สามารถโหลดแหล่งแผนที่นี้ได้ โปรดเลือกแหล่งอื่น</string>
+    <string name="map_source_change">เปลี่ยนแหล่งแผนที่</string>
+    <string name="map_source_dismiss">ปิด</string>
+    <string name="map_source_transport">OSM ขนส่ง</string>
 </resources>

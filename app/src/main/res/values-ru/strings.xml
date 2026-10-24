@@ -662,4 +662,11 @@
     <string name="train_calendar_unknown">Нет данных</string>
     <string name="train_query_delay">Пунктуальность</string>
     <string name="station_refresh">Обновить</string>
+    <string name="settings_map">Источник карты</string>
+    <string name="map_source_auto">Автоматически</string>
+    <string name="map_source_failed_title">Не удалось загрузить карту</string>
+    <string name="map_source_failed_message">Не удалось загрузить этот источник карты. Выберите другой источник.</string>
+    <string name="map_source_change">Сменить источник</string>
+    <string name="map_source_dismiss">Закрыть</string>
+    <string name="map_source_transport">OSM Транспорт</string>
 </resources>

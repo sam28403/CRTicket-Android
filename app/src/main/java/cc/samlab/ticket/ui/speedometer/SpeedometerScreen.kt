@@ -115,6 +115,7 @@ internal fun SpeedometerScreen(
                     "/live" -> SpeedometerLive { onNavigate(SPEED_ROUTE) }
                     "/track" -> SpeedometerTrack(
                         SpeedometerStore.history.firstOrNull { it.id == uri.getQueryParameter("id") },
+                        onChooseSource = { onNavigate("/settings/map") },
                     )
                     else -> SpeedometerSetup(stations, onNavigate, active)
                 }
