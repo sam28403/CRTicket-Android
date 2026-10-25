@@ -5,6 +5,7 @@ import androidx.navigation.NavBackStackEntry
 
 internal object ExpressiveRoutes {
     val pages = setOf(
+        "/price", "/price/list",
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
         "/settings/map", "/settings/language", "/settings/sale-reminders", "/search", "/sale-time/reminders",
         "/history", "/history/editor", "/list", "/station", "/sale-time", "/train", "/user",
@@ -33,6 +34,7 @@ internal object ExpressiveRoutes {
     }
 
     fun webLocation(location: String): String = when (path(location)) {
+        "/price", "/price/list" -> "/home"
         "/help/tickets", "/help/query",
         "/help/backup", "/help/arrival", "/help/monitor",
         "/help/sale", "/help/speed", "/help/vehicle",

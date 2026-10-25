@@ -48,6 +48,10 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/price" -> cc.samlab.ticket.ui.fare.FareCalculatorScreen(
+                dark, pureBlack, embedded, onBack, onNavigate,
+            )
+            "/price/list" -> cc.samlab.ticket.ui.fare.FareTableScreen(dark, pureBlack, onBack)
             "/sale-time" -> cc.samlab.ticket.ui.sale.SaleTimeScreen(
                 station, dark, pureBlack, embedded, active, onBack, onNavigate,
             )

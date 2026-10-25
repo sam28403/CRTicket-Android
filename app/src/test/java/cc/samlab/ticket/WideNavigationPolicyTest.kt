@@ -20,7 +20,7 @@ class WideNavigationPolicyTest {
             "/station?station=%E5%8C%97%E4%BA%AC%E5%8D%97",
             "/settings/arrival", "/settings/permissions", "/settings/language",
             "/help/tickets", "/help/backup?section=rules",
-            "/history/editor", "/monitor/settings", "/about/report", "/about/credits",
+            "/history/editor", "/monitor/settings", "/about/report", "/about/credits", "/price/list",
         ).forEach { assertFalse(it, WideNavigationPolicy.startsJourney(it)) }
     }
 

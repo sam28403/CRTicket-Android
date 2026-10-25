@@ -8,4 +8,5 @@
     <item name="expressive_station_view" type="id" />
     <item name="expressive_train_query_view" type="id" />
     <item name="expressive_statistics_view" type="id" />
+    <item name="expressive_fare_table_view" type="id" />
 </resources>
