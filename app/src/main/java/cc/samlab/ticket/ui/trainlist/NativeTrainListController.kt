@@ -152,7 +152,7 @@ class NativeTrainListController(
     }
 
     internal fun open(row: TrainListRow, navigate: (String) -> Unit) {
-        navigate("/train?train=${android.net.Uri.encode(row.train)}&date=$date&source=llt")
+        navigate("/train?train=${android.net.Uri.encode(row.train)}&date=$date")
     }
 
     fun close() {

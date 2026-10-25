@@ -16,7 +16,7 @@ internal fun RoutingTrainCard(
         enabled = train.clickable,
     ) {
         if (train.clickable) onNavigate(
-            "/train?train=${Uri.encode(train.detailTrain)}&date=${Uri.encode(date)}&source=llt",
+            "/train?train=${Uri.encode(train.detailTrain)}&date=${Uri.encode(date)}",
         )
     }
 }

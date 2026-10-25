@@ -163,6 +163,7 @@ async function query() {
         result: schedule.value,
         queryCode: resultQueryCode.value,
         querySource: resultQuerySource.value,
+        offlineRecord: offlineRecord.value,
       })
       toast(`数据来源：${source === 'llt' ? '路路通' : '12306'}`)
     }
@@ -201,14 +202,19 @@ watch(
     schedule.value = null
     error.value = ''
     const record = typeof code === 'string' ? code.trim().toUpperCase() : ''
-    if (offlineMode.value) offlineRecord.value = record
-    train.value = displayTrainCode(record)
+    if (offlineMode.value || record !== displayTrainCode(offlineRecord.value).split('/')[0]) {
+      offlineRecord.value = record
+    }
+    train.value = offlineMode.value
+      ? displayTrainCode(record)
+      : displayTrainCode(record).split('/')[0]
     date.value = typeof selectedDate === 'string' ? selectedDate : trainQueryRange().today
-    const saved = queryCache.get(record, date.value, source)
+    const saved = queryCache.get(offlineMode.value ? record : train.value, date.value, source)
     if (saved) {
       schedule.value = saved.result
       resultQueryCode.value = saved.queryCode
       resultQuerySource.value = saved.querySource
+      offlineRecord.value = saved.offlineRecord
       return
     }
     if (train.value && /^\d{4}-\d{2}-\d{2}$/.test(date.value)) query()

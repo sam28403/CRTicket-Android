@@ -76,7 +76,6 @@ const columns = computed(() => {
           query: {
             train: cellData,
             date: result.value.date,
-            source: 'llt',
           },
         },
       }, () => cellData),

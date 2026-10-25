@@ -27,18 +27,20 @@ internal fun SearchVehicleAssignment(
     onFailure: () -> Unit,
     search: suspend (VehicleSearch) -> List<VehicleHistory> = VehicleQueryRepository::search,
     timetable: NativeTrainListController? = null,
+    state: SearchVehicleState = remember(query) { SearchVehicleState() },
 ) {
-    var latest by remember(query) { mutableStateOf<VehicleHistory?>(null) }
-    var loading by remember(query) { mutableStateOf(true) }
-    var error by remember(query) { mutableStateOf(false) }
+    var latest by state.latest
+    var loading by state.loading
+    var error by state.error
     LaunchedEffect(query, active) {
-        if (!active) return@LaunchedEffect
+        if (!active || state.completed) return@LaunchedEffect
         loading = true
         error = false
         try {
             delay(250)
             latest = search(query).firstOrNull()
             if (!query.byTrain) latest?.let { timetable?.requestVehicleRows(listOf(it)) }
+            state.completed = true
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {

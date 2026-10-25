@@ -13,12 +13,12 @@ test('离线双车次及方案后缀使用完整记录号，并保留跨日列�
   assert.deepEqual(stationTrainLocation({
     train: 'G1/G2B', trainDate: '2026-10-10',
   }, '路路通', '2026-10-11'), {
-    path: '/train', query: { train: 'G1/G2B', date: '2026-10-10', source: 'llt' },
+    path: '/train', query: { train: 'G1/G2B', date: '2026-10-10' },
   })
 })
 
-test('在线双车次使用可查询的单车次，缺少始发日期时使用查询日期', () => {
+test('在线入口保留双车次供查询页选择在线车次及离线回退，缺少始发日期时使用查询日期', () => {
   assert.deepEqual(stationTrainLocation({ train: 'G1/G2' }, '12306', '2026-10-11'), {
-    path: '/train', query: { train: 'G1', date: '2026-10-11' },
+    path: '/train', query: { train: 'G1/G2', date: '2026-10-11' },
   })
 })

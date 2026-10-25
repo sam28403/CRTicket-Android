@@ -25,7 +25,7 @@ internal fun VehicleTrainHistoryCard(
     ) {
         onNavigate(
             "/train?train=${Uri.encode(history.train.substringBefore('/'))}" +
-                "&date=${Uri.encode(history.day)}&source=llt",
+                "&date=${Uri.encode(history.day)}",
         )
     }
 }
