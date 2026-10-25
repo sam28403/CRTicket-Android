@@ -715,4 +715,7 @@
     <string name="update_download_exists">এই আপডেটটি ইতিমধ্যে ডাউনলোড তালিকায় আছে।</string>
     <string name="update_install_permission_denied">ইনস্টল করার অনুমতি নেই। অনুমতি দিয়ে আবার চেষ্টা করুন।</string>
     <string name="update_install_failed">ইনস্টলার খোলা যায়নি। APK ফাইল আছে কি না দেখুন।</string>
+    <string name="welcome_backup_title">আপনার ডেটা পুনরুদ্ধার করুন</string>
+    <string name="welcome_backup_message">আপনি আগে এই অ্যাপ বা ওয়েব সংস্করণ ব্যবহার করে থাকলে, অনুগ্রহ করে একটি ব্যাকআপ আমদানি করুন।</string>
+    <string name="welcome_backup_skip">এড়িয়ে যান</string>
 </resources>

@@ -715,4 +715,7 @@
     <string name="update_download_exists">بۇ يېڭىلانما چۈشۈرۈش تىزىملىكىدە بار.</string>
     <string name="update_install_permission_denied">قاچىلاشقا رۇخسەت بېرىلمىدى. رۇخسەت بەرگەندىن كېيىن قايتا سىناڭ.</string>
     <string name="update_install_failed">قاچىلاش پروگراممىسى ئېچىلمىدى. APK ھۆججىتىنى تەكشۈرۈڭ.</string>
+    <string name="welcome_backup_title">سانلىق مەلۇماتلىرىڭىزنى ئەسلىگە كەلتۈرۈڭ</string>
+    <string name="welcome_backup_message">ئەگەر ئىلگىرى بۇ ئەپنى ياكى تور نەشرىنى ئىشلىتىپ باققان بولسىڭىز، زاپاس نۇسخىنى ئەكىرىڭ.</string>
+    <string name="welcome_backup_skip">ئاتلاش</string>
 </resources>

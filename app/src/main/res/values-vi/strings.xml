@@ -715,4 +715,7 @@
     <string name="update_download_exists">Bản cập nhật này đã có trong danh sách tải xuống.</string>
     <string name="update_install_permission_denied">Chưa được phép cài đặt. Hãy cấp quyền rồi thử lại.</string>
     <string name="update_install_failed">Không thể mở trình cài đặt. Hãy kiểm tra tệp APK.</string>
+    <string name="welcome_backup_title">Khôi phục dữ liệu của bạn</string>
+    <string name="welcome_backup_message">Nếu bạn đã từng sử dụng ứng dụng này hoặc phiên bản web, vui lòng nhập bản sao lưu.</string>
+    <string name="welcome_backup_skip">Bỏ qua</string>
 </resources>

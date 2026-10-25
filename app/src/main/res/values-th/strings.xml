@@ -715,4 +715,7 @@
     <string name="update_download_exists">การอัปเดตนี้อยู่ในรายการดาวน์โหลดแล้ว</string>
     <string name="update_install_permission_denied">ไม่ได้รับอนุญาตให้ติดตั้ง โปรดให้สิทธิ์แล้วลองอีกครั้ง</string>
     <string name="update_install_failed">เปิดโปรแกรมติดตั้งไม่ได้ โปรดตรวจสอบว่าไฟล์ APK ยังอยู่</string>
+    <string name="welcome_backup_title">กู้คืนข้อมูลของคุณ</string>
+    <string name="welcome_backup_message">หากคุณเคยใช้แอปนี้หรือเวอร์ชันเว็บมาก่อน โปรดนำเข้าข้อมูลสำรอง</string>
+    <string name="welcome_backup_skip">ข้าม</string>
 </resources>

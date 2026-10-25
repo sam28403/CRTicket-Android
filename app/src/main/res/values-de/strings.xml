@@ -715,4 +715,7 @@
     <string name="update_download_exists">Dieses Update ist bereits in den Downloads.</string>
     <string name="update_install_permission_denied">Installation nicht erlaubt. Nach Erteilen der Berechtigung erneut versuchen.</string>
     <string name="update_install_failed">Installationsprogramm konnte nicht geöffnet werden. APK prüfen.</string>
+    <string name="welcome_backup_title">Daten wiederherstellen</string>
+    <string name="welcome_backup_message">Wenn Sie diese App oder die Webversion bereits verwendet haben, importieren Sie bitte eine Sicherung.</string>
+    <string name="welcome_backup_skip">Überspringen</string>
 </resources>

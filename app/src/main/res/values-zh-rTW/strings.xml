@@ -715,4 +715,7 @@
     <string name="update_download_exists">此更新已在系統下載清單中</string>
     <string name="update_install_permission_denied">未允許安裝應用程式，可授權後重試</string>
     <string name="update_install_failed">無法開啟安裝程式，請確認 APK 檔案仍然存在</string>
+    <string name="welcome_backup_title">還原您的資料</string>
+    <string name="welcome_backup_message">如果您曾經使用過本軟體或網頁版，請匯入備份。</string>
+    <string name="welcome_backup_skip">略過</string>
 </resources>

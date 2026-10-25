@@ -715,4 +715,7 @@
     <string name="update_download_exists">Esta atualização já está em Downloads.</string>
     <string name="update_install_permission_denied">Instalação não permitida. Conceda a permissão e tente novamente.</string>
     <string name="update_install_failed">Não foi possível abrir o instalador. Verifique se o APK está disponível.</string>
+    <string name="welcome_backup_title">Restaure seus dados</string>
+    <string name="welcome_backup_message">Se você já usou este aplicativo ou a versão web, importe um backup.</string>
+    <string name="welcome_backup_skip">Pular</string>
 </resources>

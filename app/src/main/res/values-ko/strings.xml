@@ -715,4 +715,7 @@
     <string name="update_download_exists">이 업데이트는 이미 다운로드 목록에 있습니다.</string>
     <string name="update_install_permission_denied">설치가 허용되지 않았습니다. 권한을 허용한 뒤 다시 시도하세요.</string>
     <string name="update_install_failed">설치 프로그램을 열 수 없습니다. APK 파일을 확인하세요.</string>
+    <string name="welcome_backup_title">데이터 복원</string>
+    <string name="welcome_backup_message">이전에 이 앱이나 웹 버전을 사용하셨다면 백업을 가져오세요.</string>
+    <string name="welcome_backup_skip">건너뛰기</string>
 </resources>

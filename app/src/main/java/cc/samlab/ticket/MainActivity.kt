@@ -38,6 +38,7 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity() {
     companion object {
         const val ORIGIN = LocalAssetClient.ORIGIN
+        const val EXTRA_WELCOME_BACKUP = "welcome_backup"
     }
 
     lateinit var webView: WebView
@@ -233,6 +234,13 @@ class MainActivity : AppCompatActivity() {
         if (expected != null && page != expected && !ExpressiveRoutes.addsDefaultDate(expected, page)) return
         pendingNativeRoute = null
         navigationReady = true
+        intent.getStringExtra(EXTRA_WELCOME_BACKUP)?.let { backup ->
+            intent.removeExtra(EXTRA_WELCOME_BACKUP)
+            home.setPage("/settings")
+            settings.restoreWelcomeBackup(Uri.parse(backup))
+            updateNavigationUi()
+            return
+        }
         home.setPage(page, replace)
         updateNavigationUi()
         pendingRoute?.let { route ->

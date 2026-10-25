@@ -715,4 +715,7 @@
     <string name="update_download_exists">Cette mise à jour est déjà dans les téléchargements.</string>
     <string name="update_install_permission_denied">Installation non autorisée. Accordez la permission puis réessayez.</string>
     <string name="update_install_failed">Impossible de lancer le programme. Vérifiez la présence du fichier APK.</string>
+    <string name="welcome_backup_title">Restaurer vos données</string>
+    <string name="welcome_backup_message">Si vous avez déjà utilisé cette application ou la version web, veuillez importer une sauvegarde.</string>
+    <string name="welcome_backup_skip">Ignorer</string>
 </resources>

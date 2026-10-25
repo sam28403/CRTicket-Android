@@ -715,4 +715,7 @@
     <string name="update_download_exists">Kemas kini ini sudah ada dalam Muat Turun.</string>
     <string name="update_install_permission_denied">Pemasangan tidak dibenarkan. Berikan kebenaran dan cuba lagi.</string>
     <string name="update_install_failed">Tidak dapat membuka pemasang. Pastikan APK masih tersedia.</string>
+    <string name="welcome_backup_title">Pulihkan data anda</string>
+    <string name="welcome_backup_message">Jika anda pernah menggunakan aplikasi ini atau versi web, sila import sandaran.</string>
+    <string name="welcome_backup_skip">Langkau</string>
 </resources>

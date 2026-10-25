@@ -715,4 +715,7 @@
     <string name="update_download_exists">Questo aggiornamento è già nei download.</string>
     <string name="update_install_permission_denied">Installazione non consentita. Concedi il permesso e riprova.</string>
     <string name="update_install_failed">Impossibile aprire il programma di installazione. Verifica il file APK.</string>
+    <string name="welcome_backup_title">Ripristina i tuoi dati</string>
+    <string name="welcome_backup_message">Se hai già utilizzato questa app o la versione web, importa un backup.</string>
+    <string name="welcome_backup_skip">Salta</string>
 </resources>

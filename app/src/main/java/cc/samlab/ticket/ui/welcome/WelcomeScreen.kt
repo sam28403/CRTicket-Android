@@ -23,31 +23,52 @@ internal fun WelcomeScreen(
     onExit: () -> Unit,
     releaseNotesOnly: Boolean = false,
     onDownload: (() -> Unit)? = null,
+    onImportBackup: () -> Unit = {},
     onComplete: () -> Unit,
 ) {
     var page by rememberSaveable { mutableIntStateOf(if (releaseNotesOnly) 1 else 0) }
     val scroll = rememberScrollState()
-    BackHandler { if (page == 1 && !releaseNotesOnly) page = 0 else onExit() }
+    BackHandler { if (page > 0 && !releaseNotesOnly) page-- else onExit() }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         BoxWithConstraints(Modifier.safeDrawingPadding(), contentAlignment = Alignment.Center) {
             val wide = maxWidth >= 840.dp
+            val wideTerms = wide && firstUse && page == 1
             val horizontalPadding = if (wide) 28.dp else 16.dp
             Column(
                 Modifier.widthIn(max = if (wide) 1040.dp else 600.dp)
-                    .heightIn(max = if (wide) 760.dp else androidx.compose.ui.unit.Dp.Infinity)
+                    .heightIn(max = if (wide && !wideTerms) 760.dp else androidx.compose.ui.unit.Dp.Infinity)
                     .fillMaxSize().padding(
                         start = horizontalPadding, end = horizontalPadding,
                         top = if (wide) 24.dp else 0.dp,
-                        bottom = if (wide) 64.dp else 8.dp,
+                        bottom = if (wide && !wideTerms) 64.dp else 8.dp,
                     ).testTag("welcome-content"),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 Spacer(Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = { if (page == 0) 0.5f else 1f },
+                    progress = {
+                        if (firstUse) (page + 1) / 3f
+                        else if (page == 0) 0.5f else 1f
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                if (page == 0) {
+                if (page == 2 && firstUse) {
+                    WelcomeBackupPrompt(wide, Modifier.weight(1f).fillMaxWidth())
+                    Button(
+                        onClick = onImportBackup,
+                        modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
+                            .align(Alignment.End).testTag("welcome-import-backup"),
+                    ) {
+                        Text(stringResource(R.string.settings_import_backup))
+                    }
+                    TextButton(
+                        onClick = onComplete,
+                        modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
+                            .align(Alignment.End).testTag("welcome-skip-backup"),
+                    ) {
+                        Text(stringResource(R.string.welcome_backup_skip))
+                    }
+                } else if (page == 0) {
                     WelcomeIntro(firstUse, wide, Modifier.weight(1f).fillMaxWidth())
                     Button(
                         onClick = { page = 1 },
@@ -85,24 +106,24 @@ internal fun WelcomeScreen(
                     val canAccept = !scroll.canScrollForward && scroll.viewportSize > 0
                     if (onDownload != null) {
                         WelcomeUpdateActions(wide, onDownload, onComplete)
+                    } else if (firstUse) {
+                        WelcomeTermsActions(
+                            wide = wide,
+                            canAccept = canAccept,
+                            onAccept = { page = 2 },
+                            onExit = onExit,
+                        )
                     } else {
                         Button(
                             onClick = onComplete,
-                            enabled = !firstUse || canAccept,
                             modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
                                 .align(Alignment.End),
                         ) {
-                            Text(stringResource(
-                                if (!firstUse) R.string.welcome_start
-                                else if (canAccept) R.string.welcome_agree else R.string.welcome_read_all,
-                            ))
+                            Text(stringResource(R.string.welcome_start))
                         }
                     }
-                    if (firstUse) TextButton(onClick = onExit, modifier = Modifier.fillMaxWidth()) {
-                        Text(stringResource(R.string.welcome_decline))
-                    }
                 }
-                Spacer(Modifier.height(8.dp))
+                if (!wideTerms) Spacer(Modifier.height(8.dp))
             }
         }
     }

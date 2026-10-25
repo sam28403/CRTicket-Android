@@ -722,4 +722,7 @@
     <string name="update_download_exists">This update is already in Downloads.</string>
     <string name="update_install_permission_denied">Installation was not allowed. You can try again after granting permission.</string>
     <string name="update_install_failed">Unable to open the installer. Check that the APK is still available.</string>
+    <string name="welcome_backup_title">Restore your data</string>
+    <string name="welcome_backup_message">If you have used this app or the web version before, please import a backup.</string>
+    <string name="welcome_backup_skip">Skip</string>
 </resources>

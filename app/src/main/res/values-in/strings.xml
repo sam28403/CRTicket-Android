@@ -715,4 +715,7 @@
     <string name="update_download_exists">Pembaruan ini sudah ada di Unduhan.</string>
     <string name="update_install_permission_denied">Pemasangan tidak diizinkan. Berikan izin lalu coba lagi.</string>
     <string name="update_install_failed">Tidak dapat membuka pemasang. Pastikan APK masih tersedia.</string>
+    <string name="welcome_backup_title">Pulihkan data Anda</string>
+    <string name="welcome_backup_message">Jika Anda pernah menggunakan aplikasi ini atau versi web, silakan impor cadangan.</string>
+    <string name="welcome_backup_skip">Lewati</string>
 </resources>

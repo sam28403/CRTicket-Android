@@ -715,4 +715,7 @@
     <string name="update_download_exists">Энэ шинэчлэлт таталтын жагсаалтад байна.</string>
     <string name="update_install_permission_denied">Суулгах зөвшөөрөл олгоогүй. Зөвшөөрөл өгөөд дахин оролдоно уу.</string>
     <string name="update_install_failed">Суулгагчийг нээж чадсангүй. APK файл байгаа эсэхийг шалгана уу.</string>
+    <string name="welcome_backup_title">Өгөгдлөө сэргээх</string>
+    <string name="welcome_backup_message">Хэрэв та өмнө нь энэ апп эсвэл вэб хувилбарыг ашиглаж байсан бол нөөц хуулбараа импортлоно уу.</string>
+    <string name="welcome_backup_skip">Алгасах</string>
 </resources>

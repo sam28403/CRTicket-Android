@@ -715,4 +715,7 @@
     <string name="update_download_exists">یہ اپ ڈیٹ پہلے سے ڈاؤن لوڈ فہرست میں ہے۔</string>
     <string name="update_install_permission_denied">انسٹال کرنے کی اجازت نہیں دی گئی۔ اجازت دے کر دوبارہ کوشش کریں۔</string>
     <string name="update_install_failed">انسٹالر نہیں کھل سکا۔ APK فائل کی دستیابی چیک کریں۔</string>
+    <string name="welcome_backup_title">اپنا ڈیٹا بحال کریں</string>
+    <string name="welcome_backup_message">اگر آپ پہلے یہ ایپ یا ویب ورژن استعمال کر چکے ہیں تو براہ کرم بیک اپ درآمد کریں۔</string>
+    <string name="welcome_backup_skip">چھوڑیں</string>
 </resources>

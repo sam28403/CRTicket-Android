@@ -715,4 +715,7 @@
     <string name="update_download_exists">هذا التحديث موجود بالفعل في التنزيلات.</string>
     <string name="update_install_permission_denied">لم يُسمح بالتثبيت. يمكنك المحاولة بعد منح الإذن.</string>
     <string name="update_install_failed">تعذر فتح برنامج التثبيت. تحقق من توفر ملف APK.</string>
+    <string name="welcome_backup_title">استعادة بياناتك</string>
+    <string name="welcome_backup_message">إذا كنت قد استخدمت هذا التطبيق أو إصدار الويب من قبل، فيرجى استيراد نسخة احتياطية.</string>
+    <string name="welcome_backup_skip">تخطي</string>
 </resources>

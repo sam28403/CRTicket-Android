@@ -715,4 +715,7 @@
     <string name="update_download_exists">ອັບເດດນີ້ມີຢູ່ໃນລາຍການດາວໂຫຼດແລ້ວ.</string>
     <string name="update_install_permission_denied">ບໍ່ໄດ້ອະນຸຍາດຕິດຕັ້ງ. ອະນຸຍາດແລ້ວລອງອີກຄັ້ງ.</string>
     <string name="update_install_failed">ບໍ່ສາມາດເປີດຕົວຕິດຕັ້ງໄດ້. ກວດສອບໄຟລ໌ APK.</string>
+    <string name="welcome_backup_title">ກູ້ຄືນຂໍ້ມູນຂອງທ່ານ</string>
+    <string name="welcome_backup_message">ຖ້າທ່ານເຄີຍໃຊ້ແອັບນີ້ ຫຼື ເວີຊັນເວັບມາກ່ອນ, ກະລຸນານຳເຂົ້າຂໍ້ມູນສຳຮອງ.</string>
+    <string name="welcome_backup_skip">ຂ້າມ</string>
 </resources>

@@ -715,4 +715,7 @@
     <string name="update_download_exists">Bu güncelleme zaten indirilenlerde.</string>
     <string name="update_install_permission_denied">Yüklemeye izin verilmedi. İzin verdikten sonra tekrar deneyin.</string>
     <string name="update_install_failed">Yükleyici açılamadı. APK dosyasını kontrol edin.</string>
+    <string name="welcome_backup_title">Verilerinizi geri yükleyin</string>
+    <string name="welcome_backup_message">Bu uygulamayı veya web sürümünü daha önce kullandıysanız lütfen bir yedek içe aktarın.</string>
+    <string name="welcome_backup_skip">Atla</string>
 </resources>

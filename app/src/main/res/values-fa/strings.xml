@@ -715,4 +715,7 @@
     <string name="update_download_exists">این به‌روزرسانی در فهرست دریافت‌ها موجود است.</string>
     <string name="update_install_permission_denied">اجازه نصب داده نشد. پس از دادن مجوز دوباره تلاش کنید.</string>
     <string name="update_install_failed">نصب‌کننده باز نشد. وجود فایل APK را بررسی کنید.</string>
+    <string name="welcome_backup_title">بازیابی داده‌های شما</string>
+    <string name="welcome_backup_message">اگر قبلاً از این برنامه یا نسخه وب استفاده کرده‌اید، لطفاً یک نسخه پشتیبان وارد کنید.</string>
+    <string name="welcome_backup_skip">رد شدن</string>
 </resources>

@@ -715,4 +715,7 @@
     <string name="update_download_exists">この更新はすでにダウンロード一覧にあります。</string>
     <string name="update_install_permission_denied">インストールが許可されていません。許可してから再試行してください。</string>
     <string name="update_install_failed">インストーラーを開けません。APK ファイルが存在するか確認してください。</string>
+    <string name="welcome_backup_title">データを復元</string>
+    <string name="welcome_backup_message">以前にこのアプリまたはウェブ版を使用したことがある場合は、バックアップをインポートしてください。</string>
+    <string name="welcome_backup_skip">スキップ</string>
 </resources>

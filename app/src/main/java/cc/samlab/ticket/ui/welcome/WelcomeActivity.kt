@@ -1,8 +1,12 @@
 package cc.samlab.ticket.ui.welcome
 
 import android.content.Context
+import android.content.ClipData
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,6 +17,10 @@ import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
 
 class WelcomeActivity : AppCompatActivity() {
+    private val backupPicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) completeWelcome(uri)
+    }
+
     companion object {
         private const val EXTRA_RELEASE_NOTES_ONLY = "release_notes_only"
 
@@ -37,18 +45,36 @@ class WelcomeActivity : AppCompatActivity() {
                     changes = changes,
                     releaseNotesOnly = releaseNotesOnly,
                     onExit = { if (releaseNotesOnly) finish() else finishAndRemoveTask() },
+                    onImportBackup = {
+                        try {
+                            backupPicker.launch("application/json")
+                        } catch (_: Exception) {
+                            Toast.makeText(
+                                this, R.string.settings_file_picker_failed, Toast.LENGTH_LONG,
+                            ).show()
+                        }
+                    },
                 ) {
                     if (releaseNotesOnly) {
                         finish()
                         return@WelcomeScreen
                     }
-                    WelcomeState.complete(this)
-                    startActivity(Intent(this, MainActivity::class.java).apply {
-                        intent.extras?.let { putExtras(it) }
-                    })
-                    finish()
+                    completeWelcome()
                 }
             }
         }
+    }
+
+    private fun completeWelcome(backup: Uri? = null) {
+        WelcomeState.complete(this)
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            intent.extras?.let { putExtras(it) }
+            backup?.let {
+                putExtra(MainActivity.EXTRA_WELCOME_BACKUP, it.toString())
+                clipData = ClipData.newRawUri("backup", it)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        })
+        finish()
     }
 }

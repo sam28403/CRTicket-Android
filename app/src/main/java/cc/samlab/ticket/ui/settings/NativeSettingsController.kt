@@ -64,6 +64,7 @@ class NativeSettingsController(
     private var requestId = 0
     private var pendingAction = "snapshot"
     private var pickingFile = false
+    private var welcomeBackup: android.net.Uri? = null
 
     private val avatarPicker = activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         pickingFile = false
@@ -75,7 +76,16 @@ class NativeSettingsController(
     }
     private val backupPicker = activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         pickingFile = false
-        if (uri != null) readFile {
+        if (uri != null) importBackup(uri)
+    }
+
+    fun restoreWelcomeBackup(uri: android.net.Uri) {
+        welcomeBackup = uri
+        refresh()
+    }
+
+    private fun importBackup(uri: android.net.Uri) {
+        readFile {
             val text = readSettingsFile(activity, uri, 20 * 1024 * 1024).toString(Charsets.UTF_8)
             val value = org.json.JSONTokener(text).nextValue()
             val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
@@ -140,6 +150,10 @@ class NativeSettingsController(
         if ((pendingAction != "snapshot" || failed) && message.isNotBlank() &&
             message != activity.getString(R.string.settings_file_cancelled) && !alreadyNotified) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+        }
+        welcomeBackup?.let { uri ->
+            welcomeBackup = null
+            importBackup(uri)
         }
     }
 

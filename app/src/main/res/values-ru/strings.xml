@@ -715,4 +715,7 @@
     <string name="update_download_exists">Это обновление уже есть в загрузках.</string>
     <string name="update_install_permission_denied">Установка не разрешена. Предоставьте разрешение и повторите попытку.</string>
     <string name="update_install_failed">Не удалось открыть установщик. Проверьте наличие файла APK.</string>
+    <string name="welcome_backup_title">Восстановите свои данные</string>
+    <string name="welcome_backup_message">Если вы уже пользовались этим приложением или веб-версией, импортируйте резервную копию.</string>
+    <string name="welcome_backup_skip">Пропустить</string>
 </resources>
