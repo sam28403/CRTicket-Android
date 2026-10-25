@@ -14,7 +14,7 @@ internal object BackupPermissionReview {
         val preferences = preferences(context)
         val features = preferences.getStringSet("features", emptySet()).orEmpty().toMutableSet()
         if (value.optBoolean("arrivalEnabled")) features += "arrival"
-        if (value.has("saleAlarmEnabled")) features += "sale"
+        if (value.optBoolean("saleAlarmEnabled")) features += "sale-alarm"
         if (value.optJSONObject("monitorConfig") != null) features += "monitor"
         preferences.edit().putStringSet("features", features).commit()
     }
@@ -27,9 +27,12 @@ internal object BackupPermissionReview {
             if ("monitor" in features && !NotificationAccess.enabled(context, "ticket-monitor-running")) {
                 add(R.string.home_monitor)
             }
-            if ("sale" in features && (!SaleReminderAlarms.allowed(context) ||
-                    !NotificationAccess.enabled(context, SaleReminderPreferences.channel(context)) ||
-                    (SaleReminderPreferences.mode(context) == SaleReminderMode.ALARM &&
+            val alarm = "sale-alarm" in features ||
+                ("sale" in features && SaleReminderPreferences.mode(context) == SaleReminderMode.ALARM)
+            val channel = if (alarm) SaleAlarmNotification.CHANNEL else SaleReminderPreferences.channel(context)
+            if (("sale" in features || alarm) && (!SaleReminderAlarms.allowed(context) ||
+                    !NotificationAccess.enabled(context, channel) ||
+                    (alarm &&
                         !SaleReminderPreferences.alarmAccess(context)))) add(R.string.settings_sale_reminders)
         }
     }

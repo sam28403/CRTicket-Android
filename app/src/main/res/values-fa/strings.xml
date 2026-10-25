@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">اعلان ارسال نشد. مجوز اعلان را بررسی کنید و هشدارهای بلیط را در این صفحه مشاهده کنید.</string>
     <string name="files_picker_failed">انتخابگر فایل سیستم باز نشد</string>
     <string name="files_save_pending">ابتدا ذخیره فایل فعلی را کامل کنید</string>
-    <string name="files_size_limit">فایل‌ها نباید از 20 مگابایت تجاوز کنند</string>
+    <string name="files_size_limit">فایل‌ها نباید از 28 مگابایت تجاوز کنند</string>
     <string name="files_saver_failed">گفتگوی ذخیره فایل باز نشد</string>
     <string name="files_save_expired">فایل در انتظار ذخیره شدن منقضی شده است</string>
     <string name="files_destination_unwritable">نمی‌توان در مکان انتخابی نوشت</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">زمان بارگیری به پایان رسید. لطفاً بعداً دوباره امتحان کنید.</string>
     <string name="train_list_network_error">بارگیری انجام نشد. اتصال خود را بررسی کنید و دوباره امتحان کنید.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">فایل های صادر شده نباید بیش از 20 مگابایت باشد</string>
+    <string name="settings_export_size_limit">فایل های صادر شده نباید بیش از 28 مگابایت باشد</string>
     <string name="settings_export_read_failed">نتوانست فایل صادر شده را بخواند</string>
     <string name="train_list_sort">فهرست مرتب سازی</string>
     <string name="train_list_sort_train">شماره قطار</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">بازیابی داده‌های شما</string>
     <string name="welcome_backup_message">اگر قبلاً از این برنامه یا نسخه وب استفاده کرده‌اید، لطفاً یک نسخه پشتیبان وارد کنید.</string>
     <string name="welcome_backup_skip">رد شدن</string>
+    <string name="backup_encrypt">رمزگذاری نسخه پشتیبان</string>
+    <string name="backup_password">رمز عبور نسخه پشتیبان</string>
+    <string name="backup_password_confirm">تأیید رمز عبور</string>
+    <string name="backup_password_invalid">از رمز عبور 8 تا 1024 نویسه‌ای استفاده کنید</string>
+    <string name="backup_password_mismatch">رمزهای عبور یکسان نیستند</string>
+    <string name="backup_crypto_failed">رمز عبور نادرست است یا نسخه آسیب دیده است</string>
+    <string name="backup_crypto_invalid">نسخه پشتیبان رمزگذاری‌شده نامعتبر است</string>
+    <string name="backup_crypto_version">این قالب به نسخه جدیدتری نیاز دارد</string>
+    <string name="backup_crypto_size">حجم نسخه پشتیبان بیش از حد مجاز است</string>
+    <string name="backup_crypto_unavailable">رمزگذاری امن در این محیط در دسترس نیست</string>
 </resources>

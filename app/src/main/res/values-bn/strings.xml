@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">বিজ্ঞপ্তি পাঠানো হয়নি। বিজ্ঞপ্তির অনুমতি পরীক্ষা করুন এবং এই পৃষ্ঠায় টিকিট সতর্কতা দেখুন।</string>
     <string name="files_picker_failed">সিস্টেম ফাইল পিকার খুলতে পারেনি</string>
     <string name="files_save_pending">বর্তমান ফাইলটি আগে সংরক্ষণ করুন</string>
-    <string name="files_size_limit">ফাইলগুলি 20 MB এর বেশি হওয়া উচিত নয়৷</string>
+    <string name="files_size_limit">ফাইলগুলি 28 MB এর বেশি হওয়া উচিত নয়৷</string>
     <string name="files_saver_failed">ফাইল সংরক্ষণ ডায়ালগ খুলতে পারেনি</string>
     <string name="files_save_expired">সংরক্ষণের অপেক্ষায় থাকা ফাইলটির মেয়াদ শেষ হয়ে গেছে</string>
     <string name="files_destination_unwritable">নির্বাচিত স্থানে লেখা যায়নি</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">লোড করার সময় শেষ হয়েছে। পরে আবার চেষ্টা করুন.</string>
     <string name="train_list_network_error">লোডিং ব্যর্থ হয়েছে৷ আপনার সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">রপ্তানি করা ফাইল 20 MB এর বেশি হওয়া উচিত নয়</string>
+    <string name="settings_export_size_limit">রপ্তানি করা ফাইল 28 MB এর বেশি হওয়া উচিত নয়</string>
     <string name="settings_export_read_failed">রপ্তানি করা ফাইলটি পড়া যায়নি</string>
     <string name="train_list_sort">বাছাই তালিকা</string>
     <string name="train_list_sort_train">ট্রেন নম্বর</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">আপনার ডেটা পুনরুদ্ধার করুন</string>
     <string name="welcome_backup_message">আপনি আগে এই অ্যাপ বা ওয়েব সংস্করণ ব্যবহার করে থাকলে, অনুগ্রহ করে একটি ব্যাকআপ আমদানি করুন।</string>
     <string name="welcome_backup_skip">এড়িয়ে যান</string>
+    <string name="backup_encrypt">ব্যাকআপ এনক্রিপ্ট করুন</string>
+    <string name="backup_password">ব্যাকআপের পাসওয়ার্ড</string>
+    <string name="backup_password_confirm">পাসওয়ার্ড নিশ্চিত করুন</string>
+    <string name="backup_password_invalid">8 থেকে 1024 অক্ষরের পাসওয়ার্ড ব্যবহার করুন</string>
+    <string name="backup_password_mismatch">পাসওয়ার্ড মেলেনি</string>
+    <string name="backup_crypto_failed">ভুল পাসওয়ার্ড অথবা ক্ষতিগ্রস্ত ব্যাকআপ</string>
+    <string name="backup_crypto_invalid">অবৈধ এনক্রিপ্ট করা ব্যাকআপ</string>
+    <string name="backup_crypto_version">এই বিন্যাসের জন্য নতুন সংস্করণ প্রয়োজন</string>
+    <string name="backup_crypto_size">ব্যাকআপের আকার সীমা ছাড়িয়েছে</string>
+    <string name="backup_crypto_unavailable">এই পরিবেশে নিরাপদ এনক্রিপশন উপলব্ধ নয়</string>
 </resources>

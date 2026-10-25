@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.backup.BackupPreferences
+import cc.samlab.ticket.backup.BackupPermissionAccess
 import cc.samlab.ticket.backup.BackupPermissionReview
 import cc.samlab.ticket.sale.SaleReminderPreferences
 import cc.samlab.ticket.sale.SaleReminderMode
@@ -29,7 +30,7 @@ class SaleBackupDeviceTest {
         try {
             mode.edit().putBoolean("alarm", true).commit()
             query.edit().putBoolean("sameCity", false).putString("history", "[\"北京南\"]").commit()
-            val backup = BackupPreferences(context)
+            val backup = BackupPreferences(context) { BackupPermissionAccess(true, true) }
             val snapshot = backup.snapshot()
             val value = JSONObject().put("saleAlarmEnabled", snapshot.getBoolean("saleAlarmEnabled"))
                 .put("saleSameCity", snapshot.getBoolean("saleSameCity"))

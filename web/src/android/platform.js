@@ -43,7 +43,7 @@ export async function saveFile(blob, filename, messages = {}) {
     setTimeout(() => URL.revokeObjectURL(url), 60000)
     return true
   }
-  if (blob.size > 20 * 1024 * 1024) throw new Error(messages.sizeLimit || '导出文件不能超过20MB')
+  if (blob.size > 28 * 1024 * 1024) throw new Error(messages.sizeLimit || '导出文件不能超过28MB')
   const data = await new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result.split(',')[1])

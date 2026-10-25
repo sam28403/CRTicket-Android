@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">系统通知未发送，请检查通知权限并查看页面内的有票提醒</string>
     <string name="files_picker_failed">无法打开系统文件选择器</string>
     <string name="files_save_pending">请先完成当前文件保存</string>
-    <string name="files_size_limit">文件不能超过20MB</string>
+    <string name="files_size_limit">文件不能超过28MB</string>
     <string name="files_saver_failed">无法打开文件保存器</string>
     <string name="files_save_expired">待保存文件已失效</string>
     <string name="files_destination_unwritable">无法写入所选位置</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">读取超时，请稍后重试</string>
     <string name="train_list_network_error">读取失败，请检查手机网络后重试</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">导出文件不能超过20MB</string>
+    <string name="settings_export_size_limit">导出文件不能超过28MB</string>
     <string name="settings_export_read_failed">无法读取导出文件</string>
     <string name="train_list_sort">列表排序</string>
     <string name="train_list_sort_train">按车次</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">在线结果依赖上游接口，离线列表与车站大屏依赖对应日期的时刻表。缓存和上游更新时间可能导致差异；临时停运、晚点、余票和起售调整以铁路官方信息为准。</string>
     <string name="help_backup_title">备份、恢复与本机数据</string>
     <string name="help_backup_question">换机或导入失败怎么办？</string>
-    <string name="help_backup_answer">先在设置中导出 JSON 备份，再在新设备导入。导出和导入均可选择内容，至少选择一项；单文件不超过 20MB。导入仅显示文件实际包含的类别。格式损坏或内容无效时，请使用原始备份重试。卸载或清除数据前务必备份。</string>
+    <string name="help_backup_answer">先在设置中导出 JSON 备份，再在新设备导入。导出和导入均可选择内容，至少选择一项；单文件不超过 28MB。导入仅显示文件实际包含的类别。格式损坏或内容无效时，请使用原始备份重试。卸载或清除数据前务必备份。</string>
     <string name="help_backup_rules">可备份车票、搜索记录、设置、个人资料、到访记录、测速轨迹、制票草稿和余票监控配置。未选择类别不覆盖本机数据。车票去重合并；到访按车站合并并保留更早时间；轨迹按 ID 合并且不覆盖同 ID 本机记录。旧车票备份只恢复车票。系统权限、通知渠道、离线缓存和运行任务不迁移；恢复的余票监控须手动启动。活动测速满一分钟可备份快照，恢复为历史，不恢复定位。</string>
     <string name="help_arrival_title">到站检测与到访记录</string>
     <string name="help_arrival_question">为什么没有收到到访通知？</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">恢复您的数据</string>
     <string name="welcome_backup_message">如果您曾经使用过本软件或者网页版，请导入备份。</string>
     <string name="welcome_backup_skip">跳过</string>
+    <string name="backup_encrypt">加密备份</string>
+    <string name="backup_password">备份密码</string>
+    <string name="backup_password_confirm">再次输入密码</string>
+    <string name="backup_password_invalid">备份密码须为 8 至 1024 个字符</string>
+    <string name="backup_password_mismatch">两次输入的密码不一致</string>
+    <string name="backup_crypto_failed">密码错误或备份文件已损坏</string>
+    <string name="backup_crypto_invalid">加密备份格式无效</string>
+    <string name="backup_crypto_version">此备份格式需要更新的软件版本</string>
+    <string name="backup_crypto_size">备份数据超过大小限制</string>
+    <string name="backup_crypto_unavailable">当前环境不支持安全加密</string>
 </resources>

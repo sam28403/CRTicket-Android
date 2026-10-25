@@ -4,6 +4,8 @@ import { ElMessage } from 'element-plus'
 import { performSettingsAction } from '@/android/settingsActions.js'
 import { parseAppBackup } from '@/utils/appBackup.js'
 import { BACKUP_CONTENTS, availableBackupContents } from '@/utils/backupContents.js'
+import { decryptBackup, isEncryptedBackup, MAX_BACKUP_FILE_BYTES } from '@/utils/backupEncryption.js'
+import BackupPasswordDialog from './BackupPasswordDialog.vue'
 
 const busy = ref(false)
 const input = ref(null)
@@ -11,6 +13,18 @@ const operation = ref('')
 const importText = ref('')
 const available = ref([])
 const selected = ref([])
+const security = ref('')
+const encryptedText = ref('')
+const securityError = ref('')
+const cryptoMessages = {
+  backup_crypto_failed: '密码错误或备份文件已损坏',
+  backup_crypto_invalid: '加密备份格式无效',
+  backup_crypto_version: '此备份格式需要更新的软件版本',
+  backup_crypto_size: '备份数据超过大小限制',
+  backup_crypto_unavailable: '当前环境不支持安全加密，请使用 HTTPS 或本机应用',
+  backup_password_invalid: '备份密码须为 8 至 1024 个字符',
+}
+const errorText = error => cryptoMessages[error.code] || error.message || '操作失败'
 
 function openSelection(action, contents) {
   available.value = contents
@@ -25,6 +39,11 @@ function exportBackup() {
 async function confirmBackup() {
   const action = operation.value
   operation.value = ''
+  if (action === 'exportBackup') {
+    securityError.value = ''
+    security.value = 'export'
+    return
+  }
   await run(action, { contents: selected.value, text: importText.value })
   importText.value = ''
 }
@@ -33,7 +52,7 @@ async function run(action, payload) {
   try {
     ElMessage.success(await performSettingsAction(action, payload))
   } catch (error) {
-    ElMessage.error(error.message || '操作失败')
+    ElMessage.error(errorText(error))
   } finally {
     busy.value = false
   }
@@ -43,13 +62,50 @@ async function importFile(event) {
   event.target.value = ''
   if (!file) return
   try {
-    if (file.size > 20 * 1024 * 1024) throw new Error('备份文件不能超过 20MB')
+    if (file.size > MAX_BACKUP_FILE_BYTES) throw new Error('备份文件不能超过 28MB')
     const text = await file.text()
-    const backup = parseAppBackup(text)
-    importText.value = text
-    openSelection('import', availableBackupContents(backup))
+    if (isEncryptedBackup(JSON.parse(text))) {
+      encryptedText.value = text
+      securityError.value = ''
+      security.value = 'import'
+      return
+    }
+    await prepareImport(text)
   } catch (error) {
-    if (error !== 'cancel' && error !== 'close') ElMessage.error(error.message)
+    ElMessage.error(errorText(error))
+  }
+}
+
+async function prepareImport(text) {
+  text = await decryptBackup(text)
+  const backup = parseAppBackup(text)
+  importText.value = text
+  openSelection('import', availableBackupContents(backup))
+}
+
+function cancelSecurity() {
+  if (busy.value) return
+  security.value = ''
+  encryptedText.value = ''
+  securityError.value = ''
+}
+
+async function confirmSecurity(payload) {
+  busy.value = true
+  try {
+    if (security.value === 'export') {
+      ElMessage.success(await performSettingsAction('exportBackup', { ...payload, contents: selected.value }))
+    } else {
+      const text = await decryptBackup(encryptedText.value, payload.password)
+      await prepareImport(text)
+    }
+    security.value = ''
+    encryptedText.value = ''
+    securityError.value = ''
+  } catch (error) {
+    securityError.value = errorText(error)
+  } finally {
+    busy.value = false
   }
 }
 </script>
@@ -83,6 +139,10 @@ async function importFile(event) {
         </el-button>
       </template>
     </el-dialog>
+    <BackupPasswordDialog
+      :mode="security" :busy="busy" :error="securityError"
+      @submit="confirmSecurity" @cancel="cancelSecurity"
+    />
   </el-card>
 </template>
 

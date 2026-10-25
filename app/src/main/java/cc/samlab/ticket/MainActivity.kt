@@ -420,6 +420,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         home.close()
+        settings.close()
         stationArrival.close()
         refresh.close()
         files.closeChooser()

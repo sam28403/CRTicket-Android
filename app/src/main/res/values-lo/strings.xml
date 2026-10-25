@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">ການແຈ້ງເຕືອນບໍ່ໄດ້ຖືກສົ່ງ. ກວດເບິ່ງການອະນຸຍາດການແຈ້ງເຕືອນ ແລະເບິ່ງການແຈ້ງເຕືອນປີ້ຢູ່ໃນໜ້ານີ້.</string>
     <string name="files_picker_failed">ບໍ່ສາມາດເປີດຕົວເລືອກໄຟລ໌ລະບົບໄດ້</string>
     <string name="files_save_pending">ບັນທຶກໄຟລ໌ປັດຈຸບັນໃຫ້ສໍາເລັດກ່ອນ</string>
-    <string name="files_size_limit">ໄຟລ໌ຕ້ອງບໍ່ເກີນ 20 MB</string>
+    <string name="files_size_limit">ໄຟລ໌ຕ້ອງບໍ່ເກີນ 28 MB</string>
     <string name="files_saver_failed">ບໍ່ສາມາດເປີດກ່ອງບັນທຶກໄຟລ໌ໄດ້</string>
     <string name="files_save_expired">ໄຟລ໌ທີ່ລໍຖ້າຖືກບັນທຶກໄວ້ໄດ້ໝົດອາຍຸແລ້ວ</string>
     <string name="files_destination_unwritable">ບໍ່ສາມາດຂຽນໃສ່ສະຖານທີ່ທີ່ເລືອກໄດ້</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">ການໂຫຼດໝົດເວລາ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</string>
     <string name="train_list_network_error">ການໂຫຼດລົ້ມເຫລວ. ກວດເບິ່ງການເຊື່ອມຕໍ່ຂອງທ່ານແລ້ວລອງໃໝ່ອີກຄັ້ງ.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">ໄຟລ໌ທີ່ສົ່ງອອກຈະຕ້ອງບໍ່ເກີນ 20 MB</string>
+    <string name="settings_export_size_limit">ໄຟລ໌ທີ່ສົ່ງອອກຈະຕ້ອງບໍ່ເກີນ 28 MB</string>
     <string name="settings_export_read_failed">ບໍ່ສາມາດອ່ານໄຟລ໌ທີ່ສົ່ງອອກໄດ້</string>
     <string name="train_list_sort">ຈັດຮຽງລາຍການ</string>
     <string name="train_list_sort_train">ໝາຍເລກລົດໄຟ</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">ກູ້ຄືນຂໍ້ມູນຂອງທ່ານ</string>
     <string name="welcome_backup_message">ຖ້າທ່ານເຄີຍໃຊ້ແອັບນີ້ ຫຼື ເວີຊັນເວັບມາກ່ອນ, ກະລຸນານຳເຂົ້າຂໍ້ມູນສຳຮອງ.</string>
     <string name="welcome_backup_skip">ຂ້າມ</string>
+    <string name="backup_encrypt">ເຂົ້າລະຫັດຂໍ້ມູນສຳຮອງ</string>
+    <string name="backup_password">ລະຫັດຜ່ານຂໍ້ມູນສຳຮອງ</string>
+    <string name="backup_password_confirm">ຢືນຢັນລະຫັດຜ່ານ</string>
+    <string name="backup_password_invalid">ໃຊ້ລະຫັດຜ່ານ 8 ຫາ 1024 ຕົວອັກສອນ</string>
+    <string name="backup_password_mismatch">ລະຫັດຜ່ານບໍ່ກົງກັນ</string>
+    <string name="backup_crypto_failed">ລະຫັດຜ່ານຜິດ ຫຼື ຂໍ້ມູນສຳຮອງເສຍຫາຍ</string>
+    <string name="backup_crypto_invalid">ຂໍ້ມູນສຳຮອງເຂົ້າລະຫັດບໍ່ຖືກຕ້ອງ</string>
+    <string name="backup_crypto_version">ຮູບແບບນີ້ຕ້ອງໃຊ້ເວີຊັນໃໝ່ກວ່າ</string>
+    <string name="backup_crypto_size">ຂໍ້ມູນສຳຮອງເກີນຂະໜາດທີ່ກຳນົດ</string>
+    <string name="backup_crypto_unavailable">ບໍ່ຮອງຮັບການເຂົ້າລະຫັດທີ່ປອດໄພໃນສະພາບແວດລ້ອມນີ້</string>
 </resources>

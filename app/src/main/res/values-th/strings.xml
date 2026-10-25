@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">ไม่ได้ส่งการแจ้งเตือน ตรวจสอบการอนุญาตการแจ้งเตือนและดูการแจ้งเตือนตั๋วในหน้านี้</string>
     <string name="files_picker_failed">ไม่สามารถเปิดตัวเลือกไฟล์ระบบได้</string>
     <string name="files_save_pending">บันทึกไฟล์ปัจจุบันให้เสร็จสิ้นก่อน</string>
-    <string name="files_size_limit">ไฟล์ต้องมีขนาดไม่เกิน 20 MB</string>
+    <string name="files_size_limit">ไฟล์ต้องมีขนาดไม่เกิน 28 MB</string>
     <string name="files_saver_failed">ไม่สามารถเปิดกล่องโต้ตอบบันทึกไฟล์ได้</string>
     <string name="files_save_expired">ไฟล์ที่รอการบันทึกหมดอายุแล้ว</string>
     <string name="files_destination_unwritable">ไม่สามารถเขียนไปยังตำแหน่งที่เลือกได้</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">หมดเวลาการโหลด โปรดลองอีกครั้งในภายหลัง</string>
     <string name="train_list_network_error">โหลดไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">ไฟล์ที่ส่งออกต้องมีขนาดไม่เกิน 20 MB</string>
+    <string name="settings_export_size_limit">ไฟล์ที่ส่งออกต้องมีขนาดไม่เกิน 28 MB</string>
     <string name="settings_export_read_failed">ไม่สามารถอ่านไฟล์ที่ส่งออกได้</string>
     <string name="train_list_sort">เรียงรายการ</string>
     <string name="train_list_sort_train">เลขขบวน</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">กู้คืนข้อมูลของคุณ</string>
     <string name="welcome_backup_message">หากคุณเคยใช้แอปนี้หรือเวอร์ชันเว็บมาก่อน โปรดนำเข้าข้อมูลสำรอง</string>
     <string name="welcome_backup_skip">ข้าม</string>
+    <string name="backup_encrypt">เข้ารหัสข้อมูลสำรอง</string>
+    <string name="backup_password">รหัสผ่านข้อมูลสำรอง</string>
+    <string name="backup_password_confirm">ยืนยันรหัสผ่าน</string>
+    <string name="backup_password_invalid">ใช้รหัสผ่าน 8 ถึง 1024 ตัวอักษร</string>
+    <string name="backup_password_mismatch">รหัสผ่านไม่ตรงกัน</string>
+    <string name="backup_crypto_failed">รหัสผ่านไม่ถูกต้องหรือข้อมูลสำรองเสียหาย</string>
+    <string name="backup_crypto_invalid">ข้อมูลสำรองที่เข้ารหัสไม่ถูกต้อง</string>
+    <string name="backup_crypto_version">รูปแบบนี้ต้องใช้แอปเวอร์ชันใหม่กว่า</string>
+    <string name="backup_crypto_size">ข้อมูลสำรองเกินขนาดที่กำหนด</string>
+    <string name="backup_crypto_unavailable">สภาพแวดล้อมนี้ไม่รองรับการเข้ารหัสที่ปลอดภัย</string>
 </resources>

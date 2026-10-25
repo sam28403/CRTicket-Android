@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">系統通知未傳送，請檢查通知權限並查看頁面內的有票提醒</string>
     <string name="files_picker_failed">無法開啟系統檔案選擇器</string>
     <string name="files_save_pending">請先完成目前檔案儲存</string>
-    <string name="files_size_limit">檔案不能超過20MB</string>
+    <string name="files_size_limit">檔案不能超過28MB</string>
     <string name="files_saver_failed">無法開啟檔案儲存器</string>
     <string name="files_save_expired">待儲存檔案已失效</string>
     <string name="files_destination_unwritable">無法寫入所選位置</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">讀取超時，請稍後重試</string>
     <string name="train_list_network_error">讀取失敗，請檢查手機網絡後重試</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">匯出檔案不能超過20MB</string>
+    <string name="settings_export_size_limit">匯出檔案不能超過28MB</string>
     <string name="settings_export_read_failed">無法讀取匯出檔案</string>
     <string name="train_list_sort">列表排序</string>
     <string name="train_list_sort_train">按車次</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">還原您的資料</string>
     <string name="welcome_backup_message">如果您曾經使用過本軟件或網頁版，請匯入備份。</string>
     <string name="welcome_backup_skip">略過</string>
+    <string name="backup_encrypt">加密備份</string>
+    <string name="backup_password">備份密碼</string>
+    <string name="backup_password_confirm">再次輸入密碼</string>
+    <string name="backup_password_invalid">備份密碼須為 8 至 1024 個字元</string>
+    <string name="backup_password_mismatch">兩次輸入的密碼不一致</string>
+    <string name="backup_crypto_failed">密碼錯誤或備份檔案已損壞</string>
+    <string name="backup_crypto_invalid">加密備份格式無效</string>
+    <string name="backup_crypto_version">此備份格式需要更新的軟件版本</string>
+    <string name="backup_crypto_size">備份資料超過大小限制</string>
+    <string name="backup_crypto_unavailable">目前環境不支援安全加密</string>
 </resources>

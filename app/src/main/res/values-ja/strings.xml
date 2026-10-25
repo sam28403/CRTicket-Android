@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">通知は送信されませんでした。このページで通知の許可を確認し、チケット アラートを表示します。</string>
     <string name="files_picker_failed">システム ファイル ピッカーを開けませんでした</string>
     <string name="files_save_pending">まず現在のファイルの保存を完了してください</string>
-    <string name="files_size_limit">ファイルは 20 MB を超えてはなりません</string>
+    <string name="files_size_limit">ファイルは 28 MB を超えてはなりません</string>
     <string name="files_saver_failed">ファイル保存ダイアログを開けませんでした</string>
     <string name="files_save_expired">保存を待機しているファイルの有効期限が切れています</string>
     <string name="files_destination_unwritable">選択した場所に書き込めませんでした</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">ロードがタイムアウトしました。後でもう一度試してください。</string>
     <string name="train_list_network_error">ロードに失敗しました。接続を確認して、もう一度試してください。</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">エクスポートされたファイルは 20 MB を超えてはなりません</string>
+    <string name="settings_export_size_limit">エクスポートされたファイルは 28 MB を超えてはなりません</string>
     <string name="settings_export_read_failed">エクスポートされたファイルを読み取れませんでした</string>
     <string name="train_list_sort">ソートリスト</string>
     <string name="train_list_sort_train">列車番号</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">データを復元</string>
     <string name="welcome_backup_message">以前にこのアプリまたはウェブ版を使用したことがある場合は、バックアップをインポートしてください。</string>
     <string name="welcome_backup_skip">スキップ</string>
+    <string name="backup_encrypt">バックアップを暗号化</string>
+    <string name="backup_password">バックアップのパスワード</string>
+    <string name="backup_password_confirm">パスワードを再入力</string>
+    <string name="backup_password_invalid">パスワードは8～1024文字で入力してください</string>
+    <string name="backup_password_mismatch">パスワードが一致しません</string>
+    <string name="backup_crypto_failed">パスワードが違うか、バックアップが破損しています</string>
+    <string name="backup_crypto_invalid">暗号化バックアップの形式が無効です</string>
+    <string name="backup_crypto_version">この形式には新しいアプリが必要です</string>
+    <string name="backup_crypto_size">バックアップのサイズが上限を超えています</string>
+    <string name="backup_crypto_unavailable">この環境では安全な暗号化を利用できません</string>
 </resources>

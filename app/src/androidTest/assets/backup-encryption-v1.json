@@ -1,0 +1,18 @@
+{
+  "password": "跨设备 backup 密码 2026",
+  "plain": "{\"app\":\"CRTicket\",\"schemaVersion\":2,\"exportedAt\":\"2020-01-01T00:00:00.000Z\",\"user\":null,\"contents\":[\"profile\",\"search\"],\"tickets\":[],\"settings\":{\"profile\":{\"username\":\"Portable backup fixture\",\"avatar\":null},\"storage\":{\"crticket-train-query-history\":\"[\\\"G123\\\"]\"}}}",
+  "encrypted": {
+    "format": "CRTicketEncryptedBackup",
+    "version": 1,
+    "kdf": {
+      "name": "PBKDF2-HMAC-SHA256",
+      "iterations": 600000,
+      "salt": "AAECAwQFBgcICQoLDA0ODw=="
+    },
+    "cipher": {
+      "name": "AES-256-GCM",
+      "iv": "EBESExQVFhcYGRob"
+    },
+    "data": "vsgyYhOhc6rt99P+3eJB2MGd5hPX0lI4SzxRRBR5qHFaP1Joa7v0V9l2HUTqNAAilVzOkSsvKiaKa1cHVvhDADSgJvCxGL048Go9hIdw7UoOKKTbTjau9KJAMZPrrgQBjrl3G1zBniHqOudquSfz7FrzWRz1fmY524NkdwVzgze2IxSm4ZXic69Evoh+Zt+ieA9C2EyWu4xI0dI+6O6+ltuEjMgepiK5NABYYjb2wK64QPLI/LjYzbLTnOaXeN1FUFclXFEl/+78GnjCdR0a7Wxp4aSLmPEQsYy4wbTV7tEDf5+VBwB4bVemgfCuTCQtjaaAtCFMfoEiPHK6R7v/qEYYWJGBvv2u6jHVqSIiGQJKN8wBUgAtrIQ="
+  }
+}

@@ -143,6 +143,20 @@ class AndroidBridge(
     fun settingsStrings(): String = settingsTextResources(activity)
 
     @JavascriptInterface
+    fun unlockedBackup(id: String, text: String) {
+        // Transfer raw JSON separately: settingsResult has a 500 KB message limit.
+        // Serializing a decrypted backup inside that envelope also doubles escaping.
+        val result = JSONObject().put("id", id)
+        if (text.length <= MAX_BACKUP_NATIVE_LENGTH) {
+            result.put("success", true).put("backupText", text)
+        } else {
+            result.put("success", false)
+                .put("message", activity.getString(cc.samlab.ticket.R.string.settings_file_too_large))
+        }
+        onUi { receiveSettings(result) }
+    }
+
+    @JavascriptInterface
     fun settingsResult(payload: String) {
         if (payload.length > 500_000) return
         val result = runCatching { JSONObject(payload) }.getOrNull() ?: return

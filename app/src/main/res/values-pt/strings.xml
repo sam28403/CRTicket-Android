@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">A notificação não foi enviada. Verifique a permissão de notificação e visualize os alertas de tickets nesta página.</string>
     <string name="files_picker_failed">Não foi possível abrir o seletor de arquivos do sistema</string>
     <string name="files_save_pending">Conclua primeiro o salvamento do arquivo atual</string>
-    <string name="files_size_limit">Os arquivos não devem exceder 20 MB</string>
+    <string name="files_size_limit">Os arquivos não devem exceder 28 MB</string>
     <string name="files_saver_failed">Não foi possível abrir a caixa de diálogo para salvar o arquivo</string>
     <string name="files_save_expired">O arquivo aguardando para ser salvo expirou</string>
     <string name="files_destination_unwritable">Não foi possível gravar no local selecionado</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">O carregamento expirou. Por favor, tente novamente mais tarde.</string>
     <string name="train_list_network_error">Falha no carregamento. Verifique sua conexão e tente novamente.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">Os arquivos exportados não devem exceder 20 MB</string>
+    <string name="settings_export_size_limit">Os arquivos exportados não devem exceder 28 MB</string>
     <string name="settings_export_read_failed">Não foi possível ler o arquivo exportado</string>
     <string name="train_list_sort">Classificar lista</string>
     <string name="train_list_sort_train">Número do trem</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">Restaure seus dados</string>
     <string name="welcome_backup_message">Se você já usou este aplicativo ou a versão web, importe um backup.</string>
     <string name="welcome_backup_skip">Pular</string>
+    <string name="backup_encrypt">Criptografar backup</string>
+    <string name="backup_password">Senha do backup</string>
+    <string name="backup_password_confirm">Confirmar senha</string>
+    <string name="backup_password_invalid">Use uma senha de 8 a 1024 caracteres</string>
+    <string name="backup_password_mismatch">As senhas não coincidem</string>
+    <string name="backup_crypto_failed">Senha incorreta ou backup danificado</string>
+    <string name="backup_crypto_invalid">Backup criptografado inválido</string>
+    <string name="backup_crypto_version">Este formato exige uma versão mais recente</string>
+    <string name="backup_crypto_size">O backup excede o limite de tamanho</string>
+    <string name="backup_crypto_unavailable">A criptografia segura está indisponível aqui</string>
 </resources>

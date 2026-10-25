@@ -14,6 +14,8 @@ import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
+import org.junit.After
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -21,6 +23,10 @@ class BackupSelectionDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
+    private var welcomeState: WelcomeTestState? = null
+
+    @Before fun prepareWelcome() { welcomeState = WelcomeTestState(context) }
+    @After fun restoreWelcome() { welcomeState?.close() }
     private val excluded = setOf(
         "车票历史记录", "设置项", "个人资料", "到访车站记录",
         "测速记录与轨迹", "车票生成草稿", "余票监控配置",

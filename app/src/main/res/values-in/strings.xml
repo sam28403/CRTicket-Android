@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">Notifikasi tidak terkirim. Periksa izin notifikasi dan lihat peringatan tiket di halaman ini.</string>
     <string name="files_picker_failed">Tidak dapat membuka pemilih berkas sistem</string>
     <string name="files_save_pending">Selesaikan penyimpanan file saat ini terlebih dahulu</string>
-    <string name="files_size_limit">File tidak boleh melebihi 20 MB</string>
+    <string name="files_size_limit">File tidak boleh melebihi 28 MB</string>
     <string name="files_saver_failed">Tidak dapat membuka dialog penyimpanan file</string>
     <string name="files_save_expired">File yang menunggu untuk disimpan telah kedaluwarsa</string>
     <string name="files_destination_unwritable">Tidak dapat menulis ke lokasi yang dipilih</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">Waktu pemuatan habis. Silakan coba lagi nanti.</string>
     <string name="train_list_network_error">Pemuatan gagal. Periksa koneksi Anda dan coba lagi.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">File yang diekspor tidak boleh melebihi 20 MB</string>
+    <string name="settings_export_size_limit">File yang diekspor tidak boleh melebihi 28 MB</string>
     <string name="settings_export_read_failed">Tidak dapat membaca file yang diekspor</string>
     <string name="train_list_sort">Urutkan daftar</string>
     <string name="train_list_sort_train">Nomor kereta</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">Pulihkan data Anda</string>
     <string name="welcome_backup_message">Jika Anda pernah menggunakan aplikasi ini atau versi web, silakan impor cadangan.</string>
     <string name="welcome_backup_skip">Lewati</string>
+    <string name="backup_encrypt">Enkripsi cadangan</string>
+    <string name="backup_password">Kata sandi cadangan</string>
+    <string name="backup_password_confirm">Konfirmasi kata sandi</string>
+    <string name="backup_password_invalid">Gunakan kata sandi 8 hingga 1024 karakter</string>
+    <string name="backup_password_mismatch">Kata sandi tidak cocok</string>
+    <string name="backup_crypto_failed">Kata sandi salah atau cadangan rusak</string>
+    <string name="backup_crypto_invalid">Cadangan terenkripsi tidak valid</string>
+    <string name="backup_crypto_version">Format ini memerlukan versi yang lebih baru</string>
+    <string name="backup_crypto_size">Cadangan melebihi batas ukuran</string>
+    <string name="backup_crypto_unavailable">Enkripsi aman tidak tersedia di sini</string>
 </resources>

@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">The notification was not sent. Check notification permission and view the ticket alerts on this page.</string>
     <string name="files_picker_failed">Could not open the system file picker</string>
     <string name="files_save_pending">Complete the current file save first</string>
-    <string name="files_size_limit">Files must not exceed 20 MB</string>
+    <string name="files_size_limit">Files must not exceed 28 MB</string>
     <string name="files_saver_failed">Could not open the file save dialog</string>
     <string name="files_save_expired">The file waiting to be saved has expired</string>
     <string name="files_destination_unwritable">Could not write to the selected location</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">Loading timed out. Please try again later.</string>
     <string name="train_list_network_error">Loading failed. Check your connection and try again.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">Exported files must not exceed 20 MB</string>
+    <string name="settings_export_size_limit">Exported files must not exceed 28 MB</string>
     <string name="settings_export_read_failed">Could not read the exported file</string>
     <string name="train_list_sort">Sort list</string>
     <string name="train_list_sort_train">Train number</string>
@@ -615,7 +615,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -725,4 +725,14 @@
     <string name="welcome_backup_title">Restore your data</string>
     <string name="welcome_backup_message">If you have used this app or the web version before, please import a backup.</string>
     <string name="welcome_backup_skip">Skip</string>
+    <string name="backup_encrypt">Encrypt backup</string>
+    <string name="backup_password">Backup password</string>
+    <string name="backup_password_confirm">Confirm password</string>
+    <string name="backup_password_invalid">Use a password with 8 to 1024 characters</string>
+    <string name="backup_password_mismatch">Passwords do not match</string>
+    <string name="backup_crypto_failed">Incorrect password or damaged backup</string>
+    <string name="backup_crypto_invalid">Invalid encrypted backup</string>
+    <string name="backup_crypto_version">This backup format requires a newer app version</string>
+    <string name="backup_crypto_size">Backup exceeds the size limit</string>
+    <string name="backup_crypto_unavailable">Secure encryption is unavailable in this environment</string>
 </resources>

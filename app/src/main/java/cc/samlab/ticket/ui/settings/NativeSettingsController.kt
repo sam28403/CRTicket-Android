@@ -35,6 +35,7 @@ class NativeSettingsController(
     fun openMonitorSettings() = onMonitorSettings()
 
     internal val ui = SettingsUiState()
+    internal val backupSecurity = BackupSecurityState()
     internal val permissions = PermissionSettingsController(activity)
     var state by mutableStateOf(SettingsState(
         username = activity.getString(R.string.status_loading),
@@ -63,6 +64,10 @@ class NativeSettingsController(
         private set
     private var requestId = 0
     private var pendingAction = "snapshot"
+    private val unlockTimeout = Runnable {
+        requestId++
+        fail(activity.getString(R.string.settings_operation_failed))
+    }
     private var pickingFile = false
     private var welcomeBackup: android.net.Uri? = null
 
@@ -86,26 +91,44 @@ class NativeSettingsController(
 
     private fun importBackup(uri: android.net.Uri) {
         readFile {
-            val text = readSettingsFile(activity, uri, 20 * 1024 * 1024).toString(Charsets.UTF_8)
+            val text = readSettingsFile(activity, uri, 28 * 1024 * 1024).toString(Charsets.UTF_8)
             val value = org.json.JSONTokener(text).nextValue()
-            val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
-            requireNotNull(records) { activity.getString(R.string.settings_backup_no_tickets) }
-            require(records.length() <= 10000) { activity.getString(R.string.settings_backup_limit) }
-            val available = availableBackupContents(value)
-            require(available.isNotEmpty()) { activity.getString(R.string.settings_backup_no_tickets) }
-            activity.runOnUiThread {
-                backupAvailable = available
-                backupSelected = available
-                importText = text
-                importCount = records.length()
-                importIncludesSettings = (value as? JSONObject)?.optInt("schemaVersion") == 2
-            }
+            if ((value as? JSONObject)?.optString("format") == "CRTicketEncryptedBackup") {
+                activity.runOnUiThread {
+                    if (!activity.isDestroyed) {
+                        backupSecurity.clear()
+                        backupSecurity.encryptedText = text
+                    }
+                }
+            } else previewBackup(text)
+        }
+    }
+
+    private fun previewBackup(text: String) {
+        require(text.toByteArray(Charsets.UTF_8).size <= 20 * 1024 * 1024) {
+            activity.getString(R.string.settings_file_too_large)
+        }
+        val value = org.json.JSONTokener(text).nextValue()
+        val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
+        requireNotNull(records) { activity.getString(R.string.settings_backup_no_tickets) }
+        require(records.length() <= 10000) { activity.getString(R.string.settings_backup_limit) }
+        val available = availableBackupContents(value)
+        require(available.isNotEmpty()) { activity.getString(R.string.settings_backup_no_tickets) }
+        activity.runOnUiThread {
+            if (activity.isDestroyed) return@runOnUiThread
+            backupSecurity.clear()
+            backupAvailable = available
+            backupSelected = available
+            importText = text
+            importCount = records.length()
+            importIncludesSettings = (value as? JSONObject)?.optInt("schemaVersion") == 2
         }
     }
 
     fun refresh() {
         permissions.refresh()
-        if (!busy && !pickingFile && !exportSelection && cropBitmap == null && importText == null) request("snapshot")
+        if (!busy && !pickingFile && !exportSelection && !backupSecurity.visible &&
+            cropBitmap == null && importText == null) request("snapshot")
     }
 
     fun request(action: String, payload: JSONObject = JSONObject()) {
@@ -115,6 +138,7 @@ class NativeSettingsController(
         pendingAction = action
         if (action != "snapshot") message = activity.getString(R.string.status_processing)
         val id = (++requestId).toString()
+        if (action == "unlockBackup") webView.postDelayed(unlockTimeout, 60_000)
         val quotedId = JSONObject.quote(id)
         val unavailable = JSONObject.quote(activity.getString(R.string.settings_not_ready))
         webView.evaluateJavascript(
@@ -128,6 +152,7 @@ class NativeSettingsController(
 
     fun receive(result: JSONObject) {
         if (result.optString("id") != requestId.toString()) return
+        webView.removeCallbacks(unlockTimeout)
         result.optJSONObject("state")?.let { value ->
             val arrival = value.optJSONObject("arrival") ?: JSONObject()
             state = SettingsState(
@@ -145,6 +170,11 @@ class NativeSettingsController(
         busy = false
         failed = !result.optBoolean("success")
         message = result.optString("message")
+        if (pendingAction == "unlockBackup") {
+            if (failed) backupSecurity.error = message
+            else readFile { previewBackup(result.getString("backupText")) }
+            return
+        }
         val alreadyNotified = pendingAction.startsWith("export") &&
             message == activity.getString(R.string.settings_file_saved)
         if ((pendingAction != "snapshot" || failed) && message.isNotBlank() &&
@@ -192,6 +222,8 @@ class NativeSettingsController(
     }
 
     fun dismissBackup() {
+        if (busy) return
+        backupSecurity.clear()
         exportSelection = false
         dismissImport()
     }
@@ -203,7 +235,14 @@ class NativeSettingsController(
             return
         }
         exportSelection = false
-        request("exportBackup", JSONObject().put("contents", JSONArray(backupSelected.map { it.id })))
+        backupSecurity.clear()
+        backupSecurity.exporting = true
+    }
+
+    internal fun confirmBackupPassword() {
+        if (busy) return
+        val submission = backupSecurity.submit(activity, backupSelected.map { it.id }) ?: return
+        request(submission.first, submission.second)
     }
 
     fun saveAvatar(zoom: Float, x: Float, y: Float) {
@@ -245,10 +284,18 @@ class NativeSettingsController(
     }
 
     private fun fail(text: String) {
+        webView.removeCallbacks(unlockTimeout)
         if (activity.isDestroyed) return
         busy = false
         failed = true
         message = text
+        if (backupSecurity.visible) backupSecurity.error = text
         Toast.makeText(activity, text, Toast.LENGTH_LONG).show()
+    }
+
+    fun close() {
+        webView.removeCallbacks(unlockTimeout)
+        backupSecurity.clear()
+        importText = null
     }
 }

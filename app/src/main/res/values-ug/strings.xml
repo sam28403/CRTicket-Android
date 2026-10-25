@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">ئۇقتۇرۇش ئەۋەتىلمىدى. ئۇقتۇرۇش ئىجازىتىنى تەكشۈرۈپ ، بۇ بەتتىكى بېلەت ئاگاھلاندۇرۇشىنى كۆرۈڭ.</string>
     <string name="files_picker_failed">سىستېما ھۆججەت تاللىغۇچنى ئاچالمىدى</string>
     <string name="files_save_pending">نۆۋەتتىكى ھۆججەتنى ئاۋۋال ساقلاڭ</string>
-    <string name="files_size_limit">ھۆججەتلەر 20 MB دىن ئېشىپ كەتمەسلىكى كېرەك</string>
+    <string name="files_size_limit">ھۆججەتلەر 28 MB دىن ئېشىپ كەتمەسلىكى كېرەك</string>
     <string name="files_saver_failed">ھۆججەتنى ساقلاش سۆزلىشىش رامكىسىنى ئاچالمىدى</string>
     <string name="files_save_expired">ساقلاشنى ساقلاۋاتقان ھۆججەتنىڭ ۋاقتى توشتى</string>
     <string name="files_destination_unwritable">تاللانغان ئورۇنغا يازالمىدى</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">يۈكلەش ۋاقتى توشتى. كېيىن قايتا سىناڭ.</string>
     <string name="train_list_network_error">يۈكلەش مەغلۇب بولدى. ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">چىقىرىلغان ھۆججەتلەر 20 MB دىن ئېشىپ كەتمەسلىكى كېرەك</string>
+    <string name="settings_export_size_limit">چىقىرىلغان ھۆججەتلەر 28 MB دىن ئېشىپ كەتمەسلىكى كېرەك</string>
     <string name="settings_export_read_failed">ئېكسپورت قىلىنغان ھۆججەتنى ئوقۇيالمىدى</string>
     <string name="train_list_sort">تەرتىپلەش تىزىملىكى</string>
     <string name="train_list_sort_train">پويىز نومۇرى</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">سانلىق مەلۇماتلىرىڭىزنى ئەسلىگە كەلتۈرۈڭ</string>
     <string name="welcome_backup_message">ئەگەر ئىلگىرى بۇ ئەپنى ياكى تور نەشرىنى ئىشلىتىپ باققان بولسىڭىز، زاپاس نۇسخىنى ئەكىرىڭ.</string>
     <string name="welcome_backup_skip">ئاتلاش</string>
+    <string name="backup_encrypt">زاپاس نۇسخىنى شىفىرلاش</string>
+    <string name="backup_password">زاپاس نۇسخا پارولى</string>
+    <string name="backup_password_confirm">پارولنى جەزملەشتۈرۈش</string>
+    <string name="backup_password_invalid">8 دىن 1024 ھەرپكىچە پارول ئىشلىتىڭ</string>
+    <string name="backup_password_mismatch">پاروللار ماس كەلمىدى</string>
+    <string name="backup_crypto_failed">پارول خاتا ياكى زاپاس نۇسخا بۇزۇلغان</string>
+    <string name="backup_crypto_invalid">شىفىرلانغان زاپاس نۇسخا ئىناۋەتسىز</string>
+    <string name="backup_crypto_version">بۇ فورمات ئۈچۈن يېڭى نەشر لازىم</string>
+    <string name="backup_crypto_size">زاپاس نۇسخا چوڭلۇق چېكىدىن ئېشىپ كەتتى</string>
+    <string name="backup_crypto_unavailable">بۇ مۇھىتتا بىخەتەر شىفىرلاش يوق</string>
 </resources>

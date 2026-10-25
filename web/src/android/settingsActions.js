@@ -9,6 +9,7 @@ import {
 import { exportSettingsBackup, importSettingsBackup } from './settingsBackup.js'
 import { saveFile, native } from './platform.js'
 import { settingsText } from './settingsStrings.js'
+import { encryptBackup, decryptBackup, BackupEncryptionError } from '../utils/backupEncryption.js'
 import {
   supportsStationArrival, getStationArrivalState,
   enableStationArrival, disableStationArrival,
@@ -72,7 +73,10 @@ export async function performSettingsAction(action, payload = {}) {
   let blob
   let filename
   if (action === 'exportBackup') {
-    blob = new Blob([JSON.stringify(exportSettingsBackup(records, user, payload.contents), null, 2)], {
+    const text = JSON.stringify(exportSettingsBackup(records, user, payload.contents), null, 2)
+    const output = payload.encryption === 'none'
+      ? await decryptBackup(text) : await encryptBackup(text, payload.password)
+    blob = new Blob([output], {
       type: 'application/json;charset=utf-8',
     })
     filename = settingsText('backup_filename', stamp)
@@ -103,15 +107,25 @@ export function initializeNativeSettings() {
   window.crticketSettings = async (id, action, payload) => {
     let message = ''
     let success = true
+    let backupText
     try {
-      message = await performSettingsAction(action, payload)
+      if (action === 'unlockBackup') backupText = await decryptBackup(payload.text, payload.password)
+      else message = await performSettingsAction(action, payload)
     } catch (error) {
-      message = error.response?.data?.message || error.message || settingsText('operation_failed')
+      message = error instanceof BackupEncryptionError ? settingsText(error.code)
+        : error.response?.data?.message || error.message || settingsText('operation_failed')
       success = false
+    }
+    if (action === 'unlockBackup') {
+      const result = { id, success, message }
+      if (success) native.unlockedBackup(id, backupText)
+      else native.settingsResult(JSON.stringify(result))
+      return result
     }
     try {
       const state = await settingsSnapshot()
-      const result = { id, success, message, state, backupRestored: success && action === 'import' }
+      const result = { id, success, message, state, backupText,
+        backupRestored: success && action === 'import' }
       native.settingsResult(JSON.stringify(result))
       return result
     } catch (error) {

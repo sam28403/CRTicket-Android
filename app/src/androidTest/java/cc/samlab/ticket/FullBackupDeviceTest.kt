@@ -25,8 +25,10 @@ class FullBackupDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private var wasInteractive = false
+    private var welcomeState: WelcomeTestState? = null
 
     @Before fun wakeDevice() {
+        welcomeState = WelcomeTestState(context)
         wasInteractive = context.getSystemService(PowerManager::class.java).isInteractive
         android.os.ParcelFileDescriptor.AutoCloseInputStream(
             InstrumentationRegistry.getInstrumentation().uiAutomation
@@ -35,6 +37,7 @@ class FullBackupDeviceTest {
     }
 
     @After fun restoreScreen() {
+        welcomeState?.close()
         if (!wasInteractive) {
             InstrumentationRegistry.getInstrumentation().uiAutomation
                 .executeShellCommand("input keyevent KEYCODE_SLEEP").close()

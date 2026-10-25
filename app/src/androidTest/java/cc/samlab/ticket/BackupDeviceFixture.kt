@@ -61,7 +61,7 @@ internal class BackupDeviceFixture(
         """.trimIndent())
     }
 
-    fun export(excluded: Set<String> = emptySet()): JSONObject {
+    fun export(excluded: Set<String> = emptySet(), password: String? = null): JSONObject {
         evaluate("""
             window.__backupTestResult = null;
             window.__originalBlob = window.Blob;
@@ -86,6 +86,14 @@ internal class BackupDeviceFixture(
                 compose.onNode(hasText(label) and isToggleable()).assertIsOn().performScrollTo().performClick()
             }
             compose.onNodeWithText("开始导出").performClick()
+            compose.onNodeWithTag("backup-encryption").assertIsOn()
+            if (password == null) {
+                compose.onNodeWithTag("backup-encryption").performClick()
+            } else {
+                compose.onNodeWithTag("backup-password").performTextInput(password)
+                compose.onNodeWithTag("backup-password-confirm").performTextInput(password)
+            }
+            compose.onNodeWithTag("backup-password-submit").performClick()
             result()
             return JSONObject(stringValue(evaluate("window.__backupExport")))
         } finally {
@@ -94,7 +102,13 @@ internal class BackupDeviceFixture(
         }
     }
 
-    fun import(value: String, settings: Boolean, excluded: Set<String> = emptySet()): JSONObject {
+    fun import(
+        value: String,
+        settings: Boolean,
+        excluded: Set<String> = emptySet(),
+        password: String? = null,
+        onLocked: () -> Unit = {},
+    ): JSONObject {
         val file = File(activity.cacheDir, "full-backup-device-test.json").apply { writeText(value) }
         val monitor = instrumentation.addMonitor(
             IntentFilter(Intent.ACTION_GET_CONTENT).apply {
@@ -106,6 +120,14 @@ internal class BackupDeviceFixture(
         try {
             evaluate("window.__backupTestResult = null; true")
             compose.onNodeWithText("导入备份").performScrollTo().performClick()
+            if (password != null) {
+                compose.waitUntil(10_000) {
+                    compose.onAllNodesWithTag("backup-password").fetchSemanticsNodes().isNotEmpty()
+                }
+                onLocked()
+                compose.onNodeWithTag("backup-password").performTextReplacement(password)
+                compose.onNodeWithTag("backup-password-submit").performClick()
+            }
             compose.waitUntil(10_000) {
                 compose.onAllNodesWithText("开始导入").fetchSemanticsNodes().isNotEmpty()
             }

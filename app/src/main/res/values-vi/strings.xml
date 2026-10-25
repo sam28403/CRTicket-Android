@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">Thông báo chưa được gửi. Kiểm tra quyền thông báo và xem thông báo vé trên trang này.</string>
     <string name="files_picker_failed">Không thể mở bộ chọn tệp hệ thống</string>
     <string name="files_save_pending">Hoàn thành việc lưu tệp hiện tại trước</string>
-    <string name="files_size_limit">Tệp không được vượt quá 20 MB</string>
+    <string name="files_size_limit">Tệp không được vượt quá 28 MB</string>
     <string name="files_saver_failed">Không thể mở hộp thoại lưu tệp</string>
     <string name="files_save_expired">File đang chờ lưu đã hết hạn</string>
     <string name="files_destination_unwritable">Không thể ghi vào vị trí đã chọn</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">Đã hết thời gian tải. Vui lòng thử lại sau.</string>
     <string name="train_list_network_error">Tải không thành công. Hãy kiểm tra kết nối của bạn và thử lại.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">Tệp xuất không được vượt quá 20 MB</string>
+    <string name="settings_export_size_limit">Tệp xuất không được vượt quá 28 MB</string>
     <string name="settings_export_read_failed">Không thể đọc tệp đã xuất</string>
     <string name="train_list_sort">Sắp xếp danh sách</string>
     <string name="train_list_sort_train">Số tàu</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">Khôi phục dữ liệu của bạn</string>
     <string name="welcome_backup_message">Nếu bạn đã từng sử dụng ứng dụng này hoặc phiên bản web, vui lòng nhập bản sao lưu.</string>
     <string name="welcome_backup_skip">Bỏ qua</string>
+    <string name="backup_encrypt">Mã hóa bản sao lưu</string>
+    <string name="backup_password">Mật khẩu bản sao lưu</string>
+    <string name="backup_password_confirm">Xác nhận mật khẩu</string>
+    <string name="backup_password_invalid">Dùng mật khẩu từ 8 đến 1024 ký tự</string>
+    <string name="backup_password_mismatch">Mật khẩu không khớp</string>
+    <string name="backup_crypto_failed">Mật khẩu sai hoặc bản sao lưu bị hỏng</string>
+    <string name="backup_crypto_invalid">Bản sao lưu mã hóa không hợp lệ</string>
+    <string name="backup_crypto_version">Định dạng này cần phiên bản mới hơn</string>
+    <string name="backup_crypto_size">Bản sao lưu vượt giới hạn kích thước</string>
+    <string name="backup_crypto_unavailable">Môi trường này không hỗ trợ mã hóa an toàn</string>
 </resources>

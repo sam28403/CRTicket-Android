@@ -61,5 +61,6 @@ internal fun SettingsDialogs(dialog: String, dismiss: () -> Unit, controller: Na
     )
     if (dialog == "theme") SettingsThemeDialog(controller, dismiss)
     BackupContentsDialog(controller)
+    BackupPasswordDialog(controller)
     controller.cropBitmap?.let { AvatarCropDialog(it, controller) }
 }

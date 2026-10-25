@@ -22,7 +22,7 @@ class DocumentFiles(
     companion object {
         private const val FILE_REQUEST = 10
         private const val SAVE_REQUEST = 11
-        private const val MAX_FILE_BYTES = 20 * 1024 * 1024
+        private const val MAX_FILE_BYTES = 28 * 1024 * 1024
     }
 
     private var chooser: ValueCallback<Array<Uri>>? = null

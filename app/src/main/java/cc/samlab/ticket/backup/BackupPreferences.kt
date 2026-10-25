@@ -14,11 +14,15 @@ import cc.samlab.ticket.ui.settings.MapSource
 import org.json.JSONObject
 
 /** Portable preferences and records; permissions, caches and live sessions stay on the device. */
-internal class BackupPreferences(private val context: Context) {
+internal class BackupPreferences(
+    private val context: Context,
+    private val permissionAccess: () -> BackupPermissionAccess = { BackupPermissionAccess.read(context) },
+) {
     private val android = context.getSharedPreferences("android", Context.MODE_PRIVATE)
     private val arrival = context.getSharedPreferences("station-arrival", Context.MODE_PRIVATE)
     private val monitor = context.getSharedPreferences("ticket-monitor", Context.MODE_PRIVATE)
     private var pending: JSONObject? = null
+    private var pendingReview: JSONObject? = null
     private val railfan = BackupRailfanData(context)
     private val generator = context.getSharedPreferences("ticket-generator", Context.MODE_PRIVATE)
     private val sale = BackupSaleSettings(context)
@@ -60,8 +64,9 @@ internal class BackupPreferences(private val context: Context) {
         }
     }
 
-    fun restore(value: JSONObject) = synchronized(ArrivalHistory.lock) {
-        validate(value)
+    fun restore(requested: JSONObject) = synchronized(ArrivalHistory.lock) {
+        validate(requested)
+        val value = permissionAccess().filter(requested)
         val changes = mutableMapOf<SharedPreferences, Map<String, Any?>>()
         val androidChanges = buildMap<String, Any?> {
             if (value.has("importantNoticeSuppressed")) {
@@ -71,7 +76,10 @@ internal class BackupPreferences(private val context: Context) {
         }
         if (androidChanges.isNotEmpty()) changes[android] = androidChanges
         if (value.has("arrivalEnabled")) {
-            changes[arrival] = mapOf("enabled" to value.getBoolean("arrivalEnabled"))
+            changes[arrival] = mapOf(
+                "enabled" to value.getBoolean("arrivalEnabled"),
+                "enableRequested" to false,
+            )
         }
         if (value.has("monitorConfig")) {
             changes[monitor] = mapOf("state" to JSONObject()
@@ -101,13 +109,15 @@ internal class BackupPreferences(private val context: Context) {
             throw error
         }
         pending = JSONObject(value.toString())
+        pendingReview = JSONObject(requested.toString())
     }
 
     /** Called after the WebView has reported a successful import, before any locale recreation. */
     fun complete() {
         val value = pending ?: return
         pending = null
-        BackupPermissionReview.record(context, value)
+        BackupPermissionReview.record(context, pendingReview ?: value)
+        pendingReview = null
         if (value.has("monitorConfig")) TicketMonitorService.stop(context)
         if (value.has("arrivalEnabled")) {
             val monitor = StationArrivalMonitor.get(context)

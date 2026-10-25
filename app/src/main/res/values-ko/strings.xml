@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">알림이 전송되지 않았습니다. 이 페이지에서 알림 권한을 확인하고 티켓 알림을 확인하세요.</string>
     <string name="files_picker_failed">시스템 파일 선택기를 열 수 없습니다.</string>
     <string name="files_save_pending">현재 파일 저장을 먼저 완료하세요.</string>
-    <string name="files_size_limit">파일은 20MB를 초과할 수 없습니다.</string>
+    <string name="files_size_limit">파일은 28MB를 초과할 수 없습니다.</string>
     <string name="files_saver_failed">파일 저장 대화 상자를 열 수 없습니다.</string>
     <string name="files_save_expired">저장 대기 중인 파일이 만료되었습니다.</string>
     <string name="files_destination_unwritable">선택한 위치에 쓸 수 없습니다.</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">로드 시간이 초과되었습니다. 나중에 다시 시도해 주세요.</string>
     <string name="train_list_network_error">로드에 실패했습니다. 연결을 확인하고 다시 시도하세요.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">내보낸 파일은 20MB를 초과할 수 없습니다.</string>
+    <string name="settings_export_size_limit">내보낸 파일은 28MB를 초과할 수 없습니다.</string>
     <string name="settings_export_read_failed">내보낸 파일을 읽을 수 없습니다.</string>
     <string name="train_list_sort">목록 정렬</string>
     <string name="train_list_sort_train">열차번호</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">데이터 복원</string>
     <string name="welcome_backup_message">이전에 이 앱이나 웹 버전을 사용하셨다면 백업을 가져오세요.</string>
     <string name="welcome_backup_skip">건너뛰기</string>
+    <string name="backup_encrypt">백업 암호화</string>
+    <string name="backup_password">백업 비밀번호</string>
+    <string name="backup_password_confirm">비밀번호 확인</string>
+    <string name="backup_password_invalid">8~1024자의 비밀번호를 사용하세요</string>
+    <string name="backup_password_mismatch">비밀번호가 일치하지 않습니다</string>
+    <string name="backup_crypto_failed">비밀번호가 틀렸거나 백업이 손상되었습니다</string>
+    <string name="backup_crypto_invalid">암호화된 백업 형식이 올바르지 않습니다</string>
+    <string name="backup_crypto_version">이 형식에는 최신 앱 버전이 필요합니다</string>
+    <string name="backup_crypto_size">백업이 크기 제한을 초과했습니다</string>
+    <string name="backup_crypto_unavailable">이 환경에서는 안전한 암호화를 사용할 수 없습니다</string>
 </resources>

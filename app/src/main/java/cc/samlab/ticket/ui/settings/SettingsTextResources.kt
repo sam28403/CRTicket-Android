@@ -28,6 +28,12 @@ internal fun settingsTextResources(context: Context): String {
         "backup_limit" to R.string.settings_backup_limit,
         "import_failed" to R.string.settings_import_failed,
         "import_complete" to R.string.settings_import_complete,
+        "backup_crypto_unavailable" to R.string.backup_crypto_unavailable,
+        "backup_crypto_invalid" to R.string.backup_crypto_invalid,
+        "backup_crypto_version" to R.string.backup_crypto_version,
+        "backup_crypto_failed" to R.string.backup_crypto_failed,
+        "backup_crypto_size" to R.string.backup_crypto_size,
+        "backup_password_invalid" to R.string.backup_password_invalid,
     )
     return JSONObject().apply {
         resources.forEach { (key, id) -> put(key, context.getString(id)) }

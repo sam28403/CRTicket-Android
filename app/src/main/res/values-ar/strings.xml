@@ -177,7 +177,7 @@
     <string name="notifications_delivery_failed">لم يتم إرسال الإشعار. تحقق من إذن الإشعارات واعرض تنبيهات التذاكر على هذه الصفحة.</string>
     <string name="files_picker_failed">تعذر فتح منتقي ملفات النظام</string>
     <string name="files_save_pending">أكمل حفظ الملف الحالي أولاً</string>
-    <string name="files_size_limit">يجب ألا تتجاوز الملفات 20 ميغابايت</string>
+    <string name="files_size_limit">يجب ألا تتجاوز الملفات 28 ميغابايت</string>
     <string name="files_saver_failed">تعذر فتح مربع حوار حفظ الملف</string>
     <string name="files_save_expired">انتهت صلاحية الملف المنتظر حفظه</string>
     <string name="files_destination_unwritable">تعذر الكتابة إلى الموقع المحدد</string>
@@ -204,7 +204,7 @@
     <string name="train_list_timeout">انتهت مهلة التحميل. يرجى المحاولة مرة أخرى لاحقا.</string>
     <string name="train_list_network_error">فشل التحميل. تحقق من اتصالك وحاول مرة أخرى.</string>
     <string name="settings_backup_filename">CRTicket-backup-%1$s.json</string>
-    <string name="settings_export_size_limit">يجب ألا تتجاوز الملفات المصدرة 20 ميغابايت</string>
+    <string name="settings_export_size_limit">يجب ألا تتجاوز الملفات المصدرة 28 ميغابايت</string>
     <string name="settings_export_read_failed">تعذر قراءة الملف الذي تم تصديره</string>
     <string name="train_list_sort">قائمة الفرز</string>
     <string name="train_list_sort_train">رقم القطار</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Use official railway information for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
     <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 20MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Select at least one category for export or import; files must not exceed 28MB. Import only offers categories present in the file. Retry with the original backup if the file is damaged or invalid. Back up before uninstalling or clearing data.</string>
     <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
@@ -718,4 +718,14 @@
     <string name="welcome_backup_title">استعادة بياناتك</string>
     <string name="welcome_backup_message">إذا كنت قد استخدمت هذا التطبيق أو إصدار الويب من قبل، فيرجى استيراد نسخة احتياطية.</string>
     <string name="welcome_backup_skip">تخطي</string>
+    <string name="backup_encrypt">تشفير النسخة الاحتياطية</string>
+    <string name="backup_password">كلمة مرور النسخة الاحتياطية</string>
+    <string name="backup_password_confirm">تأكيد كلمة المرور</string>
+    <string name="backup_password_invalid">استخدم كلمة مرور من 8 إلى 1024 حرفًا</string>
+    <string name="backup_password_mismatch">كلمتا المرور غير متطابقتين</string>
+    <string name="backup_crypto_failed">كلمة المرور غير صحيحة أو النسخة تالفة</string>
+    <string name="backup_crypto_invalid">نسخة احتياطية مشفرة غير صالحة</string>
+    <string name="backup_crypto_version">يتطلب هذا التنسيق إصدارًا أحدث</string>
+    <string name="backup_crypto_size">تتجاوز النسخة الحد الأقصى للحجم</string>
+    <string name="backup_crypto_unavailable">التشفير الآمن غير متاح في هذه البيئة</string>
 </resources>
