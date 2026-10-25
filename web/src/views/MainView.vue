@@ -476,7 +476,7 @@ const goToGitHub = () => {
       }
   )
       .then(() => {
-        window.open('https://github.com/sam28403/CRTicket', '_blank')
+        window.open('https://github.com/sam28403/CRTicket-Android', '_blank')
       })
 }
 

@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Мягкая нижняя</string>
     <string name="fare_soft_upper_short">Мягкая верхняя</string>
     <string name="fare_distance_short">Расстояние</string>
+    <string name="settings_updates">Обновления</string>
+    <string name="update_check">Проверить обновления</string>
+    <string name="update_checking">Проверка обновлений…</string>
+    <string name="update_previews">Использовать предварительные версии</string>
+    <string name="update_automatic">Автоматически проверять обновления</string>
+    <string name="update_download">Скачать обновление</string>
+    <string name="update_later">Обновить позже</string>
+    <string name="update_none">Обновлений нет</string>
+    <string name="update_check_failed">Не удалось проверить обновления. Повторите попытку.</string>
+    <string name="update_no_apk">Для этой версии нет доступного APK.</string>
+    <string name="update_download_started">Загрузка началась</string>
+    <string name="update_download_failed">Не удалось начать загрузку.</string>
+    <string name="update_download_exists">Это обновление уже есть в загрузках.</string>
+    <string name="update_install_permission_denied">Установка не разрешена. Предоставьте разрешение и повторите попытку.</string>
+    <string name="update_install_failed">Не удалось открыть установщик. Проверьте наличие файла APK.</string>
 </resources>

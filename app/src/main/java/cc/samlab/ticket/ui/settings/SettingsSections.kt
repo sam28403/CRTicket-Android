@@ -111,6 +111,7 @@ internal fun SettingsPreferences(
             2, 3, true, controller.ui::openLanguage,
         )
     }
+    SettingsUpdates()
     SettingsAdvanced()
     SettingsGroup(stringResource(R.string.station_tab_map)) {
         SettingsRow(

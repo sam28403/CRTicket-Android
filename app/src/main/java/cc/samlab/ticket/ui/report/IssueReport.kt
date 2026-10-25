@@ -4,7 +4,7 @@ import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.appString
 import java.net.URLEncoder
 
-internal const val ISSUES_URL = "https://github.com/sam28403/CRTicket/issues"
+internal const val ISSUES_URL = "https://github.com/sam28403/CRTicket-Android/issues"
 
 internal enum class ReportKind(private val textId: Int) {
     BUG(R.string.report_bug),

@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">تخت نرم پایین</string>
     <string name="fare_soft_upper_short">تخت نرم بالا</string>
     <string name="fare_distance_short">مسافت</string>
+    <string name="settings_updates">به‌روزرسانی‌ها</string>
+    <string name="update_check">بررسی به‌روزرسانی</string>
+    <string name="update_checking">در حال بررسی به‌روزرسانی…</string>
+    <string name="update_previews">استفاده از نسخه‌های پیش‌نمایش</string>
+    <string name="update_automatic">بررسی خودکار به‌روزرسانی</string>
+    <string name="update_download">دریافت به‌روزرسانی</string>
+    <string name="update_later">به‌روزرسانی در فرصتی دیگر</string>
+    <string name="update_none">به‌روزرسانی موجود نیست</string>
+    <string name="update_check_failed">بررسی به‌روزرسانی ناموفق بود. دوباره تلاش کنید.</string>
+    <string name="update_no_apk">این نسخه فایل APK ندارد.</string>
+    <string name="update_download_started">دریافت آغاز شد</string>
+    <string name="update_download_failed">دریافت آغاز نشد. دوباره تلاش کنید.</string>
+    <string name="update_download_exists">این به‌روزرسانی در فهرست دریافت‌ها موجود است.</string>
+    <string name="update_install_permission_denied">اجازه نصب داده نشد. پس از دادن مجوز دوباره تلاش کنید.</string>
+    <string name="update_install_failed">نصب‌کننده باز نشد. وجود فایل APK را بررسی کنید.</string>
 </resources>

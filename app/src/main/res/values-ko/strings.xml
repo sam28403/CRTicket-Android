@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">연침 하단</string>
     <string name="fare_soft_upper_short">연침 상단</string>
     <string name="fare_distance_short">거리</string>
+    <string name="settings_updates">업데이트</string>
+    <string name="update_check">업데이트 확인</string>
+    <string name="update_checking">업데이트 확인 중…</string>
+    <string name="update_previews">미리 보기 버전 사용</string>
+    <string name="update_automatic">업데이트 자동 확인</string>
+    <string name="update_download">업데이트 다운로드</string>
+    <string name="update_later">나중에 업데이트</string>
+    <string name="update_none">업데이트가 없습니다</string>
+    <string name="update_check_failed">업데이트를 확인하지 못했습니다. 다시 시도하세요.</string>
+    <string name="update_no_apk">이 버전에는 다운로드 가능한 APK가 없습니다.</string>
+    <string name="update_download_started">다운로드를 시작했습니다</string>
+    <string name="update_download_failed">다운로드를 시작하지 못했습니다.</string>
+    <string name="update_download_exists">이 업데이트는 이미 다운로드 목록에 있습니다.</string>
+    <string name="update_install_permission_denied">설치가 허용되지 않았습니다. 권한을 허용한 뒤 다시 시도하세요.</string>
+    <string name="update_install_failed">설치 프로그램을 열 수 없습니다. APK 파일을 확인하세요.</string>
 </resources>

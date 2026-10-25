@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">མལ་ཁྲི་འཇམ་པོ་འོག</string>
     <string name="fare_soft_upper_short">མལ་ཁྲི་འཇམ་པོ་སྟེང་།</string>
     <string name="fare_distance_short">ལམ་ཐག་</string>
+    <string name="settings_updates">གསར་སྒྱུར།</string>
+    <string name="update_check">གསར་སྒྱུར་ཞིབ་བཤེར།</string>
+    <string name="update_checking">གསར་སྒྱུར་ཞིབ་བཤེར་བྱེད་བཞིན་པ…</string>
+    <string name="update_previews">སྔོན་ལྟའི་པར་གཞི་སྤྱོད་པ།</string>
+    <string name="update_automatic">རང་འགུལ་གསར་སྒྱུར་ཞིབ་བཤེར།</string>
+    <string name="update_download">གསར་སྒྱུར་ཕབ་ལེན།</string>
+    <string name="update_later">རྗེས་སུ་གསར་སྒྱུར།</string>
+    <string name="update_none">གསར་སྒྱུར་མེད།</string>
+    <string name="update_check_failed">ཞིབ་བཤེར་ཕམ་པས་ཡང་བསྐྱར་ཚོད་ལྟ་བྱོས།</string>
+    <string name="update_no_apk">པར་གཞི་འདིའི་APK་མེད།</string>
+    <string name="update_download_started">ཕབ་ལེན་འགོ་བཙུགས་ཟིན།</string>
+    <string name="update_download_failed">ཕབ་ལེན་འགོ་འཛུགས་མ་ཐུབ།</string>
+    <string name="update_download_exists">གསར་སྒྱུར་འདི་ཕབ་ལེན་ཐོ་གཞུང་ནང་ཡོད།</string>
+    <string name="update_install_permission_denied">འཇུག་སྒྲིག་གནང་བ་མེད། གནང་བ་སྤྲད་རྗེས་ཡང་བསྐྱར་ཚོད་ལྟ་བྱོས།</string>
+    <string name="update_install_failed">འཇུག་སྒྲིག་ལས་རིམ་ཁ་ཕྱེ་མ་ཐུབ། APK ཡོད་མེད་ཞིབ་བཤེར་བྱོས།</string>
 </resources>

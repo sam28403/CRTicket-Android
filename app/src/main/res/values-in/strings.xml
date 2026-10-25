@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Tempat tidur empuk bawah</string>
     <string name="fare_soft_upper_short">Tempat tidur empuk atas</string>
     <string name="fare_distance_short">Jarak</string>
+    <string name="settings_updates">Pembaruan</string>
+    <string name="update_check">Periksa pembaruan</string>
+    <string name="update_checking">Memeriksa pembaruan…</string>
+    <string name="update_previews">Gunakan versi pratinjau</string>
+    <string name="update_automatic">Periksa pembaruan otomatis</string>
+    <string name="update_download">Unduh pembaruan</string>
+    <string name="update_later">Perbarui nanti</string>
+    <string name="update_none">Tidak ada pembaruan</string>
+    <string name="update_check_failed">Gagal memeriksa pembaruan. Coba lagi.</string>
+    <string name="update_no_apk">Rilis ini tidak memiliki APK yang tersedia.</string>
+    <string name="update_download_started">Unduhan dimulai</string>
+    <string name="update_download_failed">Tidak dapat memulai unduhan.</string>
+    <string name="update_download_exists">Pembaruan ini sudah ada di Unduhan.</string>
+    <string name="update_install_permission_denied">Pemasangan tidak diizinkan. Berikan izin lalu coba lagi.</string>
+    <string name="update_install_failed">Tidak dapat membuka pemasang. Pastikan APK masih tersedia.</string>
 </resources>

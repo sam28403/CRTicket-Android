@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Beliche macio inferior</string>
     <string name="fare_soft_upper_short">Beliche macio superior</string>
     <string name="fare_distance_short">Distância</string>
+    <string name="settings_updates">Atualizações</string>
+    <string name="update_check">Verificar atualizações</string>
+    <string name="update_checking">Verificando atualizações…</string>
+    <string name="update_previews">Usar versões de prévia</string>
+    <string name="update_automatic">Verificar atualizações automaticamente</string>
+    <string name="update_download">Baixar atualização</string>
+    <string name="update_later">Atualizar depois</string>
+    <string name="update_none">Nenhuma atualização disponível</string>
+    <string name="update_check_failed">Falha ao verificar atualizações. Tente novamente.</string>
+    <string name="update_no_apk">Esta versão não tem um APK disponível.</string>
+    <string name="update_download_started">Download iniciado</string>
+    <string name="update_download_failed">Não foi possível iniciar o download.</string>
+    <string name="update_download_exists">Esta atualização já está em Downloads.</string>
+    <string name="update_install_permission_denied">Instalação não permitida. Conceda a permissão e tente novamente.</string>
+    <string name="update_install_failed">Não foi possível abrir o instalador. Verifique se o APK está disponível.</string>
 </resources>

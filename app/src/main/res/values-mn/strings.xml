@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Зөөлөн доод ор</string>
     <string name="fare_soft_upper_short">Зөөлөн дээд ор</string>
     <string name="fare_distance_short">Зай</string>
+    <string name="settings_updates">Шинэчлэлт</string>
+    <string name="update_check">Шинэчлэлт шалгах</string>
+    <string name="update_checking">Шинэчлэлт шалгаж байна…</string>
+    <string name="update_previews">Урьдчилсан хувилбар ашиглах</string>
+    <string name="update_automatic">Шинэчлэлтийг автоматаар шалгах</string>
+    <string name="update_download">Шинэчлэлт татах</string>
+    <string name="update_later">Дараа шинэчлэх</string>
+    <string name="update_none">Шинэчлэлт алга</string>
+    <string name="update_check_failed">Шинэчлэлт шалгаж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="update_no_apk">Энэ хувилбарт APK алга.</string>
+    <string name="update_download_started">Татаж эхэллээ</string>
+    <string name="update_download_failed">Татаж эхэлж чадсангүй.</string>
+    <string name="update_download_exists">Энэ шинэчлэлт таталтын жагсаалтад байна.</string>
+    <string name="update_install_permission_denied">Суулгах зөвшөөрөл олгоогүй. Зөвшөөрөл өгөөд дахин оролдоно уу.</string>
+    <string name="update_install_failed">Суулгагчийг нээж чадсангүй. APK файл байгаа эсэхийг шалгана уу.</string>
 </resources>

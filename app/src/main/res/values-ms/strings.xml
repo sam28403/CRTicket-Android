@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Katil empuk bawah</string>
     <string name="fare_soft_upper_short">Katil empuk atas</string>
     <string name="fare_distance_short">Jarak</string>
+    <string name="settings_updates">Kemas kini</string>
+    <string name="update_check">Semak kemas kini</string>
+    <string name="update_checking">Menyemak kemas kini…</string>
+    <string name="update_previews">Gunakan versi pratonton</string>
+    <string name="update_automatic">Semak kemas kini secara automatik</string>
+    <string name="update_download">Muat turun kemas kini</string>
+    <string name="update_later">Kemas kini kemudian</string>
+    <string name="update_none">Tiada kemas kini</string>
+    <string name="update_check_failed">Gagal menyemak kemas kini. Cuba lagi.</string>
+    <string name="update_no_apk">Tiada APK tersedia untuk keluaran ini.</string>
+    <string name="update_download_started">Muat turun bermula</string>
+    <string name="update_download_failed">Tidak dapat memulakan muat turun.</string>
+    <string name="update_download_exists">Kemas kini ini sudah ada dalam Muat Turun.</string>
+    <string name="update_install_permission_denied">Pemasangan tidak dibenarkan. Berikan kebenaran dan cuba lagi.</string>
+    <string name="update_install_failed">Tidak dapat membuka pemasang. Pastikan APK masih tersedia.</string>
 </resources>

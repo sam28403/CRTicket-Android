@@ -109,6 +109,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
                 ) { destination, active, embedded ->
                     pages.Render(destination, active, embedded, dark, pureBlack)
                 }
+                cc.samlab.ticket.update.UpdateHost(activity, dark, pureBlack)
             }
         }
         container.addView(root, FrameLayout.LayoutParams(-1, -1))

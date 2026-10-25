@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">軟臥下</string>
     <string name="fare_soft_upper_short">軟臥上</string>
     <string name="fare_distance_short">里程</string>
+    <string name="settings_updates">更新</string>
+    <string name="update_check">檢查更新</string>
+    <string name="update_checking">正在檢查更新…</string>
+    <string name="update_previews">使用預覽版</string>
+    <string name="update_automatic">自動檢查更新</string>
+    <string name="update_download">下載更新</string>
+    <string name="update_later">稍後更新</string>
+    <string name="update_none">暫無更新</string>
+    <string name="update_check_failed">檢查更新失敗，請稍後重試</string>
+    <string name="update_no_apk">此版本暫無可下載的 APK</string>
+    <string name="update_download_started">已開始下載更新</string>
+    <string name="update_download_failed">無法開始下載，請稍後重試</string>
+    <string name="update_download_exists">此更新已在系統下載清單中</string>
+    <string name="update_install_permission_denied">未允許安裝應用程式，可授權後重試</string>
+    <string name="update_install_failed">無法開啟安裝程式，請確認 APK 檔案仍然存在</string>
 </resources>

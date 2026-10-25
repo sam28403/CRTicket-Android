@@ -60,6 +60,9 @@ export function validateAppSettings(settings) {
     for (const key of ['arrivalEnabled', 'importantNoticeSuppressed', 'saleAlarmEnabled', 'saleSameCity']) {
       if (native[key] !== undefined && typeof native[key] !== 'boolean') invalid()
     }
+    for (const key of ['updatePreviews', 'updateAutomatic']) {
+      if (Object.hasOwn(native, key) && typeof native[key] !== 'boolean') invalid()
+    }
     if (native.saleSearchHistory !== undefined && (!Array.isArray(native.saleSearchHistory)
         || native.saleSearchHistory.length > 10
         || native.saleSearchHistory.some(name => typeof name !== 'string' || !name.trim()

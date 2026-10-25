@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Giường mềm dưới</string>
     <string name="fare_soft_upper_short">Giường mềm trên</string>
     <string name="fare_distance_short">Khoảng cách</string>
+    <string name="settings_updates">Cập nhật</string>
+    <string name="update_check">Kiểm tra cập nhật</string>
+    <string name="update_checking">Đang kiểm tra cập nhật…</string>
+    <string name="update_previews">Dùng bản xem trước</string>
+    <string name="update_automatic">Tự động kiểm tra cập nhật</string>
+    <string name="update_download">Tải bản cập nhật</string>
+    <string name="update_later">Cập nhật sau</string>
+    <string name="update_none">Không có bản cập nhật</string>
+    <string name="update_check_failed">Không thể kiểm tra cập nhật. Hãy thử lại.</string>
+    <string name="update_no_apk">Phiên bản này không có APK khả dụng.</string>
+    <string name="update_download_started">Đã bắt đầu tải xuống</string>
+    <string name="update_download_failed">Không thể bắt đầu tải xuống.</string>
+    <string name="update_download_exists">Bản cập nhật này đã có trong danh sách tải xuống.</string>
+    <string name="update_install_permission_denied">Chưa được phép cài đặt. Hãy cấp quyền rồi thử lại.</string>
+    <string name="update_install_failed">Không thể mở trình cài đặt. Hãy kiểm tra tệp APK.</string>
 </resources>

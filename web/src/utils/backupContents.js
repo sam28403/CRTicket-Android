@@ -17,7 +17,7 @@ const storageGroups = {
 const nativeGroups = {
   search: ['vehicleSearchHistory', 'saleSearchHistory'],
   settings: ['language', 'arrivalEnabled', 'importantNoticeSuppressed', 'railfanToolsEnabled',
-    'saleAlarmEnabled', 'saleSameCity', 'mapSource'],
+    'saleAlarmEnabled', 'saleSameCity', 'mapSource', 'updatePreviews', 'updateAutomatic'],
   visits: ['stationVisits'],
   speed: ['speedRecordings'],
   draft: ['generatorDraft'],

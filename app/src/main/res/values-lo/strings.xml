@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">ຕຽງນຸ່ມລຸ່ມ</string>
     <string name="fare_soft_upper_short">ຕຽງນຸ່ມເທິງ</string>
     <string name="fare_distance_short">ໄລຍະທາງ</string>
+    <string name="settings_updates">ອັບເດດ</string>
+    <string name="update_check">ກວດຫາອັບເດດ</string>
+    <string name="update_checking">ກຳລັງກວດຫາອັບເດດ…</string>
+    <string name="update_previews">ໃຊ້ລຸ້ນທົດລອງ</string>
+    <string name="update_automatic">ກວດຫາອັບເດດອັດຕະໂນມັດ</string>
+    <string name="update_download">ດາວໂຫຼດອັບເດດ</string>
+    <string name="update_later">ອັບເດດພາຍຫຼັງ</string>
+    <string name="update_none">ບໍ່ມີອັບເດດ</string>
+    <string name="update_check_failed">ກວດຫາອັບເດດບໍ່ສຳເລັດ. ລອງອີກຄັ້ງ.</string>
+    <string name="update_no_apk">ລຸ້ນນີ້ບໍ່ມີ APK.</string>
+    <string name="update_download_started">ເລີ່ມດາວໂຫຼດແລ້ວ</string>
+    <string name="update_download_failed">ບໍ່ສາມາດເລີ່ມດາວໂຫຼດໄດ້.</string>
+    <string name="update_download_exists">ອັບເດດນີ້ມີຢູ່ໃນລາຍການດາວໂຫຼດແລ້ວ.</string>
+    <string name="update_install_permission_denied">ບໍ່ໄດ້ອະນຸຍາດຕິດຕັ້ງ. ອະນຸຍາດແລ້ວລອງອີກຄັ້ງ.</string>
+    <string name="update_install_failed">ບໍ່ສາມາດເປີດຕົວຕິດຕັ້ງໄດ້. ກວດສອບໄຟລ໌ APK.</string>
 </resources>

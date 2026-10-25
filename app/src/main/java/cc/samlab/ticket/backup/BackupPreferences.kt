@@ -22,19 +22,21 @@ internal class BackupPreferences(private val context: Context) {
     private val railfan = BackupRailfanData(context)
     private val generator = context.getSharedPreferences("ticket-generator", Context.MODE_PRIVATE)
     private val sale = BackupSaleSettings(context)
+    private val updates = BackupUpdateSettings(context)
 
-    fun snapshot(): JSONObject = sale.snapshot(railfan.snapshot(JSONObject()
+    fun snapshot(): JSONObject = updates.snapshot(sale.snapshot(railfan.snapshot(JSONObject()
         .put("speedRecordings", SpeedometerStore.backup(context))
         .put("generatorDraft", generator.getString("draft", null)?.let(::JSONObject) ?: JSONObject.NULL)
         .put("language", AppLanguages.selectedTag())
         .put("mapSource", MapSource.fromId(android.getString("mapSource", null)).id)
         .put("arrivalEnabled", ArrivalStore(context).enabled)
         .put("importantNoticeSuppressed", android.getBoolean(IMPORTANT_NOTICE_SUPPRESSED, false))
-        .put("monitorConfig", TicketMonitorStore.read(context).optJSONObject("config") ?: JSONObject.NULL)))
+        .put("monitorConfig", TicketMonitorStore.read(context).optJSONObject("config") ?: JSONObject.NULL))))
 
     fun validate(value: JSONObject) {
         railfan.validate(value)
         sale.validate(value)
+        updates.validate(value)
         if (value.has("speedRecordings")) validateSpeedometerBackup(value.getJSONArray("speedRecordings"))
         if (value.has("generatorDraft") && !value.isNull("generatorDraft")) {
             validateGeneratorDraft(value.getJSONObject("generatorDraft"))
@@ -80,6 +82,7 @@ internal class BackupPreferences(private val context: Context) {
             changes[preferences] = changes[preferences].orEmpty() + values
         }
         sale.changes(value).forEach { (preferences, values) -> changes[preferences] = values }
+        updates.changes(value).forEach { (preferences, values) -> changes[preferences] = values }
         if (value.has("generatorDraft")) {
             changes[generator] = mapOf("draft" to value.optJSONObject("generatorDraft")?.toString())
         }

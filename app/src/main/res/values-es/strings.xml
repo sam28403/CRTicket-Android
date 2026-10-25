@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Litera blanda inferior</string>
     <string name="fare_soft_upper_short">Litera blanda superior</string>
     <string name="fare_distance_short">Distancia</string>
+    <string name="settings_updates">Actualizaciones</string>
+    <string name="update_check">Buscar actualizaciones</string>
+    <string name="update_checking">Buscando actualizaciones…</string>
+    <string name="update_previews">Usar versiones preliminares</string>
+    <string name="update_automatic">Buscar actualizaciones automáticamente</string>
+    <string name="update_download">Descargar actualización</string>
+    <string name="update_later">Actualizar más tarde</string>
+    <string name="update_none">No hay actualizaciones</string>
+    <string name="update_check_failed">No se pudieron buscar actualizaciones. Inténtalo de nuevo.</string>
+    <string name="update_no_apk">Esta versión no tiene un APK disponible.</string>
+    <string name="update_download_started">Descarga iniciada</string>
+    <string name="update_download_failed">No se pudo iniciar la descarga.</string>
+    <string name="update_download_exists">Esta actualización ya está en Descargas.</string>
+    <string name="update_install_permission_denied">Instalación no permitida. Concede el permiso e inténtalo de nuevo.</string>
+    <string name="update_install_failed">No se pudo abrir el instalador. Comprueba que el APK esté disponible.</string>
 </resources>

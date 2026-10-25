@@ -22,6 +22,7 @@ internal fun WelcomeScreen(
     changes: String,
     onExit: () -> Unit,
     releaseNotesOnly: Boolean = false,
+    onDownload: (() -> Unit)? = null,
     onComplete: () -> Unit,
 ) {
     var page by rememberSaveable { mutableIntStateOf(if (releaseNotesOnly) 1 else 0) }
@@ -82,15 +83,20 @@ internal fun WelcomeScreen(
                         )
                     }
                     val canAccept = !scroll.canScrollForward && scroll.viewportSize > 0
-                    Button(
-                        onClick = onComplete,
-                        enabled = !firstUse || canAccept,
-                        modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f).align(Alignment.End),
-                    ) {
-                        Text(stringResource(
-                            if (!firstUse) R.string.welcome_start
-                            else if (canAccept) R.string.welcome_agree else R.string.welcome_read_all,
-                        ))
+                    if (onDownload != null) {
+                        WelcomeUpdateActions(wide, onDownload, onComplete)
+                    } else {
+                        Button(
+                            onClick = onComplete,
+                            enabled = !firstUse || canAccept,
+                            modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
+                                .align(Alignment.End),
+                        ) {
+                            Text(stringResource(
+                                if (!firstUse) R.string.welcome_start
+                                else if (canAccept) R.string.welcome_agree else R.string.welcome_read_all,
+                            ))
+                        }
                     }
                     if (firstUse) TextButton(onClick = onExit, modifier = Modifier.fillMaxWidth()) {
                         Text(stringResource(R.string.welcome_decline))

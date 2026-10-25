@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Cuccetta morbida bassa</string>
     <string name="fare_soft_upper_short">Cuccetta morbida alta</string>
     <string name="fare_distance_short">Distanza</string>
+    <string name="settings_updates">Aggiornamenti</string>
+    <string name="update_check">Controlla aggiornamenti</string>
+    <string name="update_checking">Ricerca aggiornamenti…</string>
+    <string name="update_previews">Usa versioni di anteprima</string>
+    <string name="update_automatic">Controlla aggiornamenti automaticamente</string>
+    <string name="update_download">Scarica aggiornamento</string>
+    <string name="update_later">Aggiorna più tardi</string>
+    <string name="update_none">Nessun aggiornamento disponibile</string>
+    <string name="update_check_failed">Ricerca non riuscita. Riprova.</string>
+    <string name="update_no_apk">Nessun APK disponibile per questa versione.</string>
+    <string name="update_download_started">Download avviato</string>
+    <string name="update_download_failed">Impossibile avviare il download.</string>
+    <string name="update_download_exists">Questo aggiornamento è già nei download.</string>
+    <string name="update_install_permission_denied">Installazione non consentita. Concedi il permesso e riprova.</string>
+    <string name="update_install_failed">Impossibile aprire il programma di installazione. Verifica il file APK.</string>
 </resources>

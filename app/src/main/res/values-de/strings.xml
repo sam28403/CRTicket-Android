@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Weiche Liege unten</string>
     <string name="fare_soft_upper_short">Weiche Liege oben</string>
     <string name="fare_distance_short">Entfernung</string>
+    <string name="settings_updates">Updates</string>
+    <string name="update_check">Nach Updates suchen</string>
+    <string name="update_checking">Updates werden gesucht…</string>
+    <string name="update_previews">Vorabversionen verwenden</string>
+    <string name="update_automatic">Automatisch nach Updates suchen</string>
+    <string name="update_download">Update herunterladen</string>
+    <string name="update_later">Später aktualisieren</string>
+    <string name="update_none">Keine Updates verfügbar</string>
+    <string name="update_check_failed">Updateprüfung fehlgeschlagen. Bitte erneut versuchen.</string>
+    <string name="update_no_apk">Für diese Version ist keine APK verfügbar.</string>
+    <string name="update_download_started">Download gestartet</string>
+    <string name="update_download_failed">Download konnte nicht gestartet werden.</string>
+    <string name="update_download_exists">Dieses Update ist bereits in den Downloads.</string>
+    <string name="update_install_permission_denied">Installation nicht erlaubt. Nach Erteilen der Berechtigung erneut versuchen.</string>
+    <string name="update_install_failed">Installationsprogramm konnte nicht geöffnet werden. APK prüfen.</string>
 </resources>

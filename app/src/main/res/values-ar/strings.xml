@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">سرير ناعم سفلي</string>
     <string name="fare_soft_upper_short">سرير ناعم علوي</string>
     <string name="fare_distance_short">المسافة</string>
+    <string name="settings_updates">التحديثات</string>
+    <string name="update_check">التحقق من التحديثات</string>
+    <string name="update_checking">جارٍ التحقق من التحديثات…</string>
+    <string name="update_previews">استخدام الإصدارات التجريبية</string>
+    <string name="update_automatic">التحقق التلقائي من التحديثات</string>
+    <string name="update_download">تنزيل التحديث</string>
+    <string name="update_later">التحديث لاحقًا</string>
+    <string name="update_none">لا توجد تحديثات</string>
+    <string name="update_check_failed">تعذر التحقق من التحديثات. حاول لاحقًا.</string>
+    <string name="update_no_apk">لا يتوفر ملف APK لهذا الإصدار.</string>
+    <string name="update_download_started">بدأ التنزيل</string>
+    <string name="update_download_failed">تعذر بدء التنزيل. حاول لاحقًا.</string>
+    <string name="update_download_exists">هذا التحديث موجود بالفعل في التنزيلات.</string>
+    <string name="update_install_permission_denied">لم يُسمح بالتثبيت. يمكنك المحاولة بعد منح الإذن.</string>
+    <string name="update_install_failed">تعذر فتح برنامج التثبيت. تحقق من توفر ملف APK.</string>
 </resources>

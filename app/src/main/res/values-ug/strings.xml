@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">يۇمشاق تۆۋەن كارىۋات</string>
     <string name="fare_soft_upper_short">يۇمشاق ئۈستۈن كارىۋات</string>
     <string name="fare_distance_short">ئارىلىق</string>
+    <string name="settings_updates">يېڭىلانمىلار</string>
+    <string name="update_check">يېڭىلانما تەكشۈرۈش</string>
+    <string name="update_checking">يېڭىلانما تەكشۈرۈلۈۋاتىدۇ…</string>
+    <string name="update_previews">ئالدىن كۆرۈش نەشرىنى ئىشلىتىش</string>
+    <string name="update_automatic">يېڭىلانمىنى ئاپتوماتىك تەكشۈرۈش</string>
+    <string name="update_download">يېڭىلانمىنى چۈشۈرۈش</string>
+    <string name="update_later">كېيىن يېڭىلاش</string>
+    <string name="update_none">يېڭىلانما يوق</string>
+    <string name="update_check_failed">يېڭىلانما تەكشۈرۈش مەغلۇپ بولدى. قايتا سىناڭ.</string>
+    <string name="update_no_apk">بۇ نەشرنىڭ APK ھۆججىتى يوق.</string>
+    <string name="update_download_started">چۈشۈرۈش باشلاندى</string>
+    <string name="update_download_failed">چۈشۈرۈشنى باشلىغىلى بولمىدى.</string>
+    <string name="update_download_exists">بۇ يېڭىلانما چۈشۈرۈش تىزىملىكىدە بار.</string>
+    <string name="update_install_permission_denied">قاچىلاشقا رۇخسەت بېرىلمىدى. رۇخسەت بەرگەندىن كېيىن قايتا سىناڭ.</string>
+    <string name="update_install_failed">قاچىلاش پروگراممىسى ئېچىلمىدى. APK ھۆججىتىنى تەكشۈرۈڭ.</string>
 </resources>

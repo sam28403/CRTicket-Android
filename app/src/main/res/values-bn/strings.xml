@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">সফট স্লিপার নিচে</string>
     <string name="fare_soft_upper_short">সফট স্লিপার উপরে</string>
     <string name="fare_distance_short">দূরত্ব</string>
+    <string name="settings_updates">আপডেট</string>
+    <string name="update_check">আপডেট পরীক্ষা করুন</string>
+    <string name="update_checking">আপডেট পরীক্ষা করা হচ্ছে…</string>
+    <string name="update_previews">প্রিভিউ সংস্করণ ব্যবহার করুন</string>
+    <string name="update_automatic">স্বয়ংক্রিয়ভাবে আপডেট পরীক্ষা করুন</string>
+    <string name="update_download">আপডেট ডাউনলোড করুন</string>
+    <string name="update_later">পরে আপডেট করুন</string>
+    <string name="update_none">কোনো আপডেট নেই</string>
+    <string name="update_check_failed">আপডেট পরীক্ষা ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</string>
+    <string name="update_no_apk">এই সংস্করণের APK নেই।</string>
+    <string name="update_download_started">ডাউনলোড শুরু হয়েছে</string>
+    <string name="update_download_failed">ডাউনলোড শুরু করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="update_download_exists">এই আপডেটটি ইতিমধ্যে ডাউনলোড তালিকায় আছে।</string>
+    <string name="update_install_permission_denied">ইনস্টল করার অনুমতি নেই। অনুমতি দিয়ে আবার চেষ্টা করুন।</string>
+    <string name="update_install_failed">ইনস্টলার খোলা যায়নি। APK ফাইল আছে কি না দেখুন।</string>
 </resources>

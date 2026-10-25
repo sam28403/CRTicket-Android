@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">सॉफ्ट स्लीपर निचला</string>
     <string name="fare_soft_upper_short">सॉफ्ट स्लीपर ऊपरी</string>
     <string name="fare_distance_short">दूरी</string>
+    <string name="settings_updates">अपडेट</string>
+    <string name="update_check">अपडेट जाँचें</string>
+    <string name="update_checking">अपडेट जाँचे जा रहे हैं…</string>
+    <string name="update_previews">पूर्वावलोकन संस्करण इस्तेमाल करें</string>
+    <string name="update_automatic">अपने आप अपडेट जाँचें</string>
+    <string name="update_download">अपडेट डाउनलोड करें</string>
+    <string name="update_later">बाद में अपडेट करें</string>
+    <string name="update_none">कोई अपडेट उपलब्ध नहीं</string>
+    <string name="update_check_failed">अपडेट जाँचना विफल रहा। दोबारा प्रयास करें।</string>
+    <string name="update_no_apk">इस संस्करण के लिए APK उपलब्ध नहीं है।</string>
+    <string name="update_download_started">डाउनलोड शुरू हुआ</string>
+    <string name="update_download_failed">डाउनलोड शुरू नहीं हो सका।</string>
+    <string name="update_download_exists">यह अपडेट पहले से डाउनलोड सूची में है।</string>
+    <string name="update_install_permission_denied">इंस्टॉल करने की अनुमति नहीं है। अनुमति देकर दोबारा प्रयास करें।</string>
+    <string name="update_install_failed">इंस्टॉलर नहीं खुल सका। APK फ़ाइल की उपलब्धता जाँचें।</string>
 </resources>

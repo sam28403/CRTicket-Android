@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">نرم نچلا برتھ</string>
     <string name="fare_soft_upper_short">نرم اوپری برتھ</string>
     <string name="fare_distance_short">فاصلہ</string>
+    <string name="settings_updates">اپ ڈیٹس</string>
+    <string name="update_check">اپ ڈیٹس چیک کریں</string>
+    <string name="update_checking">اپ ڈیٹس چیک ہو رہی ہیں…</string>
+    <string name="update_previews">پیش نظارہ ورژن استعمال کریں</string>
+    <string name="update_automatic">خودکار اپ ڈیٹس چیک کریں</string>
+    <string name="update_download">اپ ڈیٹ ڈاؤن لوڈ کریں</string>
+    <string name="update_later">بعد میں اپ ڈیٹ کریں</string>
+    <string name="update_none">کوئی اپ ڈیٹ نہیں</string>
+    <string name="update_check_failed">اپ ڈیٹس چیک نہیں ہو سکیں۔ دوبارہ کوشش کریں۔</string>
+    <string name="update_no_apk">اس ورژن کی APK دستیاب نہیں۔</string>
+    <string name="update_download_started">ڈاؤن لوڈ شروع ہو گیا</string>
+    <string name="update_download_failed">ڈاؤن لوڈ شروع نہیں ہو سکا۔</string>
+    <string name="update_download_exists">یہ اپ ڈیٹ پہلے سے ڈاؤن لوڈ فہرست میں ہے۔</string>
+    <string name="update_install_permission_denied">انسٹال کرنے کی اجازت نہیں دی گئی۔ اجازت دے کر دوبارہ کوشش کریں۔</string>
+    <string name="update_install_failed">انسٹالر نہیں کھل سکا۔ APK فائل کی دستیابی چیک کریں۔</string>
 </resources>

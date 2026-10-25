@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Yumuşak alt yatak</string>
     <string name="fare_soft_upper_short">Yumuşak üst yatak</string>
     <string name="fare_distance_short">Mesafe</string>
+    <string name="settings_updates">Güncellemeler</string>
+    <string name="update_check">Güncellemeleri denetle</string>
+    <string name="update_checking">Güncellemeler denetleniyor…</string>
+    <string name="update_previews">Önizleme sürümlerini kullan</string>
+    <string name="update_automatic">Güncellemeleri otomatik denetle</string>
+    <string name="update_download">Güncellemeyi indir</string>
+    <string name="update_later">Daha sonra güncelle</string>
+    <string name="update_none">Güncelleme yok</string>
+    <string name="update_check_failed">Güncellemeler denetlenemedi. Tekrar deneyin.</string>
+    <string name="update_no_apk">Bu sürüm için APK yok.</string>
+    <string name="update_download_started">İndirme başladı</string>
+    <string name="update_download_failed">İndirme başlatılamadı.</string>
+    <string name="update_download_exists">Bu güncelleme zaten indirilenlerde.</string>
+    <string name="update_install_permission_denied">Yüklemeye izin verilmedi. İzin verdikten sonra tekrar deneyin.</string>
+    <string name="update_install_failed">Yükleyici açılamadı. APK dosyasını kontrol edin.</string>
 </resources>

@@ -12,7 +12,7 @@ const back = () => window.history.state?.back ? router.back() : router.replace('
       <img :src="'/Picture1.png'" alt="CRTicket 图标" />
       <h1>CRTicket</h1>
       <p>车票制作与铁路出行工具</p>
-      <a href="https://github.com/sam28403/CRTicket" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://github.com/sam28403/CRTicket-Android" target="_blank" rel="noopener noreferrer">GitHub</a>
     </section>
   </main>
 </template>

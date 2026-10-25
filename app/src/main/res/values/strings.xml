@@ -483,7 +483,7 @@
     <string name="duration_compact_days_hours">%1$sd%2$sh</string>
     <string name="report_app_version">CRTicket %1$s</string>
     <string name="about_github" translatable="false">GitHub</string>
-    <string name="about_github_url" translatable="false">https://github.com/sam28403/CRTicket</string>
+    <string name="about_github_url" translatable="false">https://github.com/sam28403/CRTicket-Android</string>
     <string name="settings_language">Language</string>
     <string name="language_system">System default</string>
     <string name="language_native_name">English</string>
@@ -707,4 +707,19 @@
     <string name="fare_soft_lower_short">Soft lower</string>
     <string name="fare_soft_upper_short">Soft upper</string>
     <string name="fare_distance_short">Distance</string>
+    <string name="settings_updates">Updates</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_previews">Use preview releases</string>
+    <string name="update_automatic">Automatically check for updates</string>
+    <string name="update_download">Download update</string>
+    <string name="update_later">Update later</string>
+    <string name="update_none">No updates available</string>
+    <string name="update_check_failed">Unable to check for updates. Please try again.</string>
+    <string name="update_no_apk">This release does not contain an available APK.</string>
+    <string name="update_download_started">Download started</string>
+    <string name="update_download_failed">Unable to start download. Please try again.</string>
+    <string name="update_download_exists">This update is already in Downloads.</string>
+    <string name="update_install_permission_denied">Installation was not allowed. You can try again after granting permission.</string>
+    <string name="update_install_failed">Unable to open the installer. Check that the APK is still available.</string>
 </resources>

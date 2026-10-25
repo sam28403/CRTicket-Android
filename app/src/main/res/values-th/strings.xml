@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">เตียงนุ่มล่าง</string>
     <string name="fare_soft_upper_short">เตียงนุ่มบน</string>
     <string name="fare_distance_short">ระยะทาง</string>
+    <string name="settings_updates">การอัปเดต</string>
+    <string name="update_check">ตรวจสอบการอัปเดต</string>
+    <string name="update_checking">กำลังตรวจสอบการอัปเดต…</string>
+    <string name="update_previews">ใช้รุ่นพรีวิว</string>
+    <string name="update_automatic">ตรวจสอบการอัปเดตอัตโนมัติ</string>
+    <string name="update_download">ดาวน์โหลดการอัปเดต</string>
+    <string name="update_later">อัปเดตภายหลัง</string>
+    <string name="update_none">ไม่มีการอัปเดต</string>
+    <string name="update_check_failed">ตรวจสอบการอัปเดตไม่สำเร็จ โปรดลองอีกครั้ง</string>
+    <string name="update_no_apk">รุ่นนี้ไม่มี APK ที่พร้อมดาวน์โหลด</string>
+    <string name="update_download_started">เริ่มดาวน์โหลดแล้ว</string>
+    <string name="update_download_failed">ไม่สามารถเริ่มดาวน์โหลดได้</string>
+    <string name="update_download_exists">การอัปเดตนี้อยู่ในรายการดาวน์โหลดแล้ว</string>
+    <string name="update_install_permission_denied">ไม่ได้รับอนุญาตให้ติดตั้ง โปรดให้สิทธิ์แล้วลองอีกครั้ง</string>
+    <string name="update_install_failed">เปิดโปรแกรมติดตั้งไม่ได้ โปรดตรวจสอบว่าไฟล์ APK ยังอยู่</string>
 </resources>

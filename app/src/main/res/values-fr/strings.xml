@@ -700,4 +700,19 @@
     <string name="fare_soft_lower_short">Couchette souple basse</string>
     <string name="fare_soft_upper_short">Couchette souple haute</string>
     <string name="fare_distance_short">Distance</string>
+    <string name="settings_updates">Mises à jour</string>
+    <string name="update_check">Rechercher des mises à jour</string>
+    <string name="update_checking">Recherche de mises à jour…</string>
+    <string name="update_previews">Utiliser les préversions</string>
+    <string name="update_automatic">Rechercher automatiquement les mises à jour</string>
+    <string name="update_download">Télécharger la mise à jour</string>
+    <string name="update_later">Mettre à jour plus tard</string>
+    <string name="update_none">Aucune mise à jour disponible</string>
+    <string name="update_check_failed">Échec de la recherche. Veuillez réessayer.</string>
+    <string name="update_no_apk">Aucun APK disponible pour cette version.</string>
+    <string name="update_download_started">Téléchargement lancé</string>
+    <string name="update_download_failed">Impossible de lancer le téléchargement.</string>
+    <string name="update_download_exists">Cette mise à jour est déjà dans les téléchargements.</string>
+    <string name="update_install_permission_denied">Installation non autorisée. Accordez la permission puis réessayez.</string>
+    <string name="update_install_failed">Impossible de lancer le programme. Vérifiez la présence du fichier APK.</string>
 </resources>
