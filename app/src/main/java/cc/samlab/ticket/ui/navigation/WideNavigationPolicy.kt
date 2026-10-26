@@ -25,6 +25,7 @@ internal object WideNavigationPolicy {
         val argument = when (path) {
             "/train" -> "train"
             "/station" -> "station"
+            "/railfan/lines" -> "line"
             else -> return true
         }
         // Filled query links preserve the page from which the user opened them.

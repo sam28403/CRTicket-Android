@@ -25,6 +25,7 @@ internal fun LineQueryScreen(
     embedded: Boolean,
     active: Boolean,
     onBack: () -> Unit,
+    initialLine: String = "",
 ) {
     val context = LocalContext.current
     val repository = remember(context) { LineQueryRepository(context.applicationContext) }
@@ -36,6 +37,13 @@ internal fun LineQueryScreen(
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf(false) }
     var retry by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(initialLine) {
+        if (initialLine.isNotBlank()) {
+            input = initialLine
+            selected = initialLine
+        }
+    }
 
     LaunchedEffect(repository) {
         lines = repository.catalog()

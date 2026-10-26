@@ -10,6 +10,7 @@ class WideNavigationPolicyTest {
         listOf(
             "/help", "/", "/history", "/settings", "/about", "/user", "/monitor",
             "/list?from=BJP&to=SHH", "/train", "/station", "/train?train=",
+            "/railfan/lines", "/railfan/lines?line=",
         ).forEach { assertTrue(it, WideNavigationPolicy.startsJourney(it)) }
     }
 
@@ -18,6 +19,7 @@ class WideNavigationPolicyTest {
             "/train?train=G1&date=2026-10-19&source=llt",
             "/train?date=2026-10-19&train=G3",
             "/station?station=%E5%8C%97%E4%BA%AC%E5%8D%97",
+            "/railfan/lines?line=%E6%B2%AA%E6%98%86%E7%BA%BF",
             "/settings/arrival", "/settings/permissions", "/settings/language",
             "/help/tickets", "/help/backup?section=rules",
             "/history/editor", "/monitor/settings", "/about/report", "/about/credits", "/price/list",

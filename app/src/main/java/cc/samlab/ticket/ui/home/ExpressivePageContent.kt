@@ -65,6 +65,7 @@ internal class ExpressivePageContent(
                 )
             "/railfan/lines" -> cc.samlab.ticket.ui.railfan.LineQueryScreen(
                 dark, pureBlack, embedded, active, onBack,
+                initialLine = android.net.Uri.parse(location).getQueryParameter("line").orEmpty(),
             )
             "/railfan/routing" -> cc.samlab.ticket.ui.railfan.RoutingQueryScreen(
                 trainList.routing, dark, pureBlack, embedded, active, onBack, onNavigate,

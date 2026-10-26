@@ -19,7 +19,7 @@ internal val railfanDestinations = listOf(
     ),
     HomeDestination(
         R.string.railfan_lines, R.string.line_query_description,
-        R.drawable.ic_home_routing, "/railfan/lines",
+        R.drawable.ic_home_lines, "/railfan/lines",
     ),
     HomeDestination(
         R.string.railfan_visits, R.string.visits_description,

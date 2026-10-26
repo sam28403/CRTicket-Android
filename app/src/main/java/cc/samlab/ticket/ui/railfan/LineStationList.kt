@@ -27,14 +27,7 @@ internal fun LineStationList(line: String, stops: List<RailwayLineStop>, modifie
         shape = RoundedCornerShape(24.dp), color = colors.surface,
     ) {
         Column {
-            Column(Modifier.fillMaxWidth().padding(20.dp)) {
-                Text(line, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text(
-                    stringResource(R.string.line_query_endpoints, stops.first().name, stops.last().name),
-                    modifier = Modifier.padding(top = 6.dp),
-                    style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
-                )
-            }
+            LineStationHeader(line, stops.first().name, stops.last().name)
             BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
                 if (maxWidth >= 600.dp) {
                     LineSnakeDiagram(stops, Modifier.fillMaxSize())

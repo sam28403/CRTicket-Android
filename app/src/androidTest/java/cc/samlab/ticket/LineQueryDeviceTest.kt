@@ -11,6 +11,10 @@ import cc.samlab.ticket.ui.notice.IMPORTANT_NOTICE_SUPPRESSED
 import org.junit.Before
 import org.junit.After
 import org.junit.Assume.assumeTrue
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.text.TextLayoutResult
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -96,6 +100,15 @@ class LineQueryDeviceTest {
                 compose.onAllNodesWithTag("line-stations").fetchSemanticsNodes().isNotEmpty()
             }
             compose.onNodeWithText("商丘东").assertIsDisplayed()
+            val titleLayouts = mutableListOf<TextLayoutResult>()
+            compose.onNodeWithTag("line-title").performSemanticsAction(SemanticsActions.GetTextLayoutResult) {
+                it(titleLayouts)
+            }
+            val titleLayout = titleLayouts.single()
+            assertEquals("京港高速线商合段", titleLayout.layoutInput.text.text)
+            assertEquals(1, titleLayout.lineCount)
+            assertFalse(titleLayout.hasVisualOverflow)
+            assertFalse(titleLayout.isLineEllipsized(0))
             compose.onNodeWithText("16 km").assertIsDisplayed()
             compose.onNodeWithText("49 km").assertIsDisplayed()
             compose.onNodeWithTag("line-stations").performScrollToNode(hasText("太和东"))

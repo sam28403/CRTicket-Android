@@ -46,11 +46,13 @@ internal fun ExpressiveSearchScreen(
     var trainsExpanded by rememberSaveable(query) { mutableStateOf(false) }
     var stationsExpanded by rememberSaveable(query) { mutableStateOf(false) }
     var settingsExpanded by rememberSaveable(query) { mutableStateOf(false) }
+    var linesExpanded by rememberSaveable(query) { mutableStateOf(false) }
     val focus = remember { FocusRequester() }
     val list = rememberLazyListState()
     val context = LocalContext.current
     val result = controller.result
     val railfan by RailfanPreferences.rememberEnabled()
+    val lines = rememberLineSearchResults(query, railfan)
     var assignmentFailed by rememberSaveable(query, railfan) { mutableStateOf(false) }
     val trainsLoaded = !controller.loading && controller.completedQuery == query.trim()
         && !result.optBoolean("error")
@@ -82,6 +84,7 @@ internal fun ExpressiveSearchScreen(
             val trainsTitle = stringResource(R.string.search_trains)
             val stationsTitle = stringResource(R.string.search_stations)
             val settingsTitle = stringResource(R.string.home_settings)
+            val linesTitle = stringResource(R.string.railfan_lines)
             val matches = searchSettings(settings, onNavigate).filter {
                 query.isNotBlank() && (it.title.contains(query.trim(), ignoreCase = true)
                     || it.subtitle.contains(query.trim(), ignoreCase = true))
@@ -120,6 +123,10 @@ internal fun ExpressiveSearchScreen(
                                         onNavigate("/station?station=${Uri.encode(row.optString("station"))}")
                                     }
                                 }
+                                searchLineResultGroup(linesTitle, query,
+                                    lines, linesExpanded, { linesExpanded = !linesExpanded }) { line ->
+                                    onNavigate("/railfan/lines?line=${Uri.encode(line)}")
+                                }
                                 searchResultGroup("settings", settingsTitle, query,
                                     matches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
                                     SearchSettingsRow(row, settings)
@@ -145,7 +152,7 @@ internal fun ExpressiveSearchScreen(
                                         }
                                     }
                                 } else if (trains.isEmpty() && stations.isEmpty() && matches.isEmpty()
-                                    && assignment == null) {
+                                    && lines.isEmpty() && assignment == null) {
                                     item {
                                         SearchEmptyState(R.string.search_no_results, R.string.search_no_results_hint,
                                             active, compactEmpty)
