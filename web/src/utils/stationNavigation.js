@@ -1,4 +1,5 @@
 import { normalizeStationName } from './stationName.js'
+import { matchingTrainRecord } from './trainQueryRecord.js'
 
 export function stationLocation(name) {
   return {
@@ -8,11 +9,13 @@ export function stationLocation(name) {
 }
 
 export function stationTrainLocation(row, source, date) {
+  const record = matchingTrainRecord(row.train, row.queryTrain)
   return {
     path: '/train',
     query: {
       // 查询页先使用在线车次，完整记录号保留给离线回退。
       train: row.train,
+      ...(record && record !== row.train ? { record } : {}),
       // 本站当天到发的列车可能在前一天或更早始发。
       date: row.trainDate || date,
     },

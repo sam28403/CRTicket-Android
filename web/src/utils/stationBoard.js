@@ -24,6 +24,7 @@ export function stationBoardRows(trains, tab) {
     .filter(row => tab === 'all' || Boolean(row[tab]))
     .map(row => ({
       ...row,
+      train: (tab === 'arrival' ? row.arrivalTrain : row.departureTrain) || row.train,
       ...stationRowTiming(row, tab),
       arrivalLabel: stationDelayLabel(row, 'arrival'),
       departureLabel: stationDelayLabel(row, 'departure'),

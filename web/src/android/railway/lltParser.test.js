@@ -52,6 +52,16 @@ test('拒绝损坏数据，里程倒退的记录不参与补全', () => {
   assert.throws(() => parseLltFiles(badIndex))
 })
 
+test('归档保留 xw.dat，并将换号里程关联到每站车次', () => {
+  const files = fixture()
+  files['t.i'] = dictionary(['G100/G97'])
+  files['xw.dat'] = Uint8Array.from([
+    0, 1, 0, 0, 0, 48, 2, 0, 0, 0, 4, 193, 1,
+  ])
+  const stops = parseLltArchive(zipSync(files)).trains.get('G100/G97').stops
+  assert.deepEqual(stops.map(stop => stop.train), ['G100', 'G100', 'G97'])
+})
+
 test('开行日期使用小端 128 进制，循环规则按零基索引关联', () => {
   const files = fixture()
   files['T0.dat'].set([60, 80, 84, 9], 5) // 20260924

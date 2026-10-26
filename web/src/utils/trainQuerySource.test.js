@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { trainQuerySourceLocation, requiresOfflineTrainQuery } from './trainQuerySource.js'
 import { trainQueryRange } from './trainQueryDate.js'
+import { matchingTrainRecord, trainRecordCacheKey } from './trainQueryRecord.js'
 
 const date = trainQueryRange().today
 
@@ -54,4 +55,28 @@ test('尚未输入车次也可以切换来源', () => {
   assert.deepEqual(trainQuerySourceLocation({ train: '', date, offline: true }).query, {
     train: undefined, date, source: 'llt',
   })
+})
+
+test('车站入口切换在线或离线均保留非首车次和完整记录关联', () => {
+  for (const offline of [true, false]) {
+    assert.deepEqual(trainQuerySourceLocation({
+      train: 'G3244', date, offline, offlineRecord: 'G3241/G3244', record: 'G3241/G3244',
+    }).query, {
+      train: 'G3244', date, source: offline ? 'llt' : undefined, record: 'G3241/G3244',
+    })
+  }
+  assert.equal(trainQuerySourceLocation({
+    train: 'G2', date, offline: true, record: 'G3241/G3244',
+  }).query.record, undefined)
+})
+
+test('完整记录匹配支持换号、省略前缀和方案后缀，拒绝过期关联及损坏输入', () => {
+  for (const record of ['G3241/G3244', 'G3241/3244', 'G3241/G3244B']) {
+    assert.equal(matchingTrainRecord('G3244', record), record)
+  }
+  for (const record of ['G3241/G32440', 'G3241/G3244/', {}, undefined]) {
+    assert.equal(matchingTrainRecord('G3244', record), '')
+  }
+  assert.notEqual(trainRecordCacheKey('G3244', 'G3241/G3244'), trainRecordCacheKey('G3244', 'G3241/G3244B'))
+  assert.notEqual(trainRecordCacheKey('G3244', 'G3241/G3244'), trainRecordCacheKey('G3241', 'G3241/G3244'))
 })

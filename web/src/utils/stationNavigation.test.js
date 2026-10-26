@@ -22,3 +22,11 @@ test('在线入口保留双车次供查询页选择在线车次及离线回退�
     path: '/train', query: { train: 'G1/G2', date: '2026-10-11' },
   })
 })
+
+test('上海南分段车次 G3244 跳转保留本站车次，完整记录单独传递', () => {
+  assert.deepEqual(stationTrainLocation({
+    train: 'G3244', queryTrain: 'G3241/G3244', trainDate: '2026-10-26',
+  }, '路路通', '2026-10-26').query, {
+    train: 'G3244', record: 'G3241/G3244', date: '2026-10-26',
+  })
+})

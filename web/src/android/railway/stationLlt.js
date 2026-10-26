@@ -42,6 +42,9 @@ export function listLltStation(database, station, date) {
       rows.push({
         id: `llt-${item.train}-${trainDate}-${stopIndex}`,
         train: stop.train || item.train,
+        queryTrain: item.train,
+        arrivalTrain: stop.arrival ? stop.arrivalTrain : undefined,
+        departureTrain: stop.departure ? stop.departureTrain : undefined,
         from: item.stops[0].station,
         to: item.stops.at(-1).station,
         trainDate,

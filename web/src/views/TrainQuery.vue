@@ -17,6 +17,7 @@ import { useTrainDiscovery } from '@/composables/useTrainDiscovery.js'
 import TrainQueryDiscovery from '@/components/TrainQueryDiscovery.vue'
 import { createTrainQueryCache } from '@/utils/trainQueryCache.js'
 import { useTrainDelay } from '@/composables/useTrainDelay.js'
+import { matchingTrainRecord, trainRecordCacheKey } from '@/utils/trainQueryRecord.js'
 
 defineOptions({ name: 'TrainQuery' })
 
@@ -72,6 +73,7 @@ async function switchSource() {
     date: date.value,
     offline: !offlineMode.value,
     offlineRecord: offlineRecord.value,
+    record: route.query.record,
   })
   if (location.query.date !== date.value) {
     toast('所选日期超出在线查询范围，已切换到今天')
@@ -114,7 +116,8 @@ async function query() {
     return
   }
   const entered = train.value.trim().toUpperCase()
-  const code = offlineMode.value && offlineRecord.value && entered === displayTrainCode(offlineRecord.value)
+  const record = matchingTrainRecord(entered, route.query.record)
+  const code = !record && offlineMode.value && offlineRecord.value && entered === displayTrainCode(offlineRecord.value)
     ? offlineRecord.value
     : entered
   if (!date.value) {
@@ -125,10 +128,11 @@ async function query() {
     toast('请选择今天前 2 天至后 14 天内的始发日期')
     return
   }
-  if (offlineMode.value) offlineRecord.value = code
+  if (offlineMode.value) offlineRecord.value = record || code
   const selectedDate = date.value
   discovery.record(code)
   const source = offlineMode.value ? 'llt' : undefined
+  const requestCode = offlineMode.value && record ? record : code
   train.value = displayTrainCode(code)
   loading.value = true
   error.value = ''
@@ -137,14 +141,14 @@ async function query() {
   const id = ++requestId
   try {
     // 同步网址时跳过路由监听的重查，保留当前请求和完整离线记录号。
-    previousRouteQuery = [code, selectedDate, source]
+    previousRouteQuery = [code, selectedDate, source, record || undefined]
     await router.replace({
       path: '/train',
-      query: { train: code, date: selectedDate, source },
+      query: { train: code, date: selectedDate, source, record: record || undefined },
     })
     if (id !== requestId) return
     const { data } = await api.get(source === 'llt' ? '/llt-trains/detail' : '/train-info', {
-      params: { train: code, date: selectedDate },
+      params: { train: requestCode, date: selectedDate },
       timeout: timetableTimeout,
       signal: controller.signal,
     })
@@ -156,10 +160,10 @@ async function query() {
         await switchSource()
         return
       }
-      schedule.value = trainInfoForDisplay(data)
-      resultQueryCode.value = code
+      schedule.value = trainInfoForDisplay(record ? { ...data, train: code } : data)
+      resultQueryCode.value = requestCode
       resultQuerySource.value = source === 'llt' ? 'llt' : ''
-      queryCache.set(code, selectedDate, source, {
+      queryCache.set(trainRecordCacheKey(code, record), selectedDate, source, {
         result: schedule.value,
         queryCode: resultQueryCode.value,
         querySource: resultQuerySource.value,
@@ -187,10 +191,10 @@ async function query() {
 }
 
 watch(
-  () => [route.path, route.query.train, route.query.date, route.query.source],
-  ([path, code, selectedDate, source]) => {
+  () => [route.path, route.query.train, route.query.date, route.query.source, route.query.record],
+  ([path, code, selectedDate, source, hint]) => {
     if (path !== '/train') return
-    const routeQuery = [code, selectedDate, source]
+    const routeQuery = [code, selectedDate, source, hint]
     // 缓存页面仍会收到其他路由的变化，返回同一查询时保留表单和结果。
     if (previousRouteQuery && routeQuery.every((value, index) => value === previousRouteQuery[index])) {
       return
@@ -202,14 +206,17 @@ watch(
     schedule.value = null
     error.value = ''
     const record = typeof code === 'string' ? code.trim().toUpperCase() : ''
-    if (offlineMode.value || record !== displayTrainCode(offlineRecord.value).split('/')[0]) {
+    const selectedRecord = matchingTrainRecord(record, hint)
+    if (selectedRecord) offlineRecord.value = selectedRecord
+    else if (offlineMode.value || record !== displayTrainCode(offlineRecord.value).split('/')[0]) {
       offlineRecord.value = record
     }
     train.value = offlineMode.value
       ? displayTrainCode(record)
       : displayTrainCode(record).split('/')[0]
     date.value = typeof selectedDate === 'string' ? selectedDate : trainQueryRange().today
-    const saved = queryCache.get(offlineMode.value ? record : train.value, date.value, source)
+    const cacheCode = offlineMode.value ? record : train.value
+    const saved = queryCache.get(trainRecordCacheKey(cacheCode, selectedRecord), date.value, source)
     if (saved) {
       schedule.value = saved.result
       resultQueryCode.value = saved.queryCode
