@@ -27,6 +27,9 @@ internal fun StationDiscoveryCard(
     modifier: Modifier = Modifier,
     status: String? = null,
     tag: String? = null,
+    compact: Boolean = false,
+    highlighted: Boolean = false,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     val textResources = rememberAppText()
@@ -37,8 +40,9 @@ internal fun StationDiscoveryCard(
     } else colors.primary.copy(alpha = 0.12f)
     Surface(
         onClick = onClick,
+        enabled = enabled,
         shape = RoundedCornerShape(24.dp),
-        color = colors.surfaceContainerLowest,
+        color = if (highlighted) colors.primaryContainer else colors.surfaceContainerLowest,
         modifier = modifier.fillMaxWidth().testTag(
             tag ?: if (rank != null) "station-busy-card:$rank"
             else "station-random-card:${row.optString("station")}",
@@ -63,11 +67,12 @@ internal fun StationDiscoveryCard(
                 if (rank != null) StationRankIcon(rank)
                 Text(
                     row.optString("station"), Modifier.weight(1f),
-                    color = colors.primary, style = MaterialTheme.typography.headlineSmall,
+                    color = if (highlighted) colors.onPrimaryContainer else colors.primary,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontFamily = projectTitleFont, fontWeight = FontWeight.Bold,
                     maxLines = 1, overflow = TextOverflow.Ellipsis,
                 )
-                Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
+                if (!compact) Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
                     Text(
                         if (status == null) textResources(R.string.train_list_total, row.optInt("total"))
                         else "—",
@@ -77,14 +82,14 @@ internal fun StationDiscoveryCard(
                     )
                 }
             }
-            if (status != null) {
+            if (!compact && status != null) {
                 Text(
                     status,
                     Modifier.padding(top = 12.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant,
                 )
-            } else {
+            } else if (!compact) {
                 Row(
                     Modifier.fillMaxWidth().padding(top = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,

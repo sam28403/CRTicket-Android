@@ -20,7 +20,7 @@ class ExpressiveNavigationTest {
         fixture.await("Router was not ready") {
             fixture.evaluate("typeof window.crticketNavigate === 'function'") == "true"
         }
-        fixture.evaluate("window.crticketNavigate('/help')")
+        compose.onNodeWithText("帮助", substring = false).performScrollTo().performClick()
         compose.waitUntil(20_000) {
             compose.onAllNodesWithTag("help-index").fetchSemanticsNodes().isNotEmpty()
         }
@@ -28,6 +28,8 @@ class ExpressiveNavigationTest {
             "tickets" to "车票制作与历史记录",
             "backup" to "备份、恢复与本机数据",
             "speed" to "车速表与轨迹",
+            "lines" to "线路查询与普速票价",
+            "quiz" to "每日小测验",
         ).forEach { (id, title) ->
             compose.onNodeWithText(title).performScrollTo().performClick()
             compose.onNodeWithTag("help-$id").assertExists()

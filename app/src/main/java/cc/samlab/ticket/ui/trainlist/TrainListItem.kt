@@ -34,6 +34,8 @@ internal fun TrainListItem(
     highlighted: Boolean = false,
     enabled: Boolean = true,
     showStationCount: Boolean = true,
+    showDetails: Boolean = true,
+    showMetrics: Boolean = true,
     onClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -78,13 +80,13 @@ internal fun TrainListItem(
                     )
                 }
             }
-            TrainListDetails(row, highlighted)
+            if (showDetails) TrainListDetails(row, highlighted, showMetrics)
         }
     }
 }
 
 @Composable
-private fun TrainListDetails(row: TrainListRow, highlighted: Boolean) {
+private fun TrainListDetails(row: TrainListRow, highlighted: Boolean, showMetrics: Boolean) {
     val colors = MaterialTheme.colorScheme
     val detailColor = if (highlighted) colors.onPrimaryContainer else colors.onSurfaceVariant
     Row(
@@ -110,7 +112,7 @@ private fun TrainListDetails(row: TrainListRow, highlighted: Boolean) {
             color = if (highlighted) colors.onPrimaryContainer else colors.onSurface,
         )
     }
-    Text(
+    if (showMetrics) Text(
         stringResource(R.string.train_list_metrics, row.duration, row.mileage, row.speed),
         Modifier.padding(top = 10.dp),
         style = MaterialTheme.typography.bodySmall,

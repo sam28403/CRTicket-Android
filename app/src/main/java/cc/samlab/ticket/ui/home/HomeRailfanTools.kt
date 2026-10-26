@@ -33,6 +33,10 @@ internal val railfanDestinations = listOf(
         R.string.railfan_speedometer, R.string.speed_description,
         R.drawable.ic_home_speedometer, "/railfan/speedometer",
     ),
+    HomeDestination(
+        R.string.quiz_title, R.string.quiz_description,
+        R.drawable.ic_home_quiz, "/railfan/quiz",
+    ),
 )
 
 @Composable

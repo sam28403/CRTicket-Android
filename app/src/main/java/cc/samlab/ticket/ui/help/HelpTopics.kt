@@ -29,6 +29,10 @@ internal val helpTopics = listOf(
         R.string.help_speed_question, R.string.help_speed_answer, R.string.help_speed_rules),
     HelpTopic("vehicle", R.string.help_vehicle_title,
         R.string.help_vehicle_question, R.string.help_vehicle_answer, R.string.help_vehicle_rules),
+    HelpTopic("lines", R.string.help_lines_title,
+        R.string.help_lines_question, R.string.help_lines_answer, R.string.help_lines_rules),
+    HelpTopic("quiz", R.string.help_quiz_title,
+        R.string.help_quiz_question, R.string.help_quiz_answer, R.string.help_quiz_rules),
     HelpTopic("general", R.string.help_general_title,
         R.string.help_general_question, R.string.help_general_answer, R.string.help_general_rules),
 )

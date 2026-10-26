@@ -5,16 +5,38 @@
 二级页列出功能，三级页按常见问题和使用规则展示正文。
 
 覆盖车票和历史、车次车站查询、备份恢复、到站检测、余票监控与列车追踪、
-起售预约、测速轨迹、车辆查询、外观与问题反馈。规则来自当前实现，
+起售预约、测速轨迹、车辆查询、线路与普速票价、每日小测验、外观与问题反馈。规则来自当前实现，
 不将重要通知中的计划车次规则作为已启用行为。
 
 内容维护在各语言目录的 strings.xml，主题与路由映射在 ui/help/HelpTopics.kt。
 当前提供简体中文和英文；其他语言回退英文。新增功能或变更限制时应同步更新帮助。
 正文依据 README、backup-data-coverage.md、sale-time-query.md、speedometer.md、
-vehicle-query.md、background-monitor-verification.md、train-tracking-expiry-verification.md，
+vehicle-query.md、quiz.md、train-delay.md、background-monitor-verification.md、train-tracking-expiry-verification.md，
 以及 ticketNumericValidation.js、trainNumberRules.js、ticketValidation.js 校验逻辑。
 
+新增主题为`/help/lines`和`/help/quiz`。小测验说明包含每日刷新、31天不重复、
+内置数据与当日担当的区别、里程估算范围、总结与三级题目报告，以及答题时间和备份边界。
+线路与票价主题区分目录离线搜索、首次站表查询、缓存和参考票价的使用范围。
+小测验帮助同时说明必须全部作答才能查看总结，未答完时提示剩余题数，
+以及CI总结页重置时选择重答同一组、换一组题或取消的测试入口。
+
+欢迎流程与小测验共用`StepPageTransition`，前进向左滑动、返回向右滑动，
+滑动280毫秒、淡入220毫秒、淡出180毫秒。欢迎页的各阶段保留各自布局、
+条款滚动阅读限制和备份操作；外层视口固定，避免宽屏条款页尺寸变化影响切页动画。
+
 ## 验证
+
+2026-10-26小测验完成限制与CI重置：应用帮助、README、quiz.md及0.9.5更新日志
+已同步全部作答限制、剩余题数提示和重置弹窗的两种选择。手机CI通过7项实机检查，
+161项单元测试通过。平板本轮断连；lint静态分析耗时异常，停止后未记为通过。
+
+2026-10-26：debug、CI 与设备测试 APK 构建成功，161 项 JVM 单元测试通过，
+lint 无错误。Pixel 8 Pro 和 Pixel Tablet 均通过欢迎页双向动画、条款阅读限制、
+备份提示和更新说明回归，并检查了动画中间帧。两台设备从首页真实帮助入口进入，
+通过车票、备份、测速、线路与普速票价、小测验详情及逐级返回检查。
+手机另通过小测验选项反馈、自动切题和当天总结重入回归。
+最初经 WebView 直接注入帮助路由的平板检查超时；改用原生界面的真实入口后通过，
+帮助回归继续使用该入口，避免启动路由同步影响检查。
 
 2026-10-23：debug APK 与设备测试 APK 构建成功，116 项 JVM 单元测试通过。
 Pixel 8 Pro 的 helpTopicsReturnToIndexInTheNativeStack 实机测试通过，覆盖

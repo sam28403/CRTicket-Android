@@ -3,6 +3,7 @@ package cc.samlab.ticket.ui.navigation
 /** The menu stays visible, so changing features starts a new detail journey. */
 internal object WideNavigationPolicy {
     private val children = setOf(
+        "/railfan/quiz/report",
         "/price/list",
         "/about/report",
         "/about/credits",

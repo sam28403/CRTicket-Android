@@ -5,6 +5,8 @@ import androidx.navigation.NavBackStackEntry
 
 internal object ExpressiveRoutes {
     val pages = setOf(
+        "/railfan/quiz",
+        "/railfan/quiz/report",
         "/price", "/price/list",
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
         "/settings/map", "/settings/language", "/settings/sale-reminders", "/search", "/sale-time/reminders",
@@ -12,7 +14,7 @@ internal object ExpressiveRoutes {
         "/help", "/help/tickets", "/help/query",
         "/help/backup", "/help/arrival", "/help/monitor",
         "/help/sale", "/help/speed", "/help/vehicle",
-        "/help/general",
+        "/help/general", "/help/lines", "/help/quiz",
         "/monitor", "/monitor/settings", "/about/report", "/about/credits",
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
@@ -34,11 +36,12 @@ internal object ExpressiveRoutes {
     }
 
     fun webLocation(location: String): String = when (path(location)) {
+        "/railfan/quiz", "/railfan/quiz/report" -> "/home"
         "/price", "/price/list" -> "/home"
         "/help/tickets", "/help/query",
         "/help/backup", "/help/arrival", "/help/monitor",
         "/help/sale", "/help/speed", "/help/vehicle",
-        "/help/general",
+        "/help/general", "/help/lines", "/help/quiz",
         "/help" -> "/home"
         "/sale-time", "/sale-time/reminders" -> "/home"
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"

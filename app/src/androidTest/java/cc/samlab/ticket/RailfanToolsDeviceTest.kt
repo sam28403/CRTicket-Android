@@ -41,6 +41,7 @@ class RailfanToolsDeviceTest {
             .putBoolean(IMPORTANT_NOTICE_SUPPRESSED, true)
             .commit()
         val tools = listOf(
+            R.string.quiz_title to "/railfan/quiz",
             R.string.railfan_vehicle to "/railfan/vehicle",
             R.string.railfan_routing to "/railfan/routing",
             R.string.railfan_lines to "/railfan/lines",

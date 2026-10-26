@@ -48,6 +48,24 @@ internal class ExpressivePageContent(
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
+            "/railfan/quiz" -> {
+                val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+                val completion = cc.samlab.ticket.ui.quiz.quizCompletionRoute(
+                    embedded, configuration.smallestScreenWidthDp,
+                )
+                cc.samlab.ticket.ui.quiz.QuizScreen(
+                    dark, pureBlack, embedded, onBack, active = active,
+                    onDone = { if (completion != null) onNavigate(completion) else onBack() },
+                    onReport = { date, question ->
+                        onNavigate("/railfan/quiz/report?date=$date&question=$question")
+                    },
+                )
+            }
+            "/railfan/quiz/report" -> cc.samlab.ticket.ui.quiz.QuizReportScreen(
+                dark, pureBlack, onBack, onExternal,
+                android.net.Uri.parse(location).getQueryParameter("date").orEmpty(),
+                android.net.Uri.parse(location).getQueryParameter("question").orEmpty(),
+            )
             "/price" -> cc.samlab.ticket.ui.fare.FareCalculatorScreen(
                 dark, pureBlack, embedded, onBack, onNavigate,
             )
@@ -97,7 +115,7 @@ internal class ExpressivePageContent(
             "/help", "/help/tickets", "/help/query",
             "/help/backup", "/help/arrival", "/help/monitor",
             "/help/sale", "/help/speed", "/help/vehicle",
-            "/help/general" ->
+            "/help/general", "/help/lines", "/help/quiz" ->
                 cc.samlab.ticket.ui.help.ExpressiveHelpScreen(
                     location, dark, pureBlack, embedded, active, onBack, onNavigate,
                 )
