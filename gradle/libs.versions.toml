@@ -15,6 +15,7 @@ navigation = "2.10.2"
 markwon = "4.6.2"
 
 [libraries]
+konfetti-compose = { module = "nl.dionsegijn:konfetti-compose", version = "2.2.0" }
 markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-tables = { module = "io.noties.markwon:ext-tables", version.ref = "markwon" }
 markwon-strikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "markwon" }

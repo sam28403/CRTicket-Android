@@ -179,6 +179,12 @@ class QuizDeviceTest {
             compose.onNodeWithTag("quiz-reset").performClick()
             compose.onNodeWithTag("quiz-reset-new").performClick()
             awaitTag("quiz-question-0")
+            compose.onNodeWithTag("quiz-question-0").assertIsDisplayed()
+            compose.onNodeWithTag("quiz-summary").assertDoesNotExist()
+            compose.onNodeWithTag("quiz-next").assertIsEnabled().performClick()
+            awaitTag("quiz-question-1")
+            compose.onNodeWithTag("quiz-previous").performClick()
+            awaitTag("quiz-question-0")
             val replaced = QuizSessionCodec.decode(sessionFile.readText(), initial.date)
             assertEquals(initial.date, replaced.date)
             assertEquals(20, replaced.remaining)
@@ -195,6 +201,37 @@ class QuizDeviceTest {
             awaitTag("quiz-question-0")
             assertEquals(replaced, QuizSessionCodec.decode(sessionFile.readText(), initial.date))
         } finally { fixture?.close() }
+    }
+
+    @Test fun perfectScoreFillsSummaryAndShowsFiniteConfetti() {
+        runBlocking {
+            DailyQuizRepository(context).save(initial.copy(
+                answers = initial.questions.map { it.correctIndex }, current = 20, completed = true,
+                answerTimes = List(20) { System.currentTimeMillis() },
+            ))
+        }
+        val page = TabletPageFixture(compose)
+        try {
+            page.evaluate("window.crticketNavigate('/railfan/quiz')")
+            awaitTag("quiz-summary")
+            compose.mainClock.autoAdvance = false
+            try {
+                compose.mainClock.advanceTimeBy(700)
+                compose.waitForIdle()
+                compose.onNodeWithTag("quiz-summary-result")
+                    .assertTextEquals(context.getString(R.string.quiz_summary_result, 20, 20))
+                compose.onNodeWithText(context.getString(R.string.quiz_summary_perfect)).assertIsDisplayed()
+                if (android.animation.ValueAnimator.areAnimatorsEnabled()) {
+                    compose.onNodeWithTag("quiz-celebration").assertExists()
+                }
+                page.capture("daily-quiz-perfect-confetti")
+                compose.mainClock.advanceTimeBy(4500)
+                compose.waitForIdle()
+                compose.onNodeWithTag("quiz-celebration").assertDoesNotExist()
+                compose.onNodeWithTag("quiz-done").assertIsEnabled()
+                page.capture("daily-quiz-perfect-settled")
+            } finally { compose.mainClock.autoAdvance = true }
+        } finally { page.close() }
     }
 
     private fun awaitTag(tag: String) {

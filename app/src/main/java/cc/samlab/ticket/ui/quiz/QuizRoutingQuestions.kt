@@ -3,7 +3,11 @@ package cc.samlab.ticket.ui.quiz
 import cc.samlab.ticket.R
 import java.time.LocalDate
 
-internal fun quizRoutingQuestions(sources: QuizSources, date: LocalDate): List<QuizQuestion> {
+internal fun quizRoutingQuestions(
+    sources: QuizSources,
+    date: LocalDate,
+    keep: (QuizQuestion) -> Boolean = { true },
+): List<QuizQuestion> {
     val simple = sources.trains.filter { Regex("^[A-Z]?\\d+$").matches(it.code) }
     val indexed = simple.associateBy { it.code }
     val links = mutableMapOf<String, MutableSet<Pair<String, Int>>>()
@@ -38,7 +42,7 @@ internal fun quizRoutingQuestions(sources: QuizSources, date: LocalDate): List<Q
             quizPicks(distractors, id, 3).map { it.choice(showRoute = false) },
             QuizText(R.string.quiz_f_next_train,
                 listOf(code, next, date.plusDays(offset.toLong()).toString())),
-        )?.let(output::add)
+        )?.takeIf(keep)?.let(output::add)
         if (output.size >= 24) break
     }
     return output

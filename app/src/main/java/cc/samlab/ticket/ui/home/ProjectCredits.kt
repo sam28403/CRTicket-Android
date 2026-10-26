@@ -7,6 +7,8 @@ internal val projectCredits = listOf(
     ProjectCredit("Android Jetpack", "https://developer.android.com/jetpack"),
     ProjectCredit("Jetpack Compose", "https://developer.android.com/compose"),
     ProjectCredit("Material 3", "https://m3.material.io/"),
+    ProjectCredit("Konfetti", "https://github.com/DanielMartinus/Konfetti"),
+    ProjectCredit("Android Easter Eggs", "https://github.com/hushenghao/AndroidEasterEggs"),
     ProjectCredit("OkHttp", "https://square.github.io/okhttp/"),
     ProjectCredit("AndroidFastScroll", "https://github.com/zhanghai/AndroidFastScroll"),
     ProjectCredit("Vue", "https://vuejs.org/"),

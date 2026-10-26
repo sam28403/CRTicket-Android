@@ -13,7 +13,11 @@ internal fun quizCanTravel(train: QuizTrain, from: String, to: String, date: Loc
         train.schedule.runs(date.minusDays((departure / 1440).toLong()))
 }
 
-internal fun quizTravelQuestions(all: List<QuizTrain>, date: LocalDate): List<QuizQuestion> {
+internal fun quizTravelQuestions(
+    all: List<QuizTrain>,
+    date: LocalDate,
+    keep: (QuizQuestion) -> Boolean = { true },
+): List<QuizQuestion> {
     val output = mutableListOf<QuizQuestion>()
     val seen = mutableSetOf<String>()
     for (train in all) {
@@ -37,7 +41,7 @@ internal fun quizTravelQuestions(all: List<QuizTrain>, date: LocalDate): List<Qu
                     train.choice(), quizPicks(distractors, id, 3).map { it.choice() },
                     QuizText(R.string.quiz_f_travel,
                         listOf(train.code, quizClock(departure), from.station, to.station)),
-                )?.let { output.add(it); seen.add(id) }
+                )?.takeIf(keep)?.let { output.add(it); seen.add(id) }
                 if (output.size >= 24) return output
             }
         }

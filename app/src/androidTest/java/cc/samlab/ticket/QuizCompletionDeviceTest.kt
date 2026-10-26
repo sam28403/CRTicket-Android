@@ -77,4 +77,24 @@ class QuizCompletionDeviceTest {
             assertFalse(expected.completed)
         }
     }
+
+    @Test fun fourReplacementsRememberEarlierSetsAcrossRepositoryReloads() = runBlocking {
+        org.junit.Assume.assumeTrue(BuildConfig.BUILD_TYPE == "ci")
+        val sources = QuizSourceReader.load(context)
+        var current = QuizSession(date, sources.version, DailyQuizGenerator(sources).generate(date))
+        var history = quizSelectionKeys(current.questions)
+        repeat(4) {
+            repository.save(current.copy(
+                answers = current.questions.map { it.correctIndex }, current = 20, completed = true,
+            ))
+            current = repository.reset(repository.load(date), replaceQuestions = true)
+            assertTrue(quizSelectionKeys(current.questions).none { key -> key in history })
+            history = history + quizSelectionKeys(current.questions)
+            assertTrue(current.seenKeys.containsAll(history))
+            assertEquals(current, repository.load(date))
+            assertEquals(0, current.current)
+            assertEquals(20, current.remaining)
+        }
+        assertEquals(current.seenKeys, current.resetProgress().seenKeys)
+    }
 }

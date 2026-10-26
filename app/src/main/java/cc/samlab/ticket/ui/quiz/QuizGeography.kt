@@ -11,7 +11,11 @@ internal enum class QuizDirection(val token: String, val axis: (QuizStation) -> 
     EAST("@quiz_east", { it.longitude }, 1),
 }
 
-internal fun quizGeography(stations: List<QuizStation>, date: LocalDate): List<QuizQuestion> {
+internal fun quizGeography(
+    stations: List<QuizStation>,
+    date: LocalDate,
+    keep: (QuizQuestion) -> Boolean = { true },
+): List<QuizQuestion> {
     val output = mutableListOf<QuizQuestion>()
     val neighborhoods = QuizGeographyIndex.neighbors(stations)
     for (direction in QuizDirection.entries) {
@@ -30,7 +34,7 @@ internal fun quizGeography(stations: List<QuizStation>, date: LocalDate): List<Q
                 QuizChoice(ordered[0].name, QuizOptionKind.STATION),
                 ordered.drop(1).map { QuizChoice(it.name, QuizOptionKind.STATION) },
                 QuizText(R.string.quiz_f_extreme, listOf(ordered[0].name, direction.token)),
-            )?.let { output.add(it); added++ }
+            )?.takeIf(keep)?.let { output.add(it); added++ }
             if (added >= 8) break
         }
     }
@@ -51,7 +55,7 @@ internal fun quizGeography(stations: List<QuizStation>, date: LocalDate): List<Q
                 QuizChoice(correct.name, QuizOptionKind.STATION),
                 quizPicks(wrong, id, 3).map { QuizChoice(it.name, QuizOptionKind.STATION) },
                 QuizText(R.string.quiz_f_relative, listOf(correct.name, reference.name, direction.token)),
-            )?.let { output.add(it); added++ }
+            )?.takeIf(keep)?.let { output.add(it); added++ }
             if (added >= 8) break
         }
     }

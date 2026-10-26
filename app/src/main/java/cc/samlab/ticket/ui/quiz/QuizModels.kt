@@ -31,6 +31,7 @@ internal data class QuizSession(
     val current: Int = 0,
     val completed: Boolean = false,
     val answerTimes: List<Long?> = List(questions.size) { null },
+    val seenKeys: Set<String> = emptySet(),
 ) {
     val remaining: Int get() = answers.count { it < 0 }
 

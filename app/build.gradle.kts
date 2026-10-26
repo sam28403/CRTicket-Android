@@ -76,6 +76,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.konfetti.compose)
     implementation(libs.markwon.core)
     implementation(libs.markwon.tables)
     implementation(libs.markwon.strikethrough)

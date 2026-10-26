@@ -3,81 +3,73 @@ package cc.samlab.ticket.ui.quiz
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ReportProblem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
-import cc.samlab.ticket.ui.home.projectTitleFont
 
 @Composable
 internal fun QuizSummary(questions: List<QuizQuestion>, answers: List<Int>, onReport: (Int) -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    val correct = questions.indices.count { answers[it] == questions[it].correctIndex }
-    val incorrect = questions.indices.filter {
-        answers[it] >= 0 && answers[it] != questions[it].correctIndex
-    }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().testTag("quiz-summary"),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        item {
-            Text(
-                stringResource(R.string.quiz_summary_result, correct, questions.size),
-                modifier = Modifier.padding(bottom = 16.dp).testTag("quiz-summary-result"),
-                style = MaterialTheme.typography.headlineMedium,
-                fontFamily = projectTitleFont,
-            )
-        }
-        items(incorrect, key = { it }) { index ->
-            Surface(
-                modifier = Modifier.fillMaxWidth().testTag("quiz-summary-answer-$index"),
-                color = colors.surfaceContainerLowest,
-                shape = RoundedCornerShape(24.dp),
+    val incorrect = questions.indices.filter { answers[it] != questions[it].correctIndex }
+    BoxWithConstraints(Modifier.fillMaxSize().testTag("quiz-summary")) {
+        val viewportHeight = maxHeight
+        if (maxWidth >= 700.dp && incorrect.isNotEmpty()) {
+            Row(
+                Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Row(
-                    Modifier.padding(20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.Top,
+                QuizScoreCard(questions, answers, Modifier.weight(1f).fillMaxHeight(), expanded = true)
+                LazyColumn(
+                    Modifier.weight(1f).fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 8.dp),
                 ) {
-                    Column(
-                        Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.quiz_summary_question, index + 1),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = colors.onSurfaceVariant,
-                        )
-                        Text(
-                            questions[index].statement.render(),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                    item { SummaryAnswersHeading() }
+                    items(incorrect, key = { it }) { index ->
+                        QuizSummaryAnswer(questions[index], index, onReport)
                     }
-                    FilledTonalIconButton(
-                        onClick = { onReport(index) },
-                        modifier = Modifier.testTag("quiz-report-$index"),
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = colors.errorContainer,
-                            contentColor = colors.onErrorContainer,
+                }
+            }
+        } else {
+            LazyColumn(
+                Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                item {
+                    QuizScoreCard(
+                        questions, answers,
+                        Modifier.fillMaxWidth().height(
+                            if (incorrect.isEmpty()) (viewportHeight - 24.dp).coerceAtLeast(480.dp)
+                            else (viewportHeight * 0.52f).coerceAtLeast(520.dp),
                         ),
-                    ) {
-                        Icon(Icons.Outlined.ReportProblem, stringResource(R.string.quiz_report_error))
+                        expanded = incorrect.isEmpty(),
+                    )
+                }
+                if (incorrect.isNotEmpty()) {
+                    item { SummaryAnswersHeading() }
+                    items(incorrect, key = { it }) { index ->
+                        QuizSummaryAnswer(
+                            questions[index], index, onReport,
+                            Modifier.heightIn(min = if (incorrect.size == 1) viewportHeight * 0.35f else 144.dp),
+                        )
                     }
                 }
             }
         }
+        if (incorrect.isEmpty()) QuizCelebration()
     }
+}
+
+@Composable
+private fun SummaryAnswersHeading() {
+    Text(
+        stringResource(R.string.quiz_summary_answers),
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+    )
 }

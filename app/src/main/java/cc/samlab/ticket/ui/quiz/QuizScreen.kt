@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ internal fun QuizScreen(
     onReport: (LocalDate, Int) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val view = LocalView.current
     val state = remember(context.applicationContext) {
         DailyQuizState(DailyQuizRepository(context.applicationContext))
@@ -41,7 +43,7 @@ internal fun QuizScreen(
     val scope = rememberCoroutineScope()
     var resetDialog by remember { mutableStateOf(false) }
     val onIncomplete: (Int) -> Unit = { remaining ->
-        Toast.makeText(context, context.getString(R.string.quiz_unfinished, remaining), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, resources.getString(R.string.quiz_unfinished, remaining), Toast.LENGTH_SHORT).show()
     }
     LaunchedEffect(active) {
         if (active) while (true) {
@@ -86,9 +88,17 @@ internal fun QuizScreen(
                             Text(stringResource(R.string.action_retry))
                         }
                     }
-                    session == null -> Box(
+                    session == null || state.resetting -> Box(
                         Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center,
-                    ) { CircularProgressIndicator() }
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            CircularProgressIndicator()
+                            if (state.resetting) Text(stringResource(R.string.quiz_reset_loading))
+                        }
+                    }
                     else -> QuizContent(
                         session, state.busy, state.wrongFeedback, Modifier.weight(1f),
                         onAnswer = { page, choice ->

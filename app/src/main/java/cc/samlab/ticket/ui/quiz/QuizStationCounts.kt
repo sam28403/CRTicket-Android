@@ -23,7 +23,11 @@ internal fun quizStationCounts(trains: List<QuizTrain>, date: LocalDate): Map<St
     return counts
 }
 
-internal fun quizStationCountQuestions(counts: Map<String, Int>, date: LocalDate): List<QuizQuestion> {
+internal fun quizStationCountQuestions(
+    counts: Map<String, Int>,
+    date: LocalDate,
+    keep: (QuizQuestion) -> Boolean = { true },
+): List<QuizQuestion> {
     val stations = counts.keys.sorted()
     val output = mutableListOf<QuizQuestion>()
     for (maximum in listOf(true, false)) {
@@ -48,7 +52,7 @@ internal fun quizStationCountQuestions(counts: Map<String, Int>, date: LocalDate
                 QuizChoice(sorted[0], QuizOptionKind.STATION),
                 sorted.drop(1).map { QuizChoice(it, QuizOptionKind.STATION) },
                 QuizText(R.string.quiz_f_station_count, listOf(sorted[0], counts[sorted[0]].toString())),
-            )?.let { output.add(it); added++ }
+            )?.takeIf(keep)?.let { output.add(it); added++ }
             if (added >= 12) break
         }
     }

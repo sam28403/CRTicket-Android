@@ -19,7 +19,11 @@ internal fun quizMetricValue(train: QuizTrain, metric: QuizMetric): String = whe
     QuizMetric.SPEED -> "${quizNumber(train.speed!!)} km/h"
 }
 
-internal fun quizTrainQuestions(trains: List<QuizTrain>, date: LocalDate): List<QuizQuestion> {
+internal fun quizTrainQuestions(
+    trains: List<QuizTrain>,
+    date: LocalDate,
+    keep: (QuizQuestion) -> Boolean = { true },
+): List<QuizQuestion> {
     val output = mutableListOf<QuizQuestion>()
     for (metric in QuizMetric.entries) {
         val candidates = trains.filter { metric.value(it)?.let { value -> value > 0 } == true }
@@ -39,7 +43,7 @@ internal fun quizTrainQuestions(trains: List<QuizTrain>, date: LocalDate): List<
                 sorted.drop(1).map { it.choice() },
                 QuizText(R.string.quiz_f_train_metric,
                     listOf(sorted[0].code, metric.token, quizMetricValue(sorted[0], metric))),
-            )?.let { output.add(it); added++ }
+            )?.takeIf(keep)?.let { output.add(it); added++ }
             if (added >= 12) break
         }
     }
@@ -65,7 +69,7 @@ internal fun quizTrainQuestions(trains: List<QuizTrain>, date: LocalDate): List<
                 sorted[0].choice(), sorted.drop(1).map { it.choice() },
                 QuizText(R.string.quiz_f_closest,
                     listOf(sorted[0].code, metric.token, quizMetricValue(sorted[0], metric), targetText)),
-            )?.let { output.add(it); added++ }
+            )?.takeIf(keep)?.let { output.add(it); added++ }
             if (added >= 4) break
         }
     }

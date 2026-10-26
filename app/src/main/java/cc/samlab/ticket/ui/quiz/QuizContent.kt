@@ -3,6 +3,7 @@ package cc.samlab.ticket.ui.quiz
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -24,23 +25,26 @@ internal fun QuizContent(
     onReset: (() -> Unit)? = null,
 ) {
     Column(modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Column(Modifier.widthIn(max = 720.dp).fillMaxWidth().weight(1f)) {
-            Box(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+        Column(Modifier.widthIn(max = if (session.completed) 1120.dp else 720.dp).fillMaxWidth().weight(1f)) {
+            if (!session.completed) Box(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
                 QuizProgress(session.current, session.answers)
             }
-            StepPageTransition(
-                page = session.current,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                label = "quiz-question",
-            ) { page ->
-                if (page == session.questions.size) {
-                    QuizSummary(session.questions, session.answers, onReport)
-                } else {
-                    val question = session.questions[page]
-                    QuizQuestionContent(
-                        question, page, session.questions.size, session.answers[page],
-                        wrongFeedback == question.id, !busy && !session.completed,
-                    ) { choice -> onAnswer(page, choice) }
+            // A replacement is a new presentation, not another page of the old set.
+            key(session.date, session.questions) {
+                StepPageTransition(
+                    page = session.current,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    label = "quiz-question",
+                ) { page ->
+                    if (page == session.questions.size) {
+                        QuizSummary(session.questions, session.answers, onReport)
+                    } else {
+                        val question = session.questions[page]
+                        QuizQuestionContent(
+                            question, page, session.questions.size, session.answers[page],
+                            wrongFeedback == question.id, !busy && !session.completed,
+                        ) { choice -> onAnswer(page, choice) }
+                    }
                 }
             }
             if (session.completed && onReset != null) {

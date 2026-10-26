@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.UUID
 
 internal fun quizToday(): LocalDate = LocalDate.now(ZoneId.of("Asia/Shanghai"))
 
@@ -40,11 +41,18 @@ internal class DailyQuizRepository(private val context: Context) {
             val next = if (replaceQuestions) {
                 val sources = QuizSourceReader.load(context)
                 val vehicles = loadQuizVehicles(context, sources, current.date)
+                val history = current.seenKeys + quizSelectionKeys(current.questions)
                 val questions = DailyQuizGenerator(sources).generate(
-                    current.date, vehicles, current.questions.map { it.id }.toSet(),
+                    current.date, vehicles,
+                    seenKeys = history,
+                    variationSeed = UUID.randomUUID().toString(),
                 )
-                QuizSession(current.date, sources.version, questions)
+                QuizSession(
+                    current.date, sources.version, questions,
+                    seenKeys = history + quizSelectionKeys(questions),
+                )
             } else current.resetProgress()
+            require(next.seenKeys.size <= 20_000)
             write(next)
             next
         }

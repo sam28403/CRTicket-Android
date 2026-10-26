@@ -13,6 +13,7 @@ internal object QuizSessionCodec {
         put("completed", session.completed)
         put("answers", JSONArray(session.answers))
         put("answerTimes", JSONArray(session.answerTimes))
+        put("seenKeys", JSONArray(session.seenKeys.sorted()))
         put("questions", JSONArray().apply {
             session.questions.forEach { question -> put(JSONObject().apply {
                 put("id", question.id)
@@ -33,7 +34,7 @@ internal object QuizSessionCodec {
     }.toString()
 
     fun decode(text: String, date: LocalDate): QuizSession {
-        require(text.length <= 128 * 1024)
+        require(text.length <= 512 * 1024)
         val json = JSONObject(text)
         require(json.getInt("schema") == 1 && json.getString("date") == date.toString())
         val rows = json.getJSONArray("questions")
@@ -71,9 +72,14 @@ internal object QuizSessionCodec {
         // Older versions allowed skipped questions in a completed session.
         val unfinished = answers.indexOfFirst { it < 0 }
         val resume = completed && unfinished >= 0
+        val history = json.optJSONArray("seenKeys")
+        require(history == null || history.length() <= 20_000)
+        val seenKeys = if (history == null) emptySet() else List(history.length()) { index ->
+            history.getString(index).also { require(it.matches(Regex("[qo]:[0-9a-f]{1,14}"))) }
+        }.toSet()
         return QuizSession(
             date, json.getString("sourceVersion"), questions, answers,
-            if (resume) unfinished else current, completed && !resume, answerTimes,
+            if (resume) unfinished else current, completed && !resume, answerTimes, seenKeys,
         )
     }
 

@@ -18,6 +18,8 @@ internal class DailyQuizState(
         private set
     var busy by mutableStateOf(false)
         private set
+    var resetting by mutableStateOf(false)
+        private set
     var pendingCorrect by mutableStateOf<String?>(null)
         private set
     var wrongFeedback by mutableStateOf<String?>(null)
@@ -78,10 +80,15 @@ internal class DailyQuizState(
     suspend fun reset(replaceQuestions: Boolean = false) = lock.withLock {
         if (cc.samlab.ticket.BuildConfig.BUILD_TYPE != "ci") return@withLock
         val current = session?.takeIf { it.completed } ?: return@withLock
-        attempt {
-            session = repository.reset(current, replaceQuestions)
-            pendingCorrect = null
-            wrongFeedback = null
+        resetting = true
+        try {
+            attempt {
+                session = repository.reset(current, replaceQuestions)
+                pendingCorrect = null
+                wrongFeedback = null
+            }
+        } finally {
+            resetting = false
         }
     }
 

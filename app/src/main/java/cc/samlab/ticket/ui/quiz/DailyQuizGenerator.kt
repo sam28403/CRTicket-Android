@@ -7,31 +7,50 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
         date: LocalDate,
         vehicleQuestions: List<QuizQuestion> = emptyList(),
         excludedIds: Set<String> = emptySet(),
+        seenKeys: Set<String> = emptySet(),
+        variationSeed: String = "",
     ): List<QuizQuestion> {
+        val varied = seenKeys.isNotEmpty() || variationSeed.isNotEmpty()
+        val ordering = if (variationSeed.isEmpty()) date.toString() else "$date:$variationSeed"
+        val keep: (QuizQuestion) -> Boolean = { question ->
+            question.id !in excludedIds &&
+                (seenKeys.isEmpty() || quizSelectionKeys(question).none { it in seenKeys })
+        }
         val simple = sources.trains.filter { Regex("^[A-Z]?\\d+$").matches(it.code) && it.stops.size >= 2 }
         val today = simple.filter { it.schedule.runs(date) }
         val pool = buildList {
-            addAll(quizGeography(sources.stations, date))
-            addAll(quizTrainQuestions(today, date))
-            addAll(quizStationCountQuestions(quizStationCounts(sources.trains, date), date))
-            addAll(quizLineQuestions(sources, date))
-            addAll(quizRoutingQuestions(sources, date))
-            addAll(vehicleQuestions.filter { quizEligible(it.id, date) })
-            addAll(quizTravelQuestions(simple, date))
+            addAll(quizGeography(sources.stations, date, keep))
+            addAll(quizTrainQuestions(today, date, keep))
+            addAll(quizStationCountQuestions(quizStationCounts(sources.trains, date), date, keep))
+            addAll(quizLineQuestions(sources, date, keep))
+            addAll(quizRoutingQuestions(sources, date, keep))
+            addAll(vehicleQuestions.filter { quizEligible(it.id, date) && keep(it) })
+            addAll(quizTravelQuestions(simple, date, keep))
         }.distinctBy { it.id }.filter { it.id !in excludedIds }
         val byCategory = pool.groupBy { it.category }.mapValues { (category, questions) ->
-            questions.sortedWith(compareBy<QuizQuestion> { quizHash("$date:$category:${it.id}") }.thenBy { it.id })
+            questions.sortedWith(compareBy<QuizQuestion> { quizHash("$ordering:$category:${it.id}") }.thenBy { it.id })
         }
         val selected = mutableListOf<QuizQuestion>()
+        val selectedKeys = mutableSetOf<String>()
+        fun available(question: QuizQuestion): Boolean = !varied ||
+            quizSelectionKeys(question).none { it in selectedKeys }
+        fun select(question: QuizQuestion) {
+            selected.add(question)
+            if (varied) selectedKeys.addAll(quizSelectionKeys(question))
+        }
         // Two per supported direction; missing real-time evidence is filled from supported categories.
         for (round in 0..1) for (category in 1..10) {
-            byCategory[category]?.getOrNull(round)?.let(selected::add)
+            val questions = byCategory[category].orEmpty()
+            val question = if (varied) questions.firstOrNull(::available) else questions.getOrNull(round)
+            question?.let(::select)
         }
         if (selected.size < 20) {
             val ids = selected.map { it.id }.toSet()
-            selected += pool.filter { it.id !in ids }
-                .sortedWith(compareBy<QuizQuestion> { quizHash("$date:extra:${it.id}") }.thenBy { it.id })
-                .take(20 - selected.size)
+            for (question in pool.filter { it.id !in ids }
+                .sortedWith(compareBy<QuizQuestion> { quizHash("$ordering:extra:${it.id}") }.thenBy { it.id })) {
+                if (available(question)) select(question)
+                if (selected.size == 20) break
+            }
         }
         require(selected.size == 20) { "Insufficient verified daily questions" }
         return selected

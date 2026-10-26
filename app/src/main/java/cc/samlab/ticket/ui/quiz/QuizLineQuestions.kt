@@ -5,7 +5,11 @@ import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-internal fun quizLineQuestions(sources: QuizSources, date: LocalDate): List<QuizQuestion> {
+internal fun quizLineQuestions(
+    sources: QuizSources,
+    date: LocalDate,
+    keep: (QuizQuestion) -> Boolean = { true },
+): List<QuizQuestion> {
     val output = mutableListOf<QuizQuestion>()
     val stationNames = sources.stations.map { it.name }.toSet()
     for (line in sources.lines) {
@@ -32,7 +36,7 @@ internal fun quizLineQuestions(sources: QuizSources, date: LocalDate): List<Quiz
                 },
                 QuizText(R.string.quiz_f_line_distance,
                     listOf(line.name, from.first, to.first, quizNumber(distance))),
-            )?.let { question ->
+            )?.takeIf(keep)?.let { question ->
                 val errors = question.options.map { abs(it.label.substringBefore(' ').toDouble() - distance) }
                 if (errors.count { it <= errors[question.correctIndex] } == 1) {
                     output.add(question)
@@ -50,7 +54,7 @@ internal fun quizLineQuestions(sources: QuizSources, date: LocalDate): List<Quiz
                 QuizChoice(name, QuizOptionKind.STATION),
                 quizPicks(nonmembers, id, 3).map { QuizChoice(it.name, QuizOptionKind.STATION) },
                 QuizText(R.string.quiz_f_line_member, listOf(name, line.name)),
-            )?.let { output.add(it); memberships++ }
+            )?.takeIf(keep)?.let { output.add(it); memberships++ }
             if (memberships >= 4) break
         }
     }

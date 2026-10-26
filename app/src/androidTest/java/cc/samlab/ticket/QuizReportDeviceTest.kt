@@ -61,7 +61,7 @@ class QuizReportDeviceTest {
             await("quiz-summary")
             compose.onNodeWithTag("quiz-report-1").assertDoesNotExist()
             page.capture("quiz-report-summary")
-            compose.onNodeWithTag("quiz-report-0").performClick()
+            compose.onNodeWithTag("quiz-report-0").performScrollTo().performClick()
             await("quiz-report-reason")
             compose.onNodeWithTag("quiz-report-open").assertIsNotEnabled()
             compose.onNodeWithTag("quiz-report-copy").performClick()
