@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Bu biçim daha yeni bir sürüm gerektirir</string>
     <string name="backup_crypto_size">Yedek boyut sınırını aşıyor</string>
     <string name="backup_crypto_unavailable">Bu ortamda güvenli şifreleme kullanılamıyor</string>
+    <string name="railfan_lines">Hat arama</string>
+    <string name="line_query_description">Demiryolu hattının istasyonları ve mesafeleri</string>
+    <string name="line_query_hint">Hat adını girin</string>
+    <string name="line_query_welcome">Bir demiryolu hattı arayın</string>
+    <string name="line_query_no_matches">Eşleşen hat bulunamadı</string>
+    <string name="line_query_error">Hat yüklenemedi. Daha sonra tekrar deneyin.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

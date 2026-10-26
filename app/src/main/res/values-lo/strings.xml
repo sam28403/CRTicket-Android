@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">ຮູບແບບນີ້ຕ້ອງໃຊ້ເວີຊັນໃໝ່ກວ່າ</string>
     <string name="backup_crypto_size">ຂໍ້ມູນສຳຮອງເກີນຂະໜາດທີ່ກຳນົດ</string>
     <string name="backup_crypto_unavailable">ບໍ່ຮອງຮັບການເຂົ້າລະຫັດທີ່ປອດໄພໃນສະພາບແວດລ້ອມນີ້</string>
+    <string name="railfan_lines">ຄົ້ນຫາສາຍລົດໄຟ</string>
+    <string name="line_query_description">ສະຖານີ ແລະ ໄລຍະທາງຕາມສາຍລົດໄຟ</string>
+    <string name="line_query_hint">ປ້ອນຊື່ສາຍລົດໄຟ</string>
+    <string name="line_query_welcome">ຄົ້ນຫາສາຍລົດໄຟ</string>
+    <string name="line_query_no_matches">ບໍ່ພົບສາຍທີ່ກົງກັນ</string>
+    <string name="line_query_error">ໂຫຼດສາຍລົດໄຟບໍ່ສຳເລັດ ກະລຸນາລອງໃໝ່ພາຍຫຼັງ</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

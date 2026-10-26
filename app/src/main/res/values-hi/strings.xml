@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">इस प्रारूप के लिए नया संस्करण चाहिए</string>
     <string name="backup_crypto_size">बैकअप आकार सीमा से अधिक है</string>
     <string name="backup_crypto_unavailable">इस वातावरण में सुरक्षित एन्क्रिप्शन उपलब्ध नहीं है</string>
+    <string name="railfan_lines">रेलमार्ग खोज</string>
+    <string name="line_query_description">रेलमार्ग के स्टेशन और दूरी</string>
+    <string name="line_query_hint">रेलमार्ग का नाम दर्ज करें</string>
+    <string name="line_query_welcome">एक रेलमार्ग खोजें</string>
+    <string name="line_query_no_matches">कोई मेल खाता रेलमार्ग नहीं</string>
+    <string name="line_query_error">रेलमार्ग लोड नहीं हुआ। बाद में फिर प्रयास करें।</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

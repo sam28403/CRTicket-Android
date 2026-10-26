@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">རྣམ་གཞག་འདིར་པར་གཞི་གསར་པ་དགོས།</string>
     <string name="backup_crypto_size">གྲབས་ཉར་ཆེ་ཆུང་ཚད་ལས་བརྒལ།</string>
     <string name="backup_crypto_unavailable">ཁོར་ཡུག་འདིས་བདེ་འཇགས་གསང་སྡོམ་མི་རྒྱབ།</string>
+    <string name="railfan_lines">ལྕགས་ལམ་འཚོལ་བ།</string>
+    <string name="line_query_description">ལྕགས་ལམ་གྱི་འབབ་ཚུགས་དང་རྒྱང་ཐག</string>
+    <string name="line_query_hint">ལྕགས་ལམ་གྱི་མིང་འཇུག་རོགས།</string>
+    <string name="line_query_welcome">ལྕགས་ལམ་ཞིག་འཚོལ་རོགས།</string>
+    <string name="line_query_no_matches">མཐུན་པའི་ལྕགས་ལམ་མ་རྙེད།</string>
+    <string name="line_query_error">ལྕགས་ལམ་གྱི་གཞི་གྲངས་ལེན་མ་ཐུབ། རྗེས་སུ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

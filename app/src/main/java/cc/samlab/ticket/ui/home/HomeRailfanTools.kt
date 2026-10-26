@@ -10,10 +10,6 @@ import cc.samlab.ticket.ui.railfan.RailfanPreferences
 
 internal val railfanDestinations = listOf(
     HomeDestination(
-        R.string.fare_title, R.string.fare_description,
-        R.drawable.ic_home_fare, "/price",
-    ),
-    HomeDestination(
         R.string.railfan_vehicle, R.string.vehicle_query_description,
         R.drawable.ic_home_vehicle, "/railfan/vehicle",
     ),
@@ -22,8 +18,16 @@ internal val railfanDestinations = listOf(
         R.drawable.ic_home_routing, "/railfan/routing",
     ),
     HomeDestination(
+        R.string.railfan_lines, R.string.line_query_description,
+        R.drawable.ic_home_routing, "/railfan/lines",
+    ),
+    HomeDestination(
         R.string.railfan_visits, R.string.visits_description,
         R.drawable.ic_home_visits, "/railfan/visits",
+    ),
+    HomeDestination(
+        R.string.fare_title, R.string.fare_description,
+        R.drawable.ic_home_fare, "/price",
     ),
     HomeDestination(
         R.string.railfan_speedometer, R.string.speed_description,

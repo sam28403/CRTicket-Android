@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Định dạng này cần phiên bản mới hơn</string>
     <string name="backup_crypto_size">Bản sao lưu vượt giới hạn kích thước</string>
     <string name="backup_crypto_unavailable">Môi trường này không hỗ trợ mã hóa an toàn</string>
+    <string name="railfan_lines">Tìm tuyến</string>
+    <string name="line_query_description">Các ga và khoảng cách trên tuyến đường sắt</string>
+    <string name="line_query_hint">Nhập tên tuyến</string>
+    <string name="line_query_welcome">Tìm tuyến đường sắt</string>
+    <string name="line_query_no_matches">Không có tuyến phù hợp</string>
+    <string name="line_query_error">Không thể tải tuyến. Vui lòng thử lại sau.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

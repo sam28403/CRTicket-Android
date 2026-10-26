@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">اس فارمیٹ کے لیے نیا ورژن درکار ہے</string>
     <string name="backup_crypto_size">بیک اپ حجم کی حد سے زیادہ ہے</string>
     <string name="backup_crypto_unavailable">اس ماحول میں محفوظ خفیہ کاری دستیاب نہیں</string>
+    <string name="railfan_lines">ریلوے لائن تلاش کریں</string>
+    <string name="line_query_description">ریلوے لائن کے اسٹیشن اور فاصلے</string>
+    <string name="line_query_hint">لائن کا نام درج کریں</string>
+    <string name="line_query_welcome">ریلوے لائن تلاش کریں</string>
+    <string name="line_query_no_matches">کوئی مماثل لائن نہیں ملی</string>
+    <string name="line_query_error">لائن لوڈ نہیں ہو سکی۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

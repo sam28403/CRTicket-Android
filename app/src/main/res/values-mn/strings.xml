@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Энэ форматад шинэ хувилбар шаардлагатай</string>
     <string name="backup_crypto_size">Хуулбарын хэмжээ хязгаараас хэтэрсэн</string>
     <string name="backup_crypto_unavailable">Энэ орчинд аюулгүй шифрлэлт боломжгүй</string>
+    <string name="railfan_lines">Төмөр зам хайх</string>
+    <string name="line_query_description">Төмөр замын өртөө ба зай</string>
+    <string name="line_query_hint">Төмөр замын нэр оруулна уу</string>
+    <string name="line_query_welcome">Төмөр зам хайна уу</string>
+    <string name="line_query_no_matches">Тохирох төмөр зам олдсонгүй</string>
+    <string name="line_query_error">Мэдээллийг ачаалж чадсангүй. Дараа дахин оролдоно уу.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

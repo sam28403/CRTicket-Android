@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">此备份格式需要更新的软件版本</string>
     <string name="backup_crypto_size">备份数据超过大小限制</string>
     <string name="backup_crypto_unavailable">当前环境不支持安全加密</string>
+    <string name="railfan_lines">线路查询</string>
+    <string name="line_query_description">查询铁路沿线车站与里程</string>
+    <string name="line_query_hint">输入线路名称</string>
+    <string name="line_query_welcome">搜索一条铁路线路</string>
+    <string name="line_query_no_matches">未找到匹配的线路</string>
+    <string name="line_query_error">线路加载失败，请稍后重试</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

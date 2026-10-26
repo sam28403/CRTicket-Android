@@ -63,6 +63,9 @@ internal class ExpressivePageContent(
                 cc.samlab.ticket.ui.speedometer.SpeedometerScreen(
                     location, dark, pureBlack, embedded, active, onBack, onNavigate,
                 )
+            "/railfan/lines" -> cc.samlab.ticket.ui.railfan.LineQueryScreen(
+                dark, pureBlack, embedded, active, onBack,
+            )
             "/railfan/routing" -> cc.samlab.ticket.ui.railfan.RoutingQueryScreen(
                 trainList.routing, dark, pureBlack, embedded, active, onBack, onNavigate,
             )

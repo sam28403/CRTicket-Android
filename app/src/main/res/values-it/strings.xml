@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Questo formato richiede una versione più recente</string>
     <string name="backup_crypto_size">Il backup supera il limite di dimensione</string>
     <string name="backup_crypto_unavailable">La crittografia sicura non è disponibile qui</string>
+    <string name="railfan_lines">Cerca linee</string>
+    <string name="line_query_description">Stazioni e distanze della linea ferroviaria</string>
+    <string name="line_query_hint">Inserisci il nome della linea</string>
+    <string name="line_query_welcome">Cerca una linea ferroviaria</string>
+    <string name="line_query_no_matches">Nessuna linea corrispondente</string>
+    <string name="line_query_error">Impossibile caricare la linea. Riprova più tardi.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

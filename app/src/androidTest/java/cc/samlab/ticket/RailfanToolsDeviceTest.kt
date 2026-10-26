@@ -43,7 +43,9 @@ class RailfanToolsDeviceTest {
         val tools = listOf(
             R.string.railfan_vehicle to "/railfan/vehicle",
             R.string.railfan_routing to "/railfan/routing",
+            R.string.railfan_lines to "/railfan/lines",
             R.string.railfan_visits to "/railfan/visits",
+            R.string.fare_title to "/price",
             R.string.railfan_speedometer to "/railfan/speedometer",
         )
         instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_WAKEUP").close()

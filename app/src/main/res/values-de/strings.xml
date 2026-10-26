@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Dieses Format erfordert eine neuere App-Version</string>
     <string name="backup_crypto_size">Sicherung überschreitet die Größenbegrenzung</string>
     <string name="backup_crypto_unavailable">Sichere Verschlüsselung ist hier nicht verfügbar</string>
+    <string name="railfan_lines">Streckensuche</string>
+    <string name="line_query_description">Bahnhöfe und Entfernungen einer Bahnstrecke</string>
+    <string name="line_query_hint">Streckenname eingeben</string>
+    <string name="line_query_welcome">Eine Bahnstrecke suchen</string>
+    <string name="line_query_no_matches">Keine passenden Strecken</string>
+    <string name="line_query_error">Strecke konnte nicht geladen werden. Später erneut versuchen.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

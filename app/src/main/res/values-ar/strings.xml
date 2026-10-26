@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">يتطلب هذا التنسيق إصدارًا أحدث</string>
     <string name="backup_crypto_size">تتجاوز النسخة الحد الأقصى للحجم</string>
     <string name="backup_crypto_unavailable">التشفير الآمن غير متاح في هذه البيئة</string>
+    <string name="railfan_lines">بحث الخطوط</string>
+    <string name="line_query_description">المحطات والمسافات على خط السكة الحديد</string>
+    <string name="line_query_hint">أدخل اسم الخط</string>
+    <string name="line_query_welcome">ابحث عن خط سكة حديد</string>
+    <string name="line_query_no_matches">لا توجد خطوط مطابقة</string>
+    <string name="line_query_error">تعذر تحميل الخط، حاول لاحقًا</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

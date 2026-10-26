@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">이 형식에는 최신 앱 버전이 필요합니다</string>
     <string name="backup_crypto_size">백업이 크기 제한을 초과했습니다</string>
     <string name="backup_crypto_unavailable">이 환경에서는 안전한 암호화를 사용할 수 없습니다</string>
+    <string name="railfan_lines">노선 검색</string>
+    <string name="line_query_description">철도 노선의 역과 거리 조회</string>
+    <string name="line_query_hint">노선 이름 입력</string>
+    <string name="line_query_welcome">철도 노선을 검색하세요</string>
+    <string name="line_query_no_matches">일치하는 노선이 없습니다</string>
+    <string name="line_query_error">노선을 불러오지 못했습니다. 나중에 다시 시도하세요.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

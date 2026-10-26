@@ -14,7 +14,7 @@ internal object ExpressiveRoutes {
         "/help/sale", "/help/speed", "/help/vehicle",
         "/help/general",
         "/monitor", "/monitor/settings", "/about/report", "/about/credits",
-        "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
+        "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
     )
 
@@ -41,7 +41,7 @@ internal object ExpressiveRoutes {
         "/help/general",
         "/help" -> "/home"
         "/sale-time", "/sale-time/reminders" -> "/home"
-        "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
+        "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"
         "/about/report", "/about/credits" -> "/about"
         "/settings/arrival", "/settings/permissions", "/settings/map", "/settings/language", "/settings/sale-reminders" -> "/settings"

@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Для этого формата нужна более новая версия</string>
     <string name="backup_crypto_size">Превышен допустимый размер копии</string>
     <string name="backup_crypto_unavailable">Безопасное шифрование здесь недоступно</string>
+    <string name="railfan_lines">Поиск линий</string>
+    <string name="line_query_description">Станции и расстояния на железнодорожной линии</string>
+    <string name="line_query_hint">Введите название линии</string>
+    <string name="line_query_welcome">Найдите железнодорожную линию</string>
+    <string name="line_query_no_matches">Подходящих линий нет</string>
+    <string name="line_query_error">Не удалось загрузить линию. Повторите позже.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

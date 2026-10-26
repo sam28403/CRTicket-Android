@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">این قالب به نسخه جدیدتری نیاز دارد</string>
     <string name="backup_crypto_size">حجم نسخه پشتیبان بیش از حد مجاز است</string>
     <string name="backup_crypto_unavailable">رمزگذاری امن در این محیط در دسترس نیست</string>
+    <string name="railfan_lines">جستجوی خط</string>
+    <string name="line_query_description">ایستگاه‌ها و مسافت‌های خط راه‌آهن</string>
+    <string name="line_query_hint">نام خط را وارد کنید</string>
+    <string name="line_query_welcome">یک خط راه‌آهن جستجو کنید</string>
+    <string name="line_query_no_matches">خطی پیدا نشد</string>
+    <string name="line_query_error">بارگیری خط ناموفق بود. بعداً تلاش کنید.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

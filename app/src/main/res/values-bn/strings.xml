@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">এই বিন্যাসের জন্য নতুন সংস্করণ প্রয়োজন</string>
     <string name="backup_crypto_size">ব্যাকআপের আকার সীমা ছাড়িয়েছে</string>
     <string name="backup_crypto_unavailable">এই পরিবেশে নিরাপদ এনক্রিপশন উপলব্ধ নয়</string>
+    <string name="railfan_lines">রেলপথ অনুসন্ধান</string>
+    <string name="line_query_description">রেলপথের স্টেশন ও দূরত্ব</string>
+    <string name="line_query_hint">রেলপথের নাম লিখুন</string>
+    <string name="line_query_welcome">একটি রেলপথ খুঁজুন</string>
+    <string name="line_query_no_matches">কোনো রেলপথ মেলেনি</string>
+    <string name="line_query_error">রেলপথ লোড হয়নি, পরে চেষ্টা করুন</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

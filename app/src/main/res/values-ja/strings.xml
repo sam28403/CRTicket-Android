@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">この形式には新しいアプリが必要です</string>
     <string name="backup_crypto_size">バックアップのサイズが上限を超えています</string>
     <string name="backup_crypto_unavailable">この環境では安全な暗号化を利用できません</string>
+    <string name="railfan_lines">路線検索</string>
+    <string name="line_query_description">鉄道路線の駅と距離を検索</string>
+    <string name="line_query_hint">路線名を入力</string>
+    <string name="line_query_welcome">鉄道路線を検索</string>
+    <string name="line_query_no_matches">一致する路線がありません</string>
+    <string name="line_query_error">路線を読み込めませんでした。後でもう一度お試しください。</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

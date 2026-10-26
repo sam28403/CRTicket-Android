@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Format ini memerlukan versi yang lebih baru</string>
     <string name="backup_crypto_size">Cadangan melebihi batas ukuran</string>
     <string name="backup_crypto_unavailable">Enkripsi aman tidak tersedia di sini</string>
+    <string name="railfan_lines">Cari jalur</string>
+    <string name="line_query_description">Stasiun dan jarak di jalur kereta</string>
+    <string name="line_query_hint">Masukkan nama jalur</string>
+    <string name="line_query_welcome">Cari jalur kereta</string>
+    <string name="line_query_no_matches">Tidak ada jalur yang cocok</string>
+    <string name="line_query_error">Gagal memuat jalur. Coba lagi nanti.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

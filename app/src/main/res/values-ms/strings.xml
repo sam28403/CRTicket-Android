@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Format ini memerlukan versi lebih baharu</string>
     <string name="backup_crypto_size">Sandaran melebihi had saiz</string>
     <string name="backup_crypto_unavailable">Penyulitan selamat tidak tersedia di sini</string>
+    <string name="railfan_lines">Cari laluan</string>
+    <string name="line_query_description">Stesen dan jarak mengikut laluan kereta api</string>
+    <string name="line_query_hint">Masukkan nama laluan</string>
+    <string name="line_query_welcome">Cari laluan kereta api</string>
+    <string name="line_query_no_matches">Tiada laluan sepadan</string>
+    <string name="line_query_error">Gagal memuatkan laluan. Cuba lagi kemudian.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

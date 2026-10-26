@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">Ce format nécessite une version plus récente</string>
     <string name="backup_crypto_size">La sauvegarde dépasse la taille limite</string>
     <string name="backup_crypto_unavailable">Le chiffrement sécurisé est indisponible ici</string>
+    <string name="railfan_lines">Recherche de lignes</string>
+    <string name="line_query_description">Gares et distances par ligne ferroviaire</string>
+    <string name="line_query_hint">Nom de la ligne</string>
+    <string name="line_query_welcome">Rechercher une ligne ferroviaire</string>
+    <string name="line_query_no_matches">Aucune ligne correspondante</string>
+    <string name="line_query_error">Impossible de charger la ligne. Réessayez plus tard.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

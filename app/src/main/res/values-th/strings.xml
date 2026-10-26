@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">รูปแบบนี้ต้องใช้แอปเวอร์ชันใหม่กว่า</string>
     <string name="backup_crypto_size">ข้อมูลสำรองเกินขนาดที่กำหนด</string>
     <string name="backup_crypto_unavailable">สภาพแวดล้อมนี้ไม่รองรับการเข้ารหัสที่ปลอดภัย</string>
+    <string name="railfan_lines">ค้นหาเส้นทาง</string>
+    <string name="line_query_description">สถานีและระยะทางตามเส้นทางรถไฟ</string>
+    <string name="line_query_hint">กรอกชื่อเส้นทาง</string>
+    <string name="line_query_welcome">ค้นหาเส้นทางรถไฟ</string>
+    <string name="line_query_no_matches">ไม่พบเส้นทางที่ตรงกัน</string>
+    <string name="line_query_error">โหลดเส้นทางไม่สำเร็จ โปรดลองอีกครั้งภายหลัง</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

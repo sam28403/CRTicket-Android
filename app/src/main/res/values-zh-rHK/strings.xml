@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">此備份格式需要更新的軟件版本</string>
     <string name="backup_crypto_size">備份資料超過大小限制</string>
     <string name="backup_crypto_unavailable">目前環境不支援安全加密</string>
+    <string name="railfan_lines">路線查詢</string>
+    <string name="line_query_description">查詢鐵路沿線車站與里程</string>
+    <string name="line_query_hint">輸入路線名稱</string>
+    <string name="line_query_welcome">搜尋一條鐵路路線</string>
+    <string name="line_query_no_matches">找不到符合的路線</string>
+    <string name="line_query_error">路線載入失敗，請稍後重試</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

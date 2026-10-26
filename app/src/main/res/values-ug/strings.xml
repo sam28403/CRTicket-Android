@@ -728,4 +728,13 @@
     <string name="backup_crypto_version">بۇ فورمات ئۈچۈن يېڭى نەشر لازىم</string>
     <string name="backup_crypto_size">زاپاس نۇسخا چوڭلۇق چېكىدىن ئېشىپ كەتتى</string>
     <string name="backup_crypto_unavailable">بۇ مۇھىتتا بىخەتەر شىفىرلاش يوق</string>
+    <string name="railfan_lines">تۆمۈريول ئىزدەش</string>
+    <string name="line_query_description">تۆمۈريول بېكەتلىرى ۋە مۇساپىسى</string>
+    <string name="line_query_hint">تۆمۈريول نامىنى كىرگۈزۈڭ</string>
+    <string name="line_query_welcome">بىر تۆمۈريول ئىزدەڭ</string>
+    <string name="line_query_no_matches">ماس كېلىدىغان تۆمۈريول تېپىلمىدى</string>
+    <string name="line_query_error">تۆمۈريولنى يۈكلىيەلمىدى. كېيىن قايتا سىناڭ.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>

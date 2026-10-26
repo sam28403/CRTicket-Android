@@ -735,4 +735,13 @@
     <string name="backup_crypto_version">This backup format requires a newer app version</string>
     <string name="backup_crypto_size">Backup exceeds the size limit</string>
     <string name="backup_crypto_unavailable">Secure encryption is unavailable in this environment</string>
+    <string name="railfan_lines">Line search</string>
+    <string name="line_query_description">Stations and distances by railway line</string>
+    <string name="line_query_hint">Railway line name</string>
+    <string name="line_query_welcome">Search for a railway line</string>
+    <string name="line_query_no_matches">No matching lines</string>
+    <string name="line_query_error">Could not load this line. Try again later.</string>
+    <string name="line_query_endpoints">%1$s → %2$s</string>
+    <string name="line_query_distance">%1$s km</string>
+    <string name="line_query_distance_unknown">—</string>
 </resources>
