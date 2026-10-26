@@ -89,7 +89,15 @@ class TrainTimeline(
         stops = plannedStops.mapIndexed { index, stop ->
             val correction = corrections.getOrNull(index)
             val arrival = stop.arrival?.let {
-                (it + (correction?.first ?: 0) * 60_000L).coerceAtLeast(lastEvent)
+                val predicted = it + (correction?.first ?: 0) * 60_000L
+                val previousDeparture = plannedStops.getOrNull(index - 1)?.departure
+                if (previousDeparture != null && it > previousDeparture && predicted <= lastEvent) {
+                    // Missing or conflicting predictions must not collapse a running
+                    // segment to zero after a delayed departure from the previous stop.
+                    lastEvent + (it - previousDeparture)
+                } else {
+                    predicted.coerceAtLeast(lastEvent)
+                }
             }
             val departure = stop.departure?.let {
                 val predicted = it + (correction?.second ?: 0) * 60_000L

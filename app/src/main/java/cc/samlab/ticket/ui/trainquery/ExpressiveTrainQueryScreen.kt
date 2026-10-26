@@ -63,6 +63,12 @@ internal fun ExpressiveTrainQueryScreen(
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, textResources(R.string.about_back))
                             }
                         },
+                        actions = {
+                            if (!state.optBoolean("offline")) TrainQueryRefreshButton(
+                                enabled = active && !loading && count > 0 && !state.optBoolean("refreshing"),
+                                onRefresh = { controller.dispatch("refresh") },
+                            )
+                        },
                         windowInsets = WindowInsets(0, 0, 0, 0),
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.surfaceContainer),
                     )

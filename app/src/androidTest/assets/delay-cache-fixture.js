@@ -12,6 +12,7 @@ async function installDelayCacheFixture(apiFile) {
       return (id, payload) => {
         const data = JSON.parse(payload)
         const isTrain = key === 'queryTrainDelay'
+        if (isTrain) fixture.lastTrain = data.train
         fixture[isTrain ? 'trainRequests' : 'stationRequests']++
         let response = { success: false }
         if (fixture.mode !== 'failure') {
@@ -32,17 +33,18 @@ async function installDelayCacheFixture(apiFile) {
         setTimeout(() => {
           window.crticketNotificationResult(id, response)
           fixture.completed++
-        }, 50)
+        }, fixture.responseDelay || 50)
       }
     },
   })
   api.defaults.adapter = async config => {
-    if (!['/train-info', '/station'].includes(config.url)) return adapter(config)
+    if (!['/train-info', '/llt-trains/detail', '/station'].includes(config.url)) return adapter(config)
     fixture.timetableRequests++
     if (fixture.mode === 'timetableFailure') throw new Error('fixture network unavailable')
-    const data = config.url === '/train-info' ? {
+    const data = config.url !== '/station' ? {
       success: true, train: config.params.train, date: config.params.date,
-      source: '12306', from: '北京南', to: '上海虹桥', stops: [
+      source: config.url === '/llt-trains/detail' ? '路路通' : '12306',
+      from: '北京南', to: '上海虹桥', stops: [
         { no: '01', train: 'G1', station: '北京南', departure: '18:00', arrival: null,
           departureDay: 0, arrivalDay: 0, stay: null, mileage: 0 },
         { no: '02', train: 'G1', station: '南京南', departure: '19:56', arrival: '19:53',
