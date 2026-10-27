@@ -59,7 +59,8 @@ async function download() {
 
 export async function updateSaleTimes({ workspace = root, fetchHtml = download, force = false } = {}) {
     const input = await readFile(path.join(workspace, 'web/src/station_name.js'))
-    const stationHash = createHash('sha256').update(input).digest('hex')
+    // Git checkouts may use CRLF on Windows and LF on CI for identical station data.
+    const stationHash = createHash('sha256').update(input.toString('utf8').replaceAll('\r\n', '\n')).digest('hex')
     const output = path.join(workspace, 'app/src/main/assets/sale-times.json')
     const previous = await readFile(output, 'utf8').then(JSON.parse).catch(() => null)
     if (!force && previous?.stationHash === stationHash && Object.keys(previous.stations || {}).length >= 2000) {

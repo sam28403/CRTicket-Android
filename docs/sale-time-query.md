@@ -6,7 +6,7 @@
 
 完整起售时刻表：<https://www.12306.cn/mormhweb/zxdt/201411/t20141126_2316.html>。
 
-该公告列出北京时间 08:00 至 18:00 的 41 个起售时段，当前快照包含 3206 个站名。包内数据保存在 `app/src/main/assets/sale-times.json`，记录来源、日期和 `web/src/station_name.js` 的 SHA-256 指纹。
+该公告列出北京时间 08:00 至 18:00 的 41 个起售时段，当前快照包含 3206 个站名。包内数据保存在 `app/src/main/assets/sale-times.json`，记录来源、日期和 `web/src/station_name.js` 统一为LF换行后的 SHA-256 指纹。Windows的CRLF与Linux的LF不会被误判为车站内容变化。
 
 `tools/update-sale-times.mjs` 已接入网页资源打包流程。站名文件内容变化后，下一次构建会重新下载并校验完整起售表。只有完整的 41 档及至少 2000 个站名通过校验才会原子替换快照；请求或解析失败时保留旧文件并使构建失败，防止新版站名目录与旧表一起发布。站名未变化时不产生网络请求，也可以执行 `node tools/update-sale-times.mjs --force` 强制刷新。
 

@@ -57,6 +57,17 @@ CI 和发布环境使用 Android Command-line Tools 22.0（构建号 15859902）
 每次分支推送、Pull Request 和手动运行 Android CI 都会执行网页测试、
 Android 单元测试、Lint 并构建 CI APK，产物在 Actions 的 Artifacts 中保留 14 天。
 只在本地提交而没有推送不会触发构建。
+
+起售时刻表按LF标准换行计算车站目录指纹，跨Windows与Linux构建复用相同快照；
+仅换行不同不会触发联网下载。车站目录内容变化时仍须刷新完整官方起售表，
+刷新失败则保留旧文件并中止构建。此同步检查的回归测试纳入`test:android`。
+
+2026-10-27修复运行`40452980487`中的跨平台指纹差异：该运行在网页资源打包后
+因误触发12306下载而连接超时。修复后本地249项网页测试、172项Android单元测试、
+`lintCi`与CI APK构建通过；构建任务与CI一致（本地附加`--offline`）。日志保存在
+`build/logs/ci-40452980487-web-tests.log`与`build/logs/ci-40452980487-android-verification.log`。
+此记录不代表原GitHub运行已重跑通过。
+
 CI 应用 ID 为 `cc.samlab.ticket.ci`，使用调试签名，可与正式版同时安装。
 托管 Runner 的调试密钥可能随运行变化，CI 包覆盖安装可能需要先卸载旧 CI 包。
 CI 和 PR 不读取正式签名 Secrets。设备测试不包含在此流程内。
