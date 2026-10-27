@@ -15,14 +15,30 @@ class QuizQuestionQualityDeviceTest {
         val sources = QuizSourceReader.load(context)
         val date = quizToday()
         val trains = sources.trains.associateBy { it.code }
-        val closest = quizTrainQuestions(sources.trains.filter { it.schedule.runs(date) }, date)
-            .filter { it.id.startsWith("train-nearest:DURATION:") }
+        val closest = quizNearestTrainQuestions(sources.trains.filter { it.schedule.runs(date) }, date)
         assertTrue(closest.any { it.id.startsWith("train-nearest:DURATION:1440:") })
+        assertTrue(closest.any { it.id.startsWith("train-nearest:DISTANCE:") })
+        assertTrue(closest.any {
+            it.id.startsWith("train-nearest:DISTANCE:") &&
+                it.id.split(':')[2].toInt() !in listOf(100, 500, 1000, 2000)
+        })
+        assertTrue(closest.any {
+            it.id.startsWith("train-nearest:DURATION:") &&
+                it.id.split(':')[2].toInt() !in listOf(60, 120, 300, 600, 720, 1200, 1440)
+        })
         for (question in closest) {
             val target = question.id.split(':')[2].toInt()
-            assertTrue(question.options.all {
-                abs(trains.getValue(it.label).duration!! - target) <= target * 0.10
-            })
+            val distance = question.id.startsWith("train-nearest:DISTANCE:")
+            assertTrue(if (distance) target in 100..5000 && target % 100 == 0
+                else target in 60..3420 && target % 60 == 0)
+            val gaps = question.options.map {
+                val train = trains.getValue(it.label)
+                abs((if (distance) train.distance!! else train.duration!!.toDouble()) - target)
+            }
+            val window = target * (if (distance) 0.20 else 0.10)
+            assertTrue(gaps.all { it <= window })
+            assertEquals(gaps.min(), gaps[question.correctIndex], 0.00001)
+            assertEquals(1, gaps.count { it == gaps.min() })
         }
         val distances = quizLineQuestions(sources, date).filter { it.category == 5 }
         val ranks = distances.map { question ->
