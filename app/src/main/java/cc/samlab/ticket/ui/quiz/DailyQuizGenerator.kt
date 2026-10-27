@@ -20,6 +20,7 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
         val today = simple.filter { it.schedule.runs(date) }
         val pool = buildList {
             addAll(quizGeography(sources.stations, date, keep))
+            addAll(quizCityQuestions(sources.stations, date, keep))
             addAll(quizTrainQuestions(today, date, keep))
             addAll(quizStationCountQuestions(quizStationCounts(sources.trains, date), date, keep))
             addAll(quizLineQuestions(sources, date, keep))
@@ -38,10 +39,21 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
             selected.add(question)
             if (varied) selectedKeys.addAll(quizSelectionKeys(question))
         }
-        // Two per supported direction; missing real-time evidence is filled from supported categories.
-        for (round in 0..1) for (category in 1..10) {
+        val categories = if (byCategory.size > 10) byCategory.keys.sortedBy { quizHash("$date:category:$it") }
+            else byCategory.keys.sorted()
+        // Cover each supported direction before filling the remaining daily slots.
+        for (round in 0..1) for (category in categories) {
+            if (selected.size == 20) break
             val questions = byCategory[category].orEmpty()
-            val question = if (varied) questions.firstOrNull(::available) else questions.getOrNull(round)
+            val existingDigits = selected.filter { it.category == 10 }
+                .map { quizTrainDigits(it.options[it.correctIndex].label) }.toSet()
+            val question = if (category == 10) {
+                val candidates = questions.filter { candidate ->
+                    selected.none { it.id == candidate.id } && available(candidate)
+                }
+                candidates.firstOrNull { quizTrainDigits(it.options[it.correctIndex].label) !in existingDigits }
+                    ?: candidates.firstOrNull()
+            } else if (varied) questions.firstOrNull(::available) else questions.getOrNull(round)
             question?.let(::select)
         }
         if (selected.size < 20) {

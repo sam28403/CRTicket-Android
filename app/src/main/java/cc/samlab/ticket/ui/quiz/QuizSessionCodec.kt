@@ -51,7 +51,7 @@ internal object QuizSessionCodec {
                 } },
                 row.getInt("correctIndex"), row.getJSONObject("statement").quizText(),
             ).also {
-                require(it.correctIndex in 0..3 && it.category in 1..10)
+                require(it.correctIndex in 0..3 && it.category in 1..11)
                 require(it.options.map { choice -> choice.label }.distinct().size == 4)
             }
         }

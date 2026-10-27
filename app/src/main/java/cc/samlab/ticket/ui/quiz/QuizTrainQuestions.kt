@@ -52,7 +52,11 @@ internal fun quizTrainQuestions(
         QuizMetric.DURATION to listOf(60, 120, 300, 600, 720, 1200, 1440),
     )
     for ((metric, values) in targets) for (target in values) {
-        val candidates = trains.filter { metric.value(it) != null }
+        val candidates = trains.filter { train ->
+            metric.value(train)?.let { value ->
+                metric != QuizMetric.DURATION || abs(value - target) <= quizDurationWindow(target)
+            } == true
+        }
         var added = 0
         for (train in candidates) {
             val seed = "train-nearest:${metric.name}:$target:${train.code}"
@@ -75,3 +79,6 @@ internal fun quizTrainQuestions(
     }
     return output
 }
+
+internal fun quizDurationWindow(targetMinutes: Int): Int =
+    targetMinutes / 10

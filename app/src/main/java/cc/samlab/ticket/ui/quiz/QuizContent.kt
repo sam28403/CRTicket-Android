@@ -37,7 +37,7 @@ internal fun QuizContent(
                     label = "quiz-question",
                 ) { page ->
                     if (page == session.questions.size) {
-                        QuizSummary(session.questions, session.answers, onReport)
+                        QuizSummary(session.questions, session.answers, onReport, busy, onDone, onReset)
                     } else {
                         val question = session.questions[page]
                         QuizQuestionContent(
@@ -47,39 +47,22 @@ internal fun QuizContent(
                     }
                 }
             }
-            if (session.completed && onReset != null) {
-                OutlinedButton(
-                    onClick = onReset,
-                    enabled = !busy,
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 24.dp).heightIn(min = 52.dp)
-                        .testTag("quiz-reset"),
-                ) { Text(stringResource(R.string.quiz_reset)) }
-            }
-            Row(
+            if (!session.completed) Row(
                 Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                if (session.completed) {
-                    Button(
-                        onClick = onDone,
-                        enabled = !busy,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("quiz-done"),
-                    ) { Text(stringResource(R.string.quiz_done)) }
-                } else {
-                    OutlinedButton(
-                        onClick = { onMove(-1) }, enabled = session.current > 0 && !busy,
-                        modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("quiz-previous"),
-                    ) { Text(stringResource(R.string.quiz_previous)) }
-                    Button(
-                        onClick = { onMove(1) }, enabled = !busy,
-                        modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("quiz-next"),
-                    ) {
-                        Text(stringResource(
-                            if (session.current == session.questions.lastIndex) R.string.quiz_finish
-                            else R.string.quiz_next,
-                        ))
-                    }
+                OutlinedButton(
+                    onClick = { onMove(-1) }, enabled = session.current > 0 && !busy,
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("quiz-previous"),
+                ) { Text(stringResource(R.string.quiz_previous)) }
+                Button(
+                    onClick = { onMove(1) }, enabled = !busy,
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("quiz-next"),
+                ) {
+                    Text(stringResource(
+                        if (session.current == session.questions.lastIndex) R.string.quiz_finish
+                        else R.string.quiz_next,
+                    ))
                 }
             }
         }

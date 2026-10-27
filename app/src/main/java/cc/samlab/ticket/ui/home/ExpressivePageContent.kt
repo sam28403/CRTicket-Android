@@ -49,6 +49,7 @@ internal class ExpressivePageContent(
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {
             "/railfan/quiz" -> {
+                LaunchedEffect(active) { if (active) settings.refresh() }
                 val configuration = androidx.compose.ui.platform.LocalConfiguration.current
                 val completion = cc.samlab.ticket.ui.quiz.quizCompletionRoute(
                     embedded, configuration.smallestScreenWidthDp,
@@ -59,6 +60,9 @@ internal class ExpressivePageContent(
                     onReport = { date, question ->
                         onNavigate("/railfan/quiz/report?date=$date&question=$question")
                     },
+                    shareProfile = if (settings.state.loaded) cc.samlab.ticket.ui.quiz.QuizShareProfile(
+                        settings.state.username, settings.state.avatar,
+                    ) else null,
                 )
             }
             "/railfan/quiz/report" -> cc.samlab.ticket.ui.quiz.QuizReportScreen(

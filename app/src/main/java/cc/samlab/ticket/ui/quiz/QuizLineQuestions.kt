@@ -26,12 +26,11 @@ internal fun quizLineQuestions(
             // The nearest rounded estimate is uniquely correct and separated from all distractors.
             val step = if (distance < 200) 10 else 50
             val estimate = (distance / step).roundToInt() * step
-            val offsets = listOf(-3, -1, 1, 3).filter { estimate + it * step > 0 }
-            if (offsets.size < 3) continue
+            val offsets = quizDistanceOffsets(id, estimate, step)
             val correct = QuizChoice("$estimate km", QuizOptionKind.TEXT)
             quizQuestion(
                 id, 5, QuizText(R.string.quiz_q_line_distance, listOf(line.name, from.first, to.first)),
-                correct, quizPicks(offsets, id, 3).map {
+                correct, offsets.map {
                     QuizChoice("${estimate + it * step} km", QuizOptionKind.TEXT)
                 },
                 QuizText(R.string.quiz_f_line_distance,
@@ -59,4 +58,10 @@ internal fun quizLineQuestions(
         }
     }
     return output
+}
+
+internal fun quizDistanceOffsets(id: String, estimate: Int, step: Int): List<Int> {
+    val lower = (-6..-1).filter { estimate + it * step > 0 }
+    val rank = (quizHash("$id:distance-rank") % 4).toInt().coerceAtMost(lower.size)
+    return quizPicks(lower, "$id:lower", rank) + quizPicks((1..6).toList(), "$id:upper", 3 - rank)
 }

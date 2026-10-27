@@ -28,6 +28,8 @@ internal val quizTemplates = mapOf(
     "vehicle-f" to R.string.quiz_f_vehicle,
     "travel-q" to R.string.quiz_q_travel,
     "travel-f" to R.string.quiz_f_travel,
+    "city-q" to R.string.quiz_q_city,
+    "city-f" to R.string.quiz_f_city,
 )
 private val quizTokens = mapOf(
     "@quiz_max_distance" to R.string.quiz_max_distance,

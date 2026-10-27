@@ -93,6 +93,8 @@ class QuizDeviceTest {
                 .assertTextEquals(page.activity.getString(R.string.quiz_summary_result, 1, 20))
             compose.onNodeWithTag("quiz-summary-answer-0").assertIsDisplayed()
             compose.onNodeWithTag("quiz-summary-answer-1").assertDoesNotExist()
+            page.capture("daily-quiz-summary")
+            scrollToSummaryAction("quiz-done")
             compose.onNodeWithTag("quiz-done").assertIsDisplayed()
             if (BuildConfig.BUILD_TYPE == "ci") {
                 compose.onNodeWithTag("quiz-reset").assertIsDisplayed()
@@ -100,7 +102,6 @@ class QuizDeviceTest {
                 val doneBounds = compose.onNodeWithTag("quiz-done").fetchSemanticsNode().boundsInRoot
                 assertTrue(resetBounds.bottom <= doneBounds.top)
             }
-            page.capture("daily-quiz-summary")
             compose.onNodeWithTag("quiz-done").performClick()
             if (context.resources.configuration.smallestScreenWidthDp >= 600) {
                 awaitTag("navigation-page:/")
@@ -116,6 +117,7 @@ class QuizDeviceTest {
             compose.onNodeWithTag("quiz-question-0").assertDoesNotExist()
             compose.onNodeWithTag("quiz-summary-result")
                 .assertTextEquals(reopened.activity.getString(R.string.quiz_summary_result, 1, 20))
+            scrollToSummaryAction("quiz-done")
             compose.onNodeWithTag("quiz-done").assertIsDisplayed()
             val saved = QuizSessionCodec.decode(sessionFile.readText(), initial.date)
             assertTrue(saved.completed)
@@ -176,6 +178,7 @@ class QuizDeviceTest {
             fixture = page
             page.evaluate("window.crticketNavigate('/railfan/quiz')")
             awaitTag("quiz-summary")
+            scrollToSummaryAction("quiz-reset")
             compose.onNodeWithTag("quiz-reset").performClick()
             compose.onNodeWithTag("quiz-reset-new").performClick()
             awaitTag("quiz-question-0")
@@ -221,6 +224,13 @@ class QuizDeviceTest {
                 compose.onNodeWithTag("quiz-summary-result")
                     .assertTextEquals(context.getString(R.string.quiz_summary_result, 20, 20))
                 compose.onNodeWithText(context.getString(R.string.quiz_summary_perfect)).assertIsDisplayed()
+                val heading = compose.onNodeWithTag("quiz-score-heading").fetchSemanticsNode().boundsInRoot
+                val card = compose.onNodeWithTag("quiz-score-card").fetchSemanticsNode().boundsInRoot
+                assertTrue(heading.top - card.top <= 32 * context.resources.displayMetrics.density)
+                val grid = compose.onNodeWithTag("quiz-result-grid").fetchSemanticsNode().boundsInRoot
+                assertTrue(card.bottom - grid.bottom <= 32 * context.resources.displayMetrics.density)
+                val actions = compose.onNodeWithTag("quiz-summary-actions").fetchSemanticsNode().boundsInRoot
+                assertTrue(actions.top - card.bottom <= 24 * context.resources.displayMetrics.density)
                 if (android.animation.ValueAnimator.areAnimatorsEnabled()) {
                     compose.onNodeWithTag("quiz-celebration").assertExists()
                 }
@@ -237,6 +247,10 @@ class QuizDeviceTest {
     private fun awaitTag(tag: String) {
         compose.waitUntil(30_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
         compose.waitForIdle()
+    }
+
+    private fun scrollToSummaryAction(tag: String) {
+        compose.onNodeWithTag("quiz-summary-list").performScrollToNode(hasTestTag(tag))
     }
 }
 

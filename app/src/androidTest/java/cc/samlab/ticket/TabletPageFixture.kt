@@ -11,16 +11,29 @@ import java.util.concurrent.TimeUnit
 
 internal class TabletPageFixture(private val compose: ComposeTestRule) {
     val instrumentation = InstrumentationRegistry.getInstrumentation()
-    val activity = instrumentation.startActivitySync(
-        Intent(instrumentation.targetContext, MainActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-    ) as MainActivity
+    val activity = launch()
+
+    private fun launch(): MainActivity {
+        shell("input keyevent KEYCODE_WAKEUP")
+        return instrumentation.startActivitySync(
+            Intent(instrumentation.targetContext, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        ) as MainActivity
+    }
 
     init {
         instrumentation.runOnMainSync {
             activity.setShowWhenLocked(true)
             activity.setTurnScreenOn(true)
             activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+        compose.waitUntil(20_000) {
+            var ready = false
+            instrumentation.runOnMainSync {
+                ready = activity.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED) &&
+                    activity.window.decorView.hasWindowFocus()
+            }
+            ready
         }
         compose.waitUntil(20_000) { evaluate("Boolean(window.crticketNavigate && window.crticketSettings)") == "true" }
     }

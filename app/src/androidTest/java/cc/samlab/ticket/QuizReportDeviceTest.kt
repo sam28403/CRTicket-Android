@@ -79,6 +79,7 @@ class QuizReportDeviceTest {
             page.capture("quiz-report-form")
             compose.onNodeWithContentDescription(page.activity.getString(R.string.about_back)).performClick()
             await("quiz-summary")
+            compose.onNodeWithTag("quiz-summary-list").performScrollToNode(hasTestTag("quiz-done"))
             compose.onNodeWithTag("quiz-done").assertIsDisplayed()
             page.evaluate("window.crticketNavigate('/railfan/quiz/report?date=${session.date}&question=1')")
             compose.onNodeWithText(page.activity.getString(R.string.quiz_report_unavailable)).assertIsDisplayed()

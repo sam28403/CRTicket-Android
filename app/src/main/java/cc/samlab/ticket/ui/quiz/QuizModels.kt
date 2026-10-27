@@ -43,7 +43,12 @@ internal data class QuizSession(
     )
 }
 
-internal data class QuizStation(val name: String, val longitude: Double, val latitude: Double)
+internal data class QuizStation(
+    val name: String,
+    val longitude: Double,
+    val latitude: Double,
+    val city: String = "",
+)
 internal data class QuizStop(val station: String, val arrival: Int?, val departure: Int?, val km: Double?)
 internal data class QuizSchedule(val start: LocalDate?, val end: LocalDate?, val period: Int, val mask: Long) {
     fun runs(date: LocalDate): Boolean {

@@ -21,7 +21,7 @@ internal object QuizSourceReader {
         return QuizSources(
             version = json.getString("version"),
             stations = json.getJSONArray("stations").rows { row ->
-                QuizStation(row.getString(0), row.getDouble(1), row.getDouble(2))
+                QuizStation(row.getString(0), row.getDouble(1), row.getDouble(2), row.optString(3))
             }.sortedBy { it.name },
             trains = json.getJSONArray("trains").objects { row ->
                 val schedule = row.getJSONObject("schedule")

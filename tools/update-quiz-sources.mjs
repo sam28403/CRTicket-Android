@@ -1,13 +1,23 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
-import { gzipSync } from 'node:zlib'
+import { gzipSync, gunzipSync } from 'node:zlib'
 import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import { parseLltArchive } from '../web/src/android/railway/lltParser.js'
 import coordinates from '../web/src/utils/maps/stationCoordinates.js'
 import { parseStations } from '../web/src/utils/stations.js'
+import { attachQuizStationCities } from './quiz-city-catalog.mjs'
 
 const root = new URL('../', import.meta.url)
 const cache = new URL('build/quiz-sources/', root)
+const target = new URL('app/src/main/assets/quiz-sources.bin', root)
+if (process.argv.includes('--cities-only')) {
+    const previous = JSON.parse(gunzipSync(await readFile(target)).toString('utf8'))
+    const source = attachQuizStationCities(previous, parseStations())
+    await writeFile(target, gzipSync(JSON.stringify(source), { level: 9 }))
+    console.log(JSON.stringify({ cities: new Set(source.stations.map(row => row[3]).filter(Boolean)).size,
+        cityStations: source.stations.filter(row => row[3]).length }))
+    process.exit(0)
+}
 const lines = [
     '京沪线', '京广线', '京九线', '京哈线', '陇海线', '沪昆线',
     '兰新线', '青藏线', '京沪高速线', '京广高速线', '沪昆高速线',
@@ -77,8 +87,7 @@ const source = {
     lines: lineRows,
 }
 // Android's asset merger transparently expands .gz files and strips the extension.
-const target = new URL('app/src/main/assets/quiz-sources.bin', root)
-const output = gzipSync(JSON.stringify(source), { level: 9 })
+const output = gzipSync(JSON.stringify(attachQuizStationCities(source, parseStations())), { level: 9 })
 await writeFile(target, output)
 console.log(JSON.stringify({
     target: fileURLToPath(target), version: source.version, bytes: output.length,
