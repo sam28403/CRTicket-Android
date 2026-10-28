@@ -34,6 +34,7 @@ class NativeSettingsController(
 
     fun openMonitorSettings() = onMonitorSettings()
 
+    internal val storage = StorageController(activity, webView, worker)
     internal val ui = SettingsUiState()
     internal val backupSecurity = BackupSecurityState()
     internal val permissions = PermissionSettingsController(activity)
@@ -151,6 +152,10 @@ class NativeSettingsController(
     }
 
     fun receive(result: JSONObject) {
+        if (result.optString("id").startsWith("storage:")) {
+            storage.receive(result)
+            return
+        }
         if (result.optString("id") != requestId.toString()) return
         webView.removeCallbacks(unlockTimeout)
         result.optJSONObject("state")?.let { value ->
@@ -294,6 +299,7 @@ class NativeSettingsController(
     }
 
     fun close() {
+        storage.close()
         webView.removeCallbacks(unlockTimeout)
         backupSecurity.clear()
         importText = null

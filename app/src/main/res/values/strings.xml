@@ -614,9 +614,9 @@
     <string name="help_query_answer">Check connectivity, date and the full train or station name, then retry. Online failures may come from upstream services. Load the timetable online before using offline queries. Check offline data versions in About.</string>
     <string name="help_query_rules">Online results depend on upstream APIs; offline lists and station boards use date-specific timetables. Cache and update times may differ. Valid delay predictions are retained until Beijing midnight when refreshes fail or return partial data; online train results can refresh delay predictions with the top-right button. Official railway information takes precedence for cancellations, delays, availability and sale changes.</string>
     <string name="help_backup_title">Backup, restore and local data</string>
-    <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Exports use password encryption by default; keep both the file and password because a forgotten password cannot be recovered. Import validates the password and file integrity before offering content selection, and still accepts legacy plaintext backups. Select at least one category; files must not exceed 28MB. Back up before uninstalling or clearing data.</string>
-    <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
+    <string name="help_backup_question">How do I back up, restore or clean up storage?</string>
+    <string name="help_backup_answer">Export a JSON backup in Settings and import it on the new device. Exports use password encryption by default; keep both the file and password because a forgotten password cannot be recovered. Import validates the password and file integrity before offering content selection, and still accepts legacy plaintext backups. Select at least one category; files must not exceed 28MB. Back up before uninstalling or clearing data.\n\nOpen Storage cleanup in Settings to review space and clear individual categories or all caches after confirmation. Categories include web and map cache, the Lulutong offline database, railway line cache, share images, export temporary files and test screenshots. Test screenshots appear only when files exist and disappear after cleanup.</string>
+    <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.\n\nStorage cleanup keeps tickets, reminders, preferences, profile, station visits, speed tracks and quiz records. Clearing the Lulutong database also resets its memory cache; the next query requires a network connection to download it again. Clear all caches also includes this database. Test screenshot cleanup preserves backups, logs and other files. CI and production builds each manage their own app directory. Storage cleanup is separate from the system action that clears all app data.</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
     <string name="help_arrival_answer">Enable arrival detection in Settings and check system location, background location and notification permissions. Google Play services must be available. Allow background activity and check battery restrictions and notification channels. Accuracy, scheduling and station coverage affect detection; delivery may be delayed.</string>
@@ -817,4 +817,22 @@
     <string name="quiz_share">Share result</string>
     <string name="quiz_share_failed">Could not prepare the result image. Please try again.</string>
     <string name="quiz_share_text">I scored %1$d points in today’s railway knowledge quiz. Can you beat me?\nDownload CRTicket now: %2$s\nJoin the quiz!</string>
+    <string name="settings_storage">Storage cleanup</string>
+    <string name="storage_data">Data and storage</string>
+    <string name="storage_web">Web and map cache</string>
+    <string name="storage_lines">Railway line cache</string>
+    <string name="storage_shares">Share images</string>
+    <string name="storage_exports">Export temporary files</string>
+    <string name="storage_categories">Cached files</string>
+    <string name="storage_saved">Saved data</string>
+    <string name="storage_personal">Personal data and offline resources</string>
+    <string name="storage_clear">Clear</string>
+    <string name="storage_clear_all">Clear all caches</string>
+    <string name="storage_cleanable">Can be cleaned</string>
+    <string name="storage_confirm_title">Clear selected files?</string>
+    <string name="storage_confirm_message">Tickets, reminders, preferences and offline resources will be kept.</string>
+    <string name="storage_done">Cleanup completed</string>
+    <string name="storage_timetable">Lulutong offline database</string>
+    <string name="storage_timetable_confirm">The Lulutong database will be downloaded again on the next query. A network connection will be required. Tickets, reminders and preferences will be kept.</string>
+    <string name="storage_test_screenshots">Test screenshots</string>
 </resources>

@@ -132,3 +132,66 @@ test('whole phone load deadline aborts fallback body and allows the next query t
     slow = false
     assert.equal((await load()).version, '20261004')
 })
+
+test('cleanup removes the persisted archive and forces the next query to download', async () => {
+    let saved = { bytes: archive(), checkedAt: Date.now() }
+    let requests = 0
+    const load = createLltLoader(async url => {
+        requests++
+        return new Response(url.endsWith('android.ver')
+            ? '{"version":{"data":"20261004"}}' : archive())
+    }, {
+        readArchive: async () => saved,
+        writeArchive: async value => { saved = value },
+        clearArchive: async () => { saved = undefined },
+    })
+    const first = await load()
+    assert.equal(requests, 0)
+    await load.clear()
+    assert.equal(saved, undefined)
+    const next = await load()
+    assert.notEqual(next, first)
+    assert.equal(requests, 2)
+    assert.ok(saved.bytes.byteLength > 0)
+})
+
+test('cleanup waits for initialization and prevents an old read from restoring memory', async () => {
+    let resolveRead
+    let saved = { bytes: archive(), checkedAt: Date.now() }
+    const load = createLltLoader(() => assert.fail('No download expected'), {
+        readArchive: () => new Promise(resolve => { resolveRead = resolve }),
+        writeArchive: async () => {},
+        clearArchive: async () => { saved = undefined },
+    })
+    const loading = load()
+    const rejected = assert.rejects(loading, { name: 'AbortError' })
+    await delay(0)
+    const clearing = load.clear()
+    resolveRead(saved)
+    await Promise.all([rejected, clearing])
+    assert.equal(saved, undefined)
+})
+
+test('cleanup aborts a download and does not let it repopulate the archive', async () => {
+    let started
+    const downloading = new Promise(resolve => { started = resolve })
+    let saved
+    const load = createLltLoader(async (url, options) => {
+        if (url.endsWith('android.ver')) {
+            return new Response('{"version":{"data":"20261004"}}')
+        }
+        started()
+        return new Promise((resolve, reject) => {
+            if (options.signal.aborted) reject(options.signal.reason)
+            else options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true })
+        })
+    }, {
+        readArchive: async () => null,
+        writeArchive: async value => { saved = value },
+        clearArchive: async () => { saved = undefined },
+    })
+    const rejected = assert.rejects(load(), { name: 'AbortError' })
+    await downloading
+    await Promise.all([load.clear(), rejected])
+    assert.equal(saved, undefined)
+})

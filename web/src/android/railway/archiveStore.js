@@ -39,3 +39,19 @@ export async function writeArchive(archive) {
         db.close()
     }
 }
+
+export async function clearArchive() {
+    const db = await openStore()
+    if (!db) return
+    try {
+        await new Promise((resolve, reject) => {
+            const transaction = db.transaction('archives', 'readwrite')
+            transaction.objectStore('archives').delete('current')
+            transaction.oncomplete = resolve
+            transaction.onerror = () => reject(transaction.error)
+            transaction.onabort = () => reject(transaction.error)
+        })
+    } finally {
+        db.close()
+    }
+}

@@ -4,7 +4,7 @@
 复用设置标题栏与分组卡片，以及原生导航栈、返回动画、主题和宽屏侧栏。
 二级页列出功能，三级页按常见问题和使用规则展示正文。
 
-覆盖车票和历史、车次车站查询、备份恢复、到站检测、余票监控与列车追踪、
+覆盖车票和历史、车次车站查询、备份恢复与清理存储、到站检测、余票监控与列车追踪、
 起售预约、测速轨迹、车辆查询、线路与普速票价、每日小测验、外观与问题反馈。规则来自当前实现，
 不将重要通知中的计划车次规则作为已启用行为。
 
@@ -13,6 +13,12 @@
 正文依据 README、backup-data-coverage.md、sale-time-query.md、speedometer.md、
 vehicle-query.md、quiz.md、train-delay.md、background-monitor-verification.md、train-tracking-expiry-verification.md，
 以及 ticketNumericValidation.js、trainNumberRules.js、ticketValidation.js 校验逻辑。
+
+“备份、恢复与本机数据”补充设置中的清理存储入口，说明单项清理、全部清理和操作确认。
+覆盖网页与地图缓存、路路通离线数据库、铁路线路缓存、分享图片、导出临时文件及测试截图。
+帮助明确个人资料和记录继续保留，路路通清理后下次查询需联网重新下载；测试截图仅在存在时显示，
+清理后隐藏，不删除同目录备份或日志。CI 版和正式版各自管理自己的目录。
+具体存储范围及验证记录见[清理存储](storage-cleanup.md)。
 
 新增主题为`/help/lines`和`/help/quiz`。小测验说明包含每日刷新、31天不重复、
 内置数据与当日担当的区别、里程估算范围、总结与三级题目报告，以及答题时间和备份边界。

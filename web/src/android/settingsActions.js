@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/user.js'
 import { normalizeUsername } from '@/utils/username.js'
 import { useTheme } from '@/composables/useTheme.js'
 import { appearancePreference } from '@/composables/themePreference.js'
+import { initializeNativeStorage } from './storageActions.js'
 import {
   buildExcelRows, getExportFileStamp,
 } from '@/utils/ticketBackup.js'
@@ -104,6 +105,7 @@ export async function performSettingsAction(action, payload = {}) {
 
 export function initializeNativeSettings() {
   if (typeof native?.settingsResult !== 'function') return
+    initializeNativeStorage()
   window.crticketSettings = async (id, action, payload) => {
     let message = ''
     let success = true

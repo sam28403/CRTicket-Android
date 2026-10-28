@@ -611,9 +611,9 @@
     <string name="help_query_answer">检查网络、日期及完整车次或站名后重试。在线查询失败可能来自上游服务；离线查询请先联网加载时刻表。离线数据版本可在关于中查看。</string>
     <string name="help_query_rules">在线结果依赖上游接口，离线列表与车站大屏依赖对应日期的时刻表。缓存和上游更新时间可能导致差异。已取得的正晚点预测按北京时间保留至当天结束，刷新失败或部分字段缺失时继续使用有效缓存；在线车次结果可通过右上角按钮刷新正晚点。临时停运、晚点、余票和起售调整以铁路官方信息为准。</string>
     <string name="help_backup_title">备份、恢复与本机数据</string>
-    <string name="help_backup_question">换机或导入失败怎么办？</string>
-    <string name="help_backup_answer">先在设置中导出 JSON 备份，再在新设备导入。导出默认使用密码加密，请同时保管文件和密码，忘记密码无法恢复。导入时先校验密码及文件完整性，再选择恢复内容，也兼容旧版明文备份。至少选择一项内容，单文件不超过28MB。卸载或清除数据前务必备份。</string>
-    <string name="help_backup_rules">可备份车票、搜索记录、设置、个人资料、到访记录、测速轨迹、制票草稿和余票监控配置。未选择类别不覆盖本机数据。车票去重合并；到访按车站合并并保留更早时间；轨迹按 ID 合并且不覆盖同 ID 本机记录。旧车票备份只恢复车票。系统权限、通知渠道、离线缓存和运行任务不迁移；恢复的余票监控须手动启动。活动测速满一分钟可备份快照，恢复为历史，不恢复定位。</string>
+    <string name="help_backup_question">如何备份、恢复或清理存储？</string>
+    <string name="help_backup_answer">先在设置中导出 JSON 备份，再在新设备导入。导出默认使用密码加密，请同时保管文件和密码，忘记密码无法恢复。导入时先校验密码及文件完整性，再选择恢复内容，也兼容旧版明文备份。至少选择一项内容，单文件不超过28MB。卸载或清除数据前务必备份。\n\n在设置中进入“清理存储”，查看占用并选择单项清理或清理全部缓存，确认后执行。支持网页与地图缓存、路路通离线数据库、铁路线路缓存、分享图片、导出临时文件和测试截图；测试截图仅在存在对应文件时显示，清理后自动隐藏。</string>
+    <string name="help_backup_rules">可备份车票、搜索记录、设置、个人资料、到访记录、测速轨迹、制票草稿和余票监控配置。未选择类别不覆盖本机数据。车票去重合并；到访按车站合并并保留更早时间；轨迹按 ID 合并且不覆盖同 ID 本机记录。旧车票备份只恢复车票。系统权限、通知渠道、离线缓存和运行任务不迁移；恢复的余票监控须手动启动。活动测速满一分钟可备份快照，恢复为历史，不恢复定位。\n\n清理存储会保留车票、提醒、偏好设置、个人资料、到访记录、测速轨迹和答题记录。清理路路通数据库会同时重置内存缓存，下次查询需联网重新下载；清理全部缓存也包含此数据库。清理测试截图时保留备份、日志及其他文件。CI 版和正式版各自管理自己的应用目录。清理存储不同于系统的清除全部应用数据。</string>
     <string name="help_arrival_title">到站检测与到访记录</string>
     <string name="help_arrival_question">为什么没有收到到访通知？</string>
     <string name="help_arrival_answer">在设置中开启到站检测，并检查系统定位、后台位置和通知权限。设备需要可用的 Google Play 服务。允许应用后台运行，检查省电限制和通知渠道。定位精度、系统调度与站点覆盖会影响检测，提醒不保证即时。</string>
@@ -810,4 +810,22 @@
     <string name="quiz_share">分享成绩</string>
     <string name="quiz_share_failed">暂时无法生成成绩图片，请重试。</string>
     <string name="quiz_share_text">我在今天的铁路知识测验获得 %1$d 分，你可以超过我吗？\n立刻下载 CRTicket：%2$s\n来参加测验！</string>
+    <string name="settings_storage">清理存储</string>
+    <string name="storage_data">数据与存储</string>
+    <string name="storage_web">网页与地图缓存</string>
+    <string name="storage_lines">铁路线路缓存</string>
+    <string name="storage_shares">分享图片</string>
+    <string name="storage_exports">导出临时文件</string>
+    <string name="storage_categories">缓存文件</string>
+    <string name="storage_saved">已保存的数据</string>
+    <string name="storage_personal">个人数据与离线资源</string>
+    <string name="storage_clear">清理</string>
+    <string name="storage_clear_all">清理全部缓存</string>
+    <string name="storage_cleanable">可清理空间</string>
+    <string name="storage_confirm_title">清理所选文件？</string>
+    <string name="storage_confirm_message">将保留车票、提醒、偏好设置与离线资源。</string>
+    <string name="storage_done">清理完成</string>
+    <string name="storage_timetable">路路通离线数据库</string>
+    <string name="storage_timetable_confirm">下次查询时将重新下载路路通数据库，需要网络连接。车票、提醒和偏好设置将保留。</string>
+    <string name="storage_test_screenshots">测试截图</string>
 </resources>

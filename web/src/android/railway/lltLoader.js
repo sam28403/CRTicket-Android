@@ -1,6 +1,6 @@
 import { nativeFetch } from './nativeFetch.js'
 import { parseLltArchive } from './lltParser.js'
-import { readArchive, writeArchive } from './archiveStore.js'
+import { readArchive, writeArchive, clearArchive } from './archiveStore.js'
 
 const base = 'http://down.lltskb.com'
 const fallback = 'http://223.107.87.50:8011/an.db'
@@ -24,11 +24,14 @@ export async function decodeArchive(bytes) {
     })
 }
 
-export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, writeArchive }) {
+export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, writeArchive, clearArchive }) {
     let cached
     let checkedAt = 0
     let initialization
     let pending
+    let clearing
+    let generation = 0
+    let refreshController
 
     async function download(url, loadSignal, timeout) {
         const signal = AbortSignal.any([loadSignal, AbortSignal.timeout(timeout)])
@@ -41,7 +44,8 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
     }
 
     async function refresh() {
-        const loadSignal = AbortSignal.timeout(90000)
+        refreshController = new AbortController()
+        const loadSignal = AbortSignal.any([refreshController.signal, AbortSignal.timeout(90000)])
         let manifest
         try {
             manifest = new TextDecoder().decode(await download(`${base}/android.ver`, loadSignal, 15000))
@@ -77,7 +81,9 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
         return cached
     }
 
-    return async function load() {
+    async function load() {
+        await clearing
+        const currentGeneration = generation
         if (!initialization) {
             initialization = (async () => {
                 const saved = await store.readArchive().catch(() => null)
@@ -92,6 +98,7 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
             })()
         }
         await initialization
+        if (currentGeneration !== generation) throw new DOMException('Cache cleared', 'AbortError')
         if (cached && Date.now() - checkedAt < 3600000) return cached
         if (!pending) {
             // Failed refreshes do not advance checkedAt; the next query retries immediately.
@@ -101,6 +108,23 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
         // An already downloaded database is immediately available while checking updates.
         return cached || pending
     }
+
+    load.clear = function clear() {
+        if (clearing) return clearing
+        generation++
+        refreshController?.abort(new DOMException('Cache cleared', 'AbortError'))
+        clearing = (async () => {
+            // An initialization or download must not write the archive back after cleanup.
+            await Promise.allSettled([initialization, pending])
+            cached = undefined
+            checkedAt = 0
+            initialization = undefined
+            pending = undefined
+            await store.clearArchive()
+        })().finally(() => { clearing = undefined })
+        return clearing
+    }
+    return load
 }
 
 export const loadLltDatabase = createLltLoader()

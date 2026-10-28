@@ -119,6 +119,12 @@ internal fun SettingsPreferences(
             0, 1, true, controller.ui::openMap,
         )
     }
+    SettingsGroup(stringResource(R.string.storage_data)) {
+        SettingsRow(
+            stringResource(R.string.settings_storage), "",
+            0, 1, true, controller.ui::openStorage,
+        )
+    }
     SettingsGroup(stringResource(R.string.settings_backup)) {
         SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,
             { controller.request("exportExcel") })

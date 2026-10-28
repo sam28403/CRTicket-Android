@@ -73,6 +73,7 @@ internal fun ExpressiveSettingsScreen(
                         SettingsPage.SALE_REMINDERS -> SaleReminderSettingsContent(visible, onOpenSaleReminders)
                         SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
                         SettingsPage.LANGUAGE -> LanguageSettingsContent()
+                        SettingsPage.STORAGE -> StorageSettingsContent(controller.storage, visible)
                         SettingsPage.MAP -> MapSettingsContent(dark, visible)
                         SettingsPage.MAIN -> AdaptivePanes(
                             modifier = Modifier.fillMaxSize(),

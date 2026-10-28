@@ -611,9 +611,9 @@
     <string name="help_query_answer">Check connectivity, date and the full train or station name, then retry. Online failures may come from upstream services. Load the timetable online before using offline queries. Check offline data versions in About.</string>
     <string name="help_query_rules">線上結果依賴上游介面，離線清單與車站大螢幕依賴對應日期的時刻表。快取和上游更新時間可能導致差異。已取得的正晚點預測按北京時間保留至當天結束，更新失敗或部分欄位缺少時繼續使用有效快取；線上車次結果可透過右上角按鈕更新正晚點。臨時停運、晚點、餘票和起售調整以鐵路官方資訊為準。</string>
     <string name="help_backup_title">Backup, restore and local data</string>
-    <string name="help_backup_question">How do I migrate or fix an import?</string>
-    <string name="help_backup_answer">先在設定中匯出 JSON 備份，再在新裝置匯入。匯出預設使用密碼加密，請同時保管檔案和密碼，忘記密碼無法恢復。匯入時先驗證密碼及檔案完整性，再選擇恢復內容，也相容舊版明文備份。至少選擇一項內容，單一檔案不超過28MB。解除安裝或清除資料前務必備份。</string>
-    <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.</string>
+    <string name="help_backup_question">如何備份、恢復或清理儲存空間？</string>
+    <string name="help_backup_answer">先在設定中匯出 JSON 備份，再在新裝置匯入。匯出預設使用密碼加密，請同時保管檔案和密碼，忘記密碼無法恢復。匯入時先驗證密碼及檔案完整性，再選擇恢復內容，也相容舊版明文備份。至少選擇一項內容，單一檔案不超過28MB。解除安裝或清除資料前務必備份。\n\n在設定中進入「清理儲存空間」，查看佔用並選擇單項清理或清理全部快取，確認後執行。支援網頁與地圖快取、路路通離線資料庫、鐵路路線快取、分享圖片、匯出暫存檔案和測試截圖；測試截圖僅在存在對應檔案時顯示，清理後自動隱藏。</string>
+    <string name="help_backup_rules">Backups cover tickets, searches, settings, profile, visits, speed tracks, ticket drafts and availability monitor configurations. Unselected categories do not overwrite local data. Tickets merge with deduplication; visits keep the earlier visit; tracks merge by ID without replacing an existing ID. Legacy ticket-only backups restore only tickets. Permissions, notification channels, offline caches and running tasks do not migrate. Start restored monitors manually. An active recording of at least one minute can be backed up as history, without resuming location tracking.\n\n清理儲存空間會保留車票、提醒、偏好設定、個人資料、到訪紀錄、測速軌跡和答題紀錄。清理路路通資料庫會同時重設記憶體快取，下次查詢需連線重新下載；清理全部快取也包含此資料庫。清理測試截圖時保留備份、日誌及其他檔案。CI 版和正式版各自管理自己的應用程式目錄。清理儲存空間不同於系統的清除全部應用程式資料。</string>
     <string name="help_arrival_title">Arrival detection and visits</string>
     <string name="help_arrival_question">Why did I miss an arrival notification?</string>
     <string name="help_arrival_answer">Enable arrival detection in Settings and check system location, background location and notification permissions. Google Play services must be available. Allow background activity and check battery restrictions and notification channels. Accuracy, scheduling and station coverage affect detection; delivery may be delayed.</string>
@@ -810,4 +810,22 @@
     <string name="quiz_share">分享成績</string>
     <string name="quiz_share_failed">暫時無法產生成績圖片，請重試。</string>
     <string name="quiz_share_text">我在今天的鐵路知識測驗獲得 %1$d 分，你可以超過我嗎？\n立即下載 CRTicket：%2$s\n來參加測驗！</string>
+    <string name="settings_storage">清理儲存空間</string>
+    <string name="storage_data">資料與儲存空間</string>
+    <string name="storage_web">網頁與地圖快取</string>
+    <string name="storage_lines">鐵路路線快取</string>
+    <string name="storage_shares">分享圖片</string>
+    <string name="storage_exports">匯出暫存檔案</string>
+    <string name="storage_categories">快取檔案</string>
+    <string name="storage_saved">已儲存的資料</string>
+    <string name="storage_personal">個人資料與離線資源</string>
+    <string name="storage_clear">清理</string>
+    <string name="storage_clear_all">清理全部快取</string>
+    <string name="storage_cleanable">可清理空間</string>
+    <string name="storage_confirm_title">清理所選檔案？</string>
+    <string name="storage_confirm_message">將保留車票、提醒、偏好設定與離線資源。</string>
+    <string name="storage_done">清理完成</string>
+    <string name="storage_timetable">路路通離線資料庫</string>
+    <string name="storage_timetable_confirm">下次查詢時將重新下載路路通資料庫，需要網絡連線。車票、提醒和偏好設定將保留。</string>
+    <string name="storage_test_screenshots">測試截圖</string>
 </resources>
