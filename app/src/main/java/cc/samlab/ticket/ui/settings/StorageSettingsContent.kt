@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,7 @@ import cc.samlab.ticket.R
 internal fun StorageSettingsContent(controller: StorageController, visible: Boolean) {
     var pending by remember { mutableStateOf<Set<StorageKind>>(emptySet()) }
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snapshot = controller.snapshot
     val kinds = StorageKind.entries.filter { it in snapshot.sizes }
     val format: (Long) -> String = { Formatter.formatShortFileSize(context, it) }
@@ -68,7 +70,7 @@ internal fun StorageSettingsContent(controller: StorageController, visible: Bool
         title = { Text(stringResource(R.string.storage_confirm_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(pending.joinToString("、") { context.getString(it.title) })
+                Text(pending.joinToString("、") { resources.getString(it.title) })
                 Text(stringResource(
                     if (StorageKind.TIMETABLE in pending) R.string.storage_timetable_confirm
                     else R.string.storage_confirm_message,
