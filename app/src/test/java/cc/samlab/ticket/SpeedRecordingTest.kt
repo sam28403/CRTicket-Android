@@ -9,7 +9,8 @@ class SpeedRecordingTest {
         mapOf("G1" to 350, "D1" to 250, "C1" to 160, "C1000" to 160,
             "C1001" to 350, "C4000" to 350, "C4001" to 160, "C4700" to 160,
             "C4701" to 350, "C9999" to 350, "S1" to 200, "Z1" to 160,
-            "T1" to 140, "K1" to 120, "Y1" to 120, "L1" to 120, "1234" to 120,
+            "N1" to 140, "N1998" to 140, "n1" to 140,
+            "V1" to 120, "V7998" to 120, "v6501" to 120, "T1" to 140, "K1" to 120, "Y1" to 120, "L1" to 120, "1234" to 120,
         ).forEach { (train, maximum) -> assertEquals(train, maximum, speedometerMaximum(train)) }
     }
 

@@ -11,7 +11,7 @@ object TicketMonitorMatches {
 
     fun ordinary(train: String): Boolean {
         val normalized = train.trim().uppercase()
-        if (Regex("(?:[ZTKLY]\\d+|\\d+)").matches(normalized)) return true
+        if (Regex("(?:[ZTKNVLY]\\d+|\\d+)").matches(normalized)) return true
         if (!Regex("[DCS]\\d+").matches(normalized)) return false
         val number = normalized.drop(1).toIntOrNull() ?: return false
         return when (normalized.firstOrNull()) {

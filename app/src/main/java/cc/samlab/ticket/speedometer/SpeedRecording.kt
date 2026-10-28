@@ -11,7 +11,8 @@ internal fun speedometerMaximum(train: String): Int {
         'C' -> if (number in 1..1000 || number in 4001..4700) 160 else 350
         'S' -> 200
         'Z' -> 160
-        'T' -> 140
+        'T', 'N' -> 140
+        'V' -> 120
         else -> 120
     }
 }

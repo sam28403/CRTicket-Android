@@ -52,11 +52,12 @@ internal fun QuizContent(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedButton(
-                    onClick = { onMove(-1) }, enabled = session.current > 0 && !busy,
+                    onClick = { if (!busy) onMove(-1) },
+                    enabled = session.current > 0,
                     modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("quiz-previous"),
                 ) { Text(stringResource(R.string.quiz_previous)) }
                 Button(
-                    onClick = { onMove(1) }, enabled = !busy,
+                    onClick = { if (!busy) onMove(1) },
                     modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("quiz-next"),
                 ) {
                     Text(stringResource(
