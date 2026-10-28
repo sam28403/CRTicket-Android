@@ -1,10 +1,25 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { trainQuerySourceLocation, requiresOfflineTrainQuery } from './trainQuerySource.js'
+import { trainQueryEntryLocation, trainQuerySourceLocation, requiresOfflineTrainQuery } from './trainQuerySource.js'
 import { trainQueryRange } from './trainQueryDate.js'
 import { matchingTrainRecord, trainRecordCacheKey } from './trainQueryRecord.js'
 
 const date = trainQueryRange().today
+
+test('超出在线范围的详情入口保留日期、本站车次及完整离线记录并切换路路通', () => {
+  const now = Date.parse('2026-10-28T09:00:00+08:00')
+  for (const date of ['1890-01-01', '2026-10-25', '2026-11-12', '2200-12-31']) {
+    const query = { train: 'G3244', record: 'G3241/G3244B', date }
+    assert.deepEqual(trainQueryEntryLocation(query, now), {
+      path: '/train', query: { ...query, source: 'llt' },
+    })
+    assert.equal(query.source, undefined)
+    assert.equal(trainQueryEntryLocation({ ...query, source: 'llt' }, now), null)
+  }
+  for (const date of ['2026-10-26', '2026-11-11', '', '2026-02-30', undefined]) {
+    assert.equal(trainQueryEntryLocation({ train: 'G1', date }, now), null)
+  }
+})
 
 test('S2101 的路路通备用结果必须切换离线模式，而不是保留在线通道', () => {
   assert.equal(requiresOfflineTrainQuery(undefined, {

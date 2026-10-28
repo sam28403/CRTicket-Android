@@ -11,7 +11,7 @@ import TrainDelayTime from '@/components/TrainDelayTime.vue'
 import api, { timetableTimeout } from '@/api.js'
 import { isTrainQueryDateInRange, trainQueryRange } from '@/utils/trainQueryDate.js'
 import { displayTrainCode, trainInfoForDisplay } from '@/utils/trainDisplay.js'
-import { trainQuerySourceLocation, requiresOfflineTrainQuery } from '@/utils/trainQuerySource.js'
+import { trainQueryEntryLocation, trainQuerySourceLocation, requiresOfflineTrainQuery } from '@/utils/trainQuerySource.js'
 import { getTrainQueryNumberError } from '@/utils/trainQueryValidation.js'
 import { useTrainDiscovery } from '@/composables/useTrainDiscovery.js'
 import TrainQueryDiscovery from '@/components/TrainQueryDiscovery.vue'
@@ -101,6 +101,7 @@ async function exportData() {
 }
 
 function disabledDate(value) {
+  if (offlineMode.value) return false
   const localDate = [
     value.getFullYear(),
     String(value.getMonth() + 1).padStart(2, '0'),
@@ -124,7 +125,7 @@ async function query() {
     toast('请输入完整车次并选择始发日期')
     return
   }
-  if (!isTrainQueryDateInRange(date.value)) {
+  if (!offlineMode.value && !isTrainQueryDateInRange(date.value)) {
     toast('请选择今天前 2 天至后 14 天内的始发日期')
     return
   }
@@ -194,6 +195,11 @@ watch(
   () => [route.path, route.query.train, route.query.date, route.query.source, route.query.record],
   ([path, code, selectedDate, source, hint]) => {
     if (path !== '/train') return
+    const offlineEntry = trainQueryEntryLocation(route.query)
+    if (offlineEntry) {
+      router.replace(offlineEntry)
+      return
+    }
     const routeQuery = [code, selectedDate, source, hint]
     // 缓存页面仍会收到其他路由的变化，返回同一查询时保留表单和结果。
     if (previousRouteQuery && routeQuery.every((value, index) => value === previousRouteQuery[index])) {

@@ -179,7 +179,10 @@ internal fun ExpressiveTrainQueryScreen(
             }
         }
         if (datePicker) TrainQueryDatePicker(
-            controller.date, { datePicker = false }, { controller.edit(day = it) },
+            date = controller.date,
+            offline = state.optBoolean("offline"),
+            onDismiss = { datePicker = false },
+            onSelect = { controller.edit(day = it) },
         )
     }
 }

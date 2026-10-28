@@ -14,6 +14,9 @@ class TrainQueryOnlineEntryTest {
     @get:Rule val compose = createEmptyComposeRule()
 
     @Test fun fullRecordQueriesOnlineFirstAndFallsBackToExactOfflineRecord() {
+        val context = androidx.test.platform.app.InstrumentationRegistry
+            .getInstrumentation().targetContext
+        val welcome = WelcomeTestState(context)
         val fixture = TabletPageFixture(compose)
         try {
             val assets = fixture.instrumentation.targetContext.assets
@@ -65,6 +68,7 @@ class TrainQueryOnlineEntryTest {
             )
         } finally {
             fixture.close()
+            welcome.close()
         }
     }
 }
