@@ -45,6 +45,7 @@ __pycache__/
 /web/server/db/*.db-*
 /reference/desktop-server/db/*.db
 /reference/desktop-server/db/*.db-*
+/logs/
 *.log
 *.hprof
 *.heapdump

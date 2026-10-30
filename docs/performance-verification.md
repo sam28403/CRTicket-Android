@@ -78,5 +78,5 @@ debug APK，优化包通过系统采样、页面截图和入口跳转验证。
 - WebView 重载会丢弃旧文档中的 JavaScript 回调，测试对这一正常窗口
   做有界重试，继续验证新文档的路由和主色恢复。
 
-日志在 `build/performance-validation.log`、`build/performance-regression-pass.log`
-和 `build/performance-notification-click.log`。
+日志在 `logs/archive/build/performance-validation.log`、`logs/archive/build/performance-regression-pass.log`
+和 `logs/archive/build/performance-notification-click.log`。

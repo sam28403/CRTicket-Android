@@ -65,7 +65,7 @@ Android 单元测试、Lint 并构建 CI APK，产物在 Actions 的 Artifacts �
 2026-10-27修复运行`40452980487`中的跨平台指纹差异：该运行在网页资源打包后
 因误触发12306下载而连接超时。修复后本地249项网页测试、172项Android单元测试、
 `lintCi`与CI APK构建通过；构建任务与CI一致（本地附加`--offline`）。日志保存在
-`build/logs/ci-40452980487-web-tests.log`与`build/logs/ci-40452980487-android-verification.log`。
+`logs/archive/build/logs/ci-40452980487-web-tests.log`与`logs/archive/build/logs/ci-40452980487-android-verification.log`。
 此记录不代表原GitHub运行已重跑通过。
 
 CI 应用 ID 为 `cc.samlab.ticket.ci`，使用调试签名，可与正式版同时安装。

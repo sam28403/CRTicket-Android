@@ -10,6 +10,12 @@
 
 内容维护在各语言目录的 strings.xml，主题与路由映射在 ui/help/HelpTopics.kt。
 当前提供简体中文和英文；其他语言回退英文。新增功能或变更限制时应同步更新帮助。
+
+2026-10-30 更新余票监控与列车追踪主题：说明在线正晚点启动刷新、每十分钟更新、
+页面预测同步、到发预测独立合并、恢复正点及失败后继续重试。
+通知和退出期限随预计终到时间调整，缓存按北京时间日期过期；离线追踪仍使用时刻表。
+各语言 strings.xml 同步该说明；API 37.2 编译适配记录于更新日志和技术文档。
+
 正文依据 README、backup-data-coverage.md、sale-time-query.md、speedometer.md、
 vehicle-query.md、quiz.md、train-delay.md、background-monitor-verification.md、train-tracking-expiry-verification.md，
 以及 ticketNumericValidation.js、trainNumberRules.js、ticketValidation.js 校验逻辑。

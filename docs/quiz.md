@@ -137,7 +137,7 @@ node tools/update-quiz-sources.mjs --cities-only
 单元测试覆盖日期确定性、语言切换、跨年连续64天的滚动防重复、开行规则、
 午夜到发去重、乘车方向、任意当日出发时刻与担当记录日期及冲突筛选。
 设备测试使用真实内置快照检查连续32天，并覆盖答对自动前进、回看、总结与重新进入。
-实际运行结果与截图记录在本次开发的`build/logs/daily-quiz-*`和
+实际运行结果与截图记录在本次开发的`logs/archive/build/logs/daily-quiz-*`和
 `build/verification/daily-quiz`中。
 
 2026-10-26最终验证：155项单元测试通过，Debug APK与设备测试APK构建通过，

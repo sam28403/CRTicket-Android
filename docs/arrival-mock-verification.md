@@ -19,8 +19,8 @@
 | 中国大陆 | 莘庄 | 31.1114602 | 121.3804196 | 通过 | 通过 | 通过 | 通过 |
 
 通知标题为“欢迎到访XX站”，正文为“点按查看当前车站大屏”。
-第一批实机日志：`build/verification/pixel8pro-arrival-instrumentation.log`，3 项测试通过。
-新增三站日志：`build/verification/pixel8pro-extra-stations.log`，1 项综合测试通过。
+第一批实机日志：`logs/archive/build/verification/pixel8pro-arrival-instrumentation.log`，3 项测试通过。
+新增三站日志：`logs/archive/build/verification/pixel8pro-extra-stations.log`，1 项综合测试通过。
 测试源码：`app/src/androidTest/java/cc/samlab/ticket/ArrivalMockLocationTest.kt`。
 
 坐标覆盖测试验证原表全部 28,429 个名称均被保留，完全相同的坐标合并为 11,213 个站点，

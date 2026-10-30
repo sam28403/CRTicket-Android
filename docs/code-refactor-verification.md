@@ -35,9 +35,9 @@
 实机测试不申请权限、不发布测试通知、不写入用户车票或设置。
 
 实机源码：`app/src/androidTest/java/cc/samlab/ticket/RefactorReadOnlyTest.kt`。
-完整日志：`build/verification/pixel8pro-refactor-tests.log`，`OK (6 tests)`。
-JavaScript 日志：`build/verification/refactor-js-tests.log`。
-Android 构建日志：`build/verification/refactor-native-final.log`。
+完整日志：`logs/archive/build/verification/pixel8pro-refactor-tests.log`，`OK (6 tests)`。
+JavaScript 日志：`logs/archive/build/verification/refactor-js-tests.log`。
+Android 构建日志：`logs/archive/build/verification/refactor-native-final.log`。
 
 不执行会改动设备设置或通知状态的定位模拟、主题切换及列车追踪探针。
 对应业务流程在独立浏览器测试数据中回归。

@@ -9,9 +9,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.ui.navigation.ExpressiveNavHost
 import cc.samlab.ticket.ui.navigation.ExpressiveNavigator
 import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,6 +22,17 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class NavigationCompositionTest {
     @get:Rule val compose = createEmptyComposeRule()
+    private lateinit var welcomeState: WelcomeTestState
+
+    @Before fun prepareWelcome() {
+        welcomeState = WelcomeTestState(
+            InstrumentationRegistry.getInstrumentation().targetContext,
+        )
+    }
+
+    @After fun restoreWelcome() {
+        welcomeState.close()
+    }
 
     @Test fun entryRetainsSourceAndAnimatesWithoutRecomposingPages() {
         val navigator = ExpressiveNavigator()

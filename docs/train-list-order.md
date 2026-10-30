@@ -34,4 +34,4 @@
 2026-10-28 验证：网页 252 项测试通过，CI 构建通过；Pixel 8 Pro 上 2 项实机回归通过。
 实际点击原生列表的 1890-01-01、2200-12-31、T-3、T+15 记录后均查询离线来源，日期选择器确认及再次提交保留原日期；当天记录继续在线查询。
 查询使用受控响应，未将模拟日期结果作为真实历史时刻表；双车次在线优先和精确离线回退一并复验通过。
-最终记录：`build/verification/offline-date-ci-phone-final.log`；截图：`build/verification/offline-date-screenshots/`。
+最终记录：`logs/archive/build/verification/offline-date-ci-phone-final.log`；截图：`build/verification/offline-date-screenshots/`。

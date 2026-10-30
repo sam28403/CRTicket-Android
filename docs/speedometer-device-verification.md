@@ -72,6 +72,6 @@
 - 手机设备综合场景通过（15.541 秒），检查空状态、无滚动语义、滑动前后位置不变、
   横竖屏中的速度与暂停/停止按钮可见，以及原有轨迹页。
 - 已检查系统启动与旋转动画结束后的竖屏及横屏截图。
-- 最终日志：`build/verification/speedometer/single-screen-layout-final.log`；
+- 最终日志：`logs/archive/build/verification/speedometer/single-screen-layout-final.log`；
   截图：`build/verification/speedometer/single-screen-layout-final-scenes/`。
 - 手机和平板均已安装最终构建；平板仍依据 GPS 硬件能力隐藏测速入口。

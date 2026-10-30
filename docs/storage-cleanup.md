@@ -64,7 +64,7 @@ WebView 在页面使用期间可能继续生成资源缓存，清理后的占用
   并确认 localStorage 个人数据标记仍存在；专项结束后恢复其开始前的数据包。
 - 首轮原有缓存测试在启动等待窗口焦点时超时，数据库专项通过。
   随后完整重跑原有缓存及数据库两项测试，最终为 `OK (2 tests)`。
-- 日志：`build/logs/storage-timetable-device-tests-retry.log`。
+- 日志：`logs/archive/build/logs/storage-timetable-device-tests-retry.log`。
   截图：`captures/storage-cleanup/timetable-overview.png` 和 `timetable-confirmation.png`。
 
 ## 测试截图清理补充验证
@@ -76,4 +76,4 @@ WebView 在页面使用期间可能继续生成资源缓存，清理后的占用
 - 174 项 CI 单元测试通过，包含历史目录识别、嵌套截图、个人图片排除和空目录检查。
 - 设备测试结束后检查 CI 包外部 files 目录，已无残留文件。
   截图专项不再生成新的截图，避免验证完成后重新出现该项。
-- 日志：`build/logs/storage-screenshot-device-tests.log`。
+- 日志：`logs/archive/build/logs/storage-screenshot-device-tests.log`。

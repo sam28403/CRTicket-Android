@@ -621,7 +621,7 @@
     <string name="help_monitor_title">Availability monitoring and tracking</string>
     <string name="help_monitor_question">Why did a task stop or show an inaccurate position?</string>
     <string name="help_monitor_answer">檢查網路、通知權限和背景省電限制。餘票監控查詢失敗會按設定間隔重試，日期過期會停止。列車追蹤按時刻表和已取得的正晚點預測推算，不是即時 GPS；上游調整或資料缺少可能影響結果。</string>
-    <string name="help_monitor_rules">Availability monitors run in a foreground service and can be stopped from the notification. Explicitly stopped or restored configurations do not restart automatically. Tracking started before arrival expires 30 minutes after scheduled arrival; tracking started at or after arrival expires after 3 minutes. Reopening the page or service does not reset expiry.</string>
+    <string name="help_monitor_rules">Availability monitors run in a foreground service and can be stopped from the notification. Explicitly stopped or restored configurations do not restart automatically. Tracking started before arrival expires 30 minutes after the current estimated arrival; tracking started at or after arrival expires after 3 minutes. Reopening the page or service does not reset expiry.\n\n線上車次啟用正晚點後，追蹤啟動時及之後每十分鐘更新，查詢頁取得的新預測也會同步至目前追蹤。到達和出發預測分別更新，恢復準點會覆蓋先前延誤；更新失敗或無資料時保留當天有效預測並繼續重試，北京時間午夜清除舊快取。通知時間和結束期限隨預計終到時間調整。離線追蹤使用原定時刻表。</string>
     <string name="help_sale_title">Sale times and reminders</string>
     <string name="help_sale_question">Why did a sale reminder not arrive?</string>
     <string name="help_sale_answer">Check notifications, exact alarm access, channels and the device clock. Full-screen alarms also require Do Not Disturb access and full-screen notification access where required. While using the phone, the system may show a heads-up notification; tap it to open the alarm.</string>

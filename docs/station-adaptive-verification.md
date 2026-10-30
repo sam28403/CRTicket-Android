@@ -49,10 +49,10 @@ testDebugUnitTest（61 项）、lintDebug 均通过。功能检查在 debug APK 
 
 日志：
 
-- `build/station-adaptive-final-build.log`
-- `build/station-adaptive-phone-final.log`、`build/station-adaptive-tablet-final.log`
-- `build/station-map-navigation-phone.log`、`build/station-map-navigation-tablet.log`
-- `build/station-adaptive-optimized-build.log`
+- `logs/archive/build/station-adaptive-final-build.log`
+- `logs/archive/build/station-adaptive-phone-final.log`、`logs/archive/build/station-adaptive-tablet-final.log`
+- `logs/archive/build/station-map-navigation-phone.log`、`logs/archive/build/station-map-navigation-tablet.log`
+- `logs/archive/build/station-adaptive-optimized-build.log`
 
 最后两个地图跳转日志为修正可见节点定位后的通过结果，其余回归与布局数据
 记录在前面的两台设备日志中。截图位于 `build/verification/station-adaptive/`。

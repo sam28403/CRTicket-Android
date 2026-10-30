@@ -14,7 +14,11 @@ val stationDataVersion = Regex("Station Version (\\d+)")
 android {
     namespace = "cc.samlab.ticket"
     testBuildType = providers.gradleProperty("crticket.testBuildType").getOrElse("debug")
-    compileSdk { version = release(37) }
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 2
+        }
+    }
     defaultConfig {
         applicationId = "cc.samlab.ticket"
         minSdk = 26

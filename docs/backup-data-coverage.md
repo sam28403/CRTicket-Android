@@ -67,8 +67,8 @@
   重复导入并再次导出比对完整轨迹；错误坐标被拒绝且已有数据保持不变。
 - 测试保留并恢复设备原有资料、草稿、车票和轨迹，临时夹具未留在正式历史。
 
-设备日志：`build/verification/backup-selection-device-final-1.log`、`backup-selection-device-final-2.log`。
-Web 日志：`build/verification/backup-selection-web-tests.log`。
+设备日志：`logs/archive/build/verification/backup-selection-device-final-1.log`、`backup-selection-device-final-2.log`。
+Web 日志：`logs/archive/build/verification/backup-selection-web-tests.log`。
 
 最终 Debug 应用及测试 APK 构建通过，Lint 为 0 错误、105 警告、9 提示。最终版本已更新到手机和平板。
 

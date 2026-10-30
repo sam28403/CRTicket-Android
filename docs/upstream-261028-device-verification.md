@@ -21,8 +21,8 @@
 
 ## 证据
 
-- 构建记录：`build/verification/numbering-ci-build.log`。
-- 最终手机测试记录：`build/verification/numbering-ci-phone-final.log`，结果为 `OK (9 tests)`。
+- 构建记录：`logs/archive/build/verification/numbering-ci-build.log`。
+- 最终手机测试记录：`logs/archive/build/verification/numbering-ci-phone-final.log`，结果为 `OK (9 tests)`。
 - 截图：`build/verification/numbering-ci-screenshots/`。
 
 现有 CI 包与本机构建签名不一致，安装前备份旧 APK 和私有数据，完成重装后逐文件校验恢复的 110 个文件。

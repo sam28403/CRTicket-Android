@@ -44,6 +44,7 @@ class TrainTrackingService : Service() {
     private var schedulePayload: String? = null
     private var delayRefreshAt = 0L
     private var refreshingDelay = false
+    private var destroyed = false
     private val tick = Runnable { update() }
     private val clockChanges = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -83,7 +84,13 @@ class TrainTrackingService : Service() {
             }
             require(notifications.enabled()) { appString(R.string.tracking_error_system_permission) }
             val now = System.currentTimeMillis()
-            val nextSession = if (requested != null) TrainTrackingSession.start(next.end, now)
+            val previous = timeline
+            val sameJourney = requested != null && previous != null && session != null &&
+                previous.train == next.train && previous.date == next.date &&
+                previous.queryTrain == next.queryTrain && previous.querySource == next.querySource
+            val nextSession = if (sameJourney) session!!.copy(
+                expiresAt = session!!.expiresAt + next.end - previous.end,
+            ) else if (requested != null) TrainTrackingSession.start(next.end, now)
                 else TrainTrackingStore.session(this) ?: TrainTrackingSession.restoreLegacy(next.end)
             if (nextSession.expired(now) ||
                 (requested == null && !nextSession.canResume(next.end, now))) {
@@ -101,7 +108,7 @@ class TrainTrackingService : Service() {
             }
             timeline = next
             schedulePayload = payload
-            delayRefreshAt = now + 10 * 60_000L
+            if (!sameJourney) delayRefreshAt = 0L
             session = nextSession
             runningSession = nextSession.id
             TrainTrackingStore.save(this, payload, nextSession)
@@ -170,6 +177,7 @@ class TrainTrackingService : Service() {
     }
 
     override fun onDestroy() {
+        destroyed = true
         if (runningSession == session?.id) runningSession = null
         handler.removeCallbacks(tick)
         unregisterReceiver(clockChanges)
@@ -188,12 +196,9 @@ class TrainTrackingService : Service() {
             handler.post {
                 refreshingDelay = false
                 val currentSession = session
-                if (schedulePayload != payload || timeline == null || currentSession == null) return@post
-                val updated = result ?: org.json.JSONObject(payload).apply {
-                    optJSONArray("scheduledStops")?.let { put("stops", it) }
-                    put("delayEnabled", false)
-                    put("delayAvailable", false)
-                }
+                if (destroyed || schedulePayload != payload || timeline == null || currentSession == null) return@post
+                val updated = TrainTrackingDelayUpdate.merge(payload, result,
+                    java.time.LocalDate.now(java.time.ZoneId.of("Asia/Shanghai")))
                 runCatching { TrainTrackingStore.parse(updated.toString()) }.onSuccess { next ->
                     val previousEnd = timeline!!.end
                     timeline = next

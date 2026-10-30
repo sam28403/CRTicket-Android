@@ -41,8 +41,8 @@
   首轮验证时仍会转换为首车次；下述入口回归已覆盖保留本站车次的修复。
 - 截图检查手机单列和平板双列布局，未调整设备分辨率或显示密度。
 
-日志位于 `build/station-segments-phone-device.log`、
-`build/station-segments-tablet-device.log`，截图位于 `build/verification/station-segments-*`。
+日志位于 `logs/archive/build/station-segments-phone-device.log`、
+`logs/archive/build/station-segments-tablet-device.log`，截图位于 `build/verification/station-segments-*`。
 初轮失败涉及测试启动准备、控件定位、路由断言及手机锁屏中断，
 修正测试并在手机解锁后完整重跑通过；本轮无需修改产品代码。
 
@@ -60,5 +60,5 @@
 `tools/smoke-train-source.cjs` 覆盖非首车次和方案后缀的来源反复切换、
 请求取消、完整记录恢复、缓存及 320 至 1200 像素宽度布局，浏览器回归通过。
 
-本轮日志为 `build/station-entry-phone-device.log`、
-`build/station-entry-tablet-device.log`，截图为 `build/verification/station-entry-*`。
+本轮日志为 `logs/archive/build/station-entry-phone-device.log`、
+`logs/archive/build/station-entry-tablet-device.log`，截图为 `build/verification/station-entry-*`。
