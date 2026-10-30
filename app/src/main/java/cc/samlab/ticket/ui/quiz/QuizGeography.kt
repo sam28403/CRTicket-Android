@@ -38,26 +38,6 @@ internal fun quizGeography(
             if (added >= 8) break
         }
     }
-    for (direction in QuizDirection.entries) {
-        var added = 0
-        for (reference in stations) {
-            val id = "relative:${direction.name}:${reference.name}"
-            if (!quizEligible(id, date)) continue
-            val right = stations.filter {
-                (direction.axis(it) - direction.axis(reference)) * direction.sign > 0.3
-            }
-            val wrong = stations.filter {
-                (direction.axis(it) - direction.axis(reference)) * direction.sign < -0.3
-            }
-            val correct = quizPicks(right, id, 1).firstOrNull() ?: continue
-            quizQuestion(
-                id, 6, QuizText(R.string.quiz_q_relative, listOf(reference.name, direction.token)),
-                QuizChoice(correct.name, QuizOptionKind.STATION),
-                quizPicks(wrong, id, 3).map { QuizChoice(it.name, QuizOptionKind.STATION) },
-                QuizText(R.string.quiz_f_relative, listOf(correct.name, reference.name, direction.token)),
-            )?.takeIf(keep)?.let { output.add(it); added++ }
-            if (added >= 8) break
-        }
-    }
+    output.addAll(quizRelativeQuestions(stations, date, keep))
     return output
 }

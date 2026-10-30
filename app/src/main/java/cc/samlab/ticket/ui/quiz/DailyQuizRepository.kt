@@ -22,7 +22,8 @@ internal class DailyQuizRepository(
     suspend fun load(date: LocalDate): QuizSession = lock.withLock {
         withContext(Dispatchers.IO) {
             val counts = stationCounts(date).orEmpty()
-            read(date)?.let { saved ->
+            read(date)?.let { original ->
+                val saved = repairQuizRelativeQuestions(original, QuizSourceReader.load(context))
                 val repaired = repairQuizStationCounts(saved, counts) {
                     DailyQuizGenerator(QuizSourceReader.load(context)).generate(
                         date, excludedIds = saved.questions.map { it.id }.toSet(),
