@@ -114,6 +114,16 @@ USB 或无线调试设备，然后点击 **Run**。配置执行 `:app:installBen
 所有已连接且授权的设备。安装后从设备桌面启动应用。
 配置文件为 `.run/Benchmark_Install.run.xml`。
 
+### Android Studio 安装 CI 版本
+
+在运行配置下拉框选择 **CRTicket CI - Install (test signed)**，连接并授权调试设备，
+点击 **Run**。配置执行 `:app:installCi`，自动构建网页和使用本机 debug 测试签名的
+CI APK，并安装到所有已连接且授权的设备。安装后从桌面打开 **CRTicket CI**。
+
+CI 版本包名为 `cc.samlab.ticket.ci`，可与正式版并存，应用内自动更新关闭。
+配置不依赖 IDE 当前选中的 build variant，文件为 `.run/CI_Install.run.xml`；
+APK 输出为 `app/build/outputs/apk/ci/app-ci.apk`。
+
 ### 版本规则
 
 在 `gradle.properties` 中修改 `crticket.version` 管理语义版本。

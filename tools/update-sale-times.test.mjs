@@ -10,7 +10,9 @@ const html = await readFile(new URL('../app/src/test/resources/sale-announcement
 test('the updated official announcement includes Nantong East at 17:00', () => {
     const stations = parseSaleSchedule(html)
     assert.equal(stations['南通东'], '17:00')
-    assert.equal(Object.keys(stations).length, 3207)
+    assert.equal(stations['成都龙泉驿'], '08:30')
+    assert.equal(stations['寿安'], '15:30')
+    assert.equal(Object.keys(stations).length, 3209)
 })
 
 test('the committed official snapshot can be packaged without downloading', async () => {
@@ -31,7 +33,7 @@ test('station file changes refresh the full schedule, unchanged files make no re
         await writeFile(station, 'version-one')
         let requests = 0
         const options = { workspace, fetchHtml: async () => { requests++; return html } }
-        assert.equal((await updateSaleTimes(options)).count, 3207)
+        assert.equal((await updateSaleTimes(options)).count, 3209)
         assert.equal((await updateSaleTimes(options)).updated, false)
         assert.equal(requests, 1)
         const before = await readFile(output, 'utf8')

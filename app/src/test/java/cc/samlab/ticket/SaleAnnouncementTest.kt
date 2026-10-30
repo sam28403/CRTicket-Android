@@ -15,7 +15,9 @@ class SaleAnnouncementTest {
 
     @Test fun parsesAllSlotsIncludingNestedMarkupWithoutFooterOrCommentStations() {
         val rows = parseSaleAnnouncement(fixture() + "<!-- 8:00 起售车站 假车站。 -->")
-        assertEquals(3207, rows.size)
+        assertEquals(3209, rows.size)
+        assertEquals(LocalTime.of(8, 30), rows["成都龙泉驿"])
+        assertEquals(LocalTime.of(15, 30), rows["寿安"])
         assertEquals(41, rows.values.toSet().size)
         assertEquals(LocalTime.of(17, 0), rows["南通东"])
         assertEquals(LocalTime.of(9, 15), rows["深圳北"])
