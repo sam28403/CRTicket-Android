@@ -1,3 +1,5 @@
+import { loadLltDatabase } from './railway/lltLoader.js'
+import { listStationSummaries } from './railway/stationDiscovery.js'
 import { onBeforeUnmount } from 'vue'
 import { native } from './platform.js'
 import { stationClock } from '../utils/stationBoard.js'
@@ -29,7 +31,21 @@ export function useVisitedStationCards() {
     return cachedRows
   }
   async function request(event) {
-    const { stations, requestId, saleCatalog } = event.detail || {}
+    const { stations, requestId, saleCatalog, quizDate } = event.detail || {}
+    if (quizDate) {
+      try {
+        if (quizDate !== stationClock().date) throw new Error('Invalid quiz date')
+        const database = await loadLltDatabase.fresh()
+        if (quizDate !== stationClock().date) throw new Error('Date changed')
+        native.stationBoardResult(JSON.stringify({
+          kind: 'quizCounts', requestId, date: quizDate,
+          stations: listStationSummaries(database, quizDate),
+        }))
+      } catch {
+        native.stationBoardResult(JSON.stringify({ kind: 'quizCounts', requestId, error: true }))
+      }
+      return
+    }
     if ((!saleCatalog && !Array.isArray(stations)) || !Number.isInteger(requestId)) return
     const names = saleCatalog ? parseStations().map(row => ({
       ...row, bureau: stationBureau(row.name),

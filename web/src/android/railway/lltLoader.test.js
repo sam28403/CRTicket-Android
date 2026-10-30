@@ -195,3 +195,18 @@ test('cleanup aborts a download and does not let it repopulate the archive', asy
     await Promise.all([load.clear(), rejected])
     assert.equal(saved, undefined)
 })
+
+
+test('quiz fresh load rejects failed online checks even with a usable cached archive', async () => {
+    let online = false
+    const load = createLltLoader(async url => {
+        if (!online) throw new Error('offline')
+        return new Response(url.endsWith('android.ver')
+            ? '{"version":{"data":"20261004"}}' : archive())
+    }, { readArchive: async () => ({ bytes: archive(), checkedAt: Date.now() }),
+        writeArchive: async () => {} })
+    assert.equal((await load()).version, '20261004')
+    await assert.rejects(load.fresh(), /offline/)
+    online = true
+    assert.equal((await load.fresh()).version, '20261004')
+})

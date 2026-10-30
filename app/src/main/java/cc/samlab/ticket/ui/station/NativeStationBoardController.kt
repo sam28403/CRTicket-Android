@@ -16,6 +16,7 @@ class NativeStationBoardController(
     private val webView: WebView,
     private val worker: ExecutorService,
 ) {
+    internal val quizCounts = QuizCountsBridge(webView)
     private val boards = linkedMapOf<String, StationBoardState>()
     private var discovery = JSONObject()
     internal val saleTimes = cc.samlab.ticket.ui.sale.SaleTimeRepository(activity.applicationContext)
@@ -70,6 +71,10 @@ class NativeStationBoardController(
     fun receive(payload: String) {
         if (closed || payload.length > 16 * 1024 * 1024) return
         val value = runCatching { JSONObject(payload) }.getOrNull() ?: return
+        if (value.optString("kind") == "quizCounts") {
+            activity.runOnUiThread { quizCounts.receive(value) }
+            return
+        }
         if (value.optString("kind") == "saleCatalog") {
             activity.runOnUiThread { if (!closed) saleCatalog = value }
             return

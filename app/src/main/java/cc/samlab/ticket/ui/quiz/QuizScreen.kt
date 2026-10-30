@@ -36,12 +36,13 @@ internal fun QuizScreen(
     onDone: () -> Unit = onBack,
     onReport: (LocalDate, Int) -> Unit = { _, _ -> },
     shareProfile: QuizShareProfile? = null,
+    stationCounts: suspend (LocalDate) -> Map<String, Int>? = { null },
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
     val view = LocalView.current
     val state = remember(context.applicationContext) {
-        DailyQuizState(DailyQuizRepository(context.applicationContext))
+        DailyQuizState(DailyQuizRepository(context.applicationContext, stationCounts))
     }
     val scope = rememberCoroutineScope()
     var resetDialog by remember { mutableStateOf(false) }

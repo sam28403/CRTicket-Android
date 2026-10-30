@@ -109,6 +109,12 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
         return cached || pending
     }
 
+    // Quiz counts require a successful online version check, never stale fallback.
+    load.fresh = async function fresh() {
+        await load()
+        return pending || refresh()
+    }
+
     load.clear = function clear() {
         if (clearing) return clearing
         generation++

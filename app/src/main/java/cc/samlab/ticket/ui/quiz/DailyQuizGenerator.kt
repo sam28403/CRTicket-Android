@@ -9,6 +9,7 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
         excludedIds: Set<String> = emptySet(),
         seenKeys: Set<String> = emptySet(),
         variationSeed: String = "",
+        stationCounts: Map<String, Int> = emptyMap(),
     ): List<QuizQuestion> {
         val varied = seenKeys.isNotEmpty() || variationSeed.isNotEmpty()
         val ordering = if (variationSeed.isEmpty()) date.toString() else "$date:$variationSeed"
@@ -22,7 +23,7 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
             addAll(quizGeography(sources.stations, date, keep))
             addAll(quizCityQuestions(sources.stations, date, keep))
             addAll(quizTrainQuestions(today, date, keep))
-            addAll(quizStationCountQuestions(quizStationCounts(sources.trains, date), date, keep))
+            addAll(quizStationCountQuestions(stationCounts, date, keep))
             addAll(quizLineQuestions(sources, date, keep))
             addAll(quizRoutingQuestions(sources, date, keep))
             addAll(vehicleQuestions.filter { quizEligible(it.id, date) && keep(it) })

@@ -13,15 +13,28 @@ import java.util.UUID
 
 internal fun quizToday(): LocalDate = LocalDate.now(ZoneId.of("Asia/Shanghai"))
 
-internal class DailyQuizRepository(private val context: Context) {
+internal class DailyQuizRepository(
+    private val context: Context,
+    private val stationCounts: suspend (LocalDate) -> Map<String, Int>? = { null },
+) {
     private val folder = File(context.filesDir, "daily-quiz")
 
     suspend fun load(date: LocalDate): QuizSession = lock.withLock {
         withContext(Dispatchers.IO) {
-            read(date) ?: run {
+            val counts = stationCounts(date).orEmpty()
+            read(date)?.let { saved ->
+                val repaired = repairQuizStationCounts(saved, counts) {
+                    DailyQuizGenerator(QuizSourceReader.load(context)).generate(
+                        date, excludedIds = saved.questions.map { it.id }.toSet(),
+                    )
+                }
+                write(repaired)
+                return@withContext repaired
+            }
+            run {
                 val sources = QuizSourceReader.load(context)
                 val vehicles = loadQuizVehicles(context, sources, date)
-                val questions = DailyQuizGenerator(sources).generate(date, vehicles)
+                val questions = DailyQuizGenerator(sources).generate(date, vehicles, stationCounts = counts)
                 QuizSession(date, sources.version, questions).also(::write)
             }
         }
@@ -46,6 +59,7 @@ internal class DailyQuizRepository(private val context: Context) {
                     current.date, vehicles,
                     seenKeys = history,
                     variationSeed = UUID.randomUUID().toString(),
+                    stationCounts = stationCounts(current.date).orEmpty(),
                 )
                 QuizSession(
                     current.date, sources.version, questions,
