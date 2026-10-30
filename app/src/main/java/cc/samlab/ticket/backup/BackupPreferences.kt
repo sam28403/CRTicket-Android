@@ -52,7 +52,7 @@ internal class BackupPreferences(
         }
         if (value.has("mapSource")) {
             val source = value.get("mapSource")
-            require(source is String && MapSource.entries.any { it.id == source }) {
+            require(source is String && (source == "cnrail" || MapSource.entries.any { it.id == source })) {
                 "Invalid backup map source"
             }
         }
@@ -72,7 +72,7 @@ internal class BackupPreferences(
             if (value.has("importantNoticeSuppressed")) {
                 put(IMPORTANT_NOTICE_SUPPRESSED, value.getBoolean("importantNoticeSuppressed"))
             }
-            if (value.has("mapSource")) put("mapSource", value.getString("mapSource"))
+            if (value.has("mapSource")) put("mapSource", MapSource.fromId(value.getString("mapSource")).id)
         }
         if (androidChanges.isNotEmpty()) changes[android] = androidChanges
         if (value.has("arrivalEnabled")) {

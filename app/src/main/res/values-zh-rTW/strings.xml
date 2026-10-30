@@ -828,4 +828,5 @@
     <string name="storage_timetable">路路通離線資料庫</string>
     <string name="storage_timetable_confirm">下次查詢時將重新下載路路通資料庫，需要網絡連線。車票、提醒和偏好設定將保留。</string>
     <string name="storage_test_screenshots">測試截圖</string>
+    <string name="map_source_openrailway">OpenRailwayMap</string>
 </resources>

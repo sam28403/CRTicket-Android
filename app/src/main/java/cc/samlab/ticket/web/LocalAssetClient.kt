@@ -19,6 +19,7 @@ class LocalAssetClient(
     private val toast: (String) -> Unit,
     private val onDocumentStarted: () -> Unit = {},
     private val allowTransport: Boolean = false,
+    private val railwaySource: String? = null,
     private val onMapError: () -> Unit = {},
 ) : WebViewClient() {
     companion object {
@@ -73,6 +74,12 @@ class LocalAssetClient(
         }
         if (allowTransport && !request.isForMainFrame &&
             MapResourcePolicy.isTransportResource(request.url.toString())) return null
+        if (railwaySource != null && !request.isForMainFrame && request.method == "GET") {
+            val resource = MapResourcePolicy.railwayGateway(request.url.toString(), railwaySource)
+            if (resource != null) return RailwayMapResources.load(
+                resource, railwaySource,
+            )
+        }
         if (!isLocal(request.url)) return errorResponse(403, "Forbidden")
         val path = request.url.path.orEmpty().removePrefix("/").ifEmpty { "index.html" }
         if (path.split('/').any { it == "." || it == ".." } || path.contains('\\')) {
@@ -91,6 +98,10 @@ class LocalAssetClient(
                         POLICY.replace("frame-src 'none'", "frame-src https://www.openstreetmap.org")
                             .replace("connect-src 'self' blob: data:",
                                 "connect-src 'self' blob: data: https://www.openstreetmap.org https://api.thunderforest.com")
+                    } else if (railwaySource != null) {
+                        POLICY.replace("connect-src 'self' blob: data:",
+                            "connect-src 'self' blob: data: https://tile.openstreetmap.org") +
+                            "; worker-src 'self' blob:"
                     } else POLICY,
                 ),
                 stream,

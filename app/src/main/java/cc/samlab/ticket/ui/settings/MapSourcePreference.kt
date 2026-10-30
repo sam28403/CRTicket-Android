@@ -9,6 +9,7 @@ import cc.samlab.ticket.R
 internal enum class MapSource(val id: String, val title: Int) {
     AUTO("auto", R.string.map_source_auto),
     TRANSPORT("transport", R.string.map_source_transport),
+    OPENRAILWAY("openrailway", R.string.map_source_openrailway),
     OSM("osm", R.string.map_source_osm),
     HOT("hot", R.string.map_source_hot),
     FRANCE("france", R.string.map_source_france),

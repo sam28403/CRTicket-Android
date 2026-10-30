@@ -19,6 +19,8 @@ internal val projectCredits = listOf(
     ProjectCredit("Axios", "https://axios-http.com/"),
     ProjectCredit("Day.js", "https://day.js.org/"),
     ProjectCredit("Apache ECharts", "https://echarts.apache.org/"),
+    ProjectCredit("MapLibre GL JS", "https://maplibre.org/"),
+    ProjectCredit("OpenRailwayMap", "https://openrailwaymap.app/"),
     ProjectCredit("Leaflet", "https://leafletjs.com/"),
     ProjectCredit("html2canvas", "https://html2canvas.hertzen.com/"),
     ProjectCredit("jsPDF", "https://github.com/parallax/jsPDF"),

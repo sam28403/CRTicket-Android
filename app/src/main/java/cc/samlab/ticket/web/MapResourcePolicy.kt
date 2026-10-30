@@ -5,6 +5,32 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 object MapResourcePolicy {
     const val TILE_ORIGIN = "https://a.tile.openstreetmap.fr https://tile.openstreetmap.org https://a.tile.opentopomap.org"
 
+    const val RAILWAY_ORIGIN = "https://openrailwaymap.app"
+
+    fun railwayGateway(value: String, source: String): String? {
+        val url = value.toHttpUrlOrNull() ?: return null
+        val origin = when (source) {
+            "openrailway" -> RAILWAY_ORIGIN
+            else -> return null
+        }
+        val prefix = "/railway-map/$source/"
+        if (url.scheme != "https" || url.host != "appassets.androidplatform.net" ||
+            url.port != 443 || url.username.isNotEmpty() || url.password.isNotEmpty() ||
+            !url.encodedPath.startsWith(prefix)) return null
+        return origin + "/" + url.encodedPath.removePrefix(prefix) +
+            (url.encodedQuery?.let { "?$it" } ?: "")
+    }
+
+    fun isRailwayResource(value: String, source: String = "openrailway"): Boolean {
+        val url = value.toHttpUrlOrNull() ?: return false
+        val origin = when (source) {
+            "openrailway" -> url.scheme == "https" && url.port == 443 && url.host == "openrailwaymap.app"
+            else -> false
+        }
+        return origin &&
+            url.username.isEmpty() && url.password.isEmpty()
+    }
+
     fun isTile(value: String): Boolean {
         val url = value.toHttpUrlOrNull() ?: return false
         val path = when (url.host) {

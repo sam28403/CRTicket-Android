@@ -119,7 +119,6 @@ class NativeStationBoardController(
             activity.runOnUiThread {
                 if (!closed && token == generation.get()) {
                     val state = board(value.optString("station"))
-                    state.station = value.optString("station")
                     state.loading = value.optBoolean("loading")
                     state.error = value.optString("error")
                     state.date = if (data == null) "" else value.optString("date")

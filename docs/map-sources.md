@@ -21,6 +21,12 @@ Android 使用本地偏好设置保存；网页使用浏览器本地存储。
 
 - 自动：依次尝试 OSM France HOT、OpenStreetMap 标准、OSM France 标准、OpenTopoMap。
 - OSM交通：使用 OSM 官方的 `transportmap` 嵌入页，保留其署名和交通图层。
+- OpenRailwayMap：使用 `openrailwaymap.app` 的官方矢量样式与铁路基础设施图层，
+  叠加 OpenStreetMap 标准底图，保留双方可见署名。MapLibre GL JS 按需加载；
+  支持车站定位和本地历史轨迹，完整轨迹不上传。
+  仅显示当前铁路基础设施，移除历史地图和地形数据来源，不额外连接这些可选服务。
+  MapLibre v6 的 Vite 接入按官方安装说明，使用 `?worker&url` 打包独立 Worker，
+  并在创建地图前调用 `setWorkerUrl`。Worker 随应用本地提供，不依赖外部 CDN。
 - OpenStreetMap 标准地图。
 - OSM France HOT：保留原有的默认地图样式。
 - OSM France 标准地图。
@@ -33,6 +39,20 @@ Android 使用本地偏好设置保存；网页使用浏览器本地存储。
 Android 额外监听该独立 WebView 中交通地图资源的 HTTP 和网络错误。
 地图 WebView 不暴露原生桥接；交通资源域名仅在该地图选择时放行。
 
+铁路矢量来源通过隔离地图 WebView 的 `/railway-map/{来源}/` 读取公开资源。
+Android 仅将所选来源的路径映射到固定服务域名，不转发 Cookie、账户凭据或完整轨迹，
+不跟随重定向，不允许获取脚本或 HTML，单资源上限 8 MiB，超时 20 秒。
+此适配处理 OpenRailwayMap 样式缺少跨域响应头的情况；WebView 继续禁止混合内容。
+Vite 开发预览提供相同固定来源代理；单独部署网页版时，服务器也需配置该路径的代理。
+自动模式仍只轮换原有栅格来源，不自动切入铁路矢量来源。
+
+2026-10-30 在 Pixel 8 Pro 的 CI 包上验证 OpenRailwayMap 北京站铁路图层、线路与站名已显示。
+其官方代理配置会拒绝没有 Referer 的瓦片和 TileJSON 请求；原生资源转发使用真实的
+`https://appassets.androidplatform.net/` 页面来源和 CRTicket 应用 User-Agent。
+
+已移除中国铁路地图及其专用代理、网络明文例外和致谢项。
+旧设置或备份中的 `cnrail` 兼容为“自动”，不再连接该服务。
+
 ## 服务使用
 
 这些公共服务不保证可用性，使用时必须保留可见署名，并遵守各提供方的使用条件。
@@ -41,6 +61,7 @@ Android 额外监听该独立 WebView 中交通地图资源的 HTTP 和网络错
 - [OpenStreetMap 瓦片政策](https://operations.osmfoundation.org/policies/tiles/)
 - [OSM France 地图及使用条件](https://www.openstreetmap.fr/fonds-de-carte/)
 - [OpenTopoMap](https://opentopomap.org/about)
+- [OpenRailwayMap 使用政策](https://github.com/hiddewie/OpenRailwayMap-vector/blob/master/USAGE.md)
 
 公共服务的“免费”不代表无限流量或服务保障；正式发布前应再次核对服务条款。
 

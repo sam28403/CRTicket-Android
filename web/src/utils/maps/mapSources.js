@@ -4,6 +4,7 @@ const franceCredit = `${osmCredit}, <a href="https://www.openstreetmap.fr/">OSM 
 export const mapSources = [
   { id: 'auto', name: '自动' },
   { id: 'transport', name: 'OSM交通' },
+  { id: 'openrailway', name: 'OpenRailwayMap' },
   {
     id: 'osm',
     name: 'OpenStreetMap',

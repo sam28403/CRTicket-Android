@@ -835,4 +835,5 @@
     <string name="storage_timetable">Lulutong offline database</string>
     <string name="storage_timetable_confirm">The Lulutong database will be downloaded again on the next query. A network connection will be required. Tickets, reminders and preferences will be kept.</string>
     <string name="storage_test_screenshots">Test screenshots</string>
+    <string name="map_source_openrailway">OpenRailwayMap</string>
 </resources>

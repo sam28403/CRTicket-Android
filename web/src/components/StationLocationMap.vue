@@ -1,9 +1,11 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted } from 'vue'
 import StationFallbackMap from './StationFallbackMap.vue'
 import { stationMapEmbedUrl } from '@/utils/maps/stationLocationMap.js'
 import { normalizeMapSource } from '@/utils/maps/mapSources.js'
 import { canConnectTransport } from '@/utils/maps/transportConnection.js'
+
+const RailwayVectorMap = defineAsyncComponent(() => import('./RailwayVectorMap.vue'))
 
 const props = defineProps({
   station: { type: String, required: true },
@@ -41,8 +43,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="station-location-map" role="region" :aria-label="`${station}车站地图`">
+    <RailwayVectorMap
+      v-if="selected === 'openrailway'" :station="station" :source="selected" @failed="fail"
+    />
     <iframe
-      v-if="selected === 'transport' && mapUrl"
+      v-else-if="selected === 'transport' && mapUrl"
       :src="mapUrl"
       :title="`${station}交通地图`"
       @load="loaded"

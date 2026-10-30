@@ -48,6 +48,9 @@ internal fun MapSurface(
                     settings.userAgentString += " CRTicket"
                     webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(message: ConsoleMessage): Boolean {
+                            if (message.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
+                                android.util.Log.w("CRTicketMap", message.message())
+                            }
                             if (message.message() == "CRTicketMap:failed") load.fail()
                             return true
                         }
@@ -64,6 +67,9 @@ internal fun MapSurface(
                         { uri -> context.startActivity(Intent(Intent.ACTION_VIEW, uri)) },
                         {},
                         allowTransport = source == MapSource.TRANSPORT,
+                        railwaySource = source.id.takeIf {
+                            source == MapSource.OPENRAILWAY
+                        },
                         onMapError = { post { load.fail() } },
                     )
                 }

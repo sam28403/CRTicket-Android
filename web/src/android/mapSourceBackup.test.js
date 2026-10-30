@@ -83,3 +83,16 @@ test('invalid source ids fail validation before writes and failed native restora
   }), /native commit failed/)
   assert.equal(target.getItem('mapSource'), 'osm')
 })
+
+
+test('retired railway source backups migrate both preference fields to automatic', () => {
+  for (const settings of [
+    { native: { mapSource: 'cnrail' } },
+    { storage: { mapSource: 'cnrail' } },
+    { native: { mapSource: 'cnrail' }, storage: { mapSource: 'hot' } },
+  ]) {
+    const result = validateAppSettings(settings)
+    assert.equal(result.native.mapSource, 'auto')
+    assert.equal(result.storage.mapSource, 'auto')
+  }
+})
