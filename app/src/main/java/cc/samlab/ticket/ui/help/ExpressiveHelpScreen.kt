@@ -1,8 +1,10 @@
 package cc.samlab.ticket.ui.help
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,33 +38,44 @@ internal fun ExpressiveHelpScreen(
     )
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         Surface(
-            modifier = Modifier.fillMaxSize().nestedScroll(behavior.nestedScrollConnection),
+            modifier = Modifier.fillMaxSize().then(
+                if (topic == null) Modifier.nestedScroll(behavior.nestedScrollConnection)
+                else Modifier,
+            ),
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(Modifier.testTag(if (topic == null) "help-index" else "help-${topic.id}")) {
-                SettingsHeader(
-                    behavior, onBack, embedded && topic == null,
-                    title = stringResource(topic?.title ?: R.string.home_help),
-                )
-                SettingsPanel(rememberScrollState(), "help-content", embedded) {
-                    if (topic == null) {
-                        SettingsGroup(stringResource(R.string.home_help_description), first = true) {
-                            helpTopics.forEachIndexed { index, item ->
-                                SettingsRow(
-                                    stringResource(item.title), "", index, helpTopics.size, true,
-                                    onClick = { onNavigate(item.route) },
-                                )
+                if (topic == null) {
+                    SettingsHeader(
+                        behavior, onBack, embedded,
+                        title = stringResource(R.string.home_help),
+                    )
+                } else {
+                    HelpTopicHeader(stringResource(topic.title), onBack)
+                }
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    SettingsPanel(rememberScrollState(), "help-content", embedded) {
+                        if (topic == null) {
+                            SettingsGroup(stringResource(R.string.home_help_description), first = true) {
+                                helpTopics.forEachIndexed { index, item ->
+                                    SettingsRow(
+                                        stringResource(item.title), "", index, helpTopics.size, true,
+                                        onClick = { onNavigate(item.route) },
+                                    )
+                                }
+                            }
+                        } else {
+                            SettingsGroup(stringResource(R.string.help_questions), first = true) {
+                                HelpTextCard(stringResource(topic.question), stringResource(topic.answer))
+                            }
+                            SettingsGroup(stringResource(R.string.help_rules)) {
+                                HelpTextCard(null, stringResource(topic.rules))
                             }
                         }
-                    } else {
-                        SettingsGroup(stringResource(R.string.help_questions), first = true) {
-                            HelpTextCard(stringResource(topic.question), stringResource(topic.answer))
-                        }
-                        SettingsGroup(stringResource(R.string.help_rules)) {
-                            HelpTextCard(null, stringResource(topic.rules))
-                        }
+                        androidx.compose.foundation.layout.Spacer(
+                            Modifier.fillMaxWidth().height(24.dp).testTag("help-content-end"),
+                        )
                     }
-                    androidx.compose.foundation.layout.Spacer(Modifier.padding(bottom = 24.dp))
                 }
             }
         }
