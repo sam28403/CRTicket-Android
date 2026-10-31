@@ -14,7 +14,9 @@ internal class TabletPageFixture(private val compose: ComposeTestRule) {
     val activity = launch()
 
     private fun launch(): MainActivity {
+        cc.samlab.ticket.ui.welcome.WelcomeState.complete(instrumentation.targetContext)
         shell("input keyevent KEYCODE_WAKEUP")
+        shell("wm dismiss-keyguard")
         return instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
@@ -27,7 +29,7 @@ internal class TabletPageFixture(private val compose: ComposeTestRule) {
             activity.setTurnScreenOn(true)
             activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        compose.waitUntil(20_000) {
+        compose.waitUntil(60_000) {
             var ready = false
             instrumentation.runOnMainSync {
                 ready = activity.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED) &&

@@ -105,6 +105,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
                     location, dark, pureBlack, folds, navigation, navigator,
                     onNavigate = onNavigate,
                     onDestination = { destination, back, mirror ->
+                        if (!back) pages.prepareQueryEntry(destination)
                         applyLocation(destination)
                         onNativeRoute(destination, back, mirror)
                     },
@@ -128,6 +129,10 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
 
     private fun applyLocation(destination: String) {
         val previous = location
+        if (ExpressiveRoutes.path(destination) in setOf("/", "/home")) {
+            pages.prepareQueryEntry("/station")
+            pages.prepareQueryEntry("/railfan/routing")
+        }
         location = destination
         val page = when (ExpressiveRoutes.path(destination)) {
             "/settings/sale-reminders" -> SettingsPage.SALE_REMINDERS

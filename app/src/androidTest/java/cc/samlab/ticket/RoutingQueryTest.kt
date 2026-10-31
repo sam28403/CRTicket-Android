@@ -1,6 +1,8 @@
 package cc.samlab.ticket
 
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertTrue
@@ -11,6 +13,35 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class RoutingQueryTest {
     @get:Rule val compose = createEmptyComposeRule()
+
+    @Test fun queryInputsAreEmptyOnNewEntry() {
+        val fixture = TabletPageFixture(compose)
+        try {
+            listOf(
+                Triple("/station", "station-query", "北京南"),
+                Triple("/railfan/routing", "routing-search", "G1"),
+            ).forEach { (route, tag, input) ->
+                fixture.navigate(route)
+                compose.waitUntil(10_000) {
+                    compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
+                }
+                compose.onNodeWithTag(tag).performTextReplacement(input)
+                fixture.navigate("/")
+                compose.waitUntil(10_000) {
+                    compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isEmpty()
+                }
+                fixture.navigate(route)
+                compose.waitUntil(10_000) {
+                    compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
+                }
+                compose.onNodeWithTag(tag).assert(
+                    SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString("")),
+                )
+            }
+        } finally {
+            fixture.close()
+        }
+    }
 
     @Test fun routingCardsHighlightAndBlockSpecialServices() {
         val fixture = TabletPageFixture(compose)

@@ -63,6 +63,7 @@ internal class RoutingQueryController(
         requestId++
         input = ""
         submitted = ""
+        date = ""
         groups = emptyList()
         loading = false
         error = false

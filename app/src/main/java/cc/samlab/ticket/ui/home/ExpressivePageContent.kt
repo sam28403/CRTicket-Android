@@ -45,6 +45,13 @@ internal class ExpressivePageContent(
     private val statisticsBody = StatisticsBodyLayout(activity)
     private val backend = web.parent as FrameLayout
 
+    fun prepareQueryEntry(location: String) {
+        when (ExpressiveRoutes.path(location)) {
+            "/station" -> station.resetInput(location)
+            "/railfan/routing" -> trainList.routing.clear()
+        }
+    }
+
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
         when (ExpressiveRoutes.path(location)) {

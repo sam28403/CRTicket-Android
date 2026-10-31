@@ -43,6 +43,13 @@ class NativeStationBoardController(
     internal fun stateFor(location: String): StationBoardState =
         board(Uri.parse(location).getQueryParameter("station").orEmpty())
 
+    internal fun resetInput(location: String) {
+        val state = stateFor(location)
+        state.selectStation(Uri.parse(location).getQueryParameter("station").orEmpty())
+        suggestionTarget = null
+        suggestionQuery = ""
+    }
+
     internal fun requestVisitCards(stations: List<String>) {
         visitsRequestId++
         visitsLoading = true
