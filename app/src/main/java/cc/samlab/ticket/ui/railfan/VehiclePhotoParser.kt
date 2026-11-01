@@ -17,6 +17,20 @@ internal object VehiclePhotoParser {
         .replace(Regex("[^A-Z0-9]"), "")
         .replace(Regex("^CRH?"), "")
 
+    fun searchKeyword(input: String): String? {
+        val match = Regex("^([0-9]+[A-Z][A-Z0-9]*?)([0-9]{4})$")
+            .matchEntire(identity(input)) ?: return null
+        var model = match.groupValues[1]
+        val prefix = if (model.startsWith("400") || model.startsWith("300") || model.startsWith("200")) {
+            model = model.replace(Regex("^((?:400|300)(?:AF|BF))([A-Z]+)$"), "$1-$2")
+            "CR"
+        } else {
+            if (model == "1AA" || model == "6AA") model = model.dropLast(1) + "-A"
+            "CRH"
+        }
+        return "$prefix$model-${match.groupValues[2]}"
+    }
+
     private fun text(value: String): String = value
         .replace(Regex("<[^>]*>"), " ")
         .replace("&nbsp;", " ").replace("&amp;", "&")
@@ -55,7 +69,10 @@ internal object VehiclePhotoParser {
         val known = records.flatMap { it.split('+') }.map(::identity).distinct()
         if (known.size > 1) return null
         val keyword = identity(input)
-        val matches = photos.filter { identity(it.vehicle).endsWith(keyword) }
+        val matches = photos.filter {
+            if (keyword.any { char -> char in 'A'..'Z' }) identity(it.vehicle) == keyword
+            else identity(it.vehicle).endsWith(keyword)
+        }
         if (matches.map { identity(it.vehicle) }.distinct().size != 1) return null
         return matches.firstOrNull()?.takeIf {
             known.isEmpty() || identity(it.vehicle) == known.single()

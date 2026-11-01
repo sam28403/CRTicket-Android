@@ -37,15 +37,19 @@ internal fun VehicleQueryResults(
 ) {
     val context = LocalContext.current.applicationContext
     var photo by remember(query) { mutableStateOf<VehiclePhoto?>(null) }
-    LaunchedEffect(query, rows, loading, active) {
-        if (loading || !active) return@LaunchedEffect
+    val exactPhoto = VehiclePhotoParser.searchKeyword(query.keyword) != null
+    LaunchedEffect(query, if (exactPhoto) null else rows, if (exactPhoto) false else loading, active) {
+        if ((!exactPhoto && loading) || !active) return@LaunchedEffect
         photo = try {
-            VehiclePhotoRepository.load(context, query, rows)
+            VehiclePhotoRepository.load(context, query, if (exactPhoto) emptyList() else rows)
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
             null
         }
+    }
+    val visiblePhoto = photo?.takeIf {
+        VehiclePhotoParser.select(query.keyword, rows.map { row -> row.vehicle }, listOf(it.info)) != null
     }
     val pull = rememberPullToRefreshState()
     val description = stringResource(R.string.vehicle_query_refresh)
@@ -71,12 +75,12 @@ internal fun VehicleQueryResults(
                 VehicleQueryMessage(R.string.vehicle_query_error, onRetry)
             }
             if (rows.isNotEmpty()) VehicleHistoryGrid(
-                rows, query.byTrain, trainRows, Modifier.weight(1f), onVehicle, onNavigate, photo,
-            ) else if (!loading) {
-                photo?.let {
+                rows, query.byTrain, trainRows, Modifier.weight(1f), onVehicle, onNavigate, visiblePhoto,
+            ) else {
+                visiblePhoto?.let {
                     VehiclePhotoCard(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp))
                 }
-                QueryResultEmptyState(
+                if (!loading) QueryResultEmptyState(
                     message = stringResource(
                         if (error) R.string.vehicle_query_error else R.string.vehicle_query_empty,
                     ),

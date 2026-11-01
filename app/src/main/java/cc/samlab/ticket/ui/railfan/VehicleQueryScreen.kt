@@ -1,11 +1,14 @@
 package cc.samlab.ticket.ui.railfan
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import cc.samlab.ticket.ui.trainlist.TrainListRow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -37,6 +40,9 @@ internal fun VehicleQueryScreen(
     var submitted by rememberSaveable { mutableStateOf("") }
     var submittedByTrain by rememberSaveable { mutableStateOf(false) }
     var revision by remember { mutableIntStateOf(0) }
+    val pages = remember { mutableStateListOf<VehicleQueryPage>() }
+    val pageState = rememberSaveableStateHolder()
+    var restoredTrainRows by remember { mutableStateOf<Map<String, TrainListRow>?>(null) }
     var generation by remember { mutableIntStateOf(0) }
     var query by remember { mutableStateOf<VehicleSearch?>(null) }
     var rows by remember { mutableStateOf<List<VehicleHistory>>(emptyList()) }
@@ -47,11 +53,22 @@ internal fun VehicleQueryScreen(
     val scope = rememberCoroutineScope()
     var job by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
-    fun search(value: String, forceTrain: Boolean = false, refresh: Boolean = false) {
+    fun search(
+        value: String,
+        forceTrain: Boolean = false,
+        refresh: Boolean = false,
+        rememberPrevious: Boolean = true,
+    ) {
         val parsed = if (forceTrain) VehicleSearch(value, true) else VehicleSearch.parse(value)
         invalid = parsed == null
         if (parsed == null) return
+        if (!refresh && rememberPrevious && parsed != query) {
+            pages.add(VehicleQueryPage(
+                revision, query, rows, restoredTrainRows ?: timetable.vehicleRows.toMap(), error, loading,
+            ))
+        }
         job?.cancel()
+        if (!refresh) restoredTrainRows = null
         input = parsed.keyword
         submitted = parsed.keyword
         submittedByTrain = parsed.byTrain
@@ -70,6 +87,7 @@ internal fun VehicleQueryScreen(
                 val result = VehicleQueryRepository.search(parsed)
                 if (token == generation) {
                     rows = result
+                    restoredTrainRows = null
                     if (!parsed.byTrain) timetable.requestVehicleRows(result, keepExisting = refresh)
                 }
             } catch (cancelled: CancellationException) {
@@ -85,7 +103,36 @@ internal fun VehicleQueryScreen(
         }
     }
 
+    fun returnToPrevious() {
+        if (pages.isEmpty()) {
+            onBack()
+            return
+        }
+        generation++
+        job?.cancel()
+        pageState.removeState(revision)
+        val previous = pages.removeAt(pages.lastIndex)
+        revision = previous.id
+        query = previous.query
+        input = previous.query?.keyword.orEmpty()
+        submitted = input
+        submittedByTrain = previous.query?.byTrain ?: false
+        rows = previous.rows
+        restoredTrainRows = previous.trainRows
+        error = previous.error
+        loading = false
+        refreshing = false
+        invalid = false
+        if (previous.loading && previous.query != null) {
+            search(input, submittedByTrain, refresh = true, rememberPrevious = false)
+        }
+    }
+
+    BackHandler(enabled = active && pages.isNotEmpty()) { returnToPrevious() }
+
     fun clearSearch() {
+        pages.clear()
+        restoredTrainRows = null
         revision++
         generation++
         job?.cancel()
@@ -114,7 +161,7 @@ internal fun VehicleQueryScreen(
                     title = { Text(stringResource(R.string.railfan_vehicle), fontFamily = projectTitleFont) },
                     navigationIcon = {
                         if (!embedded) FilledTonalIconButton(
-                            onClick = onBack,
+                            onClick = ::returnToPrevious,
                             modifier = Modifier.padding(start = 8.dp),
                         ) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.about_back))
@@ -132,21 +179,23 @@ internal fun VehicleQueryScreen(
                         search(input.trim().uppercase(), forceTrain = sameTrain)
                     },
                 )
-                if (query == null) VehicleQueryWelcome(
-                        history, active, Modifier.weight(1f),
-                        onClearHistory = { historyStore.clear(); history = emptyList() },
-                        onSearch = { search(it) },
-                    )
-                else key(revision) {
-                    VehicleQueryResults(
-                        query!!, rows, timetable.vehicleRows, loading, refreshing, error,
-                        Modifier.weight(1f),
-                        onRefresh = { search(submitted, submittedByTrain, refresh = true) },
-                        onRetry = { search(submitted, submittedByTrain, refresh = rows.isNotEmpty()) },
-                        onVehicle = { search(it) },
-                        onNavigate = onNavigate,
-                        active = active,
-                    )
+                pageState.SaveableStateProvider(revision) {
+                    if (query == null) VehicleQueryWelcome(
+                            history, active, Modifier.weight(1f),
+                            onClearHistory = { historyStore.clear(); history = emptyList() },
+                            onSearch = { search(it) },
+                        )
+                    else key(revision) {
+                        VehicleQueryResults(
+                            query!!, rows, restoredTrainRows ?: timetable.vehicleRows, loading, refreshing, error,
+                            Modifier.weight(1f),
+                            onRefresh = { search(submitted, submittedByTrain, refresh = true) },
+                            onRetry = { search(submitted, submittedByTrain, refresh = rows.isNotEmpty()) },
+                            onVehicle = { search(it) },
+                            onNavigate = onNavigate,
+                            active = active,
+                        )
+                    }
                 }
             }
         }

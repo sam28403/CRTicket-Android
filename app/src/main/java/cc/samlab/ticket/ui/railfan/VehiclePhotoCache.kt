@@ -16,7 +16,8 @@ internal object VehiclePhotoCache {
     private fun file(context: Context, url: String): File {
         val key = MessageDigest.getInstance("SHA-256").digest(url.toByteArray())
             .joinToString("") { "%02x".format(it) }
-        return File(directory(context), "$key.jpg")
+        val extension = if (url.startsWith("metadata:")) "json" else "jpg"
+        return File(directory(context), "$key.$extension")
     }
 
     @Synchronized

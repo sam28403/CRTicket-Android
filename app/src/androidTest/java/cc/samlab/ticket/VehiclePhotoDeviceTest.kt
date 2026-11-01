@@ -21,6 +21,7 @@ class VehiclePhotoDeviceTest {
 
     @Test fun photoWithoutHistoryAndUniqueAliasOpenDetails() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val coldStart = System.nanoTime()
         val photo = runBlocking {
             VehiclePhotoRepository.load(context, VehicleSearch("400BFZ0524", false), emptyList())
         }
@@ -28,6 +29,16 @@ class VehiclePhotoDeviceTest {
         assertTrue(photo!!.image.width > 0)
         assertTrue(photo.info.vehicle.contains("0524"))
         assertTrue(photo.info.author.isNotBlank())
+        val coldMillis = (System.nanoTime() - coldStart) / 1_000_000
+        val warmStart = System.nanoTime()
+        val cached = runBlocking {
+            VehiclePhotoRepository.load(context, VehicleSearch("CR400BF-Z-0524", false), emptyList())
+        }
+        val warmMillis = (System.nanoTime() - warmStart) / 1_000_000
+        assertNotNull(cached)
+        assertEquals(photo.info, cached!!.info)
+        assertTrue("Cached photo should not wait for HTTP: $warmMillis ms", warmMillis < 1500)
+        android.util.Log.i("VehiclePhotoPerformance", "first=$coldMillis ms cached=$warmMillis ms")
         assertNull(runBlocking {
             VehiclePhotoRepository.load(context, VehicleSearch("5033", false), emptyList())
         })

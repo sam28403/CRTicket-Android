@@ -73,21 +73,9 @@ internal object VehiclePhotoRepository {
             if (vehicles.flatMap { it.split('+') }.map(VehiclePhotoParser::identity).distinct().size > 1) {
                 return@withContext null
             }
-            val photos = mutableListOf<VehiclePhotoInfo>()
-            // Inspect every result page before claiming a unique vehicle match.
-            for (page in 1..5) {
-                val request = Request.Builder().url("$ORIGIN/soso.asp?keyword=$number&page=$page")
-                    .header("User-Agent", "CRTicketAndroid")
-                    .build()
-                val html = bytes(request).toString(Charset.forName("GB18030"))
-                photos += VehiclePhotoParser.parse(html)
-                val pages = Regex("总页数：[\\s\\S]*?<span>([0-9]+)</span>")
-                    .find(html)?.groupValues?.get(1)?.toIntOrNull() ?: return@withContext null
-                if (pages > 5) return@withContext null
-                if (page >= pages) break
-            }
-            val info = VehiclePhotoParser.select(query.keyword, vehicles, photos)
-                ?: return@withContext null
+            val cached = VehiclePhotoMetadata.read(context, query)
+                ?.takeIf { VehiclePhotoParser.select(query.keyword, vehicles, listOf(it)) != null }
+            val info = cached ?: findPhoto(query, vehicles, number) ?: return@withContext null
             val data = VehiclePhotoCache.read(context, info.imageUrl)
                 ?: bytes(Request.Builder().url(info.imageUrl)
                 .header("Referer", info.sourceUrl).header("User-Agent", "CRTicketAndroid").build())
@@ -103,7 +91,39 @@ internal object VehiclePhotoRepository {
             BitmapFactory.decodeByteArray(data, 0, data.size, options)?.asImageBitmap()
                 ?.let {
                     VehiclePhotoCache.write(context, info.imageUrl, data, cacheToken)
+                    if (cached == null) VehiclePhotoMetadata.write(context, query, info, cacheToken)
                     VehiclePhoto(info, it)
                 }
         }
+
+    private suspend fun findPhoto(
+        query: VehicleSearch,
+        vehicles: List<String>,
+        number: String,
+    ): VehiclePhotoInfo? {
+        val exact = VehiclePhotoParser.searchKeyword(query.keyword)
+        for (keyword in listOfNotNull(exact, number).distinct()) {
+            val photos = mutableListOf<VehiclePhotoInfo>()
+            for (page in 1..5) {
+                val request = Request.Builder()
+                    .url("$ORIGIN/soso.asp?keyword=$keyword&page=$page")
+                    .header("User-Agent", "CRTicketAndroid").build()
+                val html = bytes(request).toString(Charset.forName("GB18030"))
+                photos += VehiclePhotoParser.parse(html)
+                // A full model and number identifies one vehicle, even with multiple photos.
+                if (exact != null) {
+                    VehiclePhotoParser.select(query.keyword, vehicles, photos)?.let { return it }
+                }
+                val pages = Regex("总页数：[\\s\\S]*?<span>([0-9]+)</span>")
+                    .find(html)?.groupValues?.get(1)?.toIntOrNull() ?: return null
+                if (pages > 5) break
+                if (page >= pages) {
+                    VehiclePhotoParser.select(query.keyword, vehicles, photos)?.let { return it }
+                    break
+                }
+            }
+        }
+        return null
+    }
+
 }

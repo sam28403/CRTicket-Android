@@ -44,4 +44,12 @@ class VehiclePhotoTest {
         assertNull(VehiclePhotoParser.select("400BFZ0525", emptyList(), listOf(photo)))
         assertTrue(VehiclePhotoParser.parse(html.replace("/xt/uploadfiles/", "http://other.test/")).isEmpty())
     }
+
+    @Test fun buildsPreciseSearchesForCompleteVehicleNumbers() {
+        assertEquals("CRH2A-2001", VehiclePhotoParser.searchKeyword("CRH2A-2001"))
+        assertEquals("CR400BF-Z-0524", VehiclePhotoParser.searchKeyword("400BFZ0524"))
+        assertNull(VehiclePhotoParser.searchKeyword("5033"))
+        assertNull(VehiclePhotoParser.searchKeyword("BFZ"))
+    }
+
 }
