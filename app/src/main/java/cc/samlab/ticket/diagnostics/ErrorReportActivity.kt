@@ -36,7 +36,7 @@ class ErrorReportActivity : AppCompatActivity() {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Button(onClick = {
                                 getSystemService(ClipboardManager::class.java).setPrimaryClip(
-                                    ClipData.newPlainText("CRTicket error report", report),
+                                    ClipData.newPlainText(getString(R.string.home_title), report),
                                 )
                             }) { Text(stringResource(R.string.failure_copy)) }
                             Button(onClick = {

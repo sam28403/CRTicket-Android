@@ -177,6 +177,10 @@ class MainActivity : AppCompatActivity() {
             assets,
             {
                 appearance.onPageReady(resources.configuration)
+                webView.evaluateJavascript(
+                    "document.title=${org.json.JSONObject.quote(getString(R.string.home_title))};",
+                    null,
+                )
                 refresh.finish()
             },
             ::openExternal,

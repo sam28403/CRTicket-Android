@@ -13,7 +13,8 @@ internal object ErrorReports {
     @Synchronized
     fun save(context: Context, kind: String, thread: Thread, error: Throwable?) {
         val report = buildString {
-            appendLine("CRTicket ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+            appendLine("${context.getString(cc.samlab.ticket.R.string.home_title)} " +
+                "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
             appendLine("Device: ${Build.MANUFACTURER} ${Build.MODEL}")
             appendLine("Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
             appendLine("Time: ${java.time.Instant.now()}")

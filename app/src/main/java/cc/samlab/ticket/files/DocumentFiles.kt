@@ -69,7 +69,7 @@ class DocumentFiles(
                     try {
                         val safeName = filename.substringAfterLast('/').substringAfterLast('\\')
                             .replace(Regex("[\\p{Cntrl}]"), "").take(180)
-                            .ifEmpty { "CRTicket-export" }
+                            .ifEmpty { "${activity.getString(R.string.home_title)}-export" }
                         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
                             .setType(mime.substringBefore(';').ifEmpty { "application/octet-stream" })

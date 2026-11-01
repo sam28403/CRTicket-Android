@@ -1,0 +1,6 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_icon">
+    <target android:name="mark" android:animation="@animator/splash_mark_enter" />
+    <target android:name="paper" android:animation="@animator/splash_ticket_enter" />
+    <target android:name="ci_ink" android:animation="@animator/splash_stub_ink" />
+</animated-vector>

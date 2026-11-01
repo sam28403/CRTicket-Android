@@ -77,7 +77,13 @@ android {
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
     }
+    sourceSets.getByName("ci") {
+        res.srcDir(layout.buildDirectory.dir("generated/ci-branding/res").get().asFile.path)
+        assets.srcDir(layout.buildDirectory.dir("generated/ci-branding/assets").get().asFile.path)
+    }
 }
+
+apply(from = rootProject.file("gradle/ci-branding.gradle.kts"))
 
 dependencies {
     implementation(libs.konfetti.compose)

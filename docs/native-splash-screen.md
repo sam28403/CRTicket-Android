@@ -29,6 +29,17 @@ Android 12（API 31）及以上使用系统 SplashScreen。MainActivity 声明�
 启动背景跟随系统深浅色，应用内强制主题和纯黑偏好在正常页面中生效。
 首页产品图标和关于 Logo 的既有行为保持原样。
 
+## CI 品牌
+
+CI 构建通过 `src/ci/res/drawable` 覆盖启动动画，采用与 CI 启动图标一致的橙底票面。
+票面展开后显现 CI 字形，继续沿用系统开屏及退出过渡，不增加启动等待。
+CI 首页产品图标也使用独立票面图案。
+
+`gradle/ci-branding.gradle.kts` 在构建时从各语言的 `values*/strings.xml` 生成 CI 资源覆盖，
+名称统一为 CRTicket CI，覆盖首页、欢迎页、权限、分享和导出文案。
+应用内更新说明使用 CI 专属 assets 副本，源版本日志保持不变；仓库链接和备份协议标识不改名。
+生成文件位于 `app/build/generated/ci-branding/`，不手工维护第二套翻译。
+
 ## 参考
 
 - [Google 开屏规范与官方素材包](https://developer.android.com/develop/ui/views/launch/splash-screen)
