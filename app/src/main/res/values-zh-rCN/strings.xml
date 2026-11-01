@@ -837,4 +837,14 @@
     <string name="failure_test_worker">模拟后台线程崩溃</string>
     <string name="failure_test_anr">模拟无响应</string>
     <string name="storage_error_logs">错误日志</string>
+    <string name="vehicle_photo_unknown">未知</string>
+    <string name="vehicle_photo_date">拍摄日期：%1$s</string>
+    <string name="vehicle_photo_allocation">拍摄配属：%1$s</string>
+    <string name="vehicle_photo_line">拍摄线路：%1$s</string>
+    <string name="vehicle_photo_city">拍摄城市：%1$s</string>
+    <string name="vehicle_photo_train">拍摄车次：%1$s</string>
+    <string name="vehicle_photo_author">拍摄作者：%1$s</string>
+    <string name="vehicle_photo_source">出处：下关站</string>
+    <string name="vehicle_photo_close">关闭</string>
+    <string name="storage_vehicle_photos">车辆照片缓存</string>
 </resources>

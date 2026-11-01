@@ -9,6 +9,7 @@
 | --- | --- | --- |
 | 网页与地图缓存 | WebView HTTP 资源缓存 | 由 WebView 清理，后续访问重新下载 |
 | 路路通离线数据库 | IndexedDB 中 `crticket-phone-timetable/archives/current` 数据包 | 清理磁盘与加载器内存缓存，下次查询联网重新下载 |
+| 车辆照片缓存 | `cache/vehicle-photos` 下已成功解码的下关站照片，上限 32 MiB | 支持单项及全部清理，后续查看时重新下载 |
 | 铁路线路缓存 | `cache/railway-lines` | 查询线路时重新获取 |
 | 分享图片 | `cache/quiz-share` | 删除生成的答题分享图片 |
 | 导出临时文件 | `cache/export-*.tmp` | 删除导出操作留下的临时文件 |
@@ -77,3 +78,17 @@ WebView 在页面使用期间可能继续生成资源缓存，清理后的占用
 - 设备测试结束后检查 CI 包外部 files 目录，已无残留文件。
   截图专项不再生成新的截图，避免验证完成后重新出现该项。
 - 日志：`logs/archive/build/logs/storage-screenshot-device-tests.log`。
+
+车辆照片缓存仅保存图片，页面当前正在展示的图片属于界面状态，清理后离开页面即释放。
+清理通过代次检查阻止此前发起的请求在完成后重新写入缓存；新查询仍可产生新的缓存。
+照片缓存不包含摄影作者等检索信息，每次查询仍向下关站核对车辆与拍摄信息。
+
+## 车辆照片缓存验证
+
+2026-11-01，真实 Pixel Tablet 的照片专项验证缓存占用、删除及清理前请求不得写回；
+Pixel 8 Pro 的 `StorageSettingsDeviceTest` 最终通过，覆盖照片单项清理的取消与确认、
+全部清理，以及个人数据、非目标文件和 WebView localStorage 保留。
+全部清理同时覆盖扫描后才生成的照片缓存，即使上次扫描照片占用为零也会执行清理。
+测试已补齐对取消弹窗及后台扫描完成状态的等待；平板清理页测试遇到焦点和导航等待问题，
+不记为该平板上的完整清理页回归通过。
+最终日志：`logs/vehicle-photo-storage-complete.log`。

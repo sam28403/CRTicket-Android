@@ -2,7 +2,6 @@ package cc.samlab.ticket
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.ui.notice.IMPORTANT_NOTICE_SUPPRESSED
@@ -25,9 +24,10 @@ class StorageSettingsDeviceTest {
         val line = File(context.cacheDir, "railway-lines/storage-device-test.tmp")
         val share = File(context.cacheDir, "quiz-share/storage-device-test.png")
         val export = File(context.cacheDir, "export-storage-device-test.tmp")
+        val photo = File(context.cacheDir, "vehicle-photos/storage-device-test.jpg")
         val saved = File(context.filesDir, "storage-device-test.keep")
         val unrelated = File(context.cacheDir, "storage-device-test.keep")
-        listOf(line, share, export, saved, unrelated).forEach {
+        listOf(line, share, export, photo, saved, unrelated).forEach {
             it.parentFile!!.mkdirs()
             it.writeBytes(ByteArray(8192) { 42 })
         }
@@ -48,23 +48,56 @@ class StorageSettingsDeviceTest {
                 .performScrollTo().performClick()
             compose.onNodeWithTag("storage-confirm").assertIsDisplayed()
             fixture.capture("storage-confirmation")
-            pressBack()
+            compose.onNodeWithText(context.getString(android.R.string.cancel)).performClick()
+            compose.waitUntil(5_000) {
+                compose.onAllNodesWithTag("storage-confirm").fetchSemanticsNodes().isEmpty()
+            }
             assertTrue(line.exists())
             compose.onNode(hasText(context.getString(R.string.storage_lines)) and hasClickAction())
                 .performScrollTo().performClick()
             compose.onNodeWithTag("storage-confirm").performClick()
             compose.waitUntil(10_000) { !line.exists() }
+            compose.waitUntil(10_000) {
+                compose.onAllNodes(hasText(context.getString(R.string.storage_vehicle_photos)) and hasClickAction())
+                    .fetchSemanticsNodes().isNotEmpty()
+            }
             assertTrue(share.exists())
             assertTrue(export.exists())
+            assertTrue(photo.exists())
+            compose.onNode(hasText(context.getString(R.string.storage_vehicle_photos)) and hasClickAction())
+                .performScrollTo().performClick()
+            compose.onNodeWithText(context.getString(android.R.string.cancel)).performClick()
+            compose.waitUntil(5_000) {
+                compose.onAllNodesWithTag("storage-confirm").fetchSemanticsNodes().isEmpty()
+            }
+            assertTrue(photo.exists())
+            compose.onNode(hasText(context.getString(R.string.storage_vehicle_photos)) and hasClickAction())
+                .performScrollTo().performClick()
+            compose.onNodeWithTag("storage-confirm").performClick()
+            compose.waitUntil(10_000) { !photo.exists() }
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithTag("storage-clear-all").fetchSemanticsNodes().any {
+                    !it.config.contains(androidx.compose.ui.semantics.SemanticsProperties.Disabled)
+                }
+            }
+            assertTrue(share.exists())
+            photo.parentFile!!.mkdirs()
+            photo.writeBytes(ByteArray(8192))
             compose.onNodeWithTag("storage-clear-all").performScrollTo().performClick()
             compose.onNodeWithTag("storage-confirm").performClick()
-            compose.waitUntil(10_000) { !share.exists() && !export.exists() }
+            compose.waitUntil(10_000) { !share.exists() && !export.exists() && !photo.exists() }
             assertEquals(8192, saved.length().toInt())
             assertEquals(8192, unrelated.length().toInt())
             assertEquals("\"retained\"", fixture.evaluate("localStorage.getItem('storage-device-test')"))
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithTag("storage-result").fetchSemanticsNodes().isNotEmpty()
+            }
             compose.onNodeWithTag("storage-result").performScrollTo().assertIsDisplayed()
             fixture.capture("storage-after-cleanup")
-            pressBack()
+            fixture.shell("input keyevent KEYCODE_BACK")
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithTag("settings-content").fetchSemanticsNodes().isNotEmpty()
+            }
             compose.onNodeWithTag("settings-content").assertIsDisplayed()
             compose.onNode(hasText(context.getString(R.string.settings_storage)) and hasClickAction())
                 .performScrollTo().performClick()
@@ -72,7 +105,7 @@ class StorageSettingsDeviceTest {
         } finally {
             fixture.evaluate("localStorage.removeItem('storage-device-test')")
             fixture.close()
-            listOf(line, share, export, saved, unrelated).forEach { it.delete() }
+            listOf(line, share, export, photo, saved, unrelated).forEach { it.delete() }
             preferences.edit().putBoolean(IMPORTANT_NOTICE_SUPPRESSED, suppressed).commit()
             welcome.close()
         }

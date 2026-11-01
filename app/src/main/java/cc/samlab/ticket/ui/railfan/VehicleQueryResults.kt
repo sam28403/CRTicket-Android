@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CancellationException
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -32,6 +35,18 @@ internal fun VehicleQueryResults(
     onNavigate: (String) -> Unit,
     active: Boolean = true,
 ) {
+    val context = LocalContext.current.applicationContext
+    var photo by remember(query) { mutableStateOf<VehiclePhoto?>(null) }
+    LaunchedEffect(query, rows, loading, active) {
+        if (loading || !active) return@LaunchedEffect
+        photo = try {
+            VehiclePhotoRepository.load(context, query, rows)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            null
+        }
+    }
     val pull = rememberPullToRefreshState()
     val description = stringResource(R.string.vehicle_query_refresh)
     PullToRefreshBox(
@@ -56,15 +71,20 @@ internal fun VehicleQueryResults(
                 VehicleQueryMessage(R.string.vehicle_query_error, onRetry)
             }
             if (rows.isNotEmpty()) VehicleHistoryGrid(
-                rows, query.byTrain, trainRows, Modifier.weight(1f), onVehicle, onNavigate,
-            ) else if (!loading) QueryResultEmptyState(
-                message = stringResource(
-                    if (error) R.string.vehicle_query_error else R.string.vehicle_query_empty,
-                ),
-                active = active,
-                modifier = Modifier.weight(1f).testTag("vehicle-query-empty"),
-                onRetry = if (error) onRetry else null,
-            )
+                rows, query.byTrain, trainRows, Modifier.weight(1f), onVehicle, onNavigate, photo,
+            ) else if (!loading) {
+                photo?.let {
+                    VehiclePhotoCard(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp))
+                }
+                QueryResultEmptyState(
+                    message = stringResource(
+                        if (error) R.string.vehicle_query_error else R.string.vehicle_query_empty,
+                    ),
+                    active = active,
+                    modifier = Modifier.weight(1f).testTag("vehicle-query-empty"),
+                    onRetry = if (error) onRetry else null,
+                )
+            }
         }
     }
 }

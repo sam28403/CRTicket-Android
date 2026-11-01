@@ -837,4 +837,14 @@
     <string name="failure_test_worker">Simulate background thread crash</string>
     <string name="failure_test_anr">Simulate unresponsive app</string>
     <string name="storage_error_logs">Error logs</string>
+    <string name="vehicle_photo_unknown">Unknown</string>
+    <string name="vehicle_photo_date">Photo date: %1$s</string>
+    <string name="vehicle_photo_allocation">Allocation: %1$s</string>
+    <string name="vehicle_photo_line">Railway line: %1$s</string>
+    <string name="vehicle_photo_city">City: %1$s</string>
+    <string name="vehicle_photo_train">Train: %1$s</string>
+    <string name="vehicle_photo_author">Photographer: %1$s</string>
+    <string name="vehicle_photo_source">Source: Xiaguanzhan</string>
+    <string name="vehicle_photo_close">Close</string>
+    <string name="storage_vehicle_photos">Vehicle photo cache</string>
 </resources>

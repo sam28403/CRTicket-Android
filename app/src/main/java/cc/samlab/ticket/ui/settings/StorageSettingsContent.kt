@@ -33,7 +33,8 @@ internal fun StorageSettingsContent(controller: StorageController, visible: Bool
     SettingsPanel(rememberScrollState(), "settings-storage") {
         StorageOverview(controller, format) {
             pending = kinds.filter {
-                (snapshot.sizes[it] ?: 0) > 0 || it == StorageKind.TEST_SCREENSHOTS
+                (snapshot.sizes[it] ?: 0) > 0 ||
+                    it == StorageKind.TEST_SCREENSHOTS || it == StorageKind.VEHICLE_PHOTOS
             }.toSet()
         }
         SettingsGroup(stringResource(R.string.storage_categories)) {

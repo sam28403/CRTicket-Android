@@ -36,6 +36,7 @@ internal fun VehicleHistoryGrid(
     modifier: Modifier,
     onVehicle: (String) -> Unit,
     onNavigate: (String) -> Unit,
+    photo: VehiclePhoto? = null,
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val formatter = remember(locale) {
@@ -72,6 +73,9 @@ internal fun VehicleHistoryGrid(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            if (photo != null) item(key = "photo", span = { GridItemSpan(maxLineSpan) }) {
+                VehiclePhotoCard(photo, Modifier.fillMaxWidth().padding(top = 12.dp))
+            }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     stringResource(

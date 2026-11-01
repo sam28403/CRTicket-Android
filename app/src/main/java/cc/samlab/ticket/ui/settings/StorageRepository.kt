@@ -2,6 +2,7 @@ package cc.samlab.ticket.ui.settings
 
 import android.content.Context
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.railfan.VehiclePhotoCache
 import cc.samlab.ticket.diagnostics.ErrorReports
 import java.io.File
 
@@ -9,6 +10,7 @@ internal enum class StorageKind(val title: Int) {
     WEB(R.string.storage_web),
     TIMETABLE(R.string.storage_timetable),
     LINES(R.string.storage_lines),
+    VEHICLE_PHOTOS(R.string.storage_vehicle_photos),
     SHARES(R.string.storage_shares),
     EXPORTS(R.string.storage_exports),
     ERROR_LOGS(R.string.storage_error_logs),
@@ -32,6 +34,7 @@ internal class StorageRepository(private val context: Context) {
             File(context.cacheDir, "WebView/Default/Cache"),
             File(context.dataDir, "app_webview/Default/HTTP Cache"),
         )
+        StorageKind.VEHICLE_PHOTOS -> listOf(VehiclePhotoCache.directory(context))
         StorageKind.LINES -> listOf(File(context.cacheDir, "railway-lines"))
         StorageKind.SHARES -> listOf(File(context.cacheDir, "quiz-share"))
         StorageKind.EXPORTS -> context.cacheDir.listFiles().orEmpty().filter {
@@ -61,6 +64,10 @@ internal class StorageRepository(private val context: Context) {
 
     fun clear(kind: StorageKind) {
         require(kind != StorageKind.WEB && kind != StorageKind.TIMETABLE)
+        if (kind == StorageKind.VEHICLE_PHOTOS) {
+            VehiclePhotoCache.clear(context)
+            return
+        }
         targets(kind).forEach { target ->
             delete(target)
         }

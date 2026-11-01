@@ -12,6 +12,7 @@
         </trust-anchors>
     </domain-config>
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">www.xiaguanzhan.com</domain>
         <domain includeSubdomains="false">down.lltskb.com</domain>
         <domain includeSubdomains="false">223.107.87.50</domain>
     </domain-config>

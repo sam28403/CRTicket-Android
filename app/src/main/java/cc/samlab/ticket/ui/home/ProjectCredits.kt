@@ -34,6 +34,7 @@ internal val projectCredits = listOf(
     ProjectCredit("12306", "https://www.12306.cn/"),
     ProjectCredit("路路通", "http://www.lltskb.com/"),
     ProjectCredit("rail.re", "https://rail.re/"),
+    ProjectCredit("下关站", "http://www.xiaguanzhan.com/"),
     ProjectCredit("中国动车组（China-EMU）", "https://www.china-emu.cn/"),
     ProjectCredit("OpenStreetMap", "https://www.openstreetmap.org/"),
     ProjectCredit("HOT", "https://www.hotosm.org/"),
