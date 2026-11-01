@@ -4,11 +4,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
 import cc.samlab.ticket.update.updates
 
 @Composable
 internal fun SettingsUpdates() {
+    if (!BuildConfig.UPDATE_ENABLED) return
+
     val model = (LocalActivity.current as ComponentActivity).updates()
     SettingsGroup(stringResource(R.string.settings_updates)) {
         SettingsRow(

@@ -96,6 +96,9 @@
         <activity android:name=".ui.welcome.WelcomeActivity"
             android:exported="false" />
         <activity android:name=".update.UpdateInstallActivity" android:exported="false" />
+        <activity android:name=".diagnostics.ErrorReportActivity"
+            android:process=":diagnostics" android:exported="false"
+            android:excludeFromRecents="true" />
         <activity android:name=".MainActivity" android:exported="true"
             android:theme="@style/Theme.CRTicket.Starting"
             android:resizeableActivity="true"

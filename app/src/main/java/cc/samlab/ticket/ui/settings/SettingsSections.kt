@@ -113,6 +113,7 @@ internal fun SettingsPreferences(
     }
     SettingsUpdates()
     SettingsAdvanced()
+    SettingsDiagnostics()
     SettingsGroup(stringResource(R.string.station_tab_map)) {
         SettingsRow(
             stringResource(R.string.settings_map), stringResource(rememberMapSource().title),

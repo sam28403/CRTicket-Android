@@ -15,15 +15,26 @@ class SearchCatalogueTest {
     @Test fun settingsAndAllHelpTopicsAreSearchable() {
         val fixture = TabletPageFixture(compose)
         try {
+            if (!BuildConfig.UPDATE_ENABLED) {
+                fixture.navigate("/settings")
+                for (title in listOf(R.string.settings_updates, R.string.update_check,
+                    R.string.update_previews, R.string.update_automatic)) {
+                    compose.onNodeWithText(fixture.activity.getString(title)).assertDoesNotExist()
+                }
+            }
             fixture.navigate("/search")
             val field = compose.onNodeWithTag("global-search-field")
             val results = compose.onNodeWithTag("global-search-results")
             for (title in listOf(R.string.settings_map, R.string.settings_storage,
-                R.string.update_previews, R.string.permissions_exact_alarms)) {
+                R.string.settings_language, R.string.permissions_exact_alarms)) {
                 field.performTextReplacement(fixture.activity.getString(title))
                 field.performImeAction()
                 results.performScrollToNode(hasTestTag("search-settings-title"))
                 compose.onNodeWithTag("search-settings-title").assertIsDisplayed()
+            }
+            if (!BuildConfig.UPDATE_ENABLED) {
+                field.performTextReplacement(fixture.activity.getString(R.string.update_previews))
+                compose.onNodeWithTag("search-settings-title").assertDoesNotExist()
             }
             for (topic in helpTopics) {
                 field.performTextReplacement(fixture.activity.getString(topic.title))

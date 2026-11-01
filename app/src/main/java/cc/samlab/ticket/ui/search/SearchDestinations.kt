@@ -6,6 +6,7 @@ import cc.samlab.ticket.ui.settings.MapSource
 import cc.samlab.ticket.ui.settings.StorageKind
 import androidx.compose.ui.platform.LocalContext
 import cc.samlab.ticket.i18n.AppLanguages
+import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.help.helpTopics
 import cc.samlab.ticket.ui.home.ticketDestinations
@@ -134,14 +135,19 @@ internal fun additionalSearchSettings(onNavigate: (String) -> Unit): List<Search
                 stringResource(R.string.permissions_all_description),
             ).joinToString("\n"),
         ) { onNavigate("/settings/permissions") },
-    ) + (ticketDestinations + railfanDestinations).map { destination ->
+    ).filter { BuildConfig.UPDATE_ENABLED || it.key != "page-2" } +
+        (ticketDestinations + railfanDestinations).map { destination ->
         SearchSetting(destination.route, stringResource(destination.title),
             stringResource(destination.description)) { onNavigate(destination.route) }
     } + listOf(
         SearchSetting("about", stringResource(R.string.home_about), "") { onNavigate("/about") },
         SearchSetting("help", stringResource(R.string.home_help),
             stringResource(R.string.home_help_description)) { onNavigate("/help") },
-    )
+    ) + if (BuildConfig.BUILD_TYPE == "ci") {
+        listOf(R.string.failure_test_main, R.string.failure_test_worker, R.string.failure_test_anr).map { title ->
+            SearchSetting("debug-$title", stringResource(title), "") { onNavigate("/settings") }
+        }
+    } else emptyList()
 }
 
 @Composable

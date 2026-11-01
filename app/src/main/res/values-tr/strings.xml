@@ -829,4 +829,12 @@
     <string name="storage_timetable_confirm">The Lulutong database will be downloaded again on the next query. A network connection will be required. Tickets, reminders and preferences will be kept.</string>
     <string name="storage_test_screenshots">Test screenshots</string>
     <string name="map_source_openrailway">OpenRailwayMap</string>
+    <string name="failure_title">Application error</string>
+    <string name="failure_copy">Copy report</string>
+    <string name="failure_restart">Restart</string>
+    <string name="failure_debug">Debug</string>
+    <string name="failure_test_main">Simulate main thread crash</string>
+    <string name="failure_test_worker">Simulate background thread crash</string>
+    <string name="failure_test_anr">Simulate unresponsive app</string>
+    <string name="storage_error_logs">Error logs</string>
 </resources>

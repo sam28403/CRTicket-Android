@@ -2,6 +2,7 @@ package cc.samlab.ticket.ui.settings
 
 import android.content.Context
 import cc.samlab.ticket.R
+import cc.samlab.ticket.diagnostics.ErrorReports
 import java.io.File
 
 internal enum class StorageKind(val title: Int) {
@@ -10,6 +11,7 @@ internal enum class StorageKind(val title: Int) {
     LINES(R.string.storage_lines),
     SHARES(R.string.storage_shares),
     EXPORTS(R.string.storage_exports),
+    ERROR_LOGS(R.string.storage_error_logs),
     TEST_SCREENSHOTS(R.string.storage_test_screenshots),
 }
 
@@ -23,6 +25,7 @@ internal data class StorageSnapshot(
 internal class StorageRepository(private val context: Context) {
     private fun targets(kind: StorageKind): List<File> = when (kind) {
         StorageKind.TIMETABLE -> emptyList()
+        StorageKind.ERROR_LOGS -> listOf(ErrorReports.directory(context))
         StorageKind.TEST_SCREENSHOTS -> StorageTestScreenshots.files(context)
         StorageKind.WEB -> listOf(
             File(context.cacheDir, "WebView/Default/HTTP Cache"),
@@ -51,7 +54,8 @@ internal class StorageRepository(private val context: Context) {
             },
             (size(context.filesDir) + size(File(context.dataDir, "shared_prefs")) +
                 size(File(context.dataDir, "app_webview")) -
-                size(File(context.dataDir, "app_webview/Default/HTTP Cache")) - archiveBytes).coerceAtLeast(0),
+                size(File(context.dataDir, "app_webview/Default/HTTP Cache")) -
+                size(ErrorReports.directory(context)) - archiveBytes).coerceAtLeast(0),
         )
     }
 
