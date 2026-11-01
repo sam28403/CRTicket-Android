@@ -1,3 +1,5 @@
+import { loadLltDatabase } from './railway/lltLoader.js'
+import { queryLltRouting } from './railway/lltRouting.js'
 import api, { timetableTimeout } from '../api.js'
 import { native } from './platform.js'
 import { parseStations } from '../utils/stations.js'
@@ -31,12 +33,20 @@ export function initializeGlobalSearch() {
     if (typeof query !== 'string' || !query.trim()) return
     const date = trainQueryRange().today
     try {
-      const data = await loadCatalogue(date)
+      const [catalogueResult, routingResult] = await Promise.allSettled([
+        loadCatalogue(date),
+        /^[A-Z]*\d+(?:\/[A-Z]*\d+)*$/i.test(query.trim())
+          ? loadLltDatabase().then(database => queryLltRouting(database, query.trim().toUpperCase(), date))
+          : Promise.resolve(null),
+      ])
+      const data = catalogueResult.status === 'fulfilled' ? catalogueResult.value : { trains: [], stations: [] }
       const time = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', second: '2-digit',
       }).format(new Date())
       native.searchResult(JSON.stringify({
         requestId, date,
+        error: catalogueResult.status === 'rejected',
+        routing: routingResult.status === 'fulfilled' ? routingResult.value : null,
         trains: filterSearchTrains(data.trains, query),
         stations: filterSearchStations(data.stations, parseStations(), query)
           .map(row => stationSummaryNow(row, time)),

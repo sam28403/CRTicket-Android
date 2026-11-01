@@ -13,6 +13,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -27,7 +29,6 @@ import cc.samlab.ticket.ui.trainlist.NativeTrainListController
 import cc.samlab.ticket.ui.trainlist.parseTrainListRows
 import kotlinx.coroutines.delay
 import org.json.JSONArray
-import cc.samlab.ticket.ui.railfan.RailfanPreferences
 import cc.samlab.ticket.ui.railfan.VehicleSearch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -46,19 +47,22 @@ internal fun ExpressiveSearchScreen(
     var trainsExpanded by rememberSaveable(query) { mutableStateOf(false) }
     var stationsExpanded by rememberSaveable(query) { mutableStateOf(false) }
     var settingsExpanded by rememberSaveable(query) { mutableStateOf(false) }
+    var helpExpanded by rememberSaveable(query) { mutableStateOf(false) }
     var linesExpanded by rememberSaveable(query) { mutableStateOf(false) }
     val focus = remember { FocusRequester() }
     val list = rememberLazyListState()
     val context = LocalContext.current
     val result = controller.result
-    val railfan by RailfanPreferences.rememberEnabled()
-    val lines = rememberLineSearchResults(query, railfan)
-    var assignmentFailed by rememberSaveable(query, railfan) { mutableStateOf(false) }
-    val trainsLoaded = !controller.loading && controller.completedQuery == query.trim()
-        && !result.optBoolean("error")
-    val assignment = if (railfan && !assignmentFailed && trainsLoaded) {
-        VehicleSearch.forTrain(query) ?: VehicleSearch.forVehicle(query)
-    } else null
+    val lines = rememberLineSearchResults(query, true)
+    val assignments = listOfNotNull(VehicleSearch.forTrain(query), VehicleSearch.parse(query)).distinct()
+    val vehicleStates = assignments.associateWith { controller.assignmentState(it) }
+    vehicleStates.forEach { (assignment, state) ->
+        LoadSearchVehicle(assignment, active, state, timetable)
+    }
+    val hasVehicles = vehicleStates.values.any { it.rows.value.isNotEmpty() }
+    val loadingVehicles = vehicleStates.values.any { it.loading.value }
+    var vehicleExpanded by rememberSaveable(query) { mutableStateOf(false) }
+    var routingExpanded by rememberSaveable(query) { mutableStateOf(false) }
     LaunchedEffect(query, active) {
         if (active && controller.prepareSearch(query)) {
             // Invalidate the previous request before debouncing the next one.
@@ -72,11 +76,28 @@ internal fun ExpressiveSearchScreen(
     val trains = remember(result) {
         parseTrainListRows(context, result.optJSONArray("trains") ?: JSONArray())
     }
+    val routing = remember(result) {
+        val groups = result.optJSONObject("routing")?.optJSONArray("groups") ?: JSONArray()
+        (0 until groups.length()).flatMap { index ->
+            parseTrainListRows(context, groups.getJSONObject(index).optJSONArray("rows") ?: JSONArray())
+        }
+    }
     val stations = remember(result) {
         val values = result.optJSONArray("stations") ?: JSONArray()
         List(values.length()) { values.getJSONObject(it) }
     }
     SearchScrollContainer(list) { scroll ->
+        val focusManager = LocalFocusManager.current
+        val keyboard = LocalSoftwareKeyboardController.current
+        val dismissKeyboard: () -> Unit = {
+            focusManager.clearFocus(force = true)
+            keyboard?.hide()
+        }
+        val navigateResult: (String) -> Unit = { route ->
+            dismissKeyboard()
+            onNavigate(route)
+        }
+
         LaunchedEffect(active) { if (active && query.isEmpty()) focus.requestFocus() }
         MaterialExpressiveTheme(colorScheme = homeColorScheme(context, dark, pureBlack)) {
             val colors = MaterialTheme.colorScheme
@@ -84,10 +105,18 @@ internal fun ExpressiveSearchScreen(
             val trainsTitle = stringResource(R.string.search_trains)
             val stationsTitle = stringResource(R.string.search_stations)
             val settingsTitle = stringResource(R.string.home_settings)
+            val helpTitle = stringResource(R.string.home_help)
+            val helpMatches = searchHelp(navigateResult).filter {
+                query.isNotBlank() && (it.title.contains(query.trim(), true)
+                    || it.keywords.contains(query.trim(), true))
+            }
+            val vehicleTitle = stringResource(R.string.railfan_vehicle)
+            val routingTitle = stringResource(R.string.railfan_routing)
             val linesTitle = stringResource(R.string.railfan_lines)
-            val matches = searchSettings(settings, onNavigate).filter {
+            val matches = searchSettings(settings, navigateResult).filter {
                 query.isNotBlank() && (it.title.contains(query.trim(), ignoreCase = true)
-                    || it.subtitle.contains(query.trim(), ignoreCase = true))
+                    || it.subtitle.contains(query.trim(), ignoreCase = true)
+                    || it.keywords.contains(query.trim(), ignoreCase = true))
             }
             Surface(Modifier.fillMaxSize().testTag("global-search-screen"),
                 color = MaterialTheme.colorScheme.surfaceContainer) {
@@ -114,33 +143,55 @@ internal fun ExpressiveSearchScreen(
                                 searchResultGroup("trains", trainsTitle, query,
                                     trains, trainsExpanded, { trainsExpanded = !trainsExpanded }) { row, _, _ ->
                                     TrainListItem(row) {
-                                        onNavigate("/train?train=${Uri.encode(row.train)}&date=${result.optString("date")}")
+                                        navigateResult("/train?train=${Uri.encode(row.train)}&date=${result.optString("date")}")
                                     }
                                 }
                                 searchResultGroup("stations", stationsTitle, query,
                                     stations, stationsExpanded, { stationsExpanded = !stationsExpanded }) { row, _, _ ->
                                     StationDiscoveryCard(row) {
-                                        onNavigate("/station?station=${Uri.encode(row.optString("station"))}")
+                                        navigateResult("/station?station=${Uri.encode(row.optString("station"))}")
                                     }
                                 }
                                 searchLineResultGroup(linesTitle, query,
                                     lines, linesExpanded, { linesExpanded = !linesExpanded }) { line ->
-                                    onNavigate("/railfan/lines?line=${Uri.encode(line)}")
+                                    navigateResult("/railfan/lines?line=${Uri.encode(line)}")
                                 }
                                 searchResultGroup("settings", settingsTitle, query,
                                     matches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
-                                    SearchSettingsRow(row, settings)
+                                    SearchSettingsRow(row, settings, dismissKeyboard)
                                 }
-                                if (assignment != null) {
-                                    item(key = "vehicle:${assignment.keyword}") {
-                                        SearchVehicleAssignment(
-                                            assignment,
-                                            active,
-                                            onNavigate,
-                                            onFailure = { assignmentFailed = true },
-                                            timetable = timetable,
-                                            state = controller.assignmentState(assignment),
-                                        )
+                                searchResultGroup("help", helpTitle, query,
+                                    helpMatches, helpExpanded, { helpExpanded = !helpExpanded }) { row, _, _ ->
+                                    SearchSettingsRow(row, settings, dismissKeyboard)
+                                }
+                                searchResultGroup("routing", routingTitle, query,
+                                    routing, routingExpanded, { routingExpanded = !routingExpanded }) { row, _, _ ->
+                                    TrainListItem(row) { navigateResult("/train?train=${Uri.encode(row.train)}&date=${result.optString("date")}") }
+                                }
+                                assignments.forEach { assignment ->
+                                    val rows = vehicleStates.getValue(assignment).rows.value
+                                    if (rows.isNotEmpty()) {
+                                        val route = "/railfan/vehicle?${if (assignment.byTrain) "train" else "vehicle"}=${Uri.encode(assignment.keyword)}"
+                                        item(key = "vehicle-link:${assignment.path}") {
+                                            TextButton(
+                                                onClick = { navigateResult(route) },
+                                                modifier = Modifier.fillMaxWidth().testTag("global-vehicle-search"),
+                                            ) { Text("$vehicleTitle ${assignment.keyword}") }
+                                        }
+                                        searchResultGroup("vehicle:${assignment.path}", vehicleTitle, query,
+                                            rows, vehicleExpanded, { vehicleExpanded = !vehicleExpanded }) { row, _, _ ->
+                                            Box(Modifier.testTag("global-vehicle-latest")) {
+                                                if (assignment.byTrain) {
+                                                    cc.samlab.ticket.ui.railfan.VehicleAssignmentCard(row) { navigateResult(route) }
+                                                } else {
+                                                    cc.samlab.ticket.ui.railfan.VehicleTrainHistoryCard(
+                                                        row, timetable.vehicleRows["${row.day}|${row.train}"],
+                                                        { train -> navigateResult("/railfan/vehicle?train=${Uri.encode(train)}") },
+                                                        navigateResult,
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                                 if (controller.loading) {
@@ -152,7 +203,7 @@ internal fun ExpressiveSearchScreen(
                                         }
                                     }
                                 } else if (trains.isEmpty() && stations.isEmpty() && matches.isEmpty()
-                                    && lines.isEmpty() && assignment == null) {
+                                    && lines.isEmpty() && helpMatches.isEmpty() && routing.isEmpty() && !hasVehicles && !loadingVehicles) {
                                     item {
                                         SearchEmptyState(R.string.search_no_results, R.string.search_no_results_hint,
                                             active, compactEmpty)

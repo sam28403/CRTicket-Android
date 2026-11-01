@@ -103,7 +103,7 @@ internal fun VehicleQueryScreen(
     LaunchedEffect(initialTrain, initialVehicle) {
         val initial = VehicleSearch.forTrain(initialTrain)
         if (initial != null) search(initial.keyword, forceTrain = true)
-        else if (VehicleSearch.forVehicle(initialVehicle) != null) search(initialVehicle)
+        else if (VehicleSearch.parse(initialVehicle) != null) search(initialVehicle)
         else if (submitted.isNotEmpty() && query == null) search(submitted, submittedByTrain)
     }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {

@@ -20,15 +20,12 @@ internal class NativeSearchController(
     private var requestId = 0
     private var dispatched = false
     private var closed = false
-    private var vehicleQuery: VehicleSearch? = null
-    private var vehicleState = SearchVehicleState()
+    private val vehicleStates = mutableMapOf<VehicleSearch, SearchVehicleState>()
 
     fun assignmentState(query: VehicleSearch): SearchVehicleState {
-        if (vehicleQuery != query) {
-            vehicleQuery = query
-            vehicleState = SearchVehicleState()
-        }
-        return vehicleState
+        vehicleStates[query]?.let { return it }
+        if (vehicleStates.size >= 16) vehicleStates.remove(vehicleStates.keys.first())
+        return SearchVehicleState().also { vehicleStates[query] = it }
     }
 
     fun prepareSearch(query: String): Boolean {
@@ -39,10 +36,6 @@ internal class NativeSearchController(
     }
 
     fun search(query: String, dispatch: Boolean = true) {
-        if (pendingQuery != query.trim()) {
-            vehicleQuery = null
-            vehicleState = SearchVehicleState()
-        }
         requestId++
         pendingQuery = query.trim()
         completedQuery = ""

@@ -22,7 +22,7 @@ internal data class VehicleSearch(val keyword: String, val byTrain: Boolean) {
 
         fun parse(input: String): VehicleSearch? {
             val keyword = input.trim().uppercase(Locale.ROOT)
-            if (!Regex("^[-+\\w@]+$").matches(keyword)) return null
+            if (!Regex("^[-+A-Z0-9_@]+$").matches(keyword)) return null
             return VehicleSearch(keyword, Regex("^0?[GDC]\\d{1,4}$").matches(keyword))
         }
     }

@@ -25,7 +25,7 @@ class SearchVehicleFailureTest {
     @get:Rule val compose = createEmptyComposeRule()
 
     @Test
-    fun failedLookupHidesAllAssignmentContentAndKeepsOtherResults() {
+    fun failedLookupHidesVehicleAndKeepsOtherResults() {
         val response = CompletableDeferred<List<VehicleHistory>>()
         var failed = false
         InstrumentationRegistry.getInstrumentation().uiAutomation
@@ -50,13 +50,13 @@ class SearchVehicleFailureTest {
                     }
                 }
             }
-            compose.onNodeWithTag("global-vehicle-search").assertExists()
+            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
             response.completeExceptionally(IOException("Simulated lookup failure"))
             compose.waitUntil(5_000) {
-                compose.onAllNodesWithTag("global-vehicle-search").fetchSemanticsNodes().isEmpty()
+                failed
             }
             compose.onNodeWithTag("global-vehicle-latest").assertDoesNotExist()
-            compose.onNodeWithTag("assignment-test-results").onChildren().assertCountEquals(1)
+            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
             compose.onNodeWithText("Other search results").assertExists()
             compose.runOnIdle { assertTrue(failed) }
         } finally {

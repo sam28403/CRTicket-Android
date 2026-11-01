@@ -15,6 +15,7 @@ internal data class SearchSetting(
     val title: String,
     val subtitle: String,
     val enabled: Boolean = true,
+    val keywords: String = "",
     val action: () -> Unit,
 )
 
@@ -27,6 +28,7 @@ internal fun searchSettings(
     val enabled = state.loaded && !controller.busy
     val theme = settingsThemeModes.firstOrNull { it.first == state.themeMode }?.second
         ?: R.string.theme_system
+    val destinations = additionalSearchSettings(onNavigate)
     val entries = listOf(
         SearchSetting("name", stringResource(R.string.settings_display_name), state.username, enabled) {
             controller.ui.open("name")
@@ -59,7 +61,7 @@ internal fun searchSettings(
             controller.chooseExportBackup()
         },
         SearchSetting("import", stringResource(R.string.settings_import_backup), "", enabled,
-            controller::chooseBackup),
+            action = controller::chooseBackup),
         SearchSetting("notifications", stringResource(R.string.permissions_notifications),
             stringResource(if (controller.permissions.state.notifications)
                 R.string.permissions_notifications_allowed else R.string.permissions_not_allowed_settings)) {
@@ -84,8 +86,12 @@ internal fun searchSettings(
         SearchSetting("all-permissions", stringResource(R.string.permissions_all),
             stringResource(R.string.permissions_all_description)) { controller.permissions.openAppPermissions() },
     )
-    val liveUpdates = controller.permissions.state.promotedNotifications ?: return entries
-    return entries + SearchSetting("live-updates", stringResource(R.string.permissions_live_updates),
+    val merged = entries.map { entry ->
+        val page = destinations.firstOrNull { it.title == entry.title }
+        entry.copy(keywords = page?.keywords.orEmpty())
+    } + destinations.filter { page -> entries.none { it.title == page.title } }
+    val liveUpdates = controller.permissions.state.promotedNotifications ?: return merged
+    return merged + SearchSetting("live-updates", stringResource(R.string.permissions_live_updates),
         stringResource(if (liveUpdates) R.string.permissions_live_updates_allowed
             else R.string.permissions_not_allowed_settings)) { controller.permissions.openPromotedNotifications() }
 }
@@ -94,9 +100,13 @@ internal fun searchSettings(
 internal fun SearchSettingsRow(
     item: SearchSetting,
     controller: NativeSettingsController,
+    onOpen: () -> Unit = {},
 ) {
     val state = controller.state
-    SettingsRow(item.title, item.subtitle, 0, 1, item.enabled, item.action) {
+    SettingsRow(item.title, item.subtitle, 0, 1, item.enabled, {
+        onOpen()
+        item.action()
+    }) {
         when (item.key) {
             "avatar" -> SettingsAvatar(state.avatar, state.username)
             "black" -> SettingsSwitch(state.pureBlack, item.enabled, item.title) {

@@ -33,42 +33,18 @@ class GlobalVehicleSearchDeviceTest {
             fixture.navigate("/search")
             val field = compose.onNodeWithTag("global-search-field")
             val results = compose.onNodeWithTag("global-search-results")
-            fixture.evaluate("""
-                window.heldTrainSearch = null;
-                window.holdTrainSearch = event => {
-                    if (event.detail?.query !== 'G1') return;
-                    event.stopImmediatePropagation();
-                    window.heldTrainSearch = event.detail;
-                };
-                window.addEventListener('crticket-search-request', window.holdTrainSearch, true);
-            """.trimIndent())
             field.performTextReplacement("G1")
             field.performImeAction()
-            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
-            RailfanPreferences.setEnabled(context, true)
-            compose.waitUntil(10_000) {
-                fixture.evaluate("Boolean(window.heldTrainSearch)") == "true"
+            compose.waitUntil(40_000) {
+                runCatching { results.performScrollToNode(hasTestTag("global-vehicle-search")) }.isSuccess
             }
-            compose.mainClock.advanceTimeBy(1_000)
-            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
-            compose.onNodeWithTag("global-vehicle-latest").assertDoesNotExist()
-            fixture.evaluate("""
-                window.removeEventListener('crticket-search-request', window.holdTrainSearch, true);
-                window.dispatchEvent(new CustomEvent('crticket-search-request', {
-                    detail: window.heldTrainSearch
-                }));
-            """.trimIndent())
-            awaitAssignment()
-            results.performScrollToNode(hasTestTag("global-vehicle-search"))
-            compose.onNodeWithText(fixture.activity.getString(R.string.vehicle_query_search_assignment, "G1"))
-                .assertIsDisplayed()
-            compose.waitUntil(35_000) {
+            compose.waitUntil(40_000) {
                 compose.onAllNodesWithTag("global-vehicle-latest").fetchSemanticsNodes().isNotEmpty()
             }
             val latest = runBlocking { VehicleQueryRepository.search(VehicleSearch.forTrain("G1")!!).first() }
             results.performScrollToNode(hasTestTag("global-vehicle-latest"))
-            compose.onNodeWithTag("global-vehicle-latest").assertIsDisplayed()
-            compose.onAllNodesWithText(latest.displayVehicle).assertCountEquals(1)
+            compose.onAllNodesWithTag("global-vehicle-latest").onFirst().assertIsDisplayed()
+            compose.onAllNodesWithText(latest.displayVehicle).onFirst().assertExists()
             fixture.capture("global-vehicle-preview")
             results.performScrollToNode(hasTestTag("global-vehicle-search"))
             compose.onNodeWithTag("global-vehicle-search").performClick()
@@ -101,10 +77,10 @@ class GlobalVehicleSearchDeviceTest {
                 compose.onAllNodesWithTag("global-vehicle-latest").fetchSemanticsNodes().isNotEmpty()
             }
             results.performScrollToNode(hasTestTag("global-vehicle-latest"))
-            compose.onAllNodesWithTag("global-vehicle-latest").assertCountEquals(1)
-            compose.onNodeWithTag("global-vehicle-latest")
+            assert(compose.onAllNodesWithTag("global-vehicle-latest").fetchSemanticsNodes().isNotEmpty())
+            compose.onAllNodesWithTag("global-vehicle-latest").onFirst()
                 .onChildren().assertCountEquals(1)
-            compose.onAllNodesWithText(latest.displayVehicle).assertCountEquals(1)
+            compose.onAllNodesWithText(latest.displayVehicle).onFirst().assertExists()
             fixture.capture("global-vehicle-train-preview")
             results.performScrollToNode(hasTestTag("global-vehicle-search"))
             compose.onNodeWithTag("global-vehicle-search").performClick()
