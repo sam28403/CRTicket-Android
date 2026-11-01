@@ -27,7 +27,6 @@ android {
         versionName = gitVersionName
         buildConfigField("String", "STATION_DATA_VERSION", "\"$stationDataVersion\"")
         buildConfigField("boolean", "UPDATE_ENABLED", "true")
-        buildConfigField("String", "UPDATE_TEST_TAG", "\"\"")
         manifestPlaceholders["applicationLabel"] = "@string/home_title"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,14 +48,6 @@ android {
             buildConfigField("boolean", "UPDATE_ENABLED", "false")
             manifestPlaceholders["applicationLabel"] = "CRTicket CI"
         }
-        create("updateTest") {
-            initWith(getByName("debug"))
-            applicationIdSuffix = ".updatetest"
-            versionNameSuffix = "-update-test"
-            matchingFallbacks += "debug"
-            buildConfigField("String", "UPDATE_TEST_TAG", "\"v0.9.4\"")
-            manifestPlaceholders["applicationLabel"] = "CRTicket TEST"
-        }
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(
@@ -71,11 +62,9 @@ android {
             matchingFallbacks += "release"
         }
     }
-    listOf("ci", "updateTest").forEach { variant ->
-        sourceSets.getByName(variant) {
-            kotlin.directories.add(file("src/debug/java").path)
-            manifest.srcFile("src/debug/AndroidManifest.xml")
-        }
+    sourceSets.getByName("ci") {
+        kotlin.directories.add(file("src/debug/java").path)
+        manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     sourceSets.getByName("ci") {
         res.srcDir(layout.buildDirectory.dir("generated/ci-branding/res").get().asFile.path)

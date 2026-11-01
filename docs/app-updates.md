@@ -39,12 +39,6 @@ CI 包使用独立包名 `.ci`，当前 GitHub Release 不提供同包名、同�
 因此 CI 包的三个更新设置均禁用，自动检查、手动检查、下载及安装入口也在代码中拦截，
 不会通过更新功能下载正式 APK。
 
-`updateTest` 构建使用 `.updatetest` 包名，启动器名称为 `CRTicket TEST`，
-可与现有应用共存。只有该构建固定读取 `v0.9.4` 的发布日志和 APK，
-不按 TEST 包的版本号过滤，用于真实下载和系统安装入口验证。
-它不会将 GitHub 正式 APK 改包名或重新签名，也不能绕过系统的降级或签名校验。
-设备已有较新正式包时，尝试安装 v0.9.4 仍可能被系统拒绝；实际降级前应先导出备份。
-
 发布时需附加已签名的 APK。优先使用名称含 universal 的 APK，否则使用唯一 APK；
 不选择 unsigned APK、AAB 或 APKS。缺少可用 APK 时保留更新日志并提示暂不可下载。
 下载地址只接受本仓库 GitHub Releases 的 HTTPS 附件地址。
@@ -53,7 +47,7 @@ CI 包使用独立包名 `.ci`，当前 GitHub Release 不提供同包名、同�
 
 `ReleaseVersionTest` 覆盖版本比较与下载来源检查。
 `UpdateDeviceTest` 覆盖发布渠道选择、APK 选择、更新日志操作及开关默认值和保存。
-CI 包运行禁用状态测试；可用的开关操作测试在 `updateTest` 变体运行。
+CI 包运行禁用状态测试；可用的开关操作测试在 `debug` 变体运行。
 可使用独立 CI 包进行设备测试，避免覆盖日常安装的应用：
 
 ```powershell
@@ -61,19 +55,3 @@ CI 包运行禁用状态测试；可用的开关操作测试在 `updateTest` 变
     '-Pcrticket.testBuildType=ci' `
     '-Pandroid.testInstrumentationRunnerArguments.class=cc.samlab.ticket.UpdateDeviceTest'
 ```
-
-真实下载测试使用 `UpdateDownloadLiveTest`，仅对 `updateTest` 构建启用。
-测试从 GitHub 下载 v0.9.4，核对大小和 SHA-256，并检查拒绝安装来源权限后安全返回。
-运行时需网络和至少 60MB 可用空间；可通过 `ANDROID_SERIAL` 选择单台设备：
-
-```powershell
-.\gradlew.bat :app:connectedUpdateTestAndroidTest `
-    '-Pcrticket.testBuildType=updateTest' `
-    '-Pandroid.testInstrumentationRunnerArguments.class=cc.samlab.ticket.UpdateDownloadLiveTest'
-```
-
-`UpdateNotificationLiveTest` 检查下载管理器通知的进度字段，测试临时下载会在结束时移除。
-`UpdateInstallGrantedLiveTest` 使用已完成的下载验证系统安装器和临时 URI 读取授权，
-停留在安装确认阶段后返回，不执行安装。
-Android 17 可能在安装来源授权变化时结束应用进程，因此已授权分支的测试须在启动
-instrumentation 前临时授权，测试结束后再恢复原来的拒绝状态，不能在测试进程内部切换授权。

@@ -466,8 +466,7 @@ const goToHistory = () => {
 }
 const goToGitHub = () => {
   ElMessageBox.alert(
-      '<strong>谢谢您为我的项目标星！</strong>' +
-      '<img src="GitHub.gif" alt="GitHub" style="max-width: 100%; height: auto;"/>',
+      '<strong>谢谢您为我的项目标星！</strong>',
       '访问本项目源代码',
       {
         dangerouslyUseHTMLString: true,

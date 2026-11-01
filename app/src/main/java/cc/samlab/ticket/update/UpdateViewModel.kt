@@ -76,9 +76,7 @@ internal class UpdateViewModel(application: Application) : AndroidViewModel(appl
         val channel = previews
         worker.execute {
             val result = runCatching {
-                if (BuildConfig.UPDATE_TEST_TAG.isNotEmpty()) {
-                    repository.release(BuildConfig.UPDATE_TEST_TAG)
-                } else repository.check(channel, BuildConfig.VERSION_NAME)
+                repository.check(channel, BuildConfig.VERSION_NAME)
             }
             main.post {
                 if (cleared) return@post

@@ -23,13 +23,6 @@ internal class ReleaseRepository {
         .callTimeout(45, TimeUnit.SECONDS)
         .build()
 
-    fun release(tag: String): AppRelease? {
-        require(ReleaseVersion.parse(tag) != null)
-        val response = get("$API_URL/tags/$tag") ?: return null
-        val json = JSONObject(response)
-        return if (json.optBoolean("draft")) null else parseRelease(json)
-    }
-
     fun check(previews: Boolean, installed: String): AppRelease? {
         val current = ReleaseVersion.parse(installed) ?: error("Invalid installed version")
         val releases = if (previews) {
