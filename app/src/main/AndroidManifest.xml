@@ -32,6 +32,7 @@
         </intent>
     </queries>
     <application android:name=".TicketApplication"
+        android:manageSpaceActivity="cc.samlab.ticket.ui.settings.ManageStorageActivity"
         android:allowBackup="false"
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
@@ -99,6 +100,8 @@
         <activity android:name=".diagnostics.ErrorReportActivity"
             android:process=":diagnostics" android:exported="false"
             android:excludeFromRecents="true" />
+        <activity android:name=".ui.settings.ManageStorageActivity"
+            android:exported="true" android:excludeFromRecents="true" />
         <activity android:name=".MainActivity" android:exported="true"
             android:theme="@style/Theme.CRTicket.Starting"
             android:resizeableActivity="true"

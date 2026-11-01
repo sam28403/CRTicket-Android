@@ -28,6 +28,7 @@ import cc.samlab.ticket.ui.ExpressiveRefreshHost
 import cc.samlab.ticket.ui.home.ExpressiveHomeHost
 import cc.samlab.ticket.ui.navigation.ExpressiveRoutes
 import cc.samlab.ticket.ui.settings.NativeSettingsController
+import cc.samlab.ticket.ui.settings.ManageStorageActivity
 import cc.samlab.ticket.ui.window.WindowLayoutObserver
 import cc.samlab.ticket.web.AndroidBridge
 import cc.samlab.ticket.web.LocalAssetClient
@@ -113,7 +114,10 @@ class MainActivity : AppCompatActivity() {
         val route = initialNotificationRoute()
         pendingRoute = if (route == "#/home") savedInstanceState?.getString("pendingRoute") else null
         pendingNotification = savedInstanceState?.getBoolean("pendingNotification") ?: false
-        if (route == "#/home") {
+        if (route == "#/settings/storage") {
+            pendingRoute = "/settings/storage"
+            home.setPage("/settings/storage")
+        } else if (route == "#/home") {
             home.setPage(savedInstanceState?.getString("nativePage") ?: "/home")
         } else {
             home.openNotification(route.removePrefix("#"))
@@ -215,6 +219,7 @@ class MainActivity : AppCompatActivity() {
         val tracking = intent.getStringExtra(TrainTrackingNotifications.OPEN_TRACKING)
         val speed = intent.getStringExtra(cc.samlab.ticket.speedometer.SpeedometerService.OPEN_RECORDING)
         return when {
+            intent.getBooleanExtra(ManageStorageActivity.OPEN_STORAGE, false) -> "#/settings/storage"
             intent.getBooleanExtra(cc.samlab.ticket.sale.SaleReminderReceiver.OPEN_REMINDERS, false) ->
                 "#/sale-time/reminders"
             speed != null -> "#$speed"
@@ -226,6 +231,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clearNotificationRoute() {
+        intent.removeExtra(ManageStorageActivity.OPEN_STORAGE)
         intent.removeExtra(cc.samlab.ticket.sale.SaleReminderReceiver.OPEN_REMINDERS)
         intent.removeExtra(ArrivalNotifications.OPEN_STATION)
         intent.removeExtra(TrainTrackingNotifications.OPEN_TRACKING)
@@ -238,6 +244,7 @@ class MainActivity : AppCompatActivity() {
         if (expected != null && page != expected && !ExpressiveRoutes.addsDefaultDate(expected, page)) return
         pendingNativeRoute = null
         navigationReady = true
+        settings.storage.onWebReady()
         intent.getStringExtra(EXTRA_WELCOME_BACKUP)?.let { backup ->
             intent.removeExtra(EXTRA_WELCOME_BACKUP)
             home.setPage("/settings")
@@ -245,7 +252,7 @@ class MainActivity : AppCompatActivity() {
             updateNavigationUi()
             return
         }
-        home.setPage(page, replace)
+        if (pendingRoute != "/settings/storage") home.setPage(page, replace)
         updateNavigationUi()
         pendingRoute?.let { route ->
             pendingRoute = null
@@ -300,6 +307,9 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (intent.getBooleanExtra(ManageStorageActivity.OPEN_STORAGE, false)) {
+            navigateTo("/settings/storage")
+        }
         if (intent.getBooleanExtra(cc.samlab.ticket.sale.SaleReminderReceiver.OPEN_REMINDERS, false)) {
             navigateTo("/sale-time/reminders", notification = true)
         }

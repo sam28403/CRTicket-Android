@@ -23,15 +23,29 @@ internal class StorageController(
         private set
     var message by mutableStateOf("")
         private set
+    private var webReady = false
+    private var pendingOperation: Set<StorageKind>? = null
     private var requestId = 0
     private var selected = emptySet<StorageKind>()
     private val timeout = Runnable { fail() }
+
+    fun onWebReady() {
+        webReady = true
+        pendingOperation?.let { kinds ->
+            pendingOperation = null
+            runOperation(kinds)
+        }
+    }
 
     fun refresh() = runOperation(emptySet())
 
     fun clear(kinds: Set<StorageKind>) = runOperation(kinds)
 
     private fun runOperation(kinds: Set<StorageKind>) {
+        if (!webReady) {
+            pendingOperation = kinds
+            return
+        }
         if (busy) return
         busy = true
         message = ""
@@ -90,6 +104,8 @@ internal class StorageController(
     }
 
     fun close() {
+        pendingOperation = null
+        webReady = false
         requestId++
         webView.removeCallbacks(timeout)
     }
