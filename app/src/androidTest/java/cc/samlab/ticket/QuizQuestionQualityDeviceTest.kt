@@ -59,7 +59,7 @@ class QuizQuestionQualityDeviceTest {
                 assertEquals(index == question.correctIndex, quizCanTravel(train, from, to, date))
             }
         }
-        assertTrue(travel.map { quizTrainDigits(it.options[it.correctIndex].label) }.distinct().size > 1)
+        assertEquals(travel.size, travel.map { it.options[it.correctIndex].label }.distinct().size)
 
         val stations = sources.stations.associateBy { it.name }
         assertEquals("杭州", stations.getValue("千岛湖").city)

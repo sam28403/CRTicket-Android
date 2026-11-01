@@ -17,37 +17,35 @@ internal fun quizTravelQuestions(
     all: List<QuizTrain>,
     date: LocalDate,
     keep: (QuizQuestion) -> Boolean = { true },
+    seed: String = date.toString(),
 ): List<QuizQuestion> {
     val output = mutableListOf<QuizQuestion>()
     val seen = mutableSetOf<String>()
     val departures = quizDepartureIndex(all, date)
     val stationSets = all.associate { it.code to it.stops.map { stop -> stop.station }.toSet() }
-    for (train in quizTravelAnchors(all, date)) {
+    for (train in quizTravelAnchors(all, seed)) {
         if (train.stops.size < 4) continue
-        var added = 0
-        pairs@ for (index in 1 until train.stops.lastIndex - 1) {
-            for (destination in index + 1 until train.stops.lastIndex) {
-                val from = train.stops[index]
-                val departure = from.departure ?: continue
-                val to = train.stops[destination]
-                val id = "travel:${from.station}:${to.station}"
-                if (id in seen || !quizEligible(id, date) ||
-                    !quizInteriorEndpoints(train, from.station, to.station) ||
-                    !quizCanTravel(train, from.station, to.station, date)) continue
-                val distractors = departures[from.station].orEmpty().filter { candidate ->
-                    candidate.code != train.code && to.station !in stationSets.getValue(candidate.code) &&
-                        quizInteriorEndpoints(candidate, from.station, to.station) &&
-                        !quizCanTravel(candidate, from.station, to.station, date)
-                }
-                quizQuestion(
-                    id, 10, QuizText(R.string.quiz_q_travel, listOf(from.station, to.station)),
-                    train.choice(), quizPicks(distractors, id, 3).map { it.choice() },
-                    QuizText(R.string.quiz_f_travel,
-                        listOf(train.code, quizClock(departure), from.station, to.station)),
-                )?.takeIf(keep)?.let { output.add(it); seen.add(id); added++ }
-                if (output.size >= 24) return output
-                if (added == 2) break@pairs
+        for ((index, destination) in quizTravelPairs(train, seed)) {
+            val from = train.stops[index]
+            val departure = from.departure ?: continue
+            val to = train.stops[destination]
+            val id = "travel:${from.station}:${to.station}"
+            if (id in seen || !quizEligible(id, date) ||
+                !quizInteriorEndpoints(train, from.station, to.station) ||
+                !quizCanTravel(train, from.station, to.station, date)) continue
+            val distractors = departures[from.station].orEmpty().filter { candidate ->
+                candidate.code != train.code && to.station !in stationSets.getValue(candidate.code) &&
+                    quizInteriorEndpoints(candidate, from.station, to.station) &&
+                    !quizCanTravel(candidate, from.station, to.station, date)
             }
+            quizQuestion(
+                id, 10, QuizText(R.string.quiz_q_travel, listOf(from.station, to.station)),
+                train.choice(), quizPicks(distractors, "$seed:$id", 3).map { it.choice() },
+                QuizText(R.string.quiz_f_travel,
+                    listOf(train.code, quizClock(departure), from.station, to.station)),
+            )?.takeIf(keep)?.let { output.add(it); seen.add(id) } ?: continue
+            if (output.size >= 24) return output
+            break
         }
     }
     return output

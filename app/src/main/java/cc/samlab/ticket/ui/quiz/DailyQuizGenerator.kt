@@ -2,7 +2,12 @@ package cc.samlab.ticket.ui.quiz
 
 import java.time.LocalDate
 
-internal class DailyQuizGenerator(private val sources: QuizSources) {
+internal class DailyQuizGenerator(rawSources: QuizSources) {
+    private val passengerStations = rawSources.passengerStationNames()
+    private val excludedStations = rawSources.stations.map { it.name }.toSet() - passengerStations
+    private val sources = rawSources.copy(
+        stations = rawSources.stations.filter { it.name in passengerStations },
+    )
     fun generate(
         date: LocalDate,
         vehicleQuestions: List<QuizQuestion> = emptyList(),
@@ -14,7 +19,7 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
         val varied = seenKeys.isNotEmpty() || variationSeed.isNotEmpty()
         val ordering = if (variationSeed.isEmpty()) date.toString() else "$date:$variationSeed"
         val keep: (QuizQuestion) -> Boolean = { question ->
-            question.id !in excludedIds &&
+            !question.usesExcludedStation(excludedStations) && question.id !in excludedIds &&
                 (seenKeys.isEmpty() || quizSelectionKeys(question).none { it in seenKeys })
         }
         val simple = sources.trains.filter { Regex("^[A-Z]?\\d+$").matches(it.code) && it.stops.size >= 2 }
@@ -23,11 +28,11 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
             addAll(quizGeography(sources.stations, date, keep))
             addAll(quizCityQuestions(sources.stations, date, keep))
             addAll(quizTrainQuestions(today, date, keep))
-            addAll(quizStationCountQuestions(stationCounts, date, keep))
+            addAll(quizStationCountQuestions(stationCounts.filterKeys { it in passengerStations }, date, keep))
             addAll(quizLineQuestions(sources, date, keep))
             addAll(quizRoutingQuestions(sources, date, keep))
             addAll(vehicleQuestions.filter { quizEligible(it.id, date) && keep(it) })
-            addAll(quizTravelQuestions(simple, date, keep))
+            addAll(quizTravelQuestions(simple, date, keep, seed = ordering))
         }.distinctBy { it.id }.filter { it.id !in excludedIds }
         val byCategory = pool.groupBy { it.category }.mapValues { (category, questions) ->
             questions.sortedWith(compareBy<QuizQuestion> { quizHash("$ordering:$category:${it.id}") }.thenBy { it.id })
@@ -46,14 +51,13 @@ internal class DailyQuizGenerator(private val sources: QuizSources) {
         for (round in 0..1) for (category in categories) {
             if (selected.size == 20) break
             val questions = byCategory[category].orEmpty()
-            val existingDigits = selected.filter { it.category == 10 }
-                .map { quizTrainDigits(it.options[it.correctIndex].label) }.toSet()
+            val existingTrains = selected.filter { it.category == 10 }
+                .map { it.options[it.correctIndex].label }.toSet()
             val question = if (category == 10) {
                 val candidates = questions.filter { candidate ->
                     selected.none { it.id == candidate.id } && available(candidate)
                 }
-                candidates.firstOrNull { quizTrainDigits(it.options[it.correctIndex].label) !in existingDigits }
-                    ?: candidates.firstOrNull()
+                candidates.firstOrNull { it.options[it.correctIndex].label !in existingTrains }
             } else if (varied) questions.firstOrNull(::available) else questions.getOrNull(round)
             question?.let(::select)
         }

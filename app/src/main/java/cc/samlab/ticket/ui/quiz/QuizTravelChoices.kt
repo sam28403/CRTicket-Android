@@ -2,17 +2,21 @@ package cc.samlab.ticket.ui.quiz
 
 import java.time.LocalDate
 
-internal fun quizTrainDigits(code: String): Int = code.count(Char::isDigit)
+/** Every train competes in the same seeded shuffle, regardless of its code length. */
+internal fun quizTravelAnchors(
+    trains: List<QuizTrain>,
+    seed: String,
+): Sequence<QuizTrain> = trains.sortedWith(
+    compareBy<QuizTrain> { quizHash("$seed:travel-anchor:${it.code}") }.thenBy { it.code },
+).asSequence()
 
-/** Interleave code lengths so a busy, long-numbered service cannot fill the entire pool. */
-internal fun quizTravelAnchors(trains: List<QuizTrain>, date: LocalDate): Sequence<QuizTrain> = sequence {
-    val groups = trains.groupBy { quizTrainDigits(it.code) }.toSortedMap().values.map { group ->
-        group.sortedWith(compareBy<QuizTrain> { quizHash("$date:travel-anchor:${it.code}") }.thenBy { it.code })
+internal fun quizTravelPairs(train: QuizTrain, seed: String): List<Pair<Int, Int>> = buildList {
+    for (from in 1 until train.stops.lastIndex - 1) {
+        for (to in from + 1 until train.stops.lastIndex) add(from to to)
     }
-    for (index in 0 until (groups.maxOfOrNull { it.size } ?: 0)) {
-        for (group in groups) group.getOrNull(index)?.let { yield(it) }
-    }
-}
+}.sortedWith(compareBy<Pair<Int, Int>> {
+    quizHash("$seed:travel-pair:${train.code}:${it.first}:${it.second}")
+}.thenBy { it.first }.thenBy { it.second })
 
 internal fun quizDepartureIndex(trains: List<QuizTrain>, date: LocalDate): Map<String, List<QuizTrain>> {
     val result = mutableMapOf<String, MutableList<QuizTrain>>()

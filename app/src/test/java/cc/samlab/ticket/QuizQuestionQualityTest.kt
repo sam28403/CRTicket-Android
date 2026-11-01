@@ -57,10 +57,9 @@ class QuizQuestionQualityTest {
                 assertEquals(index == question.correctIndex, quizCanTravel(train, from, to, date))
             }
         }
-        assertTrue(questions.map { quizTrainDigits(it.options[it.correctIndex].label) }.distinct().size > 1)
-        assertTrue(questions.groupingBy { it.options[it.correctIndex].label }.eachCount().values.all { it <= 2 })
+        assertEquals(questions.size, questions.map { it.options[it.correctIndex].label }.distinct().size)
         val daily = DailyQuizGenerator(sources).generate(date).filter { it.category == 10 }
-        assertEquals(2, daily.map { quizTrainDigits(it.options[it.correctIndex].label) }.distinct().size)
+        assertEquals(2, daily.map { it.options[it.correctIndex].label }.distinct().size)
     }
 
     @Test fun cityQuestionDoesNotRevealTheCityInAnyOption() {

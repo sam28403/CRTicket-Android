@@ -23,7 +23,13 @@ internal class DailyQuizRepository(
         withContext(Dispatchers.IO) {
             val counts = stationCounts(date).orEmpty()
             read(date)?.let { original ->
-                val saved = repairQuizRelativeQuestions(original, QuizSourceReader.load(context))
+                val sources = QuizSourceReader.load(context)
+                val eligible = repairQuizPassengerStations(original, sources) {
+                    DailyQuizGenerator(sources).generate(
+                        date, excludedIds = original.questions.map { it.id }.toSet(),
+                    )
+                }
+                val saved = repairQuizRelativeQuestions(eligible, sources)
                 val repaired = repairQuizStationCounts(saved, counts) {
                     DailyQuizGenerator(QuizSourceReader.load(context)).generate(
                         date, excludedIds = saved.questions.map { it.id }.toSet(),

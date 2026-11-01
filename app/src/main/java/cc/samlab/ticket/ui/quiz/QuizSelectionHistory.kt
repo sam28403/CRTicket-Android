@@ -3,6 +3,9 @@ package cc.samlab.ticket.ui.quiz
 /** Compact semantic fingerprints survive CI resets without retaining full old question sets. */
 internal fun quizSelectionKeys(question: QuizQuestion): Set<String> = buildSet {
     add("q:${quizHash(question.id).toString(16)}")
+    if (question.category == 10) {
+        add("travel-train:${question.options[question.correctIndex].label}")
+    }
     val options = question.options
     if (options.all { it.kind != QuizOptionKind.TEXT } || question.category == 9) {
         val labels = options.map { "${it.kind}:${it.label}" }.sorted()
