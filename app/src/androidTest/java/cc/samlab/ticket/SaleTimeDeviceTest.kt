@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.ui.sale.SaleTime
@@ -87,8 +88,9 @@ class SaleTimeDeviceTest {
         val fixture = TabletPageFixture(compose)
         val preferences = fixture.activity.getSharedPreferences("sale-time-query", 0)
         val saved = preferences.getString("history", null)
+        val savedSameCity = preferences.getBoolean("sameCity", true)
         try {
-            preferences.edit().remove("history").commit()
+            preferences.edit().remove("history").putBoolean("sameCity", true).commit()
             fixture.evaluate("""
                 window.addEventListener('crticket-visited-stations-request', event => {
                     if (event.detail?.saleCatalog) {
@@ -120,10 +122,30 @@ class SaleTimeDeviceTest {
             }
             compose.onNodeWithTag("sale-results").performScrollToNode(hasTestTag("sale-card:北京西"))
             compose.onNodeWithTag("sale-card:北京西").assertExists()
+            fun stationBackground(name: String): androidx.compose.ui.graphics.Color {
+                compose.onNodeWithTag("sale-results")
+                    .performScrollToNode(hasTestTag("sale-card:$name"))
+                val pixels = compose.onNodeWithTag("sale-card:$name").captureToImage().toPixelMap()
+                return pixels[pixels.width / 2, 5]
+            }
+            val targetColor = stationBackground("北京南")
+            val relatedColor = stationBackground("北京西")
+            org.junit.Assert.assertNotEquals(targetColor, relatedColor)
+            org.junit.Assert.assertEquals(relatedColor, stationBackground("北京"))
+            val systemAccentBackgrounds = listOf(false, true).map { dark ->
+                cc.samlab.ticket.ui.home.homeColorScheme(fixture.activity, dark).primaryContainer
+            }
+            org.junit.Assert.assertTrue(
+                "Target background must match the system theme accent container",
+                targetColor in systemAccentBackgrounds,
+            )
+            compose.onNodeWithTag("sale-results")
+                .performScrollToNode(hasTestTag("sale-card:北京南"))
             fixture.capture("sale-time-city")
             compose.onNodeWithTag("sale-same-city").performClick().assertIsOff()
             compose.onNodeWithTag("sale-card:北京南").assertExists()
             compose.onNodeWithTag("sale-card:北京西").assertDoesNotExist()
+            org.junit.Assert.assertEquals(targetColor, stationBackground("北京南"))
             fixture.capture("sale-time-exact")
             compose.onNodeWithText("清空", substring = false).performClick()
             org.junit.Assert.assertNull(preferences.getString("history", null))
@@ -134,6 +156,7 @@ class SaleTimeDeviceTest {
         } finally {
             preferences.edit().apply {
                 if (saved == null) remove("history") else putString("history", saved)
+                putBoolean("sameCity", savedSameCity)
             }.commit()
             fixture.close()
         }

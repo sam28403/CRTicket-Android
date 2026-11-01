@@ -28,17 +28,22 @@ internal fun SaleTimeCard(
     subscriptionEnabled: Boolean = true,
     onSubscribe: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    emphasizeStation: Boolean = false,
 ) {
     val text = rememberAppText()
     val colors = MaterialTheme.colorScheme
+    val contentColor = if (emphasizeStation) colors.onPrimaryContainer else colors.onSurface
+    val detailColor = if (emphasizeStation) colors.onPrimaryContainer else colors.onSurfaceVariant
     val remaining = saleRemaining(row.time, now, date)
     Surface(
-        shape = RoundedCornerShape(24.dp), color = colors.surfaceContainerLowest,
+        shape = RoundedCornerShape(24.dp),
+        color = if (emphasizeStation) colors.primaryContainer else colors.surfaceContainerLowest,
         modifier = modifier.fillMaxWidth().testTag("sale-card:${row.name}"),
     ) {
         Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(row.name, Modifier.weight(1f), color = colors.primary,
+                Text(row.name, Modifier.weight(1f),
+                    color = contentColor,
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = projectTitleFont, fontWeight = FontWeight.Bold)
                 Surface(shape = RoundedCornerShape(12.dp), color = colors.secondaryContainer) {
@@ -52,10 +57,10 @@ internal fun SaleTimeCard(
             Row(Modifier.fillMaxWidth().padding(top = 10.dp), verticalAlignment = Alignment.Bottom) {
                 Column(Modifier.weight(1f)) {
                     if (remaining > 0) Text(text(R.string.sale_remaining),
-                        style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+                        style = MaterialTheme.typography.labelMedium, color = detailColor)
                     Text(if (remaining > 0) saleCountdown(remaining) else text(R.string.sale_opened),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = colors.onSurfaceVariant)
+                        color = detailColor)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (onSubscribe != null) {
@@ -63,15 +68,16 @@ internal fun SaleTimeCard(
                             onClick = onSubscribe,
                             enabled = subscriptionEnabled,
                             modifier = Modifier.size(40.dp).testTag("sale-subscribe:${row.name}"),
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = if (subscribed) colors.primary else colors.secondaryContainer,
+                                contentColor = if (subscribed) colors.onPrimary else colors.onSecondaryContainer,
+                                disabledContainerColor = colors.surfaceContainerHighest,
+                                disabledContentColor = colors.onSurface,
+                            ),
                         ) {
                             Icon(
                                 if (subscribed) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
                                 text(if (subscribed) R.string.sale_reminder_cancel else R.string.sale_reminder_subscribe),
-                                tint = when {
-                                    !subscriptionEnabled -> colors.onSurface.copy(alpha = 0.38f)
-                                    subscribed -> colors.primary
-                                    else -> colors.onSurfaceVariant
-                                },
                             )
                         }
                         Spacer(Modifier.width(8.dp))
@@ -80,7 +86,7 @@ internal fun SaleTimeCard(
                         if (row.name == "香港西九龙") text(R.string.station_bureau_mtr)
                         else bureau.ifBlank { text(R.string.sale_bureau_unknown) },
                         style = MaterialTheme.typography.labelMedium,
-                        color = colors.onSurfaceVariant,
+                        color = detailColor,
                     )
                 }
             }

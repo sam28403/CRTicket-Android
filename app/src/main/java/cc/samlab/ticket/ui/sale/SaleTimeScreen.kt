@@ -211,6 +211,7 @@ internal fun SaleTimeScreen(
                             if (submitted.isEmpty()) recommendationSlot.toLocalDate() else date,
                             subscribed = reminders.rows.any { it.id == reminder.id },
                             subscriptionEnabled = saleAt != null,
+                            emphasizeStation = row.name == submitted,
                             onSubscribe = if (submitted.isNotEmpty()) {
                                 { reminders.toggle(reminder) }
                             } else null,
