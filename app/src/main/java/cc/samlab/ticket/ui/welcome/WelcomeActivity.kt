@@ -9,9 +9,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.platform.LocalContext
 import cc.samlab.ticket.MainActivity
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
@@ -39,7 +37,8 @@ class WelcomeActivity : AppCompatActivity() {
                 .bufferedReader().use { it.readText() }
         }.getOrElse { getString(R.string.welcome_changes_fallback) }
         setContent {
-            MaterialTheme(colorScheme = homeColorScheme(LocalContext.current, isSystemInDarkTheme())) {
+            MaterialTheme(colorScheme = homeColorScheme(this, cc.samlab.ticket.ui.ThemePreference.isDark(this),
+                cc.samlab.ticket.ui.ThemePreference.isPureBlack(this))) {
                 WelcomeScreen(
                     firstUse = firstUse,
                     changes = changes,

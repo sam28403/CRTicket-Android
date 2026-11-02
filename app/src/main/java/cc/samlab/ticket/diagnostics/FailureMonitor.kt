@@ -59,7 +59,7 @@ internal object FailureMonitor {
     private fun report(app: Application, kind: String, thread: Thread, error: Throwable?) {
         if (!reporting.compareAndSet(false, true)) return
         ErrorReports.save(app, kind, thread, error)
-        app.startActivity(Intent(app, ErrorReportActivity::class.java).apply {
+        app.startActivity(ErrorReportActivity.intent(app).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
         Process.killProcess(Process.myPid())

@@ -125,6 +125,12 @@ class MainActivity : AppCompatActivity() {
         refresh.enabled = !home.usesWebContent
         webView.visibility = if (home.visible && !home.usesWebContent) android.view.View.INVISIBLE else android.view.View.VISIBLE
         appearance = AppearanceController(this, container, webView, dialogs, refresh, home)
+        settings.onTheme = appearance::setThemePreference
+        settings.readArrival = stationArrival::status
+        settings.onArrival = { enabled ->
+            if (enabled) stationArrival.enable("native-settings")
+            else stationArrival.disable("native-settings")
+        }
         appearance.apply(home.dark)
         configureWebView()
         navigationBack.isEnabled = !home.visible
@@ -375,6 +381,10 @@ class MainActivity : AppCompatActivity() {
     private fun callback(function: String, id: String, result: JSONObject) {
         runOnUiThread {
             if (!isDestroyed) {
+                if (id == "native-settings") {
+                    settings.receiveArrival(result)
+                    return@runOnUiThread
+                }
                 webView.evaluateJavascript("window.$function?.(${JSONObject.quote(id)},$result)", null)
             }
         }

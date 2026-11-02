@@ -27,9 +27,12 @@ export function initializeTheme() {
   const media = window.matchMedia('(prefers-color-scheme: dark)')
   systemDark.value = readSystemDark(media)
   try {
-    const saved = localStorage.getItem(key)
+    const saved = window.CRTicketAndroid?.themePreference?.() || localStorage.getItem(key)
     preference.value = normalize(saved)
   } catch { /* 受限存储时仍可在当前页面切换主题。 */ }
+  window.addEventListener('crticket-theme-preference', event => {
+    preference.value = normalize(event.detail)
+  })
   const refreshSystem = () => { systemDark.value = readSystemDark(media) }
   media.addEventListener('change', refreshSystem)
   window.addEventListener('crticket-system-theme', event => {

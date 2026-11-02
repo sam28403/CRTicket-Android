@@ -26,10 +26,23 @@ data class SettingsState(
 )
 
 class NativeSettingsController(
-    private val activity: ComponentActivity,
-    private val webView: WebView,
+    internal val activity: ComponentActivity,
+    internal val webView: WebView,
     private val worker: ExecutorService,
 ) {
+    internal var onTheme: (String) -> Unit = {}
+    internal var readArrival: () -> JSONObject = { JSONObject() }
+    internal var onArrival: (Boolean) -> Unit = {}
+    internal val preferences = activity.getSharedPreferences("android", 0)
+    internal fun receiveArrival(value: JSONObject) {
+        state = state.copy(
+            arrivalEnabled = value.optBoolean("enabled"),
+            arrivalActive = value.optBoolean("active"),
+            arrivalSupported = value.optBoolean("supported"),
+            arrivalMessage = value.optString("message"),
+        )
+    }
+
     internal var onMonitorSettings: () -> Unit = {}
 
     fun openMonitorSettings() = onMonitorSettings()
@@ -39,10 +52,14 @@ class NativeSettingsController(
     internal val backupSecurity = BackupSecurityState()
     internal val permissions = PermissionSettingsController(activity)
     var state by mutableStateOf(SettingsState(
-        username = activity.getString(R.string.status_loading),
+        username = preferences.getString("profile_username", null)
+            ?: activity.getString(R.string.settings_default_user),
+        avatar = preferences.getString("profile_avatar", "") ?: "",
+        themeMode = preferences.getString("themePreference", "classic-system")!!.substringAfterLast('-'),
+        pureBlack = cc.samlab.ticket.ui.ThemePreference.isPureBlack(activity),
         arrivalMessage = activity.getString(R.string.arrival_loading),
     ))
-        private set
+        internal set
     var busy by mutableStateOf(false)
         private set
     var message by mutableStateOf("")
@@ -74,10 +91,15 @@ class NativeSettingsController(
 
     private val avatarPicker = activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         pickingFile = false
-        if (uri != null) readFile {
-            val bytes = readSettingsFile(activity, uri, 10 * 1024 * 1024)
-            val bitmap = decodeSettingsAvatar(activity, bytes)
-            activity.runOnUiThread { cropBitmap = bitmap }
+        if (uri != null) worker.execute {
+            try {
+                val bytes = readSettingsFile(activity, uri, 10 * 1024 * 1024)
+                val bitmap = decodeSettingsAvatar(activity, bytes)
+                activity.runOnUiThread { cropBitmap = bitmap }
+            } catch (error: Exception) {
+                activity.runOnUiThread { Toast.makeText(activity,
+                    activity.getString(R.string.settings_image_picker_failed), Toast.LENGTH_LONG).show() }
+            }
         }
     }
     private val backupPicker = activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -128,11 +150,13 @@ class NativeSettingsController(
 
     fun refresh() {
         permissions.refresh()
+        receiveArrival(readArrival())
         if (!busy && !pickingFile && !exportSelection && !backupSecurity.visible &&
             cropBitmap == null && importText == null) request("snapshot")
     }
 
     fun request(action: String, payload: JSONObject = JSONObject()) {
+        if (nativeAction(action, payload)) return
         if (busy) return
         busy = true
         failed = false
@@ -159,18 +183,25 @@ class NativeSettingsController(
         if (result.optString("id") != requestId.toString()) return
         webView.removeCallbacks(unlockTimeout)
         result.optJSONObject("state")?.let { value ->
-            val arrival = value.optJSONObject("arrival") ?: JSONObject()
+            val arrival = readArrival()
+
             state = SettingsState(
-                username = value.optString("username", activity.getString(R.string.settings_default_user)),
-                avatar = value.optString("avatar").takeUnless { it == "null" } ?: "",
+                username = preferences.getString("profile_username", null)
+                    ?: value.optString("username", activity.getString(R.string.settings_default_user)),
+                avatar = preferences.getString("profile_avatar", null)
+                    ?: value.optString("avatar").takeUnless { it == "null" } ?: "",
                 arrivalEnabled = arrival.optBoolean("enabled"),
                 arrivalActive = arrival.optBoolean("active"),
                 arrivalSupported = arrival.optBoolean("supported"),
                 arrivalMessage = arrival.optString("message"),
                 loaded = true,
-                themeMode = value.optString("mode", "system"),
-                pureBlack = value.optBoolean("pureBlack"),
+                themeMode = preferences.getString("themePreference", "classic-system")!!.substringAfterLast('-'),
+                pureBlack = cc.samlab.ticket.ui.ThemePreference.isPureBlack(activity),
             )
+        }
+        if (state.loaded) {
+            preferences.edit().putString("profile_username", state.username)
+                .putString("profile_avatar", state.avatar).apply()
         }
         busy = false
         failed = !result.optBoolean("success")
@@ -193,7 +224,7 @@ class NativeSettingsController(
     }
 
     fun chooseAvatar() {
-        if (!busy) try {
+        try {
             pickingFile = true
             avatarPicker.launch("image/*")
         } catch (_: Exception) {
@@ -252,19 +283,20 @@ class NativeSettingsController(
 
     fun saveAvatar(zoom: Float, x: Float, y: Float) {
         val bitmap = cropBitmap ?: return
-        busy = true
         worker.execute {
             try {
                 val avatar = cropSettingsAvatar(bitmap, zoom, x, y)
                 activity.runOnUiThread {
                     if (!activity.isDestroyed) {
-                        busy = false
                         cropBitmap = null
                         request("avatar", JSONObject().put("avatar", avatar))
                     }
                 }
             } catch (error: Exception) {
-                activity.runOnUiThread { fail(error.message ?: activity.getString(R.string.settings_avatar_save_failed)) }
+                activity.runOnUiThread {
+                    Toast.makeText(activity, activity.getString(R.string.settings_avatar_save_failed),
+                        Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

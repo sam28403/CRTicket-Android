@@ -25,7 +25,7 @@ internal fun searchSettings(
     onNavigate: (String) -> Unit,
 ): List<SearchSetting> {
     val state = controller.state
-    val enabled = state.loaded && !controller.busy
+    val enabled = true
     val theme = settingsThemeModes.firstOrNull { it.first == state.themeMode }?.second
         ?: R.string.theme_system
     val destinations = additionalSearchSettings(onNavigate)

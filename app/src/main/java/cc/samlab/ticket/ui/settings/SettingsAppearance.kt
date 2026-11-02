@@ -60,7 +60,7 @@ internal fun SettingsThemeDialog(controller: NativeSettingsController, dismiss: 
                     val selected = controller.state.themeMode == mode
                     Row(
                         modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
-                            .selectable(selected, enabled = !controller.busy, role = Role.RadioButton) {
+                            .selectable(selected, enabled = true, role = Role.RadioButton) {
                                 controller.changeTheme(mode = mode)
                                 dismiss()
                             }.padding(horizontal = 8.dp),

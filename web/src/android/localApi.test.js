@@ -74,3 +74,18 @@ test('railway routes belong to the phone network module; server identities canno
   await assert.rejects(api.request('GET', '/left-ticket'), /未知的本机/)
   await assert.rejects(api.request('GET', '/ticket/list/1'), /未知的本机/)
 })
+
+
+test('native profile overrides stale Web storage and preserves device identity', () => {
+  const { api, storage } = fixture()
+  storage.setItem('crticket-device-owner-v1', JSON.stringify({ username: '旧资料', avatar: 'old' }))
+  globalThis.window = { CRTicketAndroid: { nativeProfile: () =>
+    JSON.stringify({ username: '原生资料', avatar: '' }) } }
+  try {
+    assert.deepEqual(api.owner(), { id: 'device', username: '原生资料', avatar: null })
+    window.CRTicketAndroid.nativeProfile = () => '{}'
+    assert.equal(api.owner().username, '旧资料')
+  } finally {
+    delete globalThis.window
+  }
+})

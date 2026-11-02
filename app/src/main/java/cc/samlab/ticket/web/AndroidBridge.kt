@@ -217,6 +217,31 @@ class AndroidBridge(
         onUi { notifications.publish(id, title, body) }
 
     @JavascriptInterface
+    fun themePreference(): String = activity.getSharedPreferences("android", 0)
+        .getString("themePreference", "") ?: ""
+
+    @JavascriptInterface
+    fun restoreNativeProfile(text: String) {
+        val value = JSONObject(text)
+        val editor = activity.getSharedPreferences("android", 0).edit()
+        for (key in listOf("username", "avatar")) {
+            if (value.has(key)) editor.putString("profile_$key", value.optString(key)
+                .takeUnless { it == "null" } ?: "")
+        }
+        editor.apply()
+    }
+
+    @JavascriptInterface
+    fun nativeProfile(): String {
+        val prefs = activity.getSharedPreferences("android", 0)
+        val value = JSONObject()
+        for (key in listOf("username", "avatar")) {
+            if (prefs.contains("profile_$key")) value.put(key, prefs.getString("profile_$key", ""))
+        }
+        return value.toString()
+    }
+
+    @JavascriptInterface
     fun systemDarkMode(): Boolean = appearance.isSystemDark()
 
     @JavascriptInterface

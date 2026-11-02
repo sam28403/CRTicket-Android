@@ -8,7 +8,10 @@ const OWNER_KEY = 'crticket-device-owner-v1'
 // Keep device records separate from the server account and its login cache.
 export function createLocalApi(storage) {
   const owner = () => {
-    const saved = JSON.parse(storage.getItem(OWNER_KEY) || '{}')
+    const saved = {
+      ...JSON.parse(storage.getItem(OWNER_KEY) || '{}'),
+      ...JSON.parse(globalThis.window?.CRTicketAndroid?.nativeProfile?.() || '{}'),
+    }
     return {
       id: 'device',
       username: saved.username || '默认用户',

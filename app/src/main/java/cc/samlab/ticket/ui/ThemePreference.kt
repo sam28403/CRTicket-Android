@@ -12,6 +12,10 @@ internal object ThemePreference {
             else -> systemDark
         }
 
+    fun isPureBlack(context: Context): Boolean =
+        context.getSharedPreferences("android", Context.MODE_PRIVATE)
+            .getString("themePreference", "")?.startsWith("contrast-") == true
+
     fun isDark(context: Context): Boolean {
         val preferences = context.getSharedPreferences("android", Context.MODE_PRIVATE)
         val systemDark = context.resources.configuration.uiMode and

@@ -47,7 +47,10 @@ export async function importSettingsBackup(text, records, user, api, messages, c
         },
       }),
       applyTheme: value => { useTheme().preference.value = value },
-      updateUser: value => useUserStore().setUser(value),
+      updateUser: value => {
+        native.restoreNativeProfile?.(JSON.stringify(value))
+        useUserStore().setUser(value)
+      },
     })
     window.dispatchEvent(restoredEvent())
     return messages.complete(counts.imported, counts.skipped, counts.invalid)

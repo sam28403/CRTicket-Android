@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -64,9 +63,6 @@ internal fun ExpressiveSettingsScreen(
                     embedded && page == SettingsPage.MAIN,
                     title = stringResource(page.title),
                 )
-                if (controller.busy && page != SettingsPage.LANGUAGE) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
                 Box(Modifier.weight(1f)) {
                     when (page) {
                         SettingsPage.PERMISSIONS -> PermissionSettingsContent(controller.permissions, embedded)

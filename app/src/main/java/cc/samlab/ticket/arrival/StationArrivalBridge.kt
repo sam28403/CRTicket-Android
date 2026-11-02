@@ -42,7 +42,7 @@ class StationArrivalBridge(
 
     fun state(id: String) = reply(id, status())
 
-    private fun status(): JSONObject = JSONObject().put("success", true)
+    internal fun status(): JSONObject = JSONObject().put("success", true)
         .put("supported", ArrivalAccess.supported(activity))
         .put("enabled", store.enabled)
         .put("active", store.enabled && store.registered && ArrivalAccess.ready(activity))

@@ -60,6 +60,10 @@ class AppearanceController(
         activity.getSharedPreferences("android", Activity.MODE_PRIVATE).edit()
             .putString("themePreference", preference)
             .apply()
+        webView.evaluateJavascript(
+            "window.dispatchEvent(new CustomEvent('crticket-theme-preference'," +
+                "{detail:${org.json.JSONObject.quote(preference)}}))", null,
+        )
         apply(
             ThemePreference.resolveDark(preference, systemDark),
             preference.startsWith("contrast-"),

@@ -3,7 +3,8 @@ package cc.samlab.ticket.diagnostics
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
-import android.content.res.Configuration
+import android.content.Context
+import cc.samlab.ticket.ui.ThemePreference
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -21,14 +22,29 @@ import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
 
 class ErrorReportActivity : AppCompatActivity() {
+    companion object {
+        private const val EXTRA_THEME = "error_report_theme"
+
+        internal fun intent(context: Context): Intent =
+            Intent(context, ErrorReportActivity::class.java).putExtra(
+                EXTRA_THEME,
+                context.getSharedPreferences("android", Context.MODE_PRIVATE)
+                    .getString("themePreference", "classic-system"),
+            )
+    }
+
     @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val report = runCatching { ErrorReports.file(this).readText() }.getOrDefault("")
-        val dark = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-            Configuration.UI_MODE_NIGHT_YES
+        // The diagnostics process may still cache preferences from an earlier report.
+        val preference = intent.getStringExtra(EXTRA_THEME)
         setContent {
-            MaterialExpressiveTheme(colorScheme = homeColorScheme(this, dark, false)) {
+            MaterialExpressiveTheme(colorScheme = homeColorScheme(
+                this,
+                ThemePreference.resolveDark(preference, androidx.compose.foundation.isSystemInDarkTheme()),
+                preference?.startsWith("contrast-") == true,
+            )) {
                 Surface(Modifier.fillMaxSize()) {
                     Column(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)
                         .padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {

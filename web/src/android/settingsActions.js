@@ -105,7 +105,15 @@ export async function performSettingsAction(action, payload = {}) {
 
 export function initializeNativeSettings() {
   if (typeof native?.settingsResult !== 'function') return
-    initializeNativeStorage()
+  initializeNativeStorage()
+  if (typeof native.nativeProfile === 'function' && typeof native.restoreNativeProfile === 'function') {
+    const saved = JSON.parse(localStorage.getItem('crticket-device-owner-v1') || '{}')
+    const current = JSON.parse(native.nativeProfile())
+    native.restoreNativeProfile(JSON.stringify({ ...saved, ...current }))
+  }
+  window.addEventListener('crticket-profile-changed', () => {
+    owner().catch(() => {})
+  })
   window.crticketSettings = async (id, action, payload) => {
     let message = ''
     let success = true

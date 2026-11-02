@@ -30,7 +30,7 @@ internal fun SettingsProfile(
 ) {
     val textResources = rememberAppText()
     val state = controller.state
-    val enabled = state.loaded && !controller.busy
+    val enabled = true
     SettingsGroup(stringResource(R.string.settings_profile), first = true) {
         SettingsRow(
             stringResource(R.string.settings_display_name), state.username,
@@ -89,7 +89,7 @@ internal fun SettingsPreferences(
     first: Boolean = false,
 ) {
     val state = controller.state
-    val enabled = state.loaded && !controller.busy
+    val enabled = true
     SettingsGroup(stringResource(R.string.settings_appearance), first = first) {
         val themeTitle = settingsThemeModes.firstOrNull { it.first == state.themeMode }?.second
             ?: R.string.theme_system
@@ -127,11 +127,11 @@ internal fun SettingsPreferences(
         )
     }
     SettingsGroup(stringResource(R.string.settings_backup)) {
-        SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled,
+        SettingsRow(stringResource(R.string.settings_export_excel), "", 0, 3, enabled && !controller.busy,
             { controller.request("exportExcel") })
-        SettingsRow(stringResource(R.string.settings_export_backup), "", 1, 3, enabled,
+        SettingsRow(stringResource(R.string.settings_export_backup), "", 1, 3, enabled && !controller.busy,
             controller::chooseExportBackup)
-        SettingsRow(stringResource(R.string.settings_import_backup), "", 2, 3, enabled,
+        SettingsRow(stringResource(R.string.settings_import_backup), "", 2, 3, enabled && !controller.busy,
             controller::chooseBackup)
     }
 }

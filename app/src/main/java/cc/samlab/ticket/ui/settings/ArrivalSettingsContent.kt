@@ -33,7 +33,7 @@ import org.json.JSONObject
 @Composable
 internal fun ArrivalSettingsContent(controller: NativeSettingsController, visible: Boolean) {
     val state = controller.state
-    val enabled = state.loaded && !controller.busy && state.arrivalSupported
+    val enabled = state.arrivalSupported
     val onChange: (Boolean) -> Unit = {
         controller.request("arrival", JSONObject().put("enabled", it))
     }
@@ -100,7 +100,7 @@ private fun ArrivalInformation(controller: NativeSettingsController) {
             ArrivalInformationText(state.arrivalMessage)
             if (state.arrivalEnabled && state.arrivalSupported) {
                 TextButton(
-                    enabled = !controller.busy,
+                    enabled = true,
                     onClick = { controller.request("arrival", JSONObject().put("enabled", true)) },
                 ) { Text(stringResource(R.string.arrival_restart)) }
             }
