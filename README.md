@@ -63,8 +63,8 @@ CRTicket 是独立运行的 Android 车票工具，提供车票制作、历史�
 | `.run` | 可共享的 Android Studio 运行配置 |
 | `tools` | 资源打包、检查和性能测量工具 |
 | `docs` | 专题说明与历史验证记录 |
-| `reference` | 不参与 APK 构建的电脑后端参考代码 |
-| `build`、`app/build` | 被 Git 忽略的日志、报告和构建产物 |
+| `logs` | 构建、测试、安装和排查日志 |
+| `build`、`app/build` | 被 Git 忽略的报告和构建产物 |
 
 生成的网页资源位于 `app/src/main/assets/web`，到站清单位于
 `app/src/main/assets/arrival-stations.json`，均由脚本生成，不纳入 Git。
