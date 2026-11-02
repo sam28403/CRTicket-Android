@@ -1,9 +1,15 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { readFileSync } from 'node:fs'
+
+const appVersion = /^crticket.version=(.+)$/m.exec(
+  readFileSync(new URL('../gradle.properties', import.meta.url), 'utf8'),
+)[1].trim()
 
 export default defineConfig({
   base: '/',
+  define: { __CRTICKET_VERSION__: JSON.stringify(appVersion) },
   publicDir: false,
   plugins: [vue()],
   server: {

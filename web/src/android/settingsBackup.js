@@ -7,6 +7,9 @@ import { useTheme } from '../composables/useTheme.js'
 import { useUserStore } from '../stores/user.js'
 import { selectBackupContents } from '../utils/backupContents.js'
 
+import { checkBackupCompatibility, currentBackupAppVersion as appVersion } from '../utils/backupCompatibility.js'
+import { settingsText } from './settingsStrings.js'
+
 const calls = createNativeCalls('crticketBackupResult')
 
 export function exportSettingsBackup(records, user, contents) {
@@ -14,17 +17,28 @@ export function exportSettingsBackup(records, user, contents) {
     theme: useTheme().preference.value,
     storage: localStorage,
     contents,
+    appVersion: appVersion(),
     native: native?.backupSettings ? JSON.parse(native.backupSettings()) : undefined,
   })
 }
 
 export async function importSettingsBackup(text, records, user, api, messages, contents) {
-  const backup = selectBackupContents(parseAppBackup(text, messages), contents)
+  const { backup: parsed, newer } = checkBackupCompatibility(
+    text, appVersion(), value => parseAppBackup(value, messages), value => {
+      if (native && value.settings?.native) {
+        const error = native.validateBackupSettings?.(JSON.stringify(value.settings.native))
+        if (error) throw new Error(error)
+      }
+    }, settingsText('backup_update_required'),
+  )
+  const backup = selectBackupContents(parsed, contents)
+  const complete = message => newer
+    ? `${message}\n${settingsText('backup_update_recommended')}` : message
   const restoredEvent = () => new CustomEvent('crticket-backup-restored', { detail: {
     generatorDraftRestored: Object.hasOwn(backup.settings?.native || {}, 'generatorDraft')
       || Object.hasOwn(backup.settings?.storage || {}, 'crticket-generator-draft'),
   } })
-  if (!backup.settings) return importTicketBackup(backup.tickets, records, user, api, messages)
+  if (!backup.settings) return complete(await importTicketBackup(backup.tickets, records, user, api, messages))
   if (native) {
     const draft = backup.settings.storage?.['crticket-generator-draft']
     if (Object.hasOwn(backup.settings.storage || {}, 'crticket-generator-draft')
@@ -53,7 +67,7 @@ export async function importSettingsBackup(text, records, user, api, messages, c
       },
     })
     window.dispatchEvent(restoredEvent())
-    return messages.complete(counts.imported, counts.skipped, counts.invalid)
+    return complete(messages.complete(counts.imported, counts.skipped, counts.invalid))
   }
   // Keep the existing browser/server import route; device-owned records never enter a server account.
   const message = await importTicketBackup(backup.tickets, records, user, api, messages)
@@ -80,5 +94,5 @@ export async function importSettingsBackup(text, records, user, api, messages, c
   if (Object.hasOwn(storage, 'crticket-generator-draft')) localStorage.removeItem('crticket-generator-receipt')
   if (theme !== undefined) useTheme().preference.value = theme
   window.dispatchEvent(restoredEvent())
-  return message
+  return complete(message)
 }

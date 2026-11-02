@@ -1,3 +1,4 @@
+import { newerBackup, currentBackupAppVersion } from './backupCompatibility.js'
 import { buildBackupPayload, parseTicketBackup } from './ticketBackup.js'
 import { normalizeUsername } from './username.js'
 import { TICKET_FIELDS } from './ticketFields.js'
@@ -73,7 +74,7 @@ export function validateAppSettings(settings) {
   return portableMapSourceSettings(settings)
 }
 
-export function buildAppBackup(tickets, user, { theme, storage, native, contents } = {}) {
+export function buildAppBackup(tickets, user, { theme, storage, native, contents, appVersion } = {}) {
   const payload = buildBackupPayload([], user)
   const settings = {
     profile: { username: user.username, avatar: user.avatar || null },
@@ -88,6 +89,7 @@ export function buildAppBackup(tickets, user, { theme, storage, native, contents
   const backup = selectBackupContents({
     ...payload,
     schemaVersion: 2,
+    ...(appVersion ? { appVersion } : {}),
     settings,
     tickets: tickets.map(ticket => ({
       ...Object.fromEntries(TICKET_FIELDS.map(field => [field, ticket[field] ?? null])),
@@ -99,6 +101,18 @@ export function buildAppBackup(tickets, user, { theme, storage, native, contents
 }
 
 export function parseAppBackup(text, messages = {}) {
+  const value = JSON.parse(text)
+  try {
+    return parseBackup(text, messages)
+  } catch (error) {
+    if (newerBackup(value, currentBackupAppVersion())) {
+      throw new Error(messages.updateRequired || '此备份与当前软件版本不兼容，请更新软件后再导入。', { cause: error })
+    }
+    throw error
+  }
+}
+
+function parseBackup(text, messages) {
   const value = JSON.parse(text)
   const tickets = parseTicketBackup(text, messages)
   if (Array.isArray(value) || value.schemaVersion === undefined || value.schemaVersion === 1) {

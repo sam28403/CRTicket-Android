@@ -1,6 +1,9 @@
 import { native } from './platform.js'
 
 const fallback = {
+  backup_update_required: '此备份与当前软件版本不兼容，请更新软件后再导入。',
+  backup_update_recommended: '此备份来自更高版本，已兼容导入，请尽快更新软件。',
+
   read_failed: '无法读取个人资料', arrival_unsupported: '当前环境不支持到站检测',
   save_failed: '保存失败', saved: '已保存', arrival_failed: '无法更新到站检测', arrival_updated: '已更新到站检测',
   export_empty: '暂无可导出的车票', export_sheet: '车票',

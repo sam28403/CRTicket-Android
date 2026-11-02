@@ -1,3 +1,4 @@
+import { currentBackupAppVersion } from './backupCompatibility.js'
 import { buildTicketPayload } from './ticketShared.js'
 import { comparableTicketValues } from './ticketFields.js'
 
@@ -42,6 +43,7 @@ const mapBackupTicketToTicketForm = (ticket) => ({
 export const buildBackupPayload = (tickets, user) => {
   return {
     schemaVersion: 1,
+    appVersion: currentBackupAppVersion(),
     exportedAt: new Date().toISOString(),
     app: "CRTicket",
     user: user ? {

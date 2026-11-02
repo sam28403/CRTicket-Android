@@ -43,6 +43,9 @@ class AndroidBridge(
     private val receiveSearch: (String) -> Unit,
     private val backupCallback: (String, String, JSONObject) -> Unit,
 ) {
+    @JavascriptInterface
+    fun backupAppVersion(): String = cc.samlab.ticket.BuildConfig.VERSION_NAME
+
     private val backupPreferences = BackupPreferences(activity)
     private fun onUi(action: () -> Unit) = activity.runOnUiThread(action)
 

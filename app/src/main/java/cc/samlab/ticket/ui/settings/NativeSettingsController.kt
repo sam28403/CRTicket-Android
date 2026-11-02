@@ -135,6 +135,10 @@ class NativeSettingsController(
         val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
         requireNotNull(records) { activity.getString(R.string.settings_backup_no_tickets) }
         require(records.length() <= 10000) { activity.getString(R.string.settings_backup_limit) }
+        if (value is JSONObject && value.has("schemaVersion") &&
+            value.optInt("schemaVersion") !in 1..2) {
+            error(activity.getString(R.string.backup_update_required))
+        }
         val available = availableBackupContents(value)
         require(available.isNotEmpty()) { activity.getString(R.string.settings_backup_no_tickets) }
         activity.runOnUiThread {

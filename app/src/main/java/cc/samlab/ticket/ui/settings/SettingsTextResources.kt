@@ -27,6 +27,8 @@ internal fun settingsTextResources(context: Context): String {
         "backup_no_tickets" to R.string.settings_backup_no_tickets,
         "backup_limit" to R.string.settings_backup_limit,
         "import_failed" to R.string.settings_import_failed,
+        "backup_update_required" to R.string.backup_update_required,
+        "backup_update_recommended" to R.string.backup_update_recommended,
         "import_complete" to R.string.settings_import_complete,
         "backup_crypto_unavailable" to R.string.backup_crypto_unavailable,
         "backup_crypto_invalid" to R.string.backup_crypto_invalid,

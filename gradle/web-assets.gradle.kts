@@ -11,6 +11,7 @@ val buildWebAssets = tasks.register<Exec>("buildWebAssets") {
     inputs.dir(rootProject.file("web/src"))
     inputs.dir(rootProject.file("web/public"))
     inputs.files(
+        rootProject.file("gradle.properties"),
         rootProject.file("web/package.json"),
         rootProject.file("web/package-lock.json"),
         rootProject.file("web/vite.config.js"),
