@@ -135,6 +135,11 @@ export async function queryTrainInfo(train, date, fetchImpl = fetch, loadDatabas
     const matched = candidates.filter(item => item.stops.length === online.stops.length &&
       item.stops.every((stop, index) =>
         normalizeStationName(stop.station) === normalizeStationName(online.stops[index].station)))
+    if (matched.length === 1) {
+      online = { ...online, stops: online.stops.map((stop, index) => ({
+        ...stop, ...(matched[0].stops[index].isTurn === true ? { isTurn: true } : {}),
+      })) }
+    }
     if (matched.length !== 1 || matched[0].stops.some(stop => stop.mileage == null)) {
       return { ...online, warnings: ['路路通未找到站序一致且里程完整的车次记录，里程暂缺。'] }
     }

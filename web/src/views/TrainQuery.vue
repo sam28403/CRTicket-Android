@@ -380,6 +380,7 @@ onBeforeUnmount(() => {
                 <div><dt>停留时长</dt><dd>{{ stop.stay == null ? '—' : `${stop.stay} 分钟` }}</dd></div>
                 <div><dt>里程</dt><dd>{{ stop.mileage == null ? '暂无' : `${stop.mileage} km` }}</dd></div>
               </dl>
+              <span v-if="stop.isTurn === true" class="turn-station-tag">本站调向</span>
             </li>
           </ol>
           <div class="export-actions">
@@ -514,6 +515,17 @@ h1 {
   justify-content: flex-end;
   margin-top: 20px;
 }
+.turn-station-tag {
+  position: absolute;
+  right: 0;
+  bottom: 16px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e8def8;
+  color: #1d192b;
+  font-size: 12px;
+  font-weight: 600;
+}
 .mobile-stops {
   display: none;
 }
@@ -528,6 +540,7 @@ h1 {
     list-style: none;
   }
   .mobile-stop {
+    position: relative;
     padding: 16px 0;
     border-bottom: 1px solid var(--el-border-color-lighter);
   }

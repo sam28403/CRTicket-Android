@@ -851,4 +851,5 @@
     <string name="webview_version_warning_message">当前 WebView 版本：%1$s。CRTicket 需要 WebView %2$d 或更高版本。请更新系统正在使用的 WebView，部分页面或功能可能无法正常使用。</string>
     <string name="backup_update_required">此备份与当前软件版本不兼容，请更新软件后再导入。</string>
     <string name="backup_update_recommended">此备份来自更高版本，已兼容导入，请尽快更新软件。</string>
+    <string name="train_query_turn_station">本站调向</string>
 </resources>

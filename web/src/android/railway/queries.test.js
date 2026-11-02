@@ -71,3 +71,27 @@ test('train lookup uses exact train matches and calculates midnight crossings', 
     }]]) }))
     assert.deepEqual(result.stops.map(stop => stop.mileage), [0, 1318])
 })
+
+test('在线停站唯一匹配时补入调向标记，缺失里程不阻止补全', async () => {
+    const fetchImpl = async url => url.includes('/search/')
+        ? Response.json({ data: [{ train_no: 'id', station_train_code: '6856/6857' }] })
+        : Response.json({ data: { data: [
+            { station_name: '集宁南', start_time: '08:00' },
+            { station_name: '二连', arrive_time: '12:00' },
+        ] } })
+    for (const mileage of [null, 10]) {
+        const database = { version: '20261105', trains: new Map([['6856/6857', {
+            train: '6856/6857', stops: [
+                { station: '集宁南', mileage: 0, isTurn: true },
+                { station: '二连', mileage, isTurn: true },
+            ],
+        }]]) }
+        const result = await queryTrainInfo('6856', date, fetchImpl, async () => database)
+        assert.deepEqual(result.stops.map(stop => stop.isTurn), [true, true])
+    }
+    const unmatched = { trains: new Map([['6856/6857', {
+        train: '6856/6857', stops: [{ station: '其他站', isTurn: true }],
+    }]]) }
+    const result = await queryTrainInfo('6856', date, fetchImpl, async () => unmatched)
+    assert.ok(result.stops.every(stop => stop.isTurn == null))
+})

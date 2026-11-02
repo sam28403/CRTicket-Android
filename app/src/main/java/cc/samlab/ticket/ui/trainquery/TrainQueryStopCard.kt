@@ -92,18 +92,35 @@ internal fun TrainQueryStopCard(
                     valueColor = stop.delayColor("departure", dark),
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                StopDetail(
-                    textResources(R.string.station_stay_duration),
-                    if (stop.isNull("stay")) "—" else textResources(R.string.duration_minutes, stop.optString("stay")),
-                    Modifier.weight(1f),
-                )
-                StopDetail(
-                    textResources(R.string.ticket_mileage),
-                    if (stop.isNull("mileage")) textResources(R.string.status_unavailable)
-                    else textResources(R.string.distance_km, stop.optString("mileage")),
-                    Modifier.weight(1f),
-                )
+            Box(Modifier.fillMaxWidth()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    StopDetail(
+                        textResources(R.string.station_stay_duration),
+                        if (stop.isNull("stay")) "—" else textResources(R.string.duration_minutes, stop.optString("stay")),
+                        Modifier.weight(1f),
+                    )
+                    StopDetail(
+                        textResources(R.string.ticket_mileage),
+                        if (stop.isNull("mileage")) textResources(R.string.status_unavailable)
+                        else textResources(R.string.distance_km, stop.optString("mileage")),
+                        Modifier.weight(1f),
+                    )
+                }
+                if (stop.optBoolean("isTurn", false)) {
+                    Surface(
+                        shape = RoundedCornerShape(50),
+                        color = colors.tertiaryContainer,
+                        contentColor = colors.onTertiaryContainer,
+                        modifier = Modifier.align(Alignment.BottomEnd).testTag("train-query-turn-$index"),
+                    ) {
+                        Text(
+                            textResources(R.string.train_query_turn_station),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
             }
         }
     }
