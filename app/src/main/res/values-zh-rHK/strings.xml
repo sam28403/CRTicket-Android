@@ -847,4 +847,6 @@
     <string name="vehicle_photo_source">出处：下关站</string>
     <string name="vehicle_photo_close">关闭</string>
     <string name="storage_vehicle_photos">车辆照片缓存</string>
+    <string name="webview_version_warning_title">WebView 版本過低</string>
+    <string name="webview_version_warning_message">目前 WebView 版本：%1$s。CRTicket 需要 WebView %2$d 或更高版本。請更新系統正在使用的 WebView，部分頁面或功能可能無法正常使用。</string>
 </resources>

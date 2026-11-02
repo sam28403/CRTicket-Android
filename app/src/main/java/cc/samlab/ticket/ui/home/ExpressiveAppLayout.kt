@@ -11,7 +11,7 @@ import androidx.window.layout.FoldingFeature
 import cc.samlab.ticket.ui.navigation.ExpressiveNavigator
 import cc.samlab.ticket.ui.navigation.ExpressiveNavHost
 import cc.samlab.ticket.ui.navigation.ExpressiveRoutes
-import cc.samlab.ticket.ui.notice.ImportantNoticeDialog
+import cc.samlab.ticket.ui.notice.WebViewVersionWarning
 import cc.samlab.ticket.ui.window.*
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -46,7 +46,7 @@ internal fun ExpressiveAppLayout(
         dark || location == "/railfan/speedometer/live",
         pureBlack || location == "/railfan/speedometer/live",
     )) {
-        ImportantNoticeDialog()
+        WebViewVersionWarning()
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
             CompositionLocalProvider(LocalFoldingFeatures provides folds) {
                 val native = ExpressiveRoutes.isNative(location)

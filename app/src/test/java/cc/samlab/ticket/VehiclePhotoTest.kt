@@ -52,4 +52,18 @@ class VehiclePhotoTest {
         assertNull(VehiclePhotoParser.searchKeyword("BFZ"))
     }
 
+    @Test fun cr400afaAliasesSearchAndMatchTheFullPhotoNumber() {
+        val fullPhoto = photo.copy(vehicle = "CR400AF-A-1001")
+        for (input in listOf("CR400AFA1001", "CR400AFA-1001", "CR400AF-A-1001")) {
+            assertEquals("CR400AF-A-1001", VehiclePhotoParser.searchKeyword(input))
+            assertEquals(fullPhoto, VehiclePhotoParser.select(
+                input, listOf("CR400AFA-1001"), listOf(fullPhoto),
+            ))
+            assertEquals(fullPhoto, VehiclePhotoParser.select(input, emptyList(), listOf(fullPhoto)))
+        }
+        assertNull(VehiclePhotoParser.select(
+            "CR400AFA1001", emptyList(), listOf(fullPhoto.copy(vehicle = "CR400AF-1001")),
+        ))
+    }
+
 }
