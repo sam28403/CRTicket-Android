@@ -16,6 +16,7 @@ class NativeHistoryController(
     private val activity: ComponentActivity,
     private val webView: WebView,
     private val worker: ExecutorService,
+    private val updateRenderer: () -> Unit,
 ) {
     internal val ui = HistoryEditorState()
     internal var stations by mutableStateOf<List<HistoryStation>>(emptyList())
@@ -28,6 +29,8 @@ class NativeHistoryController(
         private set
     private var defaults = JSONObject()
     private var sourceRows = emptyMap<String, JSONObject>()
+    internal var downloading by mutableStateOf(false)
+        private set
     private var pendingOperation: String? = null
     internal var rows by mutableStateOf<List<HistoryRecord>>(emptyList())
         private set
@@ -99,6 +102,11 @@ class NativeHistoryController(
     internal fun action(action: String, id: String = "") {
         if (ui.busy) return
         when (action) {
+            "download" -> {
+                downloading = true
+                updateRenderer()
+                mutate(JSONObject().put("action", action).put("id", id))
+            }
             "create" -> ui.open(null, defaults)
             "edit" -> sourceRows[id]?.let { ui.open(id, it) }
             "delete" -> {
@@ -137,6 +145,7 @@ class NativeHistoryController(
         ui.busy = true
         ui.error = ""
         dispatch(detail.put("operation", operation))
+        if (downloading) return
         android.os.Handler(activity.mainLooper).postDelayed({
             if (!closed && pendingOperation == operation) {
                 pendingOperation = null
@@ -152,6 +161,14 @@ class NativeHistoryController(
             if (closed || value.optString("operation") != pendingOperation) return@runOnUiThread
             pendingOperation = null
             ui.busy = false
+            if (downloading) {
+                downloading = false
+                updateRenderer()
+                if (!value.optBoolean("success")) {
+                    Toast.makeText(activity, value.optString("message"), Toast.LENGTH_LONG).show()
+                }
+                return@runOnUiThread
+            }
             if (value.optBoolean("success")) {
                 ui.deleting = null
                 ui.closeDetail()

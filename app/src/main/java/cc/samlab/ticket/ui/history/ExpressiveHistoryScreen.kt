@@ -96,6 +96,7 @@ internal fun ExpressiveHistoryScreen(
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.surfaceContainer),
                 )
+                if (controller.downloading) LinearProgressIndicator(Modifier.fillMaxWidth())
                 if (draft != null && controller.ui.error.isNotEmpty()) Surface(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = MaterialTheme.shapes.large,

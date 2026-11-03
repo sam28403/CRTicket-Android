@@ -118,7 +118,7 @@ import AppBrand from '@/components/AppBrand.vue'
 import HistoryRecords from '@/components/HistoryRecords.vue'
 import { useNativeHistory } from '@/composables/useNativeHistory.js'
 import { saveHistoryTicket, removeHistoryTicket } from '@/utils/historyMutations.js'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useTransition } from '@vueuse/core'
 import QRCode from 'qrcode'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -340,12 +340,13 @@ const generateDownloadQRCode = async (text) => {
 const downloadHistoryPNG = async (row) => {
   const trainError = getTrainNumberError(row.trainNo)
   if (trainError) {
-    ElMessage.warning(trainError)
-    return
+    if (!nativeHistory) ElMessage.warning(trainError)
+    return { success: false, message: trainError }
   }
   if (!hasRequiredTicketFields(row)) {
-    ElMessage.warning('该记录信息不完整，无法下载')
-    return
+    const message = '该记录信息不完整，无法下载'
+    if (!nativeHistory) ElMessage.warning(message)
+    return { success: false, message }
   }
 
   Object.assign(downloadTicket, {
@@ -369,13 +370,15 @@ const downloadHistoryPNG = async (row) => {
   await generateDownloadQRCode(row.number)
 
   try {
-    await new Promise((resolve) => requestAnimationFrame(resolve))
+    await nextTick()
     const element = historyTicketRef.value
     const imgData = await renderTicketImage(element)
 
     await downloadTicketPNG(imgData, row.number)
+    return { success: true }
   } catch (err) {
-    ElMessage.error('下载失败')
+    if (!nativeHistory) ElMessage.error('下载失败')
+    return { success: false, message: err?.message || '下载失败' }
   }
 }
 

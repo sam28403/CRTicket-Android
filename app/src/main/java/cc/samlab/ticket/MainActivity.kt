@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     }
     private val stationArrival by lazy { StationArrivalBridge(this, ::callback, dialogs) }
     private val history by lazy {
-        cc.samlab.ticket.ui.history.NativeHistoryController(this, webView, worker)
+        cc.samlab.ticket.ui.history.NativeHistoryController(this, webView, worker, ::updateWebVisibility)
     }
     private val files by lazy { DocumentFiles(this, worker, ::callback, ::toast) }
     private val generator by lazy {
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             home.openNotification(route.removePrefix("#"))
         }
         refresh.enabled = !home.usesWebContent
-        webView.visibility = if (home.visible && !home.usesWebContent) android.view.View.INVISIBLE else android.view.View.VISIBLE
+        updateWebVisibility()
         appearance = AppearanceController(this, container, webView, dialogs, refresh, home)
         settings.onTheme = appearance::setThemePreference
         settings.readArrival = stationArrival::status
@@ -268,13 +268,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateWebVisibility() {
+        // Keep the renderer drawing behind the native history page while encoding the ticket.
+        val renderingTicket = home.route == "/history" && history.downloading
+        webView.visibility = if (home.visible && !home.usesWebContent && !renderingTicket) {
+            android.view.View.INVISIBLE
+        } else android.view.View.VISIBLE
+    }
+
     private fun updateNavigationUi() {
         refresh.enabled = home.route != "/user"
         refreshSettingsIfReady()
         navigationBack.isEnabled = !home.visible
-        webView.visibility = if (home.visible && !home.usesWebContent) {
-            android.view.View.INVISIBLE
-        } else android.view.View.VISIBLE
+        updateWebVisibility()
         if (::appearance.isInitialized) appearance.apply(home.dark)
         if (!home.visible) webView.requestFocus()
     }

@@ -11,7 +11,7 @@ export function useNativeHistory({ rows, loading, error, distance, money, dialog
   let busy = false
   let sentStations = false
   const showPage = () => {
-    if (mounted) native.setNativePage(dialog.value || busy ? '' : '/history')
+    if (mounted) native.setNativePage(dialog.value ? '' : '/history')
   }
   const stop = watch([rows, loading, error, distance, money], () => {
     native.historyResult(JSON.stringify({
@@ -48,19 +48,15 @@ export function useNativeHistory({ rows, loading, error, distance, money, dialog
       return
     }
     busy = true
-    // Only PNG export still needs the WebView renderer and system file picker.
-    const webOverlay = action === 'download'
-    if (webOverlay) native.setNativePage('')
     try {
-      const result = await handler(operation ? event.detail : row)
-      if (operation && mounted) native.historyOperationResult(JSON.stringify({ operation, ...result }))
+      const result = await handler(operation && action !== 'download' ? event.detail : row)
+      if (operation && (mounted || action === 'download')) native.historyOperationResult(JSON.stringify({ operation, ...result }))
     } catch (error) {
-      if (operation && mounted) native.historyOperationResult(JSON.stringify({
+      if (operation && (mounted || action === 'download')) native.historyOperationResult(JSON.stringify({
         operation, success: false, message: error?.response?.data?.message || error.message || '操作失败，请重试',
       }))
     } finally {
       busy = false
-      if (webOverlay) showPage()
     }
   }
   window.addEventListener('crticket-history-action', handleAction)
