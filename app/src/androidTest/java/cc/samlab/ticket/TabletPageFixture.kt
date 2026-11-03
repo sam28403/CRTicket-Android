@@ -3,13 +3,19 @@ package cc.samlab.ticket
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertTrue
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-internal class TabletPageFixture(private val compose: ComposeTestRule) {
+internal class TabletPageFixture(
+    private val compose: ComposeTestRule,
+    dismissWebViewWarning: Boolean = false,
+) {
     val instrumentation = InstrumentationRegistry.getInstrumentation()
     val activity = launch()
 
@@ -24,6 +30,12 @@ internal class TabletPageFixture(private val compose: ComposeTestRule) {
     }
 
     init {
+        if (dismissWebViewWarning) {
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithTag("webview-version-warning").fetchSemanticsNodes().isNotEmpty()
+            }
+            compose.onNodeWithText(activity.getString(R.string.action_confirm)).performClick()
+        }
         instrumentation.runOnMainSync {
             activity.setShowWhenLocked(true)
             activity.setTurnScreenOn(true)

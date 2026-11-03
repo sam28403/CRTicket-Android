@@ -1,6 +1,7 @@
 package cc.samlab.ticket.ui.settings
 
 import android.text.format.Formatter
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,17 +22,24 @@ import cc.samlab.ticket.R
 @Composable
 internal fun StorageSettingsContent(controller: StorageController, visible: Boolean) {
     var pending by remember { mutableStateOf<Set<StorageKind>>(emptySet()) }
+    var clearAll by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val resources = LocalResources.current
     val snapshot = controller.snapshot
     val kinds = StorageKind.entries.filter { it in snapshot.sizes }
     val format: (Long) -> String = { Formatter.formatShortFileSize(context, it) }
+    LaunchedEffect(controller.message) {
+        if (clearAll && controller.message.isNotEmpty()) {
+            Toast.makeText(context, controller.message, Toast.LENGTH_SHORT).show()
+        }
+    }
     LaunchedEffect(visible) {
         if (visible) controller.refresh()
         else pending = emptySet()
     }
     SettingsPanel(rememberScrollState(), "settings-storage") {
         StorageOverview(controller, format) {
+            clearAll = true
             pending = kinds.filter {
                 (snapshot.sizes[it] ?: 0) > 0 ||
                     it == StorageKind.TEST_SCREENSHOTS || it == StorageKind.VEHICLE_PHOTOS
@@ -45,7 +53,10 @@ internal fun StorageSettingsContent(controller: StorageController, visible: Bool
                         stringResource(kind.title), format(bytes), index, kinds.size,
                         controller.loaded && !controller.busy &&
                             (bytes > 0 || kind == StorageKind.TEST_SCREENSHOTS),
-                        { pending = setOf(kind) },
+                        {
+                            clearAll = false
+                            pending = setOf(kind)
+                        },
                     ) {
                         Icon(Icons.Outlined.DeleteOutline, stringResource(R.string.storage_clear))
                     }
@@ -58,7 +69,7 @@ internal fun StorageSettingsContent(controller: StorageController, visible: Bool
                 0, 1, false, {}, trailing = {},
             )
         }
-        if (controller.message.isNotEmpty()) Text(
+        if (!clearAll && controller.message.isNotEmpty()) Text(
             controller.message,
             Modifier.padding(12.dp).testTag("storage-result"),
             style = MaterialTheme.typography.bodyMedium,

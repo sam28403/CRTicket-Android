@@ -33,7 +33,7 @@ import org.json.JSONObject
 @Composable
 internal fun ArrivalSettingsContent(controller: NativeSettingsController, visible: Boolean) {
     val state = controller.state
-    val enabled = state.arrivalSupported
+    val enabled = state.loaded
     val onChange: (Boolean) -> Unit = {
         controller.request("arrival", JSONObject().put("enabled", it))
     }
@@ -52,7 +52,7 @@ internal fun ArrivalSettingsContent(controller: NativeSettingsController, visibl
                 }
             }
             Surface(
-                onClick = { onChange(!state.arrivalEnabled) },
+                onClick = { onChange(!state.arrivalSupported || !state.arrivalEnabled) },
                 enabled = enabled,
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -69,7 +69,7 @@ internal fun ArrivalSettingsContent(controller: NativeSettingsController, visibl
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge,
                     )
-                    SettingsSwitch(state.arrivalEnabled, enabled, stringResource(R.string.settings_arrival_switch), onChange)
+                    ArrivalSettingsSwitch(controller, enabled)
                 }
             }
             ArrivalInformation(controller)

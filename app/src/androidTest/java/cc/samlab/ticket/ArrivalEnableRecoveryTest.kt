@@ -95,7 +95,9 @@ class ArrivalEnableRecoveryTest {
         instrumentation.runOnMainSync {
             assertTrue(store.enabled)
             assertTrue(store.registered)
-            assertTrue(replies.isEmpty())
+            assertEquals(1, replies.count {
+                it.first == "native-settings" && !it.second.optBoolean("starting")
+            })
         }
     }
 

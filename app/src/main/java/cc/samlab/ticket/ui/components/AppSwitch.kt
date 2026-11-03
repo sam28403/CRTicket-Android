@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -18,6 +19,7 @@ internal fun AppSwitch(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    loading: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     Switch(
@@ -33,7 +35,13 @@ internal fun AppSwitch(
             uncheckedBorderColor = colors.outline,
         ),
         thumbContent = {
-            Icon(
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    color = colors.surface,
+                    strokeWidth = 2.dp,
+                )
+            } else Icon(
                 imageVector = if (checked) Icons.Filled.Check else Icons.Filled.Close,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),

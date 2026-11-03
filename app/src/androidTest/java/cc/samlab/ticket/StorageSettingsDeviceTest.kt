@@ -89,10 +89,7 @@ class StorageSettingsDeviceTest {
             assertEquals(8192, saved.length().toInt())
             assertEquals(8192, unrelated.length().toInt())
             assertEquals("\"retained\"", fixture.evaluate("localStorage.getItem('storage-device-test')"))
-            compose.waitUntil(10_000) {
-                compose.onAllNodesWithTag("storage-result").fetchSemanticsNodes().isNotEmpty()
-            }
-            compose.onNodeWithTag("storage-result").performScrollTo().assertIsDisplayed()
+            compose.onNodeWithTag("storage-result").assertDoesNotExist()
             fixture.capture("storage-after-cleanup")
             fixture.shell("input keyevent KEYCODE_BACK")
             compose.waitUntil(10_000) {

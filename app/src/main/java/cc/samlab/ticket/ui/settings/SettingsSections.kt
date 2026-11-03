@@ -50,13 +50,7 @@ internal fun SettingsProfile(
         ) {
             SettingsChevron()
             VerticalDivider(Modifier.height(40.dp))
-            SettingsSwitch(
-                state.arrivalEnabled,
-                enabled && state.arrivalSupported,
-                stringResource(R.string.settings_arrival_switch),
-            ) {
-                controller.request("arrival", JSONObject().put("enabled", it))
-            }
+            ArrivalSettingsSwitch(controller, enabled)
         }
         SettingsRow(
             stringResource(R.string.settings_sale_reminders), "",

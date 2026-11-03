@@ -859,4 +859,5 @@
     <string name="backup_update_required">This backup is incompatible with this app version. Update the app before importing.</string>
     <string name="backup_update_recommended">This backup was created by a newer app version and was imported successfully. Please update the app soon.</string>
     <string name="train_query_turn_station">Reverses here</string>
+    <string name="arrival_google_services_required">You need to enable Google services to use this feature.</string>
 </resources>

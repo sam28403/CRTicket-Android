@@ -2,6 +2,9 @@ package cc.samlab.ticket.arrival
 
 import android.app.Activity
 import android.app.NotificationManager
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import cc.samlab.ticket.R
 import cc.samlab.ticket.notifications.MonitorNotifications
 import cc.samlab.ticket.ui.ExpressiveDialogHost
@@ -11,6 +14,7 @@ class StationArrivalBridge(
     private val activity: Activity,
     private val callback: (String, String, JSONObject) -> Unit,
     dialogs: ExpressiveDialogHost,
+    private val activationTimeoutMillis: Long = 25_000L,
 ) {
     private val store = ArrivalStore(activity)
     private val monitor = StationArrivalMonitor.get(activity)
@@ -18,6 +22,10 @@ class StationArrivalBridge(
     private var permissionRound = 0
     private var notificationPending = false
     private var activating = false
+    private val handler = Handler(Looper.getMainLooper())
+    private val activationTimeout = Runnable {
+        if (activating) finish(false, activity.getString(R.string.arrival_enable_failed))
+    }
     private val permissions = ArrivalPermissions(
         activity,
         dialogs,
@@ -44,7 +52,8 @@ class StationArrivalBridge(
 
     internal fun status(): JSONObject = JSONObject().put("success", true)
         .put("supported", ArrivalAccess.supported(activity))
-        .put("enabled", store.enabled)
+        .put("enabled", store.enabled && store.registered && !activating)
+        .put("starting", activating)
         .put("active", store.enabled && store.registered && ArrivalAccess.ready(activity))
         .put("fine", ArrivalAccess.fine(activity))
         .put("background", ArrivalAccess.background(activity))
@@ -58,8 +67,14 @@ class StationArrivalBridge(
             else store.message)
 
     fun enable(id: String) {
+        if (!ArrivalAccess.supported(activity)) {
+            val message = activity.getString(R.string.arrival_google_services_required)
+            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+            reply(id, status().put("success", false).put("message", message))
+            return
+        }
         if (pending != null || store.enableRequested || activating) {
-            reply(id, JSONObject().put("success", false).put("message", activity.getString(R.string.arrival_permission_pending)))
+            reply(id, status())
             return
         }
         pending = id
@@ -75,12 +90,14 @@ class StationArrivalBridge(
 
     private fun activate() {
         activating = true
+        reply("native-settings", status())
+        handler.removeCallbacks(activationTimeout)
+        handler.postDelayed(activationTimeout, activationTimeoutMillis)
         try {
             val round = permissionRound
             monitor.start {
                 if (round == permissionRound) {
-                    activating = false
-                    finish(store.enabled, store.message)
+                    finish(store.enabled && store.registered && ArrivalAccess.ready(activity), store.message)
                 }
             }
         } catch (error: Exception) {
@@ -100,7 +117,10 @@ class StationArrivalBridge(
         activating = false
         permissions.cancel()
         notifications.cancelPermissionRequest()
-        finish(false, activity.getString(R.string.arrival_cancelled))
+        if (pending != null || store.enableRequested) {
+            finish(false, activity.getString(R.string.arrival_cancelled))
+        }
+        handler.removeCallbacks(activationTimeout)
         monitor.stop()
         reply(id, status())
     }
@@ -121,6 +141,7 @@ class StationArrivalBridge(
     fun close() {
         // 销毁旧 Activity 时丢弃旧回调，保留已经确认的开启意图给新实例。
         permissionRound++
+        handler.removeCallbacks(activationTimeout)
         pending = null
         notificationPending = false
         permissions.cancel()
@@ -141,10 +162,21 @@ class StationArrivalBridge(
     }
 
     private fun finish(success: Boolean, message: String) {
-        store.enableRequested = false
-        val id = pending ?: return
+        handler.removeCallbacks(activationTimeout)
+        val id = pending ?: "native-settings"
         pending = null
+        activating = false
+        notificationPending = false
+        permissionRound++
+        store.enableRequested = false
+        if (!success) {
+            permissions.cancel()
+            notifications.cancelPermissionRequest()
+            monitor.stop()
+        }
+        store.message = message
         reply(id, status().put("success", success).put("message", message))
+        if (!success) Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
     }
     private fun reply(id: String, result: JSONObject) {
         callback("crticketNotificationResult", id, result)

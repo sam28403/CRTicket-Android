@@ -18,6 +18,7 @@ data class SettingsState(
     val avatar: String = "",
     val arrivalEnabled: Boolean = false,
     val arrivalActive: Boolean = false,
+    val arrivalStarting: Boolean = false,
     val arrivalSupported: Boolean = false,
     val arrivalMessage: String = "",
     val loaded: Boolean = false,
@@ -38,6 +39,7 @@ class NativeSettingsController(
         state = state.copy(
             arrivalEnabled = value.optBoolean("enabled"),
             arrivalActive = value.optBoolean("active"),
+            arrivalStarting = value.optBoolean("starting"),
             arrivalSupported = value.optBoolean("supported"),
             arrivalMessage = value.optString("message"),
         )
@@ -196,6 +198,7 @@ class NativeSettingsController(
                     ?: value.optString("avatar").takeUnless { it == "null" } ?: "",
                 arrivalEnabled = arrival.optBoolean("enabled"),
                 arrivalActive = arrival.optBoolean("active"),
+                arrivalStarting = arrival.optBoolean("starting"),
                 arrivalSupported = arrival.optBoolean("supported"),
                 arrivalMessage = arrival.optString("message"),
                 loaded = true,
