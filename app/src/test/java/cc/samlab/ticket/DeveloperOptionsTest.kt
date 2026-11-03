@@ -22,6 +22,16 @@ class DeveloperOptionsTest {
         assertFalse(matchesDeveloperSearch("开发者选项"))
     }
 
+    @Test fun ticketGenerationReturnsThroughDeveloperPage() {
+        val state = SettingsUiState()
+        state.openDebugTickets()
+        assertEquals(SettingsPage.DEBUG_TICKETS, state.page)
+        state.closeDetail()
+        assertEquals(SettingsPage.DEVELOPER, state.page)
+        state.closeDetail()
+        assertEquals(SettingsPage.MAIN, state.page)
+    }
+
     @Test fun developerPageReturnsToSettings() {
         val state = SettingsUiState()
         state.open("theme")

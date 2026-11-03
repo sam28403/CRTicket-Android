@@ -58,6 +58,16 @@ export function createLocalApi(storage) {
       }
       const tickets = read()
       if (method === 'GET' && path === '/ticket/list/device') return [...tickets].reverse()
+      if (method === 'POST' && path === '/ticket/add-batch') {
+        if (!Array.isArray(body?.tickets) || !body.tickets.length || body.tickets.length > 1000) {
+          throw new Error('生成数量无效')
+        }
+        body.tickets.forEach(check)
+        if (tickets.length + body.tickets.length > ticketQuota) throw new Error('车票数量已达10000条上限')
+        const added = body.tickets.map(ticket => record(ticket))
+        write([...tickets, ...added])
+        return { success: true, tickets: added }
+      }
       if (method === 'POST' && path === '/ticket/add') {
         check(body)
         if (tickets.length >= ticketQuota) throw new Error('车票数量已达10000条上限')

@@ -9,7 +9,7 @@ internal object ExpressiveRoutes {
         "/railfan/quiz/report",
         "/price", "/price/list",
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
-        "/settings/storage", "/settings/map", "/settings/developer",
+        "/settings/storage", "/settings/map", "/settings/developer", "/settings/developer/tickets",
         "/settings/language", "/settings/sale-reminders", "/search", "/sale-time/reminders",
         "/history", "/history/editor", "/list", "/station", "/sale-time", "/train", "/user",
         "/help", "/help/tickets", "/help/query",
@@ -48,7 +48,7 @@ internal object ExpressiveRoutes {
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"
         "/about/report", "/about/credits" -> "/about"
-        "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map", "/settings/developer",
+        "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map", "/settings/developer", "/settings/developer/tickets",
         "/settings/language", "/settings/sale-reminders" -> "/settings"
         "/history/editor" -> "/history"
         else -> location

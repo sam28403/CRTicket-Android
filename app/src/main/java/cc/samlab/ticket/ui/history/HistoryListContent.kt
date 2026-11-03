@@ -86,7 +86,7 @@ internal fun HistoryListContent(
                 )
             }
             itemsIndexed(rows, key = { index, row -> "${row.id}:$index" }) { _, row ->
-                HistoryRecordCard(row, controller::action)
+                HistoryRecordCard(row, action = controller::action)
             }
         }
     }

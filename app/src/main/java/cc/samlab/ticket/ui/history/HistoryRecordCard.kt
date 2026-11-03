@@ -16,7 +16,11 @@ import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.rememberAppText
 
 @Composable
-internal fun HistoryRecordCard(row: HistoryRecord, action: (String, String) -> Unit) {
+internal fun HistoryRecordCard(
+    row: HistoryRecord,
+    showActions: Boolean = true,
+    action: (String, String) -> Unit,
+) {
     val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
     var menu by remember { mutableStateOf(false) }
@@ -33,7 +37,7 @@ internal fun HistoryRecordCard(row: HistoryRecord, action: (String, String) -> U
                     style = MaterialTheme.typography.labelLarge,
                     color = colors.onSurfaceVariant,
                 )
-                Box {
+                if (showActions) Box {
                     IconButton(onClick = { menu = true }) {
                         Icon(Icons.Default.MoreVert, textResources(R.string.history_record_actions))
                     }

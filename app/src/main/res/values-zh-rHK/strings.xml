@@ -854,4 +854,10 @@
     <string name="train_query_turn_station">本站調向</string>
     <string name="arrival_google_services_required">您需要啟用Google服務，才可以使用此功能。</string>
     <string name="settings_developer">開發人員選項</string>
+    <string name="debug_tickets_title">模拟生成车票</string>
+    <string name="debug_tickets_count">数量</string>
+    <string name="debug_tickets_generate">生成</string>
+    <string name="debug_tickets_empty">还没有生成任何车票</string>
+    <string name="debug_tickets_success">成功生成%1$d条</string>
+    <string name="debug_tickets_failed">生成失败</string>
 </resources>

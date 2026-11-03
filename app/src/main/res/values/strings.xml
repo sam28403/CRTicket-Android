@@ -861,4 +861,10 @@
     <string name="train_query_turn_station">Reverses here</string>
     <string name="arrival_google_services_required">You need to enable Google services to use this feature.</string>
     <string name="settings_developer">Developer options</string>
+    <string name="debug_tickets_title">Generate sample tickets</string>
+    <string name="debug_tickets_count">Count</string>
+    <string name="debug_tickets_generate">Generate</string>
+    <string name="debug_tickets_empty">No tickets generated yet</string>
+    <string name="debug_tickets_success">Generated %1$d tickets</string>
+    <string name="debug_tickets_failed">Generation failed</string>
 </resources>

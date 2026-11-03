@@ -15,6 +15,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
     LANGUAGE(R.string.settings_language),
     MAP(R.string.settings_map),
     DEVELOPER(R.string.settings_developer),
+    DEBUG_TICKETS(R.string.debug_tickets_title),
     STORAGE(R.string.settings_storage),
 }
 
@@ -50,6 +51,10 @@ internal class SettingsUiState {
         showPage(SettingsPage.STORAGE)
     }
 
+    fun openDebugTickets() {
+        showPage(SettingsPage.DEBUG_TICKETS)
+    }
+
     fun openDeveloper() {
         showPage(SettingsPage.DEVELOPER)
     }
@@ -72,7 +77,11 @@ internal class SettingsUiState {
 
     fun closeDetail(): Boolean {
         if (!hasDetail) return false
-        page = if (page == SettingsPage.PERMISSIONS) permissionsParent else SettingsPage.MAIN
+        page = when (page) {
+            SettingsPage.PERMISSIONS -> permissionsParent
+            SettingsPage.DEBUG_TICKETS -> SettingsPage.DEVELOPER
+            else -> SettingsPage.MAIN
+        }
         permissionsParent = SettingsPage.MAIN
         backProgress = 0f
         onPageChanged?.invoke(page, true)

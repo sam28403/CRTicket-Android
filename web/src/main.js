@@ -19,3 +19,6 @@ initializePlatform(router)
 createApp(App).use(createPinia()).use(router).use(ElementPlus).mount('#app')
 initializeNativeSettings()
 initializeGlobalSearch()
+
+import { initializeDebugGeneration } from './android/debugGeneration.js'
+initializeDebugGeneration()
