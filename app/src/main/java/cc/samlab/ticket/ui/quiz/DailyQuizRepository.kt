@@ -3,6 +3,7 @@ package cc.samlab.ticket.ui.quiz
 import android.content.Context
 import android.util.AtomicFile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -57,7 +58,9 @@ internal class DailyQuizRepository(
 
     suspend fun reset(current: QuizSession, replaceQuestions: Boolean): QuizSession = lock.withLock {
         check(cc.samlab.ticket.BuildConfig.BUILD_TYPE == "ci")
-        withContext(Dispatchers.IO) {
+        // Finish an accepted reset even if leaving the screen cancels its caller.
+        // Keep the repository lock until the new session is persisted so reloads wait for it.
+        withContext(Dispatchers.IO + NonCancellable) {
             val next = if (replaceQuestions) {
                 val sources = QuizSourceReader.load(context)
                 val vehicles = loadQuizVehicles(context, sources, current.date)

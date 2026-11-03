@@ -75,7 +75,12 @@ internal object QuizSessionCodec {
         val history = json.optJSONArray("seenKeys")
         require(history == null || history.length() <= 20_000)
         val seenKeys = if (history == null) emptySet() else List(history.length()) { index ->
-            history.getString(index).also { require(it.matches(Regex("[qo]:[0-9a-f]{1,14}"))) }
+            history.getString(index).also {
+                require(
+                    it.matches(Regex("[qo]:[0-9a-f]{1,14}")) ||
+                        it.matches(Regex("travel-train:[A-Za-z0-9/]{1,64}")),
+                )
+            }
         }.toSet()
         return QuizSession(
             date, json.getString("sourceVersion"), questions, answers,

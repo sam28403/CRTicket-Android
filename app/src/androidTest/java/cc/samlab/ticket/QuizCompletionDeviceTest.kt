@@ -4,6 +4,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.ui.quiz.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -59,6 +64,14 @@ class QuizCompletionDeviceTest {
         assertFalse(resumed.completed)
     }
 
+    @Test fun selectionHistoryIncludingTravelTrainsSurvivesEncoding() {
+        val session = QuizSession(
+            date, "fixture", questions,
+            seenKeys = setOf("q:123abc", "o:456def", "travel-train:G123"),
+        )
+        assertEquals(session, QuizSessionCodec.decode(QuizSessionCodec.encode(session), date))
+    }
+
     @Test fun resetClearsOnlyProgressAndIsRestrictedToCi() = runBlocking {
         val completed = QuizSession(
             date, "fixture", questions, List(20) { 0 }, 20, true, List(20) { 12345L },
@@ -96,5 +109,54 @@ class QuizCompletionDeviceTest {
             assertEquals(20, current.remaining)
         }
         assertEquals(current.seenKeys, current.resetProgress().seenKeys)
+    }
+
+    @Test fun leavingDuringReplacementStillPersistsNewQuestions() = runBlocking {
+        org.junit.Assume.assumeTrue(BuildConfig.BUILD_TYPE == "ci")
+        withTimeout(120_000) {
+            val sources = QuizSourceReader.load(context)
+            val original = QuizSession(
+                date, sources.version, DailyQuizGenerator(sources).generate(date),
+            )
+            val completed = original.copy(
+                answers = original.questions.map { it.correctIndex },
+                current = 20,
+                completed = true,
+            )
+            repository.save(completed)
+            val generating = CompletableDeferred<Unit>()
+            val continueGeneration = CompletableDeferred<Unit>()
+            val slowRepository = DailyQuizRepository(context) {
+                generating.complete(Unit)
+                continueGeneration.await()
+                emptyMap()
+            }
+            val reset = launch(Dispatchers.Default) {
+                slowRepository.reset(completed, replaceQuestions = true)
+            }
+            try {
+                generating.await()
+                // Leaving QuizScreen cancels its rememberCoroutineScope.
+                reset.cancel()
+                val reopened = async(Dispatchers.Default) {
+                    DailyQuizRepository(context).load(date)
+                }
+                continueGeneration.complete(Unit)
+                reset.join()
+                val restored = reopened.await()
+                assertNotEquals(original.questions, restored.questions)
+                assertTrue(restored.questions.none { next ->
+                    original.questions.any { it.id == next.id }
+                })
+                assertEquals(0, restored.current)
+                assertEquals(20, restored.remaining)
+                assertFalse(restored.completed)
+                assertEquals(restored, DailyQuizRepository(context).saved(date))
+            } finally {
+                continueGeneration.complete(Unit)
+                reset.cancel()
+                reset.join()
+            }
+        }
     }
 }
