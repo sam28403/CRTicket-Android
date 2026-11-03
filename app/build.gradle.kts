@@ -27,6 +27,7 @@ android {
         versionName = gitVersionName
         buildConfigField("String", "STATION_DATA_VERSION", "\"$stationDataVersion\"")
         buildConfigField("boolean", "UPDATE_ENABLED", "true")
+        buildConfigField("boolean", "CI_BUILD", "false")
         manifestPlaceholders["applicationLabel"] = "@string/home_title"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,6 +47,7 @@ android {
             versionNameSuffix = "-ci"
             matchingFallbacks += "debug"
             buildConfigField("boolean", "UPDATE_ENABLED", "false")
+            buildConfigField("boolean", "CI_BUILD", "true")
             manifestPlaceholders["applicationLabel"] = "CRTicket CI"
         }
         getByName("release") {
@@ -54,6 +56,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        create("ciOffline") {
+            initWith(getByName("ci"))
+            matchingFallbacks.clear()
+            matchingFallbacks += listOf("ci", "debug")
+        }
+        create("releaseOffline") {
+            initWith(getByName("release"))
+            matchingFallbacks += "release"
         }
         create("benchmark") {
             initWith(getByName("release"))
@@ -70,9 +81,22 @@ android {
         res.srcDir(layout.buildDirectory.dir("generated/ci-branding/res").get().asFile.path)
         assets.srcDir(layout.buildDirectory.dir("generated/ci-branding/assets").get().asFile.path)
     }
+    sourceSets.getByName("ciOffline") {
+        res.directories.add(file("src/ci/res").path)
+        kotlin.directories.add(file("src/debug/java").path)
+        manifest.srcFile("src/debug/AndroidManifest.xml")
+        res.directories.add(layout.buildDirectory.dir("generated/ci-branding/res").get().asFile.path)
+        assets.directories.add(layout.buildDirectory.dir("generated/ci-branding/assets").get().asFile.path)
+    }
+    listOf("ciOffline", "releaseOffline").forEach { variant ->
+        sourceSets.getByName(variant).assets.directories.add(
+            layout.buildDirectory.dir("generated/offline-assets").get().asFile.path,
+        )
+    }
 }
 
 apply(from = rootProject.file("gradle/ci-branding.gradle.kts"))
+apply(from = rootProject.file("gradle/offline-assets.gradle.kts"))
 
 dependencies {
     implementation(libs.konfetti.compose)

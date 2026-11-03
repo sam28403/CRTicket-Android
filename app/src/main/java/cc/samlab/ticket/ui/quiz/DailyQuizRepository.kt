@@ -57,7 +57,7 @@ internal class DailyQuizRepository(
     }
 
     suspend fun reset(current: QuizSession, replaceQuestions: Boolean): QuizSession = lock.withLock {
-        check(cc.samlab.ticket.BuildConfig.BUILD_TYPE == "ci")
+        check(cc.samlab.ticket.BuildConfig.CI_BUILD)
         // Finish an accepted reset even if leaving the screen cancels its caller.
         // Keep the repository lock until the new session is persisted so reloads wait for it.
         withContext(Dispatchers.IO + NonCancellable) {

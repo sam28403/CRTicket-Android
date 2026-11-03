@@ -24,7 +24,11 @@ export async function decodeArchive(bytes) {
     })
 }
 
-export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, writeArchive, clearArchive }) {
+export function createLltLoader(
+    fetchImpl = nativeFetch,
+    store = { readArchive, writeArchive, clearArchive },
+    bundledArchive,
+) {
     let cached
     let checkedAt = 0
     let initialization
@@ -95,6 +99,14 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
                         cached = null
                     }
                 }
+                if (!cached && bundledArchive) {
+                    try {
+                        const bytes = await bundledArchive()
+                        if (bytes) cached = await decodeArchive(bytes)
+                    } catch {
+                        // A missing or damaged bundle falls back to the online loader.
+                    }
+                }
             })()
         }
         await initialization
@@ -133,4 +145,10 @@ export function createLltLoader(fetchImpl = nativeFetch, store = { readArchive, 
     return load
 }
 
-export const loadLltDatabase = createLltLoader()
+async function readBundledArchive() {
+    const response = await fetch('/offline/an.db', { cache: 'no-store' })
+    if (!response.ok) return null
+    return new Uint8Array(await response.arrayBuffer())
+}
+
+export const loadLltDatabase = createLltLoader(undefined, undefined, readBundledArchive)

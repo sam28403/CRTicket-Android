@@ -29,6 +29,6 @@ val generateCiBranding = tasks.register("generateCiBranding") {
     }
 }
 
-tasks.matching { it.name == "preCiBuild" }.configureEach {
+tasks.matching { it.name == "preCiBuild" || it.name == "preCiOfflineBuild" }.configureEach {
     dependsOn(generateCiBranding)
 }

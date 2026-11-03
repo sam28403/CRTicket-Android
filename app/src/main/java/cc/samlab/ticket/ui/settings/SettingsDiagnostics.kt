@@ -10,7 +10,7 @@ import cc.samlab.ticket.R
 
 @Composable
 internal fun SettingsDiagnostics() {
-    if (BuildConfig.BUILD_TYPE != "ci") return
+    if (!BuildConfig.CI_BUILD) return
     var pending by remember { mutableStateOf<Int?>(null) }
     val options = listOf(R.string.failure_test_main, R.string.failure_test_worker, R.string.failure_test_anr)
     SettingsGroup(stringResource(R.string.failure_debug)) {

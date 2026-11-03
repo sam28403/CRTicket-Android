@@ -31,7 +31,7 @@ Android 12（API 31）及以上使用系统 SplashScreen。MainActivity 声明�
 
 ## CI 品牌
 
-CI 构建通过 `src/ci/res/drawable` 覆盖启动动画，采用与 CI 启动图标一致的橙底票面。
+CI 和 CI 离线构建通过 `src/ci/res/drawable` 覆盖启动动画，采用与 CI 启动图标一致的橙底票面。
 票面展开后显现 CI 字形，继续沿用系统开屏及退出过渡，不增加启动等待。
 CI 首页产品图标也使用独立票面图案。
 

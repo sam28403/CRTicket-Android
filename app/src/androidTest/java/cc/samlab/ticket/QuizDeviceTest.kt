@@ -96,7 +96,7 @@ class QuizDeviceTest {
             page.capture("daily-quiz-summary")
             scrollToSummaryAction("quiz-done")
             compose.onNodeWithTag("quiz-done").assertIsDisplayed()
-            if (BuildConfig.BUILD_TYPE == "ci") {
+            if (BuildConfig.CI_BUILD) {
                 compose.onNodeWithTag("quiz-reset").assertIsDisplayed()
                 val resetBounds = compose.onNodeWithTag("quiz-reset").fetchSemanticsNode().boundsInRoot
                 val doneBounds = compose.onNodeWithTag("quiz-done").fetchSemanticsNode().boundsInRoot
@@ -123,7 +123,7 @@ class QuizDeviceTest {
             assertTrue(saved.completed)
             assertNotNull(saved.answerTimes[0])
             assertNotNull(saved.answerTimes[1])
-            if (BuildConfig.BUILD_TYPE == "ci") {
+            if (BuildConfig.CI_BUILD) {
                 compose.onNodeWithTag("quiz-reset").assertIsDisplayed().performClick()
                 compose.onNodeWithTag("quiz-reset-cancel").performClick()
                 compose.onNodeWithTag("quiz-summary").assertExists()
@@ -165,7 +165,7 @@ class QuizDeviceTest {
     }
 
     @Test fun ciCanReplaceTheCompletedSetAndResumeItAfterReopening() {
-        org.junit.Assume.assumeTrue(BuildConfig.BUILD_TYPE == "ci")
+        org.junit.Assume.assumeTrue(BuildConfig.CI_BUILD)
         runBlocking {
             DailyQuizRepository(context).save(initial.copy(
                 answers = List(20) { 0 }, current = 20, completed = true,

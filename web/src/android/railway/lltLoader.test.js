@@ -15,11 +15,11 @@ function dictionary(names) {
     })])
 }
 
-function archive() {
+function archive(version = '20261004') {
     const files = Object.fromEntries(Array.from({ length: 20 }, (_, i) => [`T${i}.dat`, new Uint8Array()]))
     files['t.i'] = dictionary(['G1'])
     files['s.i'] = dictionary(['北京南', '上海虹桥'])
-    files['ver.txt'] = Buffer.from('20261004')
+    files['ver.txt'] = Buffer.from(version)
     const record = Buffer.alloc(31)
     record.writeUInt16BE(2, 15)
     record.set([0, 0, 8, 0, 0, 0, 0], 17)
@@ -209,4 +209,55 @@ test('quiz fresh load rejects failed online checks even with a usable cached arc
     await assert.rejects(load.fresh(), /offline/)
     online = true
     assert.equal((await load.fresh()).version, '20261004')
+})
+
+
+test('bundled timetable works on first launch while the network is unavailable', async () => {
+    let reads = 0
+    const load = createLltLoader(async () => { throw new Error('Offline') }, emptyStore,
+        async () => { reads++; return archive() })
+    assert.equal((await load()).version, '20261004')
+    assert.equal((await load()).trains.get('G1').stops.length, 2)
+    assert.equal(reads, 1)
+    await assert.rejects(load.fresh(), /Offline/)
+})
+
+test('saved phone archive takes priority over the bundled snapshot', async () => {
+    const load = createLltLoader(() => assert.fail('Fresh cache needs no download'), {
+        readArchive: async () => ({ bytes: archive(), checkedAt: Date.now() }),
+    }, () => assert.fail('Existing data must not be replaced by the bundle'))
+    assert.equal((await load()).version, '20261004')
+})
+
+test('corrupt saved cache falls back to the bundle and clearing restores it', async () => {
+    let reads = 0
+    const load = createLltLoader(async () => { throw new Error('Offline') }, {
+        readArchive: async () => ({ bytes: new Uint8Array([1]), checkedAt: 0 }),
+        clearArchive: async () => {},
+    }, async () => { reads++; return archive() })
+    assert.equal((await load()).version, '20261004')
+    await load.clear()
+    assert.equal((await load()).version, '20261004')
+    assert.equal(reads, 2)
+})
+
+test('invalid bundle falls back to a successful online download', async () => {
+    const load = createLltLoader(async url => new Response(url.endsWith('android.ver')
+        ? '{"version":{"data":"20261004"}}' : archive()), emptyStore,
+    async () => new Uint8Array([1]))
+    assert.equal((await load()).version, '20261004')
+})
+
+
+test('bundled snapshot is immediately available while a newer archive is persisted', async () => {
+    let saved
+    const load = createLltLoader(async url => new Response(url.endsWith('android.ver')
+        ? '{"version":{"data":"20261004"}}' : archive()), {
+        readArchive: async () => null,
+        writeArchive: async value => { saved = value },
+    }, async () => archive('20261003'))
+    assert.equal((await load()).version, '20261003')
+    assert.equal((await load.fresh()).version, '20261004')
+    assert.ok(saved.bytes.length > 0)
+    assert.equal((await load()).version, '20261004')
 })

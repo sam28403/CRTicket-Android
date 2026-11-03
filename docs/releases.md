@@ -126,3 +126,27 @@ versionCode 根据完整 Git 历史计数，因此 checkout 使用 `fetch-depth:
 `.idea` 仅跟踪 `codeStyles` 和 `inspectionProfiles`，其他 IDE 状态和本机 JDK 配置被忽略。
 已经跟踪的本地配置需从 Git 索引移除，单独添加忽略规则不会停止跟踪。
 本机文件保留，由 Android Studio 继续管理；共享启动配置位于 `.run`，继续纳入版本管理。
+
+## 内置离线时刻表包
+
+普通包继续保留，CI 额外构建 `ciOffline`，Release 额外构建 `releaseOffline`。
+两者分别沿用 CI、Release 的包名、版本号及签名，可以与同渠道普通包相互覆盖安装。
+CI 离线包仍使用调试签名、禁用正式更新，与正式版可以同时安装。
+Android Studio 的 `CRTicket CI Offline - Install (test signed)` 配置执行
+`:app:installCiOffline`，安装 CI 离线测试包。
+
+CI 的独立 artifact 名称为 `CRTicket-ci-offline-<提交 SHA>`。
+Release 新增附件 `CRTicket-vX.Y.Z-offline.apk`，纳入正式签名验证与 `SHA256SUMS.txt`；
+现有 APK、APKS 保留，APKS 不含内置时刻表。
+
+数据快照存放在 `offline-data/an.db`，`manifest.json` 记录其数据版本、大小、来源和 SHA-256。
+构建只读取此固定快照，不联网下载；解析或校验不通过时终止离线包构建。
+维护时执行 `node tools/offline-snapshot.mjs update` 下载并校验新快照，
+将数据文件和清单一起提交。也可下载官方 `an.db` 到该目录后执行
+`node tools/offline-snapshot.mjs import` 生成清单，再核对变更。
+下载源当前使用 HTTP；SHA-256 用于检查仓库快照的一致性，不作为来源身份认证。
+
+首次无缓存时，离线包立即加载内置数据并在后台检查更新；已有有效缓存优先使用缓存，
+不会被内置数据覆盖。清除缓存后仍可使用内置数据。普通包无内置文件时继续联网下载。
+内置时刻表日期沿用查询页现有数据版本展示；数据可能随调图失效，不代表实时运行状态。
+仅时刻表相关离线查询受益，其他网络功能仍需联网。

@@ -80,10 +80,10 @@ class QuizCompletionDeviceTest {
         val state = DailyQuizState(repository)
         state.load(date)
         state.reset()
-        val expected = if (BuildConfig.BUILD_TYPE == "ci") completed.resetProgress() else completed
+        val expected = if (BuildConfig.CI_BUILD) completed.resetProgress() else completed
         assertEquals(expected, state.session)
         assertEquals(expected, repository.saved(date))
-        if (BuildConfig.BUILD_TYPE == "ci") {
+        if (BuildConfig.CI_BUILD) {
             assertEquals(20, expected.remaining)
             assertEquals(0, expected.current)
             assertTrue(expected.answerTimes.all { it == null })
@@ -92,7 +92,7 @@ class QuizCompletionDeviceTest {
     }
 
     @Test fun fourReplacementsRememberEarlierSetsAcrossRepositoryReloads() = runBlocking {
-        org.junit.Assume.assumeTrue(BuildConfig.BUILD_TYPE == "ci")
+        org.junit.Assume.assumeTrue(BuildConfig.CI_BUILD)
         val sources = QuizSourceReader.load(context)
         var current = QuizSession(date, sources.version, DailyQuizGenerator(sources).generate(date))
         var history = quizSelectionKeys(current.questions)
@@ -112,7 +112,7 @@ class QuizCompletionDeviceTest {
     }
 
     @Test fun leavingDuringReplacementStillPersistsNewQuestions() = runBlocking {
-        org.junit.Assume.assumeTrue(BuildConfig.BUILD_TYPE == "ci")
+        org.junit.Assume.assumeTrue(BuildConfig.CI_BUILD)
         withTimeout(120_000) {
             val sources = QuizSourceReader.load(context)
             val original = QuizSession(

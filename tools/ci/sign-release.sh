@@ -23,10 +23,22 @@ curl --fail --location --retry 3 \
 
 mapfile -t apks < <(find unsigned -name '*-unsigned.apk' -type f)
 mapfile -t bundles < <(find unsigned -name '*.aab' -type f)
-test "${#apks[@]}" -eq 1
+test "${#apks[@]}" -eq 2
 test "${#bundles[@]}" -eq 1
 mkdir -p dist
 apk="dist/CRTicket-$RELEASE_TAG.apk"
+offline_apk="dist/CRTicket-$RELEASE_TAG-offline.apk"
+normal_input=""
+offline_input=""
+for input in "${apks[@]}"; do
+  case "$input" in
+    */releaseOffline/*) offline_input="$input" ;;
+    */release/*) normal_input="$input" ;;
+    *) echo "Unexpected APK: $input" >&2; exit 1 ;;
+  esac
+done
+test -n "$normal_input"
+test -n "$offline_input"
 apks_archive="dist/CRTicket-$RELEASE_TAG.apks"
 build_tools="$ANDROID_HOME/build-tools/37.0.0"
 
@@ -35,7 +47,14 @@ build_tools="$ANDROID_HOME/build-tools/37.0.0"
   --ks-key-alias "$ANDROID_KEY_ALIAS" \
   --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
   --key-pass env:ANDROID_KEY_PASSWORD \
-  --out "$apk" "${apks[0]}"
+  --out "$apk" "$normal_input"
+
+"$build_tools/apksigner" sign \
+  --ks "$signing_dir/release.jks" \
+  --ks-key-alias "$ANDROID_KEY_ALIAS" \
+  --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+  --key-pass env:ANDROID_KEY_PASSWORD \
+  --out "$offline_apk" "$offline_input"
 
 java -jar "$signing_dir/bundletool.jar" build-apks \
   --bundle="${bundles[0]}" --output="$apks_archive" \
@@ -51,6 +70,7 @@ verify_apk() {
   verify_signing_certificates "$report" "$expected"
 }
 verify_apk "$apk"
+verify_apk "$offline_apk"
 unzip -q "$apks_archive" -d "$signing_dir/apks"
 count=0
 while IFS= read -r -d '' split; do
@@ -60,5 +80,5 @@ done < <(find "$signing_dir/apks" -name '*.apk' -type f -print0)
 test "$count" -gt 0
 
 # apksigner can create an installation sidecar; publish only the requested packages.
-rm -f -- "$apk.idsig"
+rm -f -- "$apk.idsig" "$offline_apk.idsig"
 (cd dist && sha256sum ./*.apk ./*.apks > SHA256SUMS.txt)

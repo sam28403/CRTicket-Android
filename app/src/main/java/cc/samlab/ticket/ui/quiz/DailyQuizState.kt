@@ -78,7 +78,7 @@ internal class DailyQuizState(
     }
 
     suspend fun reset(replaceQuestions: Boolean = false) = lock.withLock {
-        if (cc.samlab.ticket.BuildConfig.BUILD_TYPE != "ci") return@withLock
+        if (!cc.samlab.ticket.BuildConfig.CI_BUILD) return@withLock
         val current = session?.takeIf { it.completed } ?: return@withLock
         resetting = true
         try {

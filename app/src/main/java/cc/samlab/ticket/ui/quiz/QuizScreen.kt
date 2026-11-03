@@ -128,14 +128,14 @@ internal fun QuizScreen(
                         onMove = { offset -> scope.launch { state.move(offset, onIncomplete = onIncomplete) } },
                         onDone = onDone,
                         onReport = { onReport(session.date, it) },
-                        onReset = if (BuildConfig.BUILD_TYPE == "ci") {
+                        onReset = if (BuildConfig.CI_BUILD) {
                             { resetDialog = true }
                         } else null,
                     )
                 }
             }
         }
-        if (resetDialog && BuildConfig.BUILD_TYPE == "ci") QuizResetDialog(
+        if (resetDialog && BuildConfig.CI_BUILD) QuizResetDialog(
             onDismiss = { resetDialog = false },
             onReset = { replaceQuestions ->
                 resetDialog = false

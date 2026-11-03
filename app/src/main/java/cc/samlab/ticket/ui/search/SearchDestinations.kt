@@ -143,7 +143,7 @@ internal fun additionalSearchSettings(onNavigate: (String) -> Unit): List<Search
         SearchSetting("about", stringResource(R.string.home_about), "") { onNavigate("/about") },
         SearchSetting("help", stringResource(R.string.home_help),
             stringResource(R.string.home_help_description)) { onNavigate("/help") },
-    ) + if (BuildConfig.BUILD_TYPE == "ci") {
+    ) + if (BuildConfig.CI_BUILD) {
         listOf(R.string.failure_test_main, R.string.failure_test_worker, R.string.failure_test_anr).map { title ->
             SearchSetting("debug-$title", stringResource(title), "") { onNavigate("/settings") }
         }

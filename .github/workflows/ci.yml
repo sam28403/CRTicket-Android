@@ -29,12 +29,18 @@ jobs:
         run: bash tools/ci/signing-certificates.test.sh
       - name: Test and build Android
         run: >-
-          bash gradlew :app:testDebugUnitTest :app:lintCi :app:assembleCi
+          bash gradlew :app:testDebugUnitTest :app:lintCi :app:assembleCi :app:lintCiOffline :app:assembleCiOffline
           --max-workers=2 --console=plain
       - uses: actions/upload-artifact@v6
         with:
           name: CRTicket-ci-${{ github.sha }}
           path: app/build/outputs/apk/ci/*.apk
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v6
+        with:
+          name: CRTicket-ci-offline-${{ github.sha }}
+          path: app/build/outputs/apk/ciOffline/*.apk
           if-no-files-found: error
           retention-days: 14
       - uses: actions/upload-artifact@v6
