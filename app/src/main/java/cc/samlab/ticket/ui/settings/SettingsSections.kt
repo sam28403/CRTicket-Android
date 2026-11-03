@@ -107,7 +107,14 @@ internal fun SettingsPreferences(
     }
     SettingsUpdates()
     SettingsAdvanced()
-    SettingsDiagnostics()
+    if (controller.developer.visible) {
+        SettingsGroup(stringResource(R.string.settings_developer)) {
+            SettingsRow(
+                stringResource(R.string.settings_developer), "",
+                0, 1, true, controller.ui::openDeveloper,
+            )
+        }
+    }
     SettingsGroup(stringResource(R.string.station_tab_map)) {
         SettingsRow(
             stringResource(R.string.settings_map), stringResource(rememberMapSource().title),

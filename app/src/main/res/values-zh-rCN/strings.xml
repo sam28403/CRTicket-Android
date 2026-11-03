@@ -853,4 +853,5 @@
     <string name="backup_update_recommended">此备份来自更高版本，已兼容导入，请尽快更新软件。</string>
     <string name="train_query_turn_station">本站调向</string>
     <string name="arrival_google_services_required">您需要启用Google服务，才可以使用此功能。</string>
+    <string name="settings_developer">开发者选项</string>
 </resources>

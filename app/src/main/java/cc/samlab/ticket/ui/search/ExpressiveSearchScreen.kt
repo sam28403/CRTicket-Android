@@ -118,6 +118,11 @@ internal fun ExpressiveSearchScreen(
                     || it.subtitle.contains(query.trim(), ignoreCase = true)
                     || it.keywords.contains(query.trim(), ignoreCase = true))
             }
+            val developerMatches = if (cc.samlab.ticket.ui.settings.matchesDeveloperSearch(query)) {
+                listOf(SearchSetting("developer", stringResource(R.string.settings_developer), "") {
+                    navigateResult("/settings/developer")
+                })
+            } else emptyList()
             Surface(Modifier.fillMaxSize().testTag("global-search-screen"),
                 color = MaterialTheme.colorScheme.surfaceContainer) {
                 BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
@@ -157,7 +162,7 @@ internal fun ExpressiveSearchScreen(
                                     navigateResult("/railfan/lines?line=${Uri.encode(line)}")
                                 }
                                 searchResultGroup("settings", settingsTitle, query,
-                                    matches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
+                                    matches + developerMatches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
                                     SearchSettingsRow(row, settings, dismissKeyboard)
                                 }
                                 searchResultGroup("help", helpTitle, query,

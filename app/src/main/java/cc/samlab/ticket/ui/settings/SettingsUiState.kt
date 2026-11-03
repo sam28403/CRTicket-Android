@@ -14,6 +14,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
     SALE_REMINDERS(R.string.settings_sale_reminders),
     LANGUAGE(R.string.settings_language),
     MAP(R.string.settings_map),
+    DEVELOPER(R.string.settings_developer),
     STORAGE(R.string.settings_storage),
 }
 
@@ -47,6 +48,10 @@ internal class SettingsUiState {
 
     fun openStorage() {
         showPage(SettingsPage.STORAGE)
+    }
+
+    fun openDeveloper() {
+        showPage(SettingsPage.DEVELOPER)
     }
 
     fun openMap() {

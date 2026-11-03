@@ -50,6 +50,7 @@ class NativeSettingsController(
     fun openMonitorSettings() = onMonitorSettings()
 
     internal val storage = StorageController(activity, webView, worker)
+    internal val developer = DeveloperOptionsState(activity)
     internal val ui = SettingsUiState()
     internal val backupSecurity = BackupSecurityState()
     internal val permissions = PermissionSettingsController(activity)

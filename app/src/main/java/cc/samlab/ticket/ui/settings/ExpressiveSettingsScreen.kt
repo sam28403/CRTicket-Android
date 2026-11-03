@@ -70,6 +70,14 @@ internal fun ExpressiveSettingsScreen(
                         SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
                         SettingsPage.LANGUAGE -> LanguageSettingsContent()
                         SettingsPage.STORAGE -> StorageSettingsContent(controller.storage, visible)
+                        SettingsPage.DEVELOPER -> {
+                            androidx.compose.runtime.LaunchedEffect(Unit) {
+                                controller.developer.reveal()
+                            }
+                            SettingsPanel(scroll, "settings-developer", embedded) {
+                                SettingsDiagnostics()
+                            }
+                        }
                         SettingsPage.MAP -> MapSettingsContent(dark, visible)
                         SettingsPage.MAIN -> AdaptivePanes(
                             modifier = Modifier.fillMaxSize(),

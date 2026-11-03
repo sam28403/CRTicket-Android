@@ -13,6 +13,7 @@ internal object WideNavigationPolicy {
         "/settings/permissions",
         "/settings/storage",
         "/settings/map",
+        "/settings/developer",
         "/settings/language",
         "/history/editor",
         "/monitor/settings",

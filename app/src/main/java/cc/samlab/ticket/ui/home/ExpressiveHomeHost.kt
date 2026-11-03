@@ -37,7 +37,8 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             "/help/general", "/help/lines", "/help/quiz" -> "/help"
             "/about/report", "/about/credits" -> "/about"
             "/sale-time/reminders" -> "/sale-time"
-            "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map", "/settings/language", "/settings/sale-reminders" -> "/settings"
+            "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map", "/settings/developer",
+        "/settings/language", "/settings/sale-reminders" -> "/settings"
             "/history/editor" -> "/history"
             else -> path.takeIf { ExpressiveRoutes.isNative(location) }.orEmpty()
         }
@@ -87,6 +88,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
                 SettingsPage.ARRIVAL -> "/settings/arrival"
                 SettingsPage.PERMISSIONS -> "/settings/permissions"
                 SettingsPage.STORAGE -> "/settings/storage"
+                SettingsPage.DEVELOPER -> "/settings/developer"
                 SettingsPage.MAP -> "/settings/map"
                 SettingsPage.LANGUAGE -> "/settings/language"
                 SettingsPage.MAIN -> "/settings"
@@ -139,6 +141,7 @@ class ExpressiveHomeHost(private val activity: ComponentActivity) {
             "/settings/arrival" -> SettingsPage.ARRIVAL
             "/settings/permissions" -> SettingsPage.PERMISSIONS
             "/settings/storage" -> SettingsPage.STORAGE
+            "/settings/developer" -> SettingsPage.DEVELOPER
             "/settings/map" -> SettingsPage.MAP
             "/settings/language" -> SettingsPage.LANGUAGE
             else -> SettingsPage.MAIN
