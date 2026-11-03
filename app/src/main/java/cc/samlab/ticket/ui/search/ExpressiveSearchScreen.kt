@@ -77,10 +77,7 @@ internal fun ExpressiveSearchScreen(
         parseTrainListRows(context, result.optJSONArray("trains") ?: JSONArray())
     }
     val routing = remember(result) {
-        val groups = result.optJSONObject("routing")?.optJSONArray("groups") ?: JSONArray()
-        (0 until groups.length()).flatMap { index ->
-            parseTrainListRows(context, groups.getJSONObject(index).optJSONArray("rows") ?: JSONArray())
-        }
+        parseTrainListRows(context, result.optJSONArray("routing") ?: JSONArray())
     }
     val stations = remember(result) {
         val values = result.optJSONArray("stations") ?: JSONArray()
@@ -171,7 +168,11 @@ internal fun ExpressiveSearchScreen(
                                 }
                                 searchResultGroup("routing", routingTitle, query,
                                     routing, routingExpanded, { routingExpanded = !routingExpanded }) { row, _, _ ->
-                                    TrainListItem(row) { navigateResult("/train?train=${Uri.encode(row.train)}&date=${result.optString("date")}") }
+                                    Box(Modifier.testTag("search-routing-card")) {
+                                        TrainListItem(row) {
+                                            navigateResult("/railfan/routing?train=${Uri.encode(row.train)}")
+                                        }
+                                    }
                                 }
                                 assignments.forEach { assignment ->
                                     val rows = vehicleStates.getValue(assignment).rows.value

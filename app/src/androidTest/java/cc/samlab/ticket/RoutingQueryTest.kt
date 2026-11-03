@@ -14,6 +14,37 @@ import org.junit.runner.RunWith
 class RoutingQueryTest {
     @get:Rule val compose = createEmptyComposeRule()
 
+    @Test fun globalSearchOpensFullRouting() {
+        val fixture = TabletPageFixture(compose)
+        try {
+            fixture.navigate("/search")
+            val field = compose.onNodeWithTag("global-search-field")
+            field.performTextInput("G1")
+            field.performImeAction()
+            val results = compose.onNodeWithTag("global-search-results")
+            compose.waitUntil(90_000) {
+                runCatching {
+                    results.performScrollToNode(hasTestTag("search-routing-title"))
+                }.isSuccess
+            }
+            val title = fixture.activity.getString(R.string.railfan_routing)
+            compose.onNodeWithTag("search-routing-title").assertTextEquals(
+                fixture.activity.getString(R.string.search_group_count, title, 1),
+            )
+            results.performScrollToNode(hasTestTag("search-routing-card"))
+            compose.onNode(hasAnyAncestor(hasTestTag("search-routing-card")) and hasClickAction())
+                .assert(hasText("G1")).performClick()
+            compose.waitUntil(30_000) {
+                compose.onAllNodesWithTag("routing-results").fetchSemanticsNodes().isNotEmpty()
+            }
+            val routing = compose.onNodeWithTag("routing-results")
+            routing.performScrollToNode(hasText("G1") and isSelected())
+            routing.performScrollToNode(isNotSelected())
+            fixture.capture("search-g1-full-routing")
+        } finally {
+            fixture.close()
+        }
+    }
     @Test fun queryInputsAreEmptyOnNewEntry() {
         val fixture = TabletPageFixture(compose)
         try {

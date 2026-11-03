@@ -35,18 +35,22 @@ export function initializeGlobalSearch() {
     try {
       const [catalogueResult, routingResult] = await Promise.allSettled([
         loadCatalogue(date),
-        /^[A-Z]*\d+(?:\/[A-Z]*\d+)*$/i.test(query.trim())
+        /^(?:[A-Z]*|0[A-Z]+)\d+(?:\/[A-Z]*\d+)*$/i.test(query.trim())
           ? loadLltDatabase().then(database => queryLltRouting(database, query.trim().toUpperCase(), date))
           : Promise.resolve(null),
       ])
       const data = catalogueResult.status === 'fulfilled' ? catalogueResult.value : { trains: [], stations: [] }
+      const routing = routingResult.status === 'fulfilled' ? routingResult.value : null
+      const matchingRow = routing?.groups
+        .map(group => group.rows.find(row => row.highlighted))
+        .find(Boolean)
       const time = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', second: '2-digit',
       }).format(new Date())
       native.searchResult(JSON.stringify({
         requestId, date,
         error: catalogueResult.status === 'rejected',
-        routing: routingResult.status === 'fulfilled' ? routingResult.value : null,
+        routing: matchingRow ? [{ ...matchingRow, train: routing.train }] : [],
         trains: filterSearchTrains(data.trains, query),
         stations: filterSearchStations(data.stations, parseStations(), query)
           .map(row => stationSummaryNow(row, time)),
