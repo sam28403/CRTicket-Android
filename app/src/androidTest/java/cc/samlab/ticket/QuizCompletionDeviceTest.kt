@@ -22,7 +22,12 @@ class QuizCompletionDeviceTest {
     private val date = quizToday()
     private val file = File(context.filesDir, "daily-quiz/$date.json")
     private var previous: ByteArray? = null
-    private val repository = DailyQuizRepository(context)
+    private fun liveFixture(): QuizLiveData {
+        val sources = QuizSourceReader.load(context)
+        return QuizLiveData(date, sources, quizStationCounts(sources.trains, date))
+    }
+    private val version get() = "live-v1:${QuizSourceReader.load(context).version}"
+    private val repository = DailyQuizRepository(context) { liveFixture() }
     private val questions = List(20) { index ->
         QuizQuestion(
             "completion-$index", 1,
@@ -39,7 +44,7 @@ class QuizCompletionDeviceTest {
     }
 
     @Test fun lastCorrectAnswerCannotCompleteWithEarlierQuestionsSkipped() = runBlocking {
-        repository.save(QuizSession(date, "fixture", questions, current = 19))
+        repository.save(QuizSession(date, version, questions, current = 19))
         val state = DailyQuizState(repository) { 12345L }
         state.load(date)
         state.answer(19, 0) { fail("Correct answer triggered rejection") }
@@ -54,7 +59,7 @@ class QuizCompletionDeviceTest {
 
     @Test fun oldCompletedSessionsWithSkippedQuestionsResumeAtFirstUnanswered() {
         val old = QuizSession(
-            date, "fixture", questions, listOf(0) + List(19) { -1 },
+            date, version, questions, listOf(0) + List(19) { -1 },
             current = 20, completed = true,
         )
         val resumed = QuizSessionCodec.decode(QuizSessionCodec.encode(old), date)
@@ -66,7 +71,7 @@ class QuizCompletionDeviceTest {
 
     @Test fun selectionHistoryIncludingTravelTrainsSurvivesEncoding() {
         val session = QuizSession(
-            date, "fixture", questions,
+            date, version, questions,
             seenKeys = setOf("q:123abc", "o:456def", "travel-train:G123"),
         )
         assertEquals(session, QuizSessionCodec.decode(QuizSessionCodec.encode(session), date))
@@ -74,7 +79,7 @@ class QuizCompletionDeviceTest {
 
     @Test fun resetClearsOnlyProgressAndIsRestrictedToCi() = runBlocking {
         val completed = QuizSession(
-            date, "fixture", questions, List(20) { 0 }, 20, true, List(20) { 12345L },
+            date, version, questions, List(20) { 0 }, 20, true, List(20) { 12345L },
         )
         repository.save(completed)
         val state = DailyQuizState(repository)
@@ -94,7 +99,7 @@ class QuizCompletionDeviceTest {
     @Test fun fourReplacementsRememberEarlierSetsAcrossRepositoryReloads() = runBlocking {
         org.junit.Assume.assumeTrue(BuildConfig.CI_BUILD)
         val sources = QuizSourceReader.load(context)
-        var current = QuizSession(date, sources.version, DailyQuizGenerator(sources).generate(date))
+        var current = QuizSession(date, version, DailyQuizGenerator(liveFixture().verifiedSources(sources, date)).generate(date))
         var history = quizSelectionKeys(current.questions)
         repeat(4) {
             repository.save(current.copy(
@@ -116,7 +121,7 @@ class QuizCompletionDeviceTest {
         withTimeout(120_000) {
             val sources = QuizSourceReader.load(context)
             val original = QuizSession(
-                date, sources.version, DailyQuizGenerator(sources).generate(date),
+                date, version, DailyQuizGenerator(liveFixture().verifiedSources(sources, date)).generate(date),
             )
             val completed = original.copy(
                 answers = original.questions.map { it.correctIndex },
@@ -129,7 +134,7 @@ class QuizCompletionDeviceTest {
             val slowRepository = DailyQuizRepository(context) {
                 generating.complete(Unit)
                 continueGeneration.await()
-                emptyMap()
+                liveFixture()
             }
             val reset = launch(Dispatchers.Default) {
                 slowRepository.reset(completed, replaceQuestions = true)
@@ -139,7 +144,7 @@ class QuizCompletionDeviceTest {
                 // Leaving QuizScreen cancels its rememberCoroutineScope.
                 reset.cancel()
                 val reopened = async(Dispatchers.Default) {
-                    DailyQuizRepository(context).load(date)
+                    DailyQuizRepository(context) { liveFixture() }.load(date)
                 }
                 continueGeneration.complete(Unit)
                 reset.join()

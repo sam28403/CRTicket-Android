@@ -63,7 +63,7 @@ internal class ExpressivePageContent(
                 )
                 cc.samlab.ticket.ui.quiz.QuizScreen(
                     dark, pureBlack, embedded, onBack, active = active,
-                    stationCounts = { date -> station.quizCounts.query(date) },
+                    liveData = { date -> station.quizCounts.query(date) },
                     onDone = { if (completion != null) onNavigate(completion) else onBack() },
                     onReport = { date, question ->
                         onNavigate("/railfan/quiz/report?date=$date&question=$question")

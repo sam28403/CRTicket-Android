@@ -26,8 +26,8 @@ internal class DailyQuizState(
         private set
     private val lock = Mutex()
 
-    suspend fun load(date: LocalDate) = lock.withLock {
-        if (session?.date == date && !failed) return@withLock
+    suspend fun load(date: LocalDate, refresh: Boolean = false) = lock.withLock {
+        if (!refresh && session?.date == date && !failed) return@withLock
         session = null
         pendingCorrect = null
         wrongFeedback = null

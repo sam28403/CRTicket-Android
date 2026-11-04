@@ -1,6 +1,8 @@
 package cc.samlab.ticket.ui.station
 
 import android.webkit.WebView
+import cc.samlab.ticket.ui.quiz.QuizLiveData
+import cc.samlab.ticket.ui.quiz.QuizSourceReader
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,11 +12,11 @@ import java.time.LocalDate
 
 internal class QuizCountsBridge(private val web: WebView) {
     private var sequence = 0
-    private val pending = mutableMapOf<Int, Pair<LocalDate, CompletableDeferred<Map<String, Int>?>>>()
+    private val pending = mutableMapOf<Int, Pair<LocalDate, CompletableDeferred<QuizLiveData?>>>()
 
-    suspend fun query(date: LocalDate): Map<String, Int>? = withContext(Dispatchers.Main) {
+    suspend fun query(date: LocalDate): QuizLiveData? = withContext(Dispatchers.Main) {
         val id = ++sequence
-        val result = CompletableDeferred<Map<String, Int>?>()
+        val result = CompletableDeferred<QuizLiveData?>()
         pending[id] = date to result
         try {
             val detail = JSONObject().put("quizDate", date.toString()).put("requestId", id)
@@ -34,9 +36,10 @@ internal class QuizCountsBridge(private val web: WebView) {
             require(!value.optBoolean("error") && value.getString("date") == date.toString())
             val rows = value.getJSONArray("stations")
             require(rows.length() > 0)
-            List(rows.length()) { rows.getJSONObject(it) }.associate {
+            val counts = List(rows.length()) { rows.getJSONObject(it) }.associate {
                 it.getString("station") to it.getInt("total").also { total -> require(total > 0) }
             }
+            QuizLiveData(date, QuizSourceReader.readJson(value.getJSONObject("sources")), counts)
         }.getOrNull()
         result.complete(counts)
     }

@@ -36,13 +36,13 @@ internal fun QuizScreen(
     onDone: () -> Unit = onBack,
     onReport: (LocalDate, Int) -> Unit = { _, _ -> },
     shareProfile: QuizShareProfile? = null,
-    stationCounts: suspend (LocalDate) -> Map<String, Int>? = { null },
+    liveData: suspend (LocalDate) -> QuizLiveData? = { null },
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
     val view = LocalView.current
     val state = remember(context.applicationContext) {
-        DailyQuizState(DailyQuizRepository(context.applicationContext, stationCounts))
+        DailyQuizState(DailyQuizRepository(context.applicationContext, liveData))
     }
     val scope = rememberCoroutineScope()
     var resetDialog by remember { mutableStateOf(false) }
@@ -51,9 +51,12 @@ internal fun QuizScreen(
         Toast.makeText(context, resources.getString(R.string.quiz_unfinished, remaining), Toast.LENGTH_SHORT).show()
     }
     LaunchedEffect(active) {
-        if (active) while (true) {
-            state.load(quizToday())
-            delay(30_000)
+        if (active) {
+            state.load(quizToday(), refresh = true)
+            while (true) {
+                delay(30_000)
+                state.load(quizToday())
+            }
         }
     }
     LaunchedEffect(state.pendingCorrect, active) {

@@ -1,3 +1,4 @@
+import { quizLiveSources } from './railway/quizLiveSources.js'
 import { loadLltDatabase } from './railway/lltLoader.js'
 import { listStationSummaries } from './railway/stationDiscovery.js'
 import { onBeforeUnmount } from 'vue'
@@ -40,6 +41,7 @@ export function useVisitedStationCards() {
         native.stationBoardResult(JSON.stringify({
           kind: 'quizCounts', requestId, date: quizDate,
           stations: listStationSummaries(database, quizDate),
+          sources: quizLiveSources(database),
         }))
       } catch {
         native.stationBoardResult(JSON.stringify({ kind: 'quizCounts', requestId, error: true }))

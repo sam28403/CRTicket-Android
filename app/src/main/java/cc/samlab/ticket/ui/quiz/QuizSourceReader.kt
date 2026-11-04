@@ -17,6 +17,10 @@ internal object QuizSourceReader {
 
     fun read(input: InputStream): QuizSources {
         val json = GZIPInputStream(input).bufferedReader().use { JSONObject(it.readText()) }
+        return readJson(json)
+    }
+
+    fun readJson(json: JSONObject): QuizSources {
         require(json.getInt("schema") == 1)
         return QuizSources(
             version = json.getString("version"),
