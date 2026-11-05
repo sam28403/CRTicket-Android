@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit
 /** Both public query methods are read-only, including their form POSTs. */
 internal object TrainDelayRepository {
     private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(6, TimeUnit.SECONDS)
         .callTimeout(8, TimeUnit.SECONDS)
@@ -70,6 +72,7 @@ internal object TrainDelayRepository {
         ))).optJSONObject("data")?.optJSONObject("trainDetail")?.optJSONArray("stopTime")
 
     fun query(payload: String): JSONObject {
+        cc.samlab.ticket.network.NetworkFeatures.requireEnabled()
         require(payload.length <= 200_000)
         val data = JSONObject(payload)
         data.optJSONArray("scheduledStops")?.let {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="failure_debug">调试</string>
+    <string name="failure_test_main">模拟主线程崩溃</string>
+    <string name="failure_test_worker">模拟后台线程崩溃</string>
+    <string name="failure_test_anr">模拟无响应</string>
+    <string name="settings_developer">开发者选项</string>
+    <string name="debug_tickets_title">模拟生成车票</string>
+    <string name="debug_tickets_count">数量</string>
+    <string name="debug_tickets_generate">生成</string>
+    <string name="debug_tickets_empty">还没有生成任何车票</string>
+    <string name="debug_tickets_success">成功生成%1$d条</string>
+    <string name="debug_tickets_failed">生成失败</string>
+    <string name="llt_settings_group">路路通数据</string>
+    <string name="llt_auto_update">自动更新路路通数据</string>
+    <string name="llt_import_title">导入路路通数据库</string>
+    <string name="llt_import_button">导入</string>
+    <string name="llt_current_version">当前路路通数据库版本</string>
+    <string name="llt_version_empty">暂无数据库</string>
+    <string name="llt_import_success">路路通数据库导入成功</string>
+    <string name="llt_import_failed">路路通数据库导入失败</string>
+    <string name="network_features_enabled">使用联网功能</string>
+    <string name="network_features_disabled">联网功能已关闭</string>
+    <string name="developer_show_non_running_trains">显示当日不开行车次</string>
+</resources>

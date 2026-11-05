@@ -53,8 +53,11 @@ internal fun ExpressiveSearchScreen(
     val list = rememberLazyListState()
     val context = LocalContext.current
     val result = controller.result
-    val lines = rememberLineSearchResults(query, true)
-    val assignments = listOfNotNull(VehicleSearch.forTrain(query), VehicleSearch.parse(query)).distinct()
+    val online = cc.samlab.ticket.network.NetworkFeatures.enabled
+    val lines = rememberLineSearchResults(query, online)
+    val assignments = if (online) listOfNotNull(
+        VehicleSearch.forTrain(query), VehicleSearch.parse(query),
+    ).distinct() else emptyList()
     val vehicleStates = assignments.associateWith { controller.assignmentState(it) }
     vehicleStates.forEach { (assignment, state) ->
         LoadSearchVehicle(assignment, active, state, timetable)
@@ -115,11 +118,7 @@ internal fun ExpressiveSearchScreen(
                     || it.subtitle.contains(query.trim(), ignoreCase = true)
                     || it.keywords.contains(query.trim(), ignoreCase = true))
             }
-            val developerMatches = if (cc.samlab.ticket.ui.settings.matchesDeveloperSearch(query)) {
-                listOf(SearchSetting("developer", stringResource(R.string.settings_developer), "") {
-                    navigateResult("/settings/developer")
-                })
-            } else emptyList()
+            val extraMatches = extraSearchSettings(query, navigateResult)
             Surface(Modifier.fillMaxSize().testTag("global-search-screen"),
                 color = MaterialTheme.colorScheme.surfaceContainer) {
                 BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
@@ -159,7 +158,7 @@ internal fun ExpressiveSearchScreen(
                                     navigateResult("/railfan/lines?line=${Uri.encode(line)}")
                                 }
                                 searchResultGroup("settings", settingsTitle, query,
-                                    matches + developerMatches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
+                                    matches + extraMatches, settingsExpanded, { settingsExpanded = !settingsExpanded }) { row, _, _ ->
                                     SearchSettingsRow(row, settings, dismissKeyboard)
                                 }
                                 searchResultGroup("help", helpTitle, query,

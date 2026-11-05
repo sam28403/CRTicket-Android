@@ -69,6 +69,9 @@ class LocalAssetClient(
         view: WebView,
         request: WebResourceRequest,
     ): WebResourceResponse? {
+        if (!isLocal(request.url) && !cc.samlab.ticket.network.NetworkFeatures.isAllowed()) {
+            return errorResponse(503, "Network disabled")
+        }
         if (MapResourcePolicy.isTile(request.url.toString()) && !request.isForMainFrame) {
             return null
         }

@@ -23,6 +23,8 @@ import kotlin.coroutines.resumeWithException
 
 internal object VehicleQueryRepository {
     private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
         .callTimeout(25, TimeUnit.SECONDS)
         .build()
     private val images = LruCache<String, ImageBitmap>(32)

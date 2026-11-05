@@ -52,6 +52,7 @@ internal fun StationBoardItem(
                     accent,
                     onTrain,
                     fontFamily = projectTitleFont,
+                    notRunning = row.notRunning,
                 )
                 StationStatus(row, highlight, accent)
             }
@@ -73,7 +74,7 @@ internal fun StationBoardItem(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Column(Modifier.weight(1f)) {
-                StationTrainCode(row.train, accent, onTrain)
+                StationTrainCode(row.train, accent, onTrain, notRunning = row.notRunning)
                 StationStatus(row, highlight, accent)
             }
             Column(Modifier.weight(1.3f)) {

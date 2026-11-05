@@ -126,9 +126,7 @@ class NativeAppearanceDeviceTest {
         }
 
     private fun controller(activity: MainActivity): NativeSettingsController {
-        val field = MainActivity::class.java.getDeclaredField("settings\$delegate")
-        field.isAccessible = true
-        return (field.get(activity) as Lazy<*>).value as NativeSettingsController
+        return activity.testController<NativeSettingsController>()
     }
 
     private fun capture(name: String, dark: Boolean) {

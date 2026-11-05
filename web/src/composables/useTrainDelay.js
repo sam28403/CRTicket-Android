@@ -1,3 +1,4 @@
+import { useNetworkFeatures } from './useNetworkFeatures.js'
 import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
 import { native } from '../android/platform.js'
 import { callNativeNotification } from '../android/nativeNotifications.js'
@@ -11,6 +12,7 @@ async function queryNativeDelay(snapshot, signal) {
 }
 
 export function useTrainDelay(schedule, queryDelay = queryNativeDelay, available = ref(true)) {
+  const online = useNetworkFeatures()
   const enabled = ref(true)
   let generation = 0
   let timer
@@ -25,7 +27,7 @@ export function useTrainDelay(schedule, queryDelay = queryNativeDelay, available
   }
 
   async function refresh() {
-    if (!available.value || !schedule.value?.stops.length || !enabled.value) return
+    if (!online.value || !available.value || !schedule.value?.stops.length || !enabled.value) return
     cancel()
     const id = generation
     const snapshot = schedule.value
@@ -50,9 +52,9 @@ export function useTrainDelay(schedule, queryDelay = queryNativeDelay, available
     }
   }
 
-  watch([schedule, enabled, available], ([snapshot, value, allowed], [previous]) => {
+  watch([schedule, enabled, available, online], ([snapshot, value, allowed, onlineAllowed], [previous]) => {
     cancel()
-    if (!allowed) {
+    if (!allowed || !onlineAllowed) {
       enabled.value = false
       return
     }
@@ -69,13 +71,13 @@ export function useTrainDelay(schedule, queryDelay = queryNativeDelay, available
     enabled,
     result: computed(() => {
       const snapshot = schedule.value
-      if (!available.value || !enabled.value || !snapshot?.stops.length) return snapshot
+      if (!online.value || !available.value || !enabled.value || !snapshot?.stops.length) return snapshot
       const offsets = cache.get(trainDelayCacheKey(snapshot))
       return offsets ? applyTrainDelay(snapshot, offsets) : snapshot
     }),
-    toggle: () => { if (available.value) enabled.value = !enabled.value },
+    toggle: () => { if (online.value && available.value) enabled.value = !enabled.value },
     async refresh() {
-      if (!available.value) return
+      if (!online.value || !available.value) return
       if (!enabled.value) {
         enabled.value = true
         await nextTick()

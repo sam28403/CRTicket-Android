@@ -31,6 +31,7 @@ internal fun MapSurface(
     modifier: Modifier = Modifier,
     onChooseSource: (() -> Unit)? = null,
 ) {
+    if (!cc.samlab.ticket.network.NetworkFeatures.enabled) return
     val source = rememberMapSource()
     val load = remember(station, segments, source) { MapLoadStatus() }
     key(station, segments, source) {

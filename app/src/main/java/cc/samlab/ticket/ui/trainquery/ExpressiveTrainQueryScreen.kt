@@ -34,6 +34,7 @@ internal fun ExpressiveTrainQueryScreen(
     location: String = "/train",
 ) {
     val textResources = rememberAppText()
+    val online = cc.samlab.ticket.network.NetworkFeatures.enabled
     val railfanEnabled by RailfanPreferences.rememberEnabled()
     val state = controller.stateFor(location)
     val loading = state.optBoolean("loading")
@@ -43,7 +44,7 @@ internal fun ExpressiveTrainQueryScreen(
     val error = state.optString("error")
     val timing by rememberQueryTiming(result, active)
     val operatingCalendar by rememberOperatingCalendar(
-        train = if (count > 0) result!!.optString("train") else "",
+        train = if (online && count > 0) result!!.optString("train") else "",
         date = result?.optString("date").orEmpty(),
     )
     var datePicker by remember { mutableStateOf(false) }
@@ -51,7 +52,7 @@ internal fun ExpressiveTrainQueryScreen(
         val colors = MaterialTheme.colorScheme
         Surface(Modifier.fillMaxSize().testTag("train-query-screen"), color = colors.surfaceContainer) {
             TrainQueryRefreshBox(
-                offline = state.optBoolean("offline"),
+                offline = !online || state.optBoolean("offline"),
                 refreshing = state.optBoolean("refreshing"),
                 onRefresh = { if (active && !loading) controller.dispatch("refresh") },
             ) {
@@ -64,7 +65,7 @@ internal fun ExpressiveTrainQueryScreen(
                             }
                         },
                         actions = {
-                            if (!state.optBoolean("offline")) TrainQueryRefreshButton(
+                            if (online && !state.optBoolean("offline")) TrainQueryRefreshButton(
                                 enabled = active && !loading && count > 0 && !state.optBoolean("refreshing"),
                                 onRefresh = { controller.dispatch("refresh") },
                             )
@@ -111,7 +112,7 @@ internal fun ExpressiveTrainQueryScreen(
                                         Text(result!!.optString("train"), style = MaterialTheme.typography.titleLarge, fontFamily = projectTitleFont)
                                         Text("${result.optString("from")} → ${result.optString("to")}", style = MaterialTheme.typography.titleMedium)
                                     }
-                                    if (!state.optBoolean("offline")) Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    if (online && !state.optBoolean("offline")) Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
                                             textResources(R.string.train_query_delay),
                                             style = MaterialTheme.typography.labelMedium,
@@ -180,7 +181,7 @@ internal fun ExpressiveTrainQueryScreen(
         }
         if (datePicker) TrainQueryDatePicker(
             date = controller.date,
-            offline = state.optBoolean("offline"),
+            offline = !online || state.optBoolean("offline"),
             onDismiss = { datePicker = false },
             onSelect = { controller.edit(day = it) },
         )

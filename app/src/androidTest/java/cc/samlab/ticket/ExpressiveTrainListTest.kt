@@ -26,7 +26,7 @@ class ExpressiveTrainListTest {
     private lateinit var activity: MainActivity
 
     @Before fun launch() {
-        assertEquals("Pixel 8 Pro", android.os.Build.MODEL)
+        org.junit.Assume.assumeTrue("Phone layout test", android.os.Build.MODEL == "Pixel 8 Pro")
         activity = instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
@@ -49,7 +49,7 @@ class ExpressiveTrainListTest {
     }
 
     @After fun close() {
-        instrumentation.runOnMainSync { activity.finish() }
+        if (::activity.isInitialized) instrumentation.runOnMainSync { activity.finish() }
     }
 
     @Test fun liveDataCalendarRefreshAndDetails() {

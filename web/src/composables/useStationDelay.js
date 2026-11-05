@@ -1,3 +1,4 @@
+import { useNetworkFeatures } from './useNetworkFeatures.js'
 import { computed, onScopeDispose, watch } from 'vue'
 import { native } from '../android/platform.js'
 import { callNativeNotification } from '../android/nativeNotifications.js'
@@ -13,6 +14,7 @@ async function queryNativeDelay(payload, signal) {
 }
 
 export function useStationDelay(schedule, queryDelay = queryNativeDelay) {
+  const online = useNetworkFeatures()
   let controller
   let generation = 0
   let timer
@@ -27,16 +29,17 @@ export function useStationDelay(schedule, queryDelay = queryNativeDelay) {
   async function refresh() {
     cancel()
     const snapshot = schedule.value
-    if (!snapshot?.trains.length) return
+    if (!online.value || !snapshot?.trains.length) return
     const id = generation
     const day = trainQueryRange().today
     const key = stationDelayCacheKey(snapshot)
     controller = new AbortController()
     const predictions = new Map(cache.get(key))
     // Show the timetable immediately, then merge small batches without replacing the list.
-    for (let index = 0; index < snapshot.trains.length; index += 16) {
+    const runningTrains = snapshot.trains.filter(row => !row.notRunning)
+    for (let index = 0; index < runningTrains.length; index += 16) {
       if (id !== generation) return
-      const trains = snapshot.trains.slice(index, index + 16).map(row => ({
+      const trains = runningTrains.slice(index, index + 16).map(row => ({
         ...row, queryTrain: displayTrainCode(row.train).split('/')[0],
       }))
       try {
@@ -59,19 +62,19 @@ export function useStationDelay(schedule, queryDelay = queryNativeDelay) {
     timer = setTimeout(refresh, 10 * 60 * 1000)
   }
 
-  watch(schedule, () => {
+  watch([schedule, online], () => {
     cancel()
     refresh()
   }, { flush: 'post' })
   onScopeDispose(cancel)
   return { result: computed(() => {
     const snapshot = schedule.value
-    if (!snapshot) return snapshot
+    if (!snapshot || !online.value) return snapshot
     const predictions = cache.get(stationDelayCacheKey(snapshot))
     if (!predictions?.size) return snapshot
     return {
       ...snapshot,
-      trains: snapshot.trains.map(row => applyStationDelay(
+      trains: snapshot.trains.map(row => row.notRunning ? row : applyStationDelay(
         row, predictions.get(stationDelayRowKey(row)) || {},
       )),
     }

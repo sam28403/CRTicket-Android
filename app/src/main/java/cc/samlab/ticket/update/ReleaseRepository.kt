@@ -18,6 +18,8 @@ internal data class AppRelease(
 
 internal class ReleaseRepository {
     private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(20, TimeUnit.SECONDS)
         .callTimeout(45, TimeUnit.SECONDS)

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
@@ -107,19 +108,15 @@ internal fun SettingsPreferences(
     }
     SettingsUpdates()
     SettingsAdvanced()
-    if (controller.developer.visible) {
-        SettingsGroup(stringResource(R.string.settings_developer)) {
+    ExtraSettingsEntry(controller)
+    SettingsGroup(stringResource(R.string.station_tab_map)) {
+        val online = cc.samlab.ticket.network.NetworkFeatures.enabled
+        Box(Modifier.alpha(if (online) 1f else 0.38f)) {
             SettingsRow(
-                stringResource(R.string.settings_developer), "",
-                0, 1, true, controller.ui::openDeveloper,
+                stringResource(R.string.settings_map), stringResource(rememberMapSource().title),
+                0, 1, online, controller.ui::openMap,
             )
         }
-    }
-    SettingsGroup(stringResource(R.string.station_tab_map)) {
-        SettingsRow(
-            stringResource(R.string.settings_map), stringResource(rememberMapSource().title),
-            0, 1, true, controller.ui::openMap,
-        )
     }
     SettingsGroup(stringResource(R.string.storage_data)) {
         SettingsRow(

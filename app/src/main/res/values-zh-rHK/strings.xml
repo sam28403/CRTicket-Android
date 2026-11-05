@@ -832,10 +832,6 @@
     <string name="failure_title">应用发生异常</string>
     <string name="failure_copy">复制错误报告</string>
     <string name="failure_restart">重新启动</string>
-    <string name="failure_debug">调试</string>
-    <string name="failure_test_main">模拟主线程崩溃</string>
-    <string name="failure_test_worker">模拟后台线程崩溃</string>
-    <string name="failure_test_anr">模拟无响应</string>
     <string name="storage_error_logs">错误日志</string>
     <string name="vehicle_photo_unknown">未知</string>
     <string name="vehicle_photo_date">拍摄日期：%1$s</string>
@@ -853,11 +849,4 @@
     <string name="backup_update_recommended">此备份来自更高版本，已兼容导入，请尽快更新软件。</string>
     <string name="train_query_turn_station">本站調向</string>
     <string name="arrival_google_services_required">您需要啟用Google服務，才可以使用此功能。</string>
-    <string name="settings_developer">開發人員選項</string>
-    <string name="debug_tickets_title">模拟生成车票</string>
-    <string name="debug_tickets_count">数量</string>
-    <string name="debug_tickets_generate">生成</string>
-    <string name="debug_tickets_empty">还没有生成任何车票</string>
-    <string name="debug_tickets_success">成功生成%1$d条</string>
-    <string name="debug_tickets_failed">生成失败</string>
 </resources>

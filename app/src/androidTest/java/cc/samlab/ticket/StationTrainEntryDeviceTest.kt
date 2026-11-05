@@ -25,11 +25,8 @@ class StationTrainEntryDeviceTest {
                 lateinit var query: NativeTrainQueryController
                 lateinit var state: StationBoardState
                 fixture.instrumentation.runOnMainSync {
-                    fun controller(name: String): Any = (MainActivity::class.java
-                        .getDeclaredField("$name\$delegate").apply { isAccessible = true }
-                        .get(fixture.activity) as Lazy<*>).value!!
-                    board = controller("stationBoard") as NativeStationBoardController
-                    query = controller("trainQuery") as NativeTrainQueryController
+                    board = fixture.activity.testController<NativeStationBoardController>()
+                    query = fixture.activity.testController<NativeTrainQueryController>()
                 }
                 fixture.navigate("/station")
                 fixture.evaluate("window.crticketNavigate('/station?station=上海南')")

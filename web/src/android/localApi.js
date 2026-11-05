@@ -58,7 +58,8 @@ export function createLocalApi(storage) {
       }
       const tickets = read()
       if (method === 'GET' && path === '/ticket/list/device') return [...tickets].reverse()
-      if (method === 'POST' && path === '/ticket/add-batch') {
+      if ((typeof __CRTICKET_CI__ === 'undefined' || __CRTICKET_CI__)
+        && method === 'POST' && path === '/ticket/add-batch') {
         if (!Array.isArray(body?.tickets) || !body.tickets.length || body.tickets.length > 1000) {
           throw new Error('生成数量无效')
         }

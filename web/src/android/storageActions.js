@@ -7,7 +7,7 @@ export function initializeNativeStorage() {
         try {
             if (action === 'clear') await loadLltDatabase.clear()
             const archive = await readArchive()
-            const bytes = archive?.bytes?.byteLength || 0
+            const bytes = archive?.imported ? 0 : archive?.bytes?.byteLength || 0
             native.settingsResult(JSON.stringify({ id, success: true, bytes }))
         } catch {
             native.settingsResult(JSON.stringify({ id, success: false }))

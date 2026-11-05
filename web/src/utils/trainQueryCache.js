@@ -5,6 +5,7 @@ export function createTrainQueryCache(limit = 16) {
     String(train || '').trim().toUpperCase(), date, source === 'llt' ? 'llt' : '',
   ])
   return {
+    clear() { entries.clear() },
     get(train, date, source) {
       return entries.get(key(train, date, source))
     },

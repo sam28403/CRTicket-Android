@@ -1,10 +1,12 @@
 import { onBeforeUnmount, watch } from 'vue'
 import { native } from '@/android/platform.js'
+import { createTrainListSnapshot } from '../android/trainListSnapshot.js'
 
 // Transfer a snapshot only when data changes; scrolling stays entirely in Compose.
 export function useNativeTrainList(date, loading, error, result, query, errorKey) {
   const enabled = typeof native?.trainListResult === 'function'
   if (!enabled) return false
+  const snapshot = createTrainListSnapshot()
 
   function request(event) {
     const selected = event.detail?.date
@@ -13,13 +15,13 @@ export function useNativeTrainList(date, loading, error, result, query, errorKey
   }
   window.addEventListener('crticket-train-list-request', request)
   const stop = watch([date, loading, error, result], () => {
-    native.trainListResult(JSON.stringify({
+    native.trainListResult(JSON.stringify(snapshot({
       date: date.value,
       loading: loading.value,
       error: error.value,
       errorKey: errorKey?.value || '',
       result: result.value,
-    }))
+    })))
   }, { immediate: true, flush: 'post' })
   onBeforeUnmount(() => {
     stop()

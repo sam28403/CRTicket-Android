@@ -1,5 +1,6 @@
 <script setup>
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { useNetworkFeatures } from '@/composables/useNetworkFeatures.js'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
@@ -28,6 +29,8 @@ const board = useStationBoard()
 const { station, clock, loading, result, error, query } = board
 const nativeBoard = useNativeStationBoard(board)
 const activeTab = ref('all')
+const online = useNetworkFeatures()
+watch(online, value => { if (!value && activeTab.value === 'map') activeTab.value = 'all' })
 const follow = ref(true)
 // 时间更新不重新遍历和排序车次；仅查询结果和标签变化时重算。
 const rows = computed(() => activeTab.value === 'map'
@@ -146,18 +149,18 @@ function refresh() {
               :label="tab.label"
               :name="tab.name"
             />
-            <el-tab-pane name="map">
+            <el-tab-pane name="map" :disabled="!online">
               <template #label>
                 <span>地图</span>
                 <el-button
-                  text circle :icon="Setting" aria-label="地图选择"
+                  text circle :icon="Setting" aria-label="地图选择" :disabled="!online"
                   @click.stop="$router.push('/settings/map')"
                 />
               </template>
             </el-tab-pane>
           </el-tabs>
           <StationLocationMap
-            v-if="activeTab === 'map'"
+            v-if="online && activeTab === 'map'"
             :key="`${result.station}:${mapSource}`"
             :station="result.station"
             :source="mapSource"

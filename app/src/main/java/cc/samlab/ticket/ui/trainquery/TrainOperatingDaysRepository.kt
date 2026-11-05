@@ -19,7 +19,10 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 internal object TrainOperatingDaysRepository {
-    private val client = OkHttpClient.Builder().callTimeout(20, TimeUnit.SECONDS).build()
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
+        .callTimeout(20, TimeUnit.SECONDS).build()
     private data class Cached(val time: Long, val days: TrainOperatingDays)
     private val cache = linkedMapOf<Pair<String, LocalDate>, Cached>()
 

@@ -22,13 +22,16 @@ internal fun StationTrainCode(
     color: Color,
     onClick: () -> Unit,
     fontFamily: FontFamily? = null,
+    notRunning: Boolean = false,
 ) {
+    val strike = cc.samlab.ticket.ui.components.rememberTrainCodeStrikeThrough(notRunning, color)
     Text(
         code,
         Modifier.heightIn(min = 36.dp).clickable(onClick = onClick).wrapContentHeight()
-            .testTag("station-train-code"),
+            .testTag("station-train-code").then(strike.modifier),
         color = color, style = MaterialTheme.typography.titleLarge,
         fontFamily = fontFamily,
+        onTextLayout = strike.onTextLayout,
     )
 }
 

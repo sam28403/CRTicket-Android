@@ -26,12 +26,9 @@ class StationTrainSegmentsDeviceTest {
     private fun verifyLive() {
         val fixture = TabletPageFixture(compose)
         try {
-            val delegate = MainActivity::class.java.getDeclaredField("stationBoard\$delegate")
-                .apply { isAccessible = true }
-                .get(fixture.activity) as Lazy<*>
             lateinit var controller: NativeStationBoardController
             fixture.instrumentation.runOnMainSync {
-                controller = delegate.value as NativeStationBoardController
+                controller = fixture.activity.testController<NativeStationBoardController>()
             }
             for ((station, departure) in listOf("南京南" to "G100", "天津西" to "G97", "唐山" to "G97")) {
                 val location = "/station?station=$station"

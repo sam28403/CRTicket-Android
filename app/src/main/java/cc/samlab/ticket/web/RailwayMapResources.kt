@@ -10,6 +10,8 @@ import okhttp3.Request
 /** Official public map data only; no cookies, credentials or native bridge. */
 internal object RailwayMapResources {
     private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
         .followRedirects(false)
         .followSslRedirects(false)
         .callTimeout(20, TimeUnit.SECONDS)

@@ -22,3 +22,9 @@ initializeGlobalSearch()
 
 import { initializeDebugGeneration } from './android/debugGeneration.js'
 initializeDebugGeneration()
+
+import { initializeTimetableSettings } from './android/timetableSettings.js'
+initializeTimetableSettings()
+
+import { initializeTimetableVersion } from './android/timetableVersion.js'
+initializeTimetableVersion()

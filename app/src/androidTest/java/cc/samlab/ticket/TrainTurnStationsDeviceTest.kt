@@ -57,11 +57,9 @@ class TrainTurnStationsDeviceTest {
             val date = LocalDate.now(ZoneId.of("Asia/Shanghai"))
             var location = "/train?train=6856&date=$date&source=llt"
             fixture.evaluate("window.crticketNavigate(${JSONObject.quote(location)})")
-            val delegate = MainActivity::class.java.getDeclaredField("trainQuery\$delegate")
-                .apply { isAccessible = true }.get(fixture.activity) as Lazy<*>
             lateinit var controller: NativeTrainQueryController
             fixture.instrumentation.runOnMainSync {
-                controller = delegate.value as NativeTrainQueryController
+                controller = fixture.activity.testController<NativeTrainQueryController>()
             }
             compose.waitUntil(120_000) {
                 val result = controller.state.optJSONObject("result")

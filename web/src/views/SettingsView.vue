@@ -1,4 +1,6 @@
 <script setup>
+import { useNetworkFeatures } from '@/composables/useNetworkFeatures.js'
+const online = useNetworkFeatures()
 import UserNameCard from '@/components/UserNameCard.vue'
 import SettingsAvatarCard from '@/components/SettingsAvatarCard.vue'
 import SettingsDataCard from '@/components/SettingsDataCard.vue'
@@ -18,7 +20,8 @@ const nativeSettings = typeof window.CRTicketAndroid?.settingsResult === 'functi
     <StationArrivalCard />
     <h2>外观</h2>
     <SettingsAppearanceCard />
-    <RouterLink to="/settings/map">地图选择</RouterLink>
+    <RouterLink v-if="online" to="/settings/map">地图选择</RouterLink>
+    <span v-else aria-disabled="true">地图选择</span>
     <h2>数据与备份</h2>
     <SettingsDataCard />
   </main>

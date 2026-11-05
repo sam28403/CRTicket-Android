@@ -7,10 +7,12 @@ import { updateSaleTimes } from './update-sale-times.mjs'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 const source = path.join(root, 'web/public')
-const target = path.join(root, 'app/src/main/assets/web')
-await updateSaleTimes()
-await packageArrivalStations()
-await packageSpeedometerAssets()
+const target = process.env.CRTICKET_WEB_OUTPUT || path.join(root, 'app/build/generated/web-public/web')
+if (process.env.CRTICKET_SKIP_COMMON !== 'true') {
+    await updateSaleTimes()
+    await packageArrivalStations()
+    await packageSpeedometerAssets()
+}
 
 for (const entry of await readdir(source, { withFileTypes: true })) {
     // Keep original fonts for editable source/test fixtures; package optimized fonts only.

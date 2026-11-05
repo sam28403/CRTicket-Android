@@ -1,4 +1,5 @@
 <script setup>
+import { useNetworkFeatures } from '@/composables/useNetworkFeatures.js'
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted } from 'vue'
 import StationFallbackMap from './StationFallbackMap.vue'
 import { stationMapEmbedUrl } from '@/utils/maps/stationLocationMap.js'
@@ -12,6 +13,7 @@ const props = defineProps({
   source: { type: String, default: 'auto' },
 })
 const emit = defineEmits(['failed'])
+const online = useNetworkFeatures()
 const selected = computed(() => normalizeMapSource(props.source))
 const mapUrl = computed(() => stationMapEmbedUrl(props.station))
 const controller = new AbortController()
@@ -25,7 +27,7 @@ function fail() {
 }
 
 onMounted(async () => {
-  if (selected.value !== 'transport') return
+  if (!online.value || selected.value !== 'transport') return
   timer = setTimeout(fail, 15000)
   if (!navigator.userAgent.includes('CRTicket')) {
     const connected = await canConnectTransport(mapUrl.value, { signal: controller.signal })
@@ -42,7 +44,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="station-location-map" role="region" :aria-label="`${station}车站地图`">
+  <div v-if="online" class="station-location-map" role="region" :aria-label="`${station}车站地图`">
     <RailwayVectorMap
       v-if="selected === 'openrailway'" :station="station" :source="selected" @failed="fail"
     />

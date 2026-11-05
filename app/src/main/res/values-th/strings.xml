@@ -832,10 +832,6 @@
     <string name="failure_title">Application error</string>
     <string name="failure_copy">Copy report</string>
     <string name="failure_restart">Restart</string>
-    <string name="failure_debug">Debug</string>
-    <string name="failure_test_main">Simulate main thread crash</string>
-    <string name="failure_test_worker">Simulate background thread crash</string>
-    <string name="failure_test_anr">Simulate unresponsive app</string>
     <string name="storage_error_logs">Error logs</string>
     <string name="vehicle_photo_unknown">Unknown</string>
     <string name="vehicle_photo_date">Photo date: %1$s</string>
@@ -853,11 +849,4 @@
     <string name="backup_update_recommended">This backup was created by a newer app version and was imported successfully. Please update the app soon.</string>
     <string name="train_query_turn_station">Reverses here</string>
     <string name="arrival_google_services_required">You need to enable Google services to use this feature.</string>
-    <string name="settings_developer">Developer options</string>
-    <string name="debug_tickets_title">Generate sample tickets</string>
-    <string name="debug_tickets_count">Count</string>
-    <string name="debug_tickets_generate">Generate</string>
-    <string name="debug_tickets_empty">No tickets generated yet</string>
-    <string name="debug_tickets_success">Generated %1$d tickets</string>
-    <string name="debug_tickets_failed">Generation failed</string>
 </resources>

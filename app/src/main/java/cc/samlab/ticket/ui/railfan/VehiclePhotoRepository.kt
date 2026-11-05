@@ -23,6 +23,8 @@ internal data class VehiclePhoto(val info: VehiclePhotoInfo, val image: ImageBit
 internal object VehiclePhotoRepository {
     private const val ORIGIN = "http://www.xiaguanzhan.com"
     private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(20, TimeUnit.SECONDS)
         .callTimeout(30, TimeUnit.SECONDS)

@@ -40,7 +40,7 @@ internal class ExpressivePageContent(
     private val onExternal: (String) -> Unit,
 ) {
     val statistics = StatisticsUiState()
-    val dataVersions = AboutDataVersions(activity)
+    val dataVersions = AboutDataVersions(activity, web)
     val search = cc.samlab.ticket.ui.search.NativeSearchController(activity, web)
     private val statisticsBody = StatisticsBodyLayout(activity)
     private val backend = web.parent as FrameLayout
@@ -54,6 +54,7 @@ internal class ExpressivePageContent(
 
     @Composable
     fun Render(location: String, active: Boolean, embedded: Boolean, dark: Boolean, pureBlack: Boolean) {
+        if (renderRestrictedFeature(location, dark, pureBlack, embedded, onBack)) return
         when (ExpressiveRoutes.path(location)) {
             "/railfan/quiz" -> {
                 LaunchedEffect(active) { if (active) settings.refresh() }
@@ -137,15 +138,13 @@ internal class ExpressivePageContent(
             "/about/report" -> cc.samlab.ticket.ui.report.ExpressiveReportScreen(
                 dark, pureBlack, onBack, onExternal,
             )
-            "/settings", "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map", "/settings/developer", "/settings/developer/tickets",
+            "/settings", "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map",
         "/settings/language", "/settings/sale-reminders" -> {
                 val page = when (ExpressiveRoutes.path(location)) {
                     "/settings/sale-reminders" -> SettingsPage.SALE_REMINDERS
                     "/settings/arrival" -> SettingsPage.ARRIVAL
                     "/settings/permissions" -> SettingsPage.PERMISSIONS
                     "/settings/storage" -> SettingsPage.STORAGE
-                    "/settings/developer/tickets" -> SettingsPage.DEBUG_TICKETS
-                    "/settings/developer" -> SettingsPage.DEVELOPER
                     "/settings/map" -> SettingsPage.MAP
                     "/settings/language" -> SettingsPage.LANGUAGE
                     else -> SettingsPage.MAIN
@@ -154,6 +153,10 @@ internal class ExpressivePageContent(
                     onNavigate("/sale-time/reminders")
                 }
             }
+            in extraSettingsRoutes -> ExpressiveSettingsScreen(
+                dark, settings, onBack, pureBlack, active, embedded,
+                extraSettingsPage(ExpressiveRoutes.path(location)) ?: SettingsPage.MAIN,
+            )
             "/monitor", "/monitor/settings" -> ExpressiveTicketMonitorScreen(
                 monitor, dark, pureBlack, location == "/monitor/settings", onBack,
                 { onNavigate("/monitor/settings") }, embedded, active,

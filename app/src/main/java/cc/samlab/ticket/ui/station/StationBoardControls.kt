@@ -96,6 +96,7 @@ internal fun StationBoardTabs(
         StationTab.entries.forEachIndexed { index, tab ->
             ToggleButton(
                 checked = tab == selected,
+                enabled = tab != StationTab.MAP || cc.samlab.ticket.network.NetworkFeatures.enabled,
                 onCheckedChange = { onSelect(tab) },
                 modifier = Modifier.height(36.dp).testTag("station-tab-${tab.key}")
                     .semantics { role = Role.Tab; this.selected = tab == selected },
@@ -109,6 +110,7 @@ internal fun StationBoardTabs(
             if (tab == StationTab.MAP) {
                 IconButton(
                     onClick = onMapSettings,
+                    enabled = cc.samlab.ticket.network.NetworkFeatures.enabled,
                     modifier = Modifier.size(36.dp).testTag("station-map-settings"),
                 ) {
                     Icon(

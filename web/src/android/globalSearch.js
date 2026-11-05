@@ -6,13 +6,15 @@ import { parseStations } from '../utils/stations.js'
 import { stationSummaryNow } from '../utils/stationDiscovery.js'
 import { trainQueryRange } from '../utils/trainQueryDate.js'
 import { filterSearchTrains, filterSearchStations } from '../utils/globalSearch.js'
+import { showNonRunningTrains } from './timetableVisibility.js'
 
 let catalogue
-let catalogueDate = ''
+let catalogueKey = ''
 
 async function loadCatalogue(date) {
-  if (!catalogue || catalogueDate !== date) {
-    catalogueDate = date
+  const key = `${date}:${loadLltDatabase.revision}:${showNonRunningTrains()}`
+  if (!catalogue || catalogueKey !== key) {
+    catalogueKey = key
     const task = Promise.all([
       api.get('/llt-trains', { params: { date }, timeout: timetableTimeout }),
       api.get('/station/discovery', { params: { date }, timeout: timetableTimeout }),

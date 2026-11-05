@@ -24,8 +24,13 @@ internal fun ExpressiveStationBoardScreen(
     active: Boolean,
     embedded: Boolean = false,
 ) {
+    val online = cc.samlab.ticket.network.NetworkFeatures.enabled
+    val tab = if (!online && controller.selectedTab == StationTab.MAP) StationTab.ALL
+        else controller.selectedTab
+    LaunchedEffect(online, controller.selectedTab) {
+        if (!online && controller.selectedTab == StationTab.MAP) controller.selectedTab = StationTab.ALL
+    }
     val list = controller.gridState
-    val tab = controller.selectedTab
     val rows = controller.tabs[tab].orEmpty()
     val hasTrains = controller.tabs[StationTab.ALL].orEmpty().isNotEmpty()
     val failed = !controller.loading && controller.error.isNotEmpty() && !hasTrains
@@ -73,7 +78,7 @@ internal fun ExpressiveStationBoardScreen(
                     )
                 } else if (controller.date.isNotEmpty()) {
                     if (tab == StationTab.MAP) {
-                        if (active) StationBoardMap(
+                        if (active && online) StationBoardMap(
                             controller.resultStation, dark,
                             Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp, vertical = 8.dp)
                                 .testTag("station-map"),

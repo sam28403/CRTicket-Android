@@ -29,6 +29,10 @@ if (native) {
                 data = await local.request(config.method.toUpperCase(), path,
                     typeof config.data === 'string' ? JSON.parse(config.data) : config.data);
             }
+            // List summaries are read-only cached objects; keep their row identity for the native bridge.
+            if (/^\/llt-trains(?:\?|$)/.test(path)) {
+                return { data, status: 200, statusText: '', headers: {}, config, request: null };
+            }
             result = { status: 200, body: JSON.stringify(data) };
         } catch (error) {
             if (error.code === 'ERR_CANCELED' || error.code === 'ECONNABORTED') {

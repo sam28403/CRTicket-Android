@@ -47,6 +47,7 @@ const columns = computed(() => {
       if (column.key === 'train') {
         return h(RouterLink, {
           class: 'board-cell board-link',
+          style: rowData.notRunning ? { textDecoration: 'line-through', textDecorationThickness: '2px' } : undefined,
           to: stationTrainLocation(rowData, props.source, props.date),
           title: `查看 ${displayTrainCode(cellData)} 时刻表`,
         }, () => displayTrainCode(cellData))

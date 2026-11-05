@@ -30,11 +30,12 @@ internal data class StationBoardRow(
     val highlightLabel: String,
     val arrivalOffset: Int = 0,
     val departureOffset: Int = 0,
+    val notRunning: Boolean = false,
 ) {
-    fun inStation(seconds: Int) = arrivalSeconds.isFinite() && departureSeconds.isFinite() &&
+    fun inStation(seconds: Int) = !notRunning && arrivalSeconds.isFinite() && departureSeconds.isFinite() &&
         seconds >= arrivalSeconds && seconds < departureSeconds
 
-    fun upcoming(seconds: Int) = !inStation(seconds) &&
+    fun upcoming(seconds: Int) = !notRunning && !inStation(seconds) &&
         seconds >= highlightStart && seconds < highlightEnd
 }
 
@@ -55,11 +56,12 @@ internal fun parseStationRow(row: JSONObject) = StationBoardRow(
     highlightLabel = row.optString("highlightLabel"),
     arrivalOffset = row.optInt("arrivalOffset"),
     departureOffset = row.optInt("departureOffset"),
+    notRunning = row.optBoolean("notRunning"),
 )
 
 internal fun stationCurrentIndex(rows: List<StationBoardRow>, seconds: Int): Int {
     val highlighted = rows.indexOfFirst { it.inStation(seconds) || it.upcoming(seconds) }
     if (highlighted >= 0) return highlighted
-    val next = rows.indexOfFirst { it.time.isFinite() && it.time > seconds }
+    val next = rows.indexOfFirst { !it.notRunning && it.time.isFinite() && it.time > seconds }
     return if (next >= 0) next else rows.lastIndex.coerceAtLeast(0)
 }

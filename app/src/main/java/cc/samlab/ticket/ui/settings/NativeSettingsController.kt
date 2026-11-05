@@ -50,8 +50,7 @@ class NativeSettingsController(
     fun openMonitorSettings() = onMonitorSettings()
 
     internal val storage = StorageController(activity, webView, worker)
-    internal val debugTickets = DebugTicketsController(activity, webView)
-    internal val developer = DeveloperOptionsState(activity)
+    internal val extras = SettingsExtras(activity, webView)
     internal val ui = SettingsUiState()
     internal val backupSecurity = BackupSecurityState()
     internal val permissions = PermissionSettingsController(activity)
@@ -184,6 +183,7 @@ class NativeSettingsController(
     }
 
     fun receive(result: JSONObject) {
+        if (extras.receive(result)) return
         if (result.optString("id").startsWith("storage:")) {
             storage.receive(result)
             return
@@ -340,6 +340,7 @@ class NativeSettingsController(
     }
 
     fun close() {
+        extras.close()
         storage.close()
         webView.removeCallbacks(unlockTimeout)
         backupSecurity.clear()

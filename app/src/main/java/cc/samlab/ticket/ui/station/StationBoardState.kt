@@ -23,7 +23,10 @@ internal class StationBoardState(
     private var presentationDate = ""
     var selectedTab: StationTab
         get() = presentation.selectedTab
-        set(value) { presentation.selectedTab = value }
+        set(value) {
+            presentation.selectedTab = if (value == StationTab.MAP &&
+                !cc.samlab.ticket.network.NetworkFeatures.isAllowed()) StationTab.ALL else value
+        }
     var follow: Boolean
         get() = presentation.follow
         set(value) { presentation.follow = value }

@@ -18,6 +18,8 @@ class PhoneHttp(
     private val callback: (String, String, JSONObject) -> Unit
 ) {
     private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
         .callTimeout(45, TimeUnit.SECONDS)

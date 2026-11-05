@@ -83,5 +83,12 @@ internal class TabletPageFixture(
             android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptor).bufferedReader().use { it.readText() }
         }
 
-    fun close() { instrumentation.runOnMainSync { activity.finish() } }
+    fun close() {
+        instrumentation.runOnMainSync { activity.finish() }
+        val deadline = android.os.SystemClock.uptimeMillis() + 10_000
+        while (!activity.isDestroyed && android.os.SystemClock.uptimeMillis() < deadline) {
+            android.os.SystemClock.sleep(20)
+        }
+        assertTrue("Activity did not finish before the next fixture", activity.isDestroyed)
+    }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="failure_debug">Debug</string>
+    <string name="failure_test_main">Simulate main thread crash</string>
+    <string name="failure_test_worker">Simulate background thread crash</string>
+    <string name="failure_test_anr">Simulate unresponsive app</string>
+    <string name="settings_developer">Developer options</string>
+    <string name="debug_tickets_title">Generate sample tickets</string>
+    <string name="debug_tickets_count">Count</string>
+    <string name="debug_tickets_generate">Generate</string>
+    <string name="debug_tickets_empty">No tickets generated yet</string>
+    <string name="debug_tickets_success">Generated %1$d tickets</string>
+    <string name="debug_tickets_failed">Generation failed</string>
+    <string name="llt_settings_group">LuLuTong data</string>
+    <string name="llt_auto_update">Automatically update LuLuTong data</string>
+    <string name="llt_import_title">Import LuLuTong database</string>
+    <string name="llt_import_button">Import</string>
+    <string name="llt_current_version">Current LuLuTong database version</string>
+    <string name="llt_version_empty">No database</string>
+    <string name="llt_import_success">LuLuTong database imported</string>
+    <string name="llt_import_failed">Unable to import LuLuTong database</string>
+    <string name="network_features_enabled">Use online features</string>
+    <string name="network_features_disabled">Online features are turned off</string>
+    <string name="developer_show_non_running_trains">Show trains not running today</string>
+</resources>

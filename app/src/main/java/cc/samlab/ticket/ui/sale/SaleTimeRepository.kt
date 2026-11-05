@@ -17,7 +17,10 @@ import kotlin.coroutines.resumeWithException
 
 internal class SaleTimeRepository(context: Context) {
     private val preferences = context.getSharedPreferences("sale-time-query", Context.MODE_PRIVATE)
-    private val client = OkHttpClient.Builder().callTimeout(20, TimeUnit.SECONDS).build()
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
+        .callTimeout(20, TimeUnit.SECONDS).build()
     private val cache = mutableMapOf<String, List<SaleTime>>()
     private var cacheDate = LocalDate.now(saleZone)
     var sameCity: Boolean

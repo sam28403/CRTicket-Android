@@ -4,9 +4,10 @@ plugins {
 }
 
 apply(from = rootProject.file("gradle/versioning.gradle.kts"))
-apply(from = rootProject.file("gradle/web-assets.gradle.kts"))
 val gitVersionCode = extra["androidVersionCode"] as Int
 val gitVersionName = extra["androidVersionName"] as String
+val fullDeviceTests = providers.gradleProperty("crticket.fullDeviceTests")
+    .map(String::toBoolean).getOrElse(false)
 val stationDataVersion = Regex("Station Version (\\d+)")
     .find(rootProject.file("web/src/views/MainView.vue").readText())
     ?.groupValues?.get(1) ?: error("Missing bundled station data version")
@@ -43,6 +44,7 @@ android {
     buildTypes {
         create("ci") {
             initWith(getByName("debug"))
+            isMinifyEnabled = false
             applicationIdSuffix = ".ci"
             versionNameSuffix = "-ci"
             matchingFallbacks += "debug"
@@ -68,9 +70,11 @@ android {
         }
         create("benchmark") {
             initWith(getByName("release"))
+            if (fullDeviceTests) proguardFiles("proguard-benchmark-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = false
             matchingFallbacks += "release"
+            testProguardFiles("proguard-test-rules.pro")
         }
     }
     sourceSets.getByName("ci") {
@@ -88,6 +92,25 @@ android {
         res.directories.add(layout.buildDirectory.dir("generated/ci-branding/res").get().asFile.path)
         assets.directories.add(layout.buildDirectory.dir("generated/ci-branding/assets").get().asFile.path)
     }
+    sourceSets.getByName("ciOffline").kotlin.directories.add(file("src/ci/java").path)
+    listOf("ci", "ciOffline").forEach { variant ->
+        sourceSets.getByName(variant).assets.directories.add(
+            layout.buildDirectory.dir("generated/web-ci").get().asFile.path,
+        )
+    }
+    listOf("debug", "release", "releaseOffline", "benchmark").forEach { variant ->
+        sourceSets.getByName(variant).kotlin.directories.add(file("src/nonCi/java").path)
+        sourceSets.getByName(variant).assets.directories.add(
+            layout.buildDirectory.dir("generated/web-public").get().asFile.path,
+        )
+    }
+    sourceSets.getByName("androidTest").kotlin.directories.apply {
+        if (testBuildType.startsWith("ci")) add(file("src/androidTestCi/java").path)
+        if (testBuildType == "debug" || testBuildType.startsWith("ci")) {
+            add(file("src/androidTestDebug/java").path)
+        }
+    }
+    sourceSets.getByName("testCiOffline").kotlin.directories.add(file("src/testCi/java").path)
     listOf("ciOffline", "releaseOffline").forEach { variant ->
         sourceSets.getByName(variant).assets.directories.add(
             layout.buildDirectory.dir("generated/offline-assets").get().asFile.path,
@@ -95,6 +118,7 @@ android {
     }
 }
 
+apply(from = rootProject.file("gradle/web-assets.gradle.kts"))
 apply(from = rootProject.file("gradle/ci-branding.gradle.kts"))
 apply(from = rootProject.file("gradle/offline-assets.gradle.kts"))
 

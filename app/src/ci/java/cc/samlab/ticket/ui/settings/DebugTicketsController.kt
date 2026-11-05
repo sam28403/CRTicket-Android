@@ -66,6 +66,11 @@ internal class DebugTicketsController(
                         row.getDouble("price"), row.optInt("use_credit") == 1,
                     )
                 }
+                web.evaluateJavascript(
+                    "window.dispatchEvent(new CustomEvent('crticket-history-action'," +
+                        "{detail:{action:'refresh'}}))",
+                    null,
+                )
                 toast(true)
             } catch (cancelled: kotlinx.coroutines.CancellationException) {
                 throw cancelled

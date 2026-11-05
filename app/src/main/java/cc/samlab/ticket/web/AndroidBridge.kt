@@ -44,6 +44,14 @@ class AndroidBridge(
     private val backupCallback: (String, String, JSONObject) -> Unit,
 ) {
     @JavascriptInterface
+    fun lltVersion(version: String) {
+        if (version.matches(Regex("\\d{8}"))) {
+            activity.getSharedPreferences("data-versions", 0).edit()
+                .putString("llt", version).apply()
+        }
+    }
+
+    @JavascriptInterface
     fun backupAppVersion(): String = cc.samlab.ticket.BuildConfig.VERSION_NAME
 
     private val backupPreferences = BackupPreferences(activity)

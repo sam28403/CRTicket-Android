@@ -1,4 +1,5 @@
 <script setup>
+import { useTimetableVisibility } from '@/composables/useTimetableVisibility.js'
 import { computed, h, onActivated, onBeforeUnmount, onDeactivated, ref, shallowRef, watch } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { onBeforeRouteLeave, RouterLink } from 'vue-router'
@@ -69,13 +70,15 @@ const columns = computed(() => {
       title: '车次',
       width: trainWidth,
       sortable: true,
-      cellRenderer: ({ cellData }) => h(RouterLink, {
+      cellRenderer: ({ cellData, rowData }) => h(RouterLink, {
         class: 'cell-text train-link',
+        style: rowData.notRunning ? { textDecoration: 'line-through', textDecorationThickness: '2px' } : undefined,
         to: {
           path: '/train',
           query: {
             train: cellData,
             date: result.value.date,
+            ...(rowData.notRunning ? { source: 'llt' } : {}),
           },
         },
       }, () => cellData),
@@ -160,6 +163,7 @@ function restoreScroll() {
 watch([table, width, height], restoreScroll, { flush: 'post' })
 onActivated(() => {
   active = true
+  if (!result.value && !loading.value) query()
   restoreScroll()
 })
 onBeforeRouteLeave(() => { active = false })
@@ -209,8 +213,18 @@ async function query() {
 }
 
 const nativeList = useNativeTrainList(date, loading, error, result, query, errorKey)
-watch(date, query, { immediate: true })
+const showNonRunning = useTimetableVisibility()
+function invalidateDatabase() {
+  controller?.abort()
+  requestId++
+  loading.value = false
+  result.value = null
+  if (active) query()
+}
+window.addEventListener('crticket-timetable-replaced', invalidateDatabase)
+watch([date, showNonRunning], invalidateDatabase, { immediate: true })
 onBeforeUnmount(() => {
+  window.removeEventListener('crticket-timetable-replaced', invalidateDatabase)
   cancelAnimationFrame(restoreFrame)
   requestId++
   controller?.abort()

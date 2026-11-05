@@ -13,14 +13,13 @@ internal object WideNavigationPolicy {
         "/settings/permissions",
         "/settings/storage",
         "/settings/map",
-        "/settings/developer", "/settings/developer/tickets",
         "/settings/language",
         "/history/editor",
         "/monitor/settings",
         "/railfan/speedometer/guide",
         "/railfan/speedometer/live",
         "/railfan/speedometer/track",
-    )
+    ) + cc.samlab.ticket.ui.settings.extraSettingsRoutes
 
     fun startsJourney(location: String): Boolean {
         val path = location.substringBefore('?')

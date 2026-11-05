@@ -1,6 +1,8 @@
+import { requireNetwork } from '../networkFeatures.js'
 import { nativeRequest } from '../platform.js'
 
 export async function nativeFetch(url, options = {}) {
+    requireNetwork()
     let result
     try {
         result = await nativeRequest('GET', String(url), '', {

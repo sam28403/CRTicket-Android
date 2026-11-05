@@ -7,6 +7,7 @@ import cc.samlab.ticket.i18n.AppStrings
 class TicketApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        cc.samlab.ticket.network.NetworkFeatures.initialize(this)
         val process = getSystemService(android.app.ActivityManager::class.java)
             .runningAppProcesses?.firstOrNull { it.pid == android.os.Process.myPid() }?.processName
         if (process?.endsWith(":diagnostics") != true) {

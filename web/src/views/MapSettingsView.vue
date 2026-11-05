@@ -1,4 +1,5 @@
 <script setup>
+import { useNetworkFeatures } from '@/composables/useNetworkFeatures.js'
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { ElRadio, ElRadioGroup } from 'element-plus'
 import StationLocationMap from '@/components/StationLocationMap.vue'
@@ -6,6 +7,7 @@ import { mapSources } from '@/utils/maps/mapSources.js'
 import { useMapSource } from '@/composables/useMapSource.js'
 
 const selected = useMapSource()
+const online = useNetworkFeatures()
 const showWarning = ref(false)
 watch(selected, () => { showWarning.value = false })
 function failed() {
@@ -18,9 +20,9 @@ onBeforeUnmount(() => { showWarning.value = false })
   <main class="map-settings">
     <header><RouterLink to="/settings">返回</RouterLink><h1>地图选择</h1></header>
     <div class="map-preview">
-      <StationLocationMap :key="selected" station="北京" :source="selected" @failed="failed" />
+      <StationLocationMap v-if="online" :key="selected" station="北京" :source="selected" @failed="failed" />
     </div>
-    <el-radio-group v-model="selected" aria-label="地图选择">
+    <el-radio-group v-model="selected" :disabled="!online" aria-label="地图选择">
       <el-radio v-for="source in mapSources" :key="source.id" :value="source.id" border>
         {{ source.name }}
       </el-radio>

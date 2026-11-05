@@ -23,6 +23,7 @@ class TicketMonitorService : Service() {
         @Volatile private var running = false
 
         fun start(context: Context, payload: String) {
+            cc.samlab.ticket.network.NetworkFeatures.requireEnabled()
             val config = TicketMonitorConfig.parse(payload)
             TicketMonitorStore.save(context, JSONObject()
                 .put("active", true).put("config", config.json())
@@ -32,6 +33,7 @@ class TicketMonitorService : Service() {
         }
 
         fun update(context: Context, payload: String) {
+            cc.samlab.ticket.network.NetworkFeatures.requireEnabled()
             val config = TicketMonitorConfig.parse(payload)
             val state = TicketMonitorStore.read(context)
             if (!state.optBoolean("active")) return
@@ -42,11 +44,16 @@ class TicketMonitorService : Service() {
         }
 
         fun refresh(context: Context) {
+            if (!cc.samlab.ticket.network.NetworkFeatures.isAllowed()) return
             if (!TicketMonitorStore.read(context).optBoolean("active")) return
             context.startForegroundService(Intent(context, TicketMonitorService::class.java))
         }
 
         fun restore(context: Context) {
+            if (!cc.samlab.ticket.network.NetworkFeatures.isAllowed()) {
+                stop(context)
+                return
+            }
             val state = TicketMonitorStore.read(context)
             if (!state.optBoolean("active")) return
             if (runCatching {
@@ -87,6 +94,10 @@ class TicketMonitorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val state = TicketMonitorStore.read(this)
+        if (!cc.samlab.ticket.network.NetworkFeatures.isAllowed()) {
+            stop(this)
+            return START_NOT_STICKY
+        }
         if (!state.optBoolean("active")) {
             stopSelf()
             return START_NOT_STICKY

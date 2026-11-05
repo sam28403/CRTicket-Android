@@ -88,7 +88,7 @@ class AdaptiveWindowTest {
             compose.onNodeWithTag("navigation-shell").assertExists()
             compose.onNode(hasSetTextAction() and hasAnyAncestor(isDialog())).assertTextContains("G8888 编辑草稿")
             compose.onNodeWithText("取消").performClick()
-            shell("am start --windowingMode 5 --activity-single-top -n cc.samlab.ticket/.MainActivity")
+            shell("am start --windowingMode 5 --activity-single-top -n ${activity.packageName}/cc.samlab.ticket.MainActivity")
             shell("am task resize ${activity.taskId} 40 80 1140 1480")
             compose.waitUntil(10_000) {
                 compose.onAllNodesWithTag("navigation-shell").fetchSemanticsNodes().isEmpty()
@@ -103,7 +103,7 @@ class AdaptiveWindowTest {
             compose.onNodeWithText("取消").performClick()
             capture("tablet-navigation-resized")
         } finally {
-            shell("am start --windowingMode 1 --activity-single-top -n cc.samlab.ticket/.MainActivity")
+            shell("am start --windowingMode 1 --activity-single-top -n ${activity.packageName}/cc.samlab.ticket.MainActivity")
             shell(if (automatic) "wm user-rotation free" else "wm user-rotation lock $rotation")
             shell("wm fixed-to-user-rotation $fixed")
             instrumentation.runOnMainSync { activity.finish() }

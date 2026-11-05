@@ -26,7 +26,7 @@ export async function readArchive() {
 
 export async function writeArchive(archive) {
     const db = await openStore()
-    if (!db) return
+    if (!db) throw new Error('数据库存储不可用')
     try {
         await new Promise((resolve, reject) => {
             const transaction = db.transaction('archives', 'readwrite')
@@ -46,7 +46,11 @@ export async function clearArchive() {
     try {
         await new Promise((resolve, reject) => {
             const transaction = db.transaction('archives', 'readwrite')
-            transaction.objectStore('archives').delete('current')
+            const store = transaction.objectStore('archives')
+            const request = store.get('current')
+            request.onsuccess = () => {
+                if (!request.result?.imported) store.delete('current')
+            }
             transaction.oncomplete = resolve
             transaction.onerror = () => reject(transaction.error)
             transaction.onabort = () => reject(transaction.error)

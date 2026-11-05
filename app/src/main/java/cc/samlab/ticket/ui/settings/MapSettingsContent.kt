@@ -26,7 +26,7 @@ internal fun MapSettingsContent(dark: Boolean, visible: Boolean) {
             .padding(16.dp).selectableGroup().testTag("settings-map-list"),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        if (visible) StationBoardMap(
+        if (visible && cc.samlab.ticket.network.NetworkFeatures.enabled) StationBoardMap(
             station = "北京",
             dark = dark,
             modifier = Modifier.fillMaxWidth().height(240.dp).padding(vertical = 8.dp)
@@ -62,13 +62,15 @@ private fun MapSourceChoice(source: MapSource, selected: MapSource, index: Int, 
         Row(
             Modifier.fillMaxWidth().heightIn(min = 64.dp)
                 .testTag("map-source:${source.id}")
-                .selectable(source == selected, role = Role.RadioButton) {
+                .selectable(source == selected, enabled = cc.samlab.ticket.network.NetworkFeatures.enabled,
+                    role = Role.RadioButton) {
                     selectMapSource(context, source)
                 }.padding(horizontal = 20.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(stringResource(source.title), Modifier.weight(1f))
-            RadioButton(source == selected, onClick = null)
+            RadioButton(source == selected, onClick = null,
+                enabled = cc.samlab.ticket.network.NetworkFeatures.enabled)
         }
     }
 }

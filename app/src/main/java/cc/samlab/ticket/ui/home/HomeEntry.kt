@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
@@ -45,7 +46,7 @@ internal fun HomeEntry(
         shape = shape,
         color = if (selected) MaterialTheme.colorScheme.secondaryContainer
             else MaterialTheme.colorScheme.surfaceContainerLowest,
-        modifier = Modifier.fillMaxWidth().semantics {
+        modifier = Modifier.fillMaxWidth().alpha(if (enabled) 1f else 0.38f).semantics {
             role = Role.Button
             this.selected = selected
         },

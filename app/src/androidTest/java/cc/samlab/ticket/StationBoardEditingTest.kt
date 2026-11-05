@@ -25,14 +25,10 @@ class StationBoardEditingTest {
             val fixture = TabletPageFixture(compose)
             try {
                 fixture.navigate("/station")
-                val delegate = MainActivity::class.java
-                    .getDeclaredField("stationBoard\$delegate")
-                    .apply { isAccessible = true }
-                    .get(fixture.activity) as Lazy<*>
                 lateinit var controller: NativeStationBoardController
                 lateinit var state: StationBoardState
                 compose.runOnIdle {
-                    controller = delegate.value as NativeStationBoardController
+                    controller = fixture.activity.testController<NativeStationBoardController>()
                     state = controller.stateFor("/station")
                 }
                 val payload = JSONObject()

@@ -1,11 +1,11 @@
 import { findLltTrainCandidates } from './lltList.js'
 
-export function lltTrainDetail(database, train, date) {
+export function lltTrainDetail(database, train, date, includeNotRunning = false) {
   if (typeof train !== 'string' || train.length > 40
     || !/^[A-Z]?\d{1,5}[A-Z]?(?:\/[A-Z]?\d{1,5}[A-Z]?)*$/.test(train)) {
     throw new Error('请选择有效车次')
   }
-  const candidates = findLltTrainCandidates(database, train, date)
+  const candidates = findLltTrainCandidates(database, train, date, includeNotRunning)
   if (candidates.length > 1) {
     throw new Error('该日期存在多个同名车次，请从车次列表选择完整车次')
   }

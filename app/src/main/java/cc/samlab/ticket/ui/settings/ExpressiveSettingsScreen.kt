@@ -70,21 +70,6 @@ internal fun ExpressiveSettingsScreen(
                         SettingsPage.ARRIVAL -> ArrivalSettingsContent(controller, visible)
                         SettingsPage.LANGUAGE -> LanguageSettingsContent()
                         SettingsPage.STORAGE -> StorageSettingsContent(controller.storage, visible)
-                        SettingsPage.DEBUG_TICKETS -> DebugTicketsContent(controller.debugTickets, visible)
-                        SettingsPage.DEVELOPER -> {
-                            androidx.compose.runtime.LaunchedEffect(Unit) {
-                                controller.developer.reveal()
-                            }
-                            SettingsPanel(scroll, "settings-developer", embedded) {
-                                SettingsGroup(stringResource(cc.samlab.ticket.R.string.debug_tickets_title), first = true) {
-                                    SettingsRow(
-                                        stringResource(cc.samlab.ticket.R.string.debug_tickets_title), "",
-                                        0, 1, true, controller.ui::openDebugTickets,
-                                    )
-                                }
-                                SettingsDiagnostics()
-                            }
-                        }
                         SettingsPage.MAP -> MapSettingsContent(dark, visible)
                         SettingsPage.MAIN -> AdaptivePanes(
                             modifier = Modifier.fillMaxSize(),
@@ -105,6 +90,7 @@ internal fun ExpressiveSettingsScreen(
                                 }
                             },
                         )
+                        else -> ExtraSettingsContent(controller, page, visible, embedded)
                     }
                 }
             }

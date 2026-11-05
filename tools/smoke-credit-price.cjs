@@ -4,8 +4,9 @@ const path = require('node:path')
 const assert = require('node:assert/strict')
 const { chromium } = require(process.env.CRTICKET_PLAYWRIGHT_PACKAGE || 'playwright')
 
-const root = path.resolve(__dirname, '../app/src/main/assets/web')
-const output = path.resolve(__dirname, '../build/verification')
+const root = process.env.CRTICKET_WEB_OUTPUT
+  || path.resolve(__dirname, '../app/build/generated/web-public/web')
+const output = path.resolve(__dirname, '../logs/smoke-credit-price')
 const types = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.ttf': 'font/ttf', '.jpg': 'image/jpeg', '.png': 'image/png', '.woff2': 'font/woff2' }
 const server = createServer(async (req, res) => {
   try {

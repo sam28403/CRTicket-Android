@@ -27,6 +27,8 @@ internal fun HomeDestinations(
                 iconContainer = iconColors.container,
                 iconTint = iconColors.foreground,
                 selected = selectedRoute == destination.route,
+                enabled = cc.samlab.ticket.network.NetworkFeatures.enabled ||
+                    !cc.samlab.ticket.network.NetworkFeatures.blocksRoute(destination.route),
                 onClick = { onNavigate(destination.route) },
             )
         }

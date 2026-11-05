@@ -27,6 +27,7 @@ internal fun parseTrainListRows(context: Context, data: JSONArray): List<TrainLi
             if (speed == null) unavailable
             else context.getString(R.string.display_decimal_one, speed),
             sourceIndex = index,
+            notRunning = row.optBoolean("notRunning"),
             distanceKm = distance,
             speedKmh = speed,
             stationCount = row.optDouble("stationCount", Double.NaN)

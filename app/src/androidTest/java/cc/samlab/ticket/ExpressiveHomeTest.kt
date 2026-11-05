@@ -96,7 +96,7 @@ class ExpressiveHomeTest {
     }
 
     @Test fun compactHomeSearchOpensSecondLevelAndKeepsNavigation() {
-        compose.onNodeWithText("CRTicket").assertIsDisplayed()
+        compose.onNodeWithText(activity.getString(R.string.home_title)).assertIsDisplayed()
         compose.onNodeWithText("关于").assertExists()
         compose.waitUntil(10_000) { !keyboardVisible() }
         capture("home")
@@ -213,11 +213,11 @@ class ExpressiveHomeTest {
         }
         compose.onNodeWithText("关于").performScrollTo().performClick()
         awaitRoute("/about")
-        compose.onNodeWithContentDescription("CRTicket 应用图标").assertIsDisplayed()
-        compose.onNodeWithText("CRTicket").assertIsDisplayed()
+        compose.onNodeWithContentDescription(activity.getString(R.string.about_icon)).assertIsDisplayed()
+        compose.onNodeWithText(activity.getString(R.string.home_title)).assertIsDisplayed()
         compose.onNodeWithText("版本 ${BuildConfig.VERSION_NAME}").assertIsDisplayed()
         compose.onNodeWithContentDescription("GitHub").assertIsDisplayed()
-        assertEquals("https://github.com/sam28403/CRTicket",
+        assertEquals("https://github.com/sam28403/CRTicket-Android",
             activity.getString(R.string.about_github_url))
         capture("about")
         compose.onNodeWithContentDescription("返回").performClick()
@@ -232,7 +232,7 @@ class ExpressiveHomeTest {
     @Test fun aboutLogoUnlocksTicketOnEighthTapAndDialogBackStaysOnAbout() {
         compose.onNodeWithText("关于").performScrollTo().performClick()
         awaitRoute("/about")
-        val logo = compose.onNodeWithContentDescription("CRTicket 应用图标")
+        val logo = compose.onNodeWithContentDescription(activity.getString(R.string.about_icon))
         val title = activity.getString(R.string.egg_title)
         repeat(7) { logo.performClick() }
         compose.onNodeWithText(title).assertDoesNotExist()

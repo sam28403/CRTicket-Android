@@ -15,6 +15,7 @@ internal enum class SettingsPage(@androidx.annotation.StringRes val title: Int) 
     LANGUAGE(R.string.settings_language),
     MAP(R.string.settings_map),
     DEVELOPER(R.string.settings_developer),
+    LLT_IMPORT(R.string.llt_import_title),
     DEBUG_TICKETS(R.string.debug_tickets_title),
     STORAGE(R.string.settings_storage),
 }
@@ -51,6 +52,10 @@ internal class SettingsUiState {
         showPage(SettingsPage.STORAGE)
     }
 
+    fun openLltImport() {
+        showPage(SettingsPage.LLT_IMPORT)
+    }
+
     fun openDebugTickets() {
         showPage(SettingsPage.DEBUG_TICKETS)
     }
@@ -79,7 +84,7 @@ internal class SettingsUiState {
         if (!hasDetail) return false
         page = when (page) {
             SettingsPage.PERMISSIONS -> permissionsParent
-            SettingsPage.DEBUG_TICKETS -> SettingsPage.DEVELOPER
+            SettingsPage.DEBUG_TICKETS, SettingsPage.LLT_IMPORT -> SettingsPage.DEVELOPER
             else -> SettingsPage.MAIN
         }
         permissionsParent = SettingsPage.MAIN

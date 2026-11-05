@@ -86,6 +86,9 @@ internal class LineQueryRepository(context: Context) {
     }
 
     private companion object {
-        val client = OkHttpClient.Builder().callTimeout(25, TimeUnit.SECONDS).build()
+        val client = OkHttpClient.Builder()
+            .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+            .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
+            .callTimeout(25, TimeUnit.SECONDS).build()
     }
 }

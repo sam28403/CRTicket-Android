@@ -11,6 +11,7 @@ internal object StationDelayRepository {
     private val workers = Executors.newFixedThreadPool(4)
 
     fun query(payload: String): JSONArray {
+        cc.samlab.ticket.network.NetworkFeatures.requireEnabled()
         require(payload.length <= 200_000)
         val data = JSONObject(payload)
         val station = data.getString("station")

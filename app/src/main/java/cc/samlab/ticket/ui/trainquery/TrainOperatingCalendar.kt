@@ -29,9 +29,9 @@ internal data class OperatingCalendarState(
 internal fun rememberOperatingCalendar(
     train: String,
     date: String,
-): State<OperatingCalendarState> = key(train, date) {
+): State<OperatingCalendarState> = key(train, date, cc.samlab.ticket.network.NetworkFeatures.enabled) {
     produceState(OperatingCalendarState(), train, date) {
-        if (train.isEmpty()) {
+        if (train.isEmpty() || !cc.samlab.ticket.network.NetworkFeatures.isAllowed()) {
             value = OperatingCalendarState(loading = false)
             return@produceState
         }

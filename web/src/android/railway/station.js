@@ -1,3 +1,4 @@
+import { showNonRunningTrains } from '../timetableVisibility.js'
 import { parseStations } from '../../utils/stations.js'
 import { stationQueryName } from '../../utils/stationName.js'
 import { trainQueryRange } from '../../utils/trainQueryDate.js'
@@ -9,12 +10,13 @@ const stations = new Map(parseStations().map(station => [station.name, station])
 
 export async function queryStation(station, date, {
   loadDatabase = loadLltDatabase,
+  includeNotRunning = showNonRunningTrains(),
 } = {}) {
   const database = await loadDatabase()
   return {
     source: '路路通',
     version: database.version,
-    trains: listLltStation(database, station.name, date),
+    trains: listLltStation(database, station.name, date, includeNotRunning),
     warnings: [],
   }
 }
@@ -36,12 +38,13 @@ export function createStationQuery(options = {}) {
       throw new Error('车站大屏仅支持查询当天信息')
     }
 
-    const key = `${date}-${station.name}`
+    const includeNotRunning = options.includeNotRunning ?? showNonRunningTrains()
+    const key = `${loadLltDatabase.revision}-${includeNotRunning}-${date}-${station.name}`
     let entry = cache.get(key)
     if (!entry || now() - entry.cachedAt >= 60000) {
       let task = pending.get(key)
       if (!task) {
-        task = queryStation(station, date, options).then(result => {
+        task = queryStation(station, date, { ...options, includeNotRunning }).then(result => {
           const cachedAt = now()
           const value = {
             cachedAt,

@@ -1,5 +1,9 @@
 package cc.samlab.ticket
 
+import cc.samlab.ticket.ui.settings.developer
+import cc.samlab.ticket.ui.settings.timetable
+import cc.samlab.ticket.ui.settings.debugTickets
+
 import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -56,10 +60,13 @@ class DeveloperOptionsDeviceTest {
             first.capture("developer-search")
             compose.onNode(hasText(title) and hasClickAction()).performClick()
             compose.onNodeWithTag("settings-developer").assertIsDisplayed()
-            compose.onNodeWithText(debugTitle).assertIsDisplayed()
+            compose.onNodeWithText(debugTitle).performScrollTo().assertIsDisplayed()
             compose.waitUntil(5_000) { preferences.getBoolean("visible", false) }
             first.capture("developer-options")
             pressBack()
+            compose.waitUntil(10_000) {
+                runCatching { compose.onNodeWithTag("global-search-screen").assertIsDisplayed() }.isSuccess
+            }
             compose.onNodeWithTag("global-search-screen").assertIsDisplayed()
             first.navigate("/settings")
             compose.onNode(hasText(title) and hasClickAction()).performScrollTo().performClick()

@@ -13,7 +13,10 @@ import java.util.concurrent.TimeUnit
 
 internal class SaleScheduleSource(private val context: Context) {
     private val preferences = context.getSharedPreferences("sale-schedule", Context.MODE_PRIVATE)
-    private val client = OkHttpClient.Builder().callTimeout(12, TimeUnit.SECONDS).build()
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(cc.samlab.ticket.network.NetworkFeatures.interceptor)
+        .eventListenerFactory(cc.samlab.ticket.network.NetworkFeatures.events)
+        .callTimeout(12, TimeUnit.SECONDS).build()
     private var loaded: Map<String, LocalTime> = emptyMap()
     private var checkedDate = ""
     private var stationHash = ""

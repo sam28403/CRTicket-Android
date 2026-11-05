@@ -35,6 +35,8 @@ class NativeTrainListController(
     private var sortGeneration = 0
     var revision by mutableStateOf(0)
         private set
+    internal var snapshotRevision by mutableStateOf(0)
+        private set
     private val generation = java.util.concurrent.atomic.AtomicInteger()
     internal var vehicleRows by mutableStateOf<Map<String, TrainListRow>>(emptyMap())
         private set
@@ -88,6 +90,8 @@ class NativeTrainListController(
                     if (parsed != null) {
                         sourceRows = parsed
                         publishSortedRows()
+                    } else if (!busy && value.optBoolean("reuseRows")) {
+                        snapshotRevision++
                     }
                 }
             }
@@ -142,6 +146,7 @@ class NativeTrainListController(
             activity.runOnUiThread {
                 if (!closed && token == sortGeneration) {
                     rows = sorted
+                    snapshotRevision++
                     if (resetAfterSort) {
                         revision++
                         resetAfterSort = false
@@ -152,7 +157,8 @@ class NativeTrainListController(
     }
 
     internal fun open(row: TrainListRow, navigate: (String) -> Unit) {
-        navigate("/train?train=${android.net.Uri.encode(row.train)}&date=$date")
+        val source = if (row.notRunning) "&source=llt" else ""
+        navigate("/train?train=${android.net.Uri.encode(row.train)}&date=$date$source")
     }
 
     fun close() {

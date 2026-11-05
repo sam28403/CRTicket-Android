@@ -24,7 +24,7 @@ function originDate(date, day) {
     .toISOString().slice(0, 10)
 }
 
-export function listLltStation(database, station, date) {
+export function listLltStation(database, station, date, includeNotRunning = false) {
   const rows = []
   for (const { item, stop, stopIndex } of stationIndex(database).get(station) || []) {
     const arrivalDay = stop.arrivalDay || 0
@@ -34,13 +34,15 @@ export function listLltStation(database, station, date) {
     if (stop.departure) dates.add(originDate(date, departureDay))
     for (const trainDate of dates) {
       // 开行规则针对始发日期，不能直接拿本站当天检查隔日或多日列车。
-      if (!runsOnDate(item.schedule, trainDate)) continue
+      const running = runsOnDate(item.schedule, trainDate)
+      if (!running && !includeNotRunning) continue
       const arrival = stop.arrival && originDate(date, arrivalDay) === trainDate
         ? stop.arrival : null
       const departure = stop.departure && originDate(date, departureDay) === trainDate
         ? stop.departure : null
       rows.push({
         id: `llt-${item.train}-${trainDate}-${stopIndex}`,
+        ...(!running ? { notRunning: true } : {}),
         train: stop.train || item.train,
         queryTrain: item.train,
         arrivalTrain: stop.arrival ? stop.arrivalTrain : undefined,

@@ -2,7 +2,8 @@ const { createServer } = require('node:http')
 const { readFile } = require('node:fs/promises')
 const path = require('node:path')
 
-const root = path.resolve(__dirname, '../app/src/main/assets/web')
+const root = process.env.CRTICKET_WEB_OUTPUT
+  || path.resolve(__dirname, '../app/build/generated/web-public/web')
 const types = {
     '.html': 'text/html',
     '.js': 'application/javascript',

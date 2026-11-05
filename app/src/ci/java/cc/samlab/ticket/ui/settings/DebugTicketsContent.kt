@@ -50,7 +50,7 @@ internal fun DebugTicketsContent(controller: DebugTicketsController, visible: Bo
         item {
             Button(
                 onClick = controller::generate,
-                enabled = !controller.busy,
+                enabled = !controller.busy && cc.samlab.ticket.network.NetworkFeatures.enabled,
                 modifier = Modifier.widthIn(max = 640.dp).fillMaxWidth().heightIn(min = 56.dp)
                     .testTag("debug-tickets-generate"),
             ) {
@@ -87,6 +87,7 @@ internal fun DebugTicketsContent(controller: DebugTicketsController, visible: Bo
             },
         )
         DatePickerDialog(
+            modifier = Modifier.testTag("debug-tickets-date-dialog"),
             onDismissRequest = { choosingDate = false },
             confirmButton = {
                 TextButton(enabled = state.selectedDateMillis != null, onClick = {

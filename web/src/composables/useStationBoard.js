@@ -1,3 +1,4 @@
+import { useTimetableVisibility } from './useTimetableVisibility.js'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api, { timetableTimeout } from '@/api.js'
@@ -21,6 +22,7 @@ export function useStationBoard() {
   let controller
   let requestId = 0
   const snapshots = new Map()
+  const showNonRunning = useTimetableVisibility()
   const timer = setInterval(() => { now.value = Date.now() }, 1000)
 
   async function query(name = station.value, preserve = false) {
@@ -76,6 +78,17 @@ export function useStationBoard() {
     }
   }
 
+  function invalidateDatabase() {
+    snapshots.clear()
+    controller?.abort()
+    requestId++
+    loading.value = false
+    schedule.value = null
+    if (route.path === '/station' && stationQueryName(station.value)) query()
+  }
+  watch(showNonRunning, invalidateDatabase)
+  window.addEventListener('crticket-timetable-replaced', invalidateDatabase)
+
   watch(() => [route.path, route.query.station], ([path, name]) => {
     if (path !== '/station') return
     const selected = typeof name === 'string' ? stationLocation(name).query.station : ''
@@ -105,6 +118,7 @@ export function useStationBoard() {
   })
 
   onBeforeUnmount(() => {
+    window.removeEventListener('crticket-timetable-replaced', invalidateDatabase)
     clearInterval(timer)
     requestId++
     controller?.abort()

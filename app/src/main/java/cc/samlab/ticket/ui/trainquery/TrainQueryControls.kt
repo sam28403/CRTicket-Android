@@ -32,6 +32,7 @@ internal fun TrainQueryControls(
 ) {
     val textResources = rememberAppText()
     val loading = state.optBoolean("loading")
+    val online = cc.samlab.ticket.network.NetworkFeatures.enabled
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     fun dismissKeyboard() {
@@ -93,9 +94,9 @@ internal fun TrainQueryControls(
                     dismissKeyboard()
                     controller.dispatch("source")
                 },
-                enabled = !loading,
+                enabled = !loading && online,
                 shapes = ButtonDefaults.shapes(),
-                modifier = Modifier.height(48.dp),
+                modifier = Modifier.height(48.dp).testTag("train-query-source"),
             ) {
                 Text(textResources(
                     if (state.optBoolean("offline")) R.string.train_query_switch_online

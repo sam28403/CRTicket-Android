@@ -185,6 +185,7 @@ class TrainTrackingService : Service() {
     }
 
     private fun refreshDelay(now: Long) {
+        if (!cc.samlab.ticket.network.NetworkFeatures.isAllowed()) return
         val payload = schedulePayload ?: return
         val data = org.json.JSONObject(payload)
         if (refreshingDelay || now < delayRefreshAt ||
@@ -196,7 +197,8 @@ class TrainTrackingService : Service() {
             handler.post {
                 refreshingDelay = false
                 val currentSession = session
-                if (destroyed || schedulePayload != payload || timeline == null || currentSession == null) return@post
+                if (destroyed || !cc.samlab.ticket.network.NetworkFeatures.isAllowed() ||
+                    schedulePayload != payload || timeline == null || currentSession == null) return@post
                 val updated = TrainTrackingDelayUpdate.merge(payload, result,
                     java.time.LocalDate.now(java.time.ZoneId.of("Asia/Shanghai")))
                 runCatching { TrainTrackingStore.parse(updated.toString()) }.onSuccess { next ->

@@ -51,6 +51,7 @@ export function currentTrainIndex(rows, currentSeconds) {
     if (rows[middle].timeSeconds <= currentSeconds) left = middle + 1
     else right = middle
   }
+  while (left < rows.length && rows[left].notRunning) left++
   return left < rows.length && Number.isFinite(rows[left].timeSeconds) ? left : -1
 }
 
@@ -60,6 +61,7 @@ export function currentTrainHighlights(rows, currentSeconds) {
   const upcoming = new Set()
   const highlighted = new Set()
   rows.forEach((row, index) => {
+    if (row.notRunning) return
     if (
       Number.isFinite(row.arrivalSeconds) && Number.isFinite(row.departureSeconds)
       && row.arrivalSeconds <= currentSeconds && currentSeconds < row.departureSeconds

@@ -136,7 +136,10 @@ internal fun additionalSearchSettings(onNavigate: (String) -> Unit): List<Search
             ).joinToString("\n"),
         ) { onNavigate("/settings/permissions") },
     ).filter { BuildConfig.UPDATE_ENABLED || it.key != "page-2" } +
-        (ticketDestinations + railfanDestinations).map { destination ->
+        (ticketDestinations + railfanDestinations).filter {
+            cc.samlab.ticket.network.NetworkFeatures.enabled ||
+                !cc.samlab.ticket.network.NetworkFeatures.blocksRoute(it.route)
+        }.map { destination ->
         SearchSetting(destination.route, stringResource(destination.title),
             stringResource(destination.description)) { onNavigate(destination.route) }
     } + listOf(

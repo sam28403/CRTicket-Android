@@ -55,10 +55,13 @@ internal fun TrainListItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                val trainColor = if (highlighted) colors.onPrimaryContainer else colors.primary
+                val strike = cc.samlab.ticket.ui.components.rememberTrainCodeStrikeThrough(row.notRunning, trainColor)
                 Text(
                     row.train,
-                    Modifier.weight(1f),
-                    color = if (highlighted) colors.onPrimaryContainer else colors.primary,
+                    modifier = Modifier.weight(1f).then(strike.modifier),
+                    onTextLayout = strike.onTextLayout,
+                    color = trainColor,
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = projectTitleFont,
                     fontWeight = FontWeight.Bold,

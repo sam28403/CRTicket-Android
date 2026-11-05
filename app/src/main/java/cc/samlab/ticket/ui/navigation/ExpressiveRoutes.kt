@@ -9,7 +9,7 @@ internal object ExpressiveRoutes {
         "/railfan/quiz/report",
         "/price", "/price/list",
         "/", "/home", "/about", "/settings", "/settings/arrival", "/settings/permissions",
-        "/settings/storage", "/settings/map", "/settings/developer", "/settings/developer/tickets",
+        "/settings/storage", "/settings/map",
         "/settings/language", "/settings/sale-reminders", "/search", "/sale-time/reminders",
         "/history", "/history/editor", "/list", "/station", "/sale-time", "/train", "/user",
         "/help", "/help/tickets", "/help/query",
@@ -19,7 +19,7 @@ internal object ExpressiveRoutes {
         "/monitor", "/monitor/settings", "/about/report", "/about/credits",
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
-    )
+    ) + cc.samlab.ticket.ui.settings.extraSettingsRoutes
 
     fun path(location: String): String = Uri.parse(location).path.orEmpty()
 
@@ -48,9 +48,10 @@ internal object ExpressiveRoutes {
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"
         "/about/report", "/about/credits" -> "/about"
-        "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map", "/settings/developer", "/settings/developer/tickets",
+        "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map",
         "/settings/language", "/settings/sale-reminders" -> "/settings"
         "/history/editor" -> "/history"
+        in cc.samlab.ticket.ui.settings.extraSettingsRoutes -> "/settings"
         else -> location
     }
 

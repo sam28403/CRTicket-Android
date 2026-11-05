@@ -26,13 +26,13 @@ export function runsOnDate(schedule, date) {
   return Math.floor(schedule.rule.mask / 2 ** (days % schedule.rule.period)) % 2 === 1
 }
 
-export function findLltTrainCandidates(database, train, date) {
+export function findLltTrainCandidates(database, train, date, includeNotRunning = false) {
   const exact = database.trains.get(train)
-  if (exact && runsOnDate(exact.schedule, date)) return [exact]
+  if (exact && (includeNotRunning || runsOnDate(exact.schedule, date))) return [exact]
   // 完整记录号和方案后缀仍须精确匹配，单车次才按沿途车次号查找。
   if (!/^[A-Z]?\d{1,5}$/.test(train)) return []
   return [...database.trains.values()].filter(item => {
-    if (!runsOnDate(item.schedule, date)) return false
+    if (!includeNotRunning && !runsOnDate(item.schedule, date)) return false
     if (!/^[A-Z]?\d+(?:\/[A-Z]?\d+)+$/.test(item.train)) return false
     const parts = item.train.split('/')
     const prefix = parts[0].match(/^[A-Z]/)?.[0] || ''
@@ -60,11 +60,12 @@ export function compareTrains(a, b) {
     || a.train.localeCompare(b.train, 'en', { numeric: true })
 }
 
-export function listLltTrains(database, date) {
+export function listLltTrains(database, date, includeNotRunning = false) {
   const rows = []
   for (const item of database.trains.values()) {
-    if (!runsOnDate(item.schedule, date)) continue
-    rows.push(lltTrainSummary(item))
+    const running = runsOnDate(item.schedule, date)
+    if (!running && !includeNotRunning) continue
+    rows.push({ ...lltTrainSummary(item), ...(!running ? { notRunning: true } : {}) })
   }
   rows.sort(compareTrains)
   return { date, version: database.version, total: rows.length, trains: rows }

@@ -17,7 +17,8 @@ defineProps({
 <template>
   <article class="mobile-train" :class="{ 'is-current': current }">
     <div class="mobile-train-heading">
-      <RouterLink :to="stationTrainLocation(row, source, date)" class="train-link">
+      <RouterLink :to="stationTrainLocation(row, source, date)" class="train-link"
+        :style="row.notRunning ? { textDecoration: 'line-through', textDecorationThickness: '2px' } : undefined">
         {{ displayTrainCode(row.train) }}
       </RouterLink>
       <span v-if="current" class="current-badge">

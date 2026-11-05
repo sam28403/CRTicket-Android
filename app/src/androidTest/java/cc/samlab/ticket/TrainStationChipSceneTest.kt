@@ -70,7 +70,7 @@ class TrainStationChipSceneTest {
             assertEquals(setOf("乌鲁木齐", "鲁木齐南"), chips)
         } finally {
             fixture.shell("cmd statusbar collapse")
-            fixture.shell("am start -n cc.samlab.ticket/.MainActivity")
+            fixture.shell("am start -n ${context.packageName}/cc.samlab.ticket.MainActivity")
             fixture.restore()
         }
     }

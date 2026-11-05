@@ -53,15 +53,14 @@ class QuizAnnualLiveDeviceTest {
     private fun page(): TabletPageFixture = TabletPageFixture(compose).also { fixture = it }
 
     private fun repository(page: TabletPageFixture): DailyQuizRepository {
-        val getter = MainActivity::class.java.getDeclaredMethod("getStationBoard")
-        getter.isAccessible = true
-        val station = getter.invoke(page.activity) as NativeStationBoardController
+        val station = page.activity.testController<NativeStationBoardController>()
         return DailyQuizRepository(context) { station.quizCounts.query(it) }
     }
 
-    private fun saved(): QuizSession = runBlocking {
-        requireNotNull(DailyQuizRepository(context).saved(day))
-    }
+    private fun saved(): QuizSession = requireNotNull(QuizSessionCodec.decode(
+        android.util.AtomicFile(File(context.filesDir, "daily-quiz/$day.json"))
+            .openRead().bufferedReader().use { it.readText() }, day,
+    ))
 
     private fun awaitQuestion() {
         compose.waitUntil(120_000) {

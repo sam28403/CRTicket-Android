@@ -21,6 +21,7 @@ internal enum class MapSource(val id: String, val title: Int) {
 }
 
 internal fun selectMapSource(context: Context, source: MapSource) {
+    if (!cc.samlab.ticket.network.NetworkFeatures.isAllowed()) return
     context.getSharedPreferences("android", Context.MODE_PRIVATE)
         .edit().putString("mapSource", source.id).apply()
 }

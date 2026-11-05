@@ -1,3 +1,4 @@
+import { timetableAutoUpdate } from '../networkFeatures.js'
 import { nativeFetch } from './nativeFetch.js'
 import { parseLltArchive } from './lltParser.js'
 import { readArchive, writeArchive, clearArchive } from './archiveStore.js'
@@ -28,14 +29,26 @@ export function createLltLoader(
     fetchImpl = nativeFetch,
     store = { readArchive, writeArchive, clearArchive },
     bundledArchive,
+    options = {},
 ) {
+    const autoUpdate = options.autoUpdate || timetableAutoUpdate
+    const publishVersion = options.publish || (database => globalThis.CRTicketAndroid?.lltVersion?.(database.version))
+    let published
+    const publish = database => {
+        if (published === database) return
+        publishVersion(database)
+        published = database
+    }
     let cached
+    let imported = false
     let checkedAt = 0
     let initialization
     let pending
     let clearing
     let generation = 0
     let refreshController
+    let revision = 0
+    Object.defineProperty(load, 'revision', { get: () => revision })
 
     async function download(url, loadSignal, timeout) {
         const signal = AbortSignal.any([loadSignal, AbortSignal.timeout(timeout)])
@@ -48,6 +61,8 @@ export function createLltLoader(
     }
 
     async function refresh() {
+        if (!autoUpdate()) return cached
+
         refreshController = new AbortController()
         const loadSignal = AbortSignal.any([refreshController.signal, AbortSignal.timeout(90000)])
         let manifest
@@ -76,7 +91,12 @@ export function createLltLoader(
             if (version && next.version !== version) {
                 throw new Error('路路通正在更新数据，请稍后重试')
             }
+            loadSignal.throwIfAborted()
+            if (!autoUpdate()) return cached
             cached = next
+            imported = false
+            revision++
+            publish(cached)
             checkedAt = Date.now()
             await store.writeArchive({ bytes, checkedAt }).catch(() => {})
         } else {
@@ -94,6 +114,7 @@ export function createLltLoader(
                 if (saved) {
                     try {
                         cached = await decodeArchive(new Uint8Array(saved.bytes))
+                        imported = saved.imported === true
                         checkedAt = saved.checkedAt
                     } catch {
                         cached = null
@@ -111,6 +132,11 @@ export function createLltLoader(
         }
         await initialization
         if (currentGeneration !== generation) throw new DOMException('Cache cleared', 'AbortError')
+        if (cached) publish(cached)
+        if (!autoUpdate()) {
+            if (!cached) throw new Error('本机暂无路路通数据库')
+            return cached
+        }
         if (cached && Date.now() - checkedAt < 3600000) return cached
         if (!pending) {
             // Failed refreshes do not advance checkedAt; the next query retries immediately.
@@ -124,17 +150,53 @@ export function createLltLoader(
     // Quiz counts require a successful online version check, never stale fallback.
     load.fresh = async function fresh() {
         await load()
-        return pending || refresh()
+        return autoUpdate() ? pending || refresh() : cached
+    }
+
+    load.pauseUpdates = async function pauseUpdates() {
+        refreshController?.abort(new DOMException('Updates disabled', 'AbortError'))
+        await Promise.allSettled([pending])
+    }
+
+    if (typeof __CRTICKET_CI__ === 'undefined' || __CRTICKET_CI__) {
+        load.importArchive = async function importArchive(bytes) {
+            if (autoUpdate()) throw new Error('请先关闭自动更新')
+            const next = await decodeArchive(bytes)
+            await clearing
+            await load.pauseUpdates()
+            await Promise.allSettled([initialization])
+            if (autoUpdate()) throw new Error('请先关闭自动更新')
+            // Commit before replacing memory so a failed save preserves the current database.
+            await store.writeArchive({ bytes, checkedAt: 0, imported: true })
+            generation++
+            cached = next
+            imported = true
+            revision++
+            checkedAt = 0
+            initialization = Promise.resolve()
+            publish(next)
+            return next
+        }
+
     }
 
     load.clear = function clear() {
         if (clearing) return clearing
         generation++
+        revision++
         refreshController?.abort(new DOMException('Cache cleared', 'AbortError'))
         clearing = (async () => {
             // An initialization or download must not write the archive back after cleanup.
             await Promise.allSettled([initialization, pending])
+            if (imported && cached) {
+                await store.clearArchive()
+                initialization = Promise.resolve()
+                pending = undefined
+                return
+            }
             cached = undefined
+            imported = false
+            published = undefined
             checkedAt = 0
             initialization = undefined
             pending = undefined

@@ -34,6 +34,7 @@ internal fun RailfanPlaceholderScreen(
     pureBlack: Boolean,
     embedded: Boolean,
     onBack: () -> Unit,
+    message: String? = null,
 ) {
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
@@ -57,6 +58,7 @@ internal fun RailfanPlaceholderScreen(
                         containerColor = colors.surfaceContainer,
                     ),
                 )
+                if (message != null) cc.samlab.ticket.ui.QueryResultEmptyState(message, true)
             }
         }
     }

@@ -1,4 +1,5 @@
 <script setup>
+import { useNetworkFeatures } from '@/composables/useNetworkFeatures.js'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -31,7 +32,8 @@ const schedule = ref(null)
 const route = useRoute()
 const router = useRouter()
 const discovery = useTrainDiscovery(route, router)
-const offlineMode = computed(() => route.query.source === 'llt')
+const networkAllowed = useNetworkFeatures()
+const offlineMode = computed(() => !networkAllowed.value || route.query.source === 'llt')
 const delay = useTrainDelay(schedule, undefined, computed(() => !offlineMode.value))
 const result = delay.result
 const refreshing = ref(false)
@@ -67,7 +69,7 @@ async function refresh() {
 }
 
 async function switchSource() {
-  if (switchingSource.value) return
+  if (switchingSource.value || !networkAllowed.value) return
   const location = trainQuerySourceLocation({
     train: train.value,
     date: date.value,
@@ -192,9 +194,16 @@ async function query() {
 }
 
 watch(
-  () => [route.path, route.query.train, route.query.date, route.query.source, route.query.record],
+  () => [route.path, route.query.train, route.query.date, route.query.source, route.query.record, networkAllowed.value],
   ([path, code, selectedDate, source, hint]) => {
     if (path !== '/train') return
+    if (!networkAllowed.value && source !== 'llt') {
+      controller?.abort()
+      requestId++
+      loading.value = false
+      router.replace({ path: '/train', query: { ...route.query, source: 'llt' } })
+      return
+    }
     const offlineEntry = trainQueryEntryLocation(route.query)
     if (offlineEntry) {
       router.replace(offlineEntry)
@@ -235,7 +244,18 @@ watch(
   { immediate: true },
 )
 
+function invalidateDatabase() {
+  queryCache.clear()
+  controller?.abort()
+  requestId++
+  loading.value = false
+  schedule.value = null
+  previousRouteQuery = undefined
+  if (route.path === '/train' && train.value) query()
+}
+window.addEventListener('crticket-timetable-replaced', invalidateDatabase)
 onBeforeUnmount(() => {
+  window.removeEventListener('crticket-timetable-replaced', invalidateDatabase)
   requestId++
   controller?.abort()
 })
@@ -281,7 +301,7 @@ onBeforeUnmount(() => {
           <el-form-item class="query-action">
             <div class="query-buttons">
               <el-button type="primary" native-type="submit" :loading="loading">查询</el-button>
-              <el-button native-type="button" :disabled="switchingSource" @click="switchSource">
+              <el-button native-type="button" :disabled="switchingSource || !networkAllowed" @click="switchSource">
                 {{ offlineMode ? '切换为在线查询' : '切换为路路通离线' }}
               </el-button>
             </div>

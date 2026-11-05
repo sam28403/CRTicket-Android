@@ -62,6 +62,110 @@ test('official archive fallback works when the version service cannot be reached
 
 const emptyStore = { readArchive: async () => null, writeArchive: async () => {} }
 
+test('cleaning a protected import preserves its parsed database and publishes the version once', async () => {
+    let reads = 0
+    let publishes = 0
+    const load = createLltLoader(undefined, {
+        readArchive: async () => { reads++; return { bytes: archive(), imported: true } },
+        clearArchive: async () => {},
+    }, undefined, { autoUpdate: () => false, publish: () => { publishes++ } })
+    const first = await load()
+    await load()
+    await load.clear()
+    assert.equal(await load(), first)
+    assert.equal(reads, 1)
+    assert.equal(publishes, 1)
+})
+
+test('network master switch prevents automatic timetable checks while preserving offline data', async () => {
+    const original = globalThis.CRTicketDeveloper
+    try {
+        globalThis.CRTicketDeveloper = { networkEnabled: () => false, lltAutoUpdate: () => true }
+        const load = createLltLoader(() => assert.fail('Network switch is off'), {
+            readArchive: async () => ({ bytes: archive('20111102'), checkedAt: 0 }),
+        })
+        assert.equal((await load()).version, '20111102')
+        assert.equal((await load.fresh()).version, '20111102')
+    } finally {
+        if (original === undefined) delete globalThis.CRTicketDeveloper
+        else globalThis.CRTicketDeveloper = original
+    }
+})
+
+test('manual mode never downloads, including fresh and restart after cache cleaning', async () => {
+    let saved = { bytes: archive('20111102'), checkedAt: 0, imported: true }
+    const store = {
+        readArchive: async () => saved,
+        writeArchive: async value => { saved = value },
+        clearArchive: async () => { if (!saved?.imported) saved = null },
+    }
+    const options = { autoUpdate: () => false }
+    const offline = () => assert.fail('Manual mode must not use the network')
+    const load = createLltLoader(offline, store, undefined, options)
+    assert.equal((await load.fresh()).version, '20111102')
+    await load.clear()
+    assert.equal((await load()).version, '20111102')
+    const restarted = createLltLoader(offline, store, undefined, options)
+    assert.equal((await restarted()).version, '20111102')
+})
+
+test('validated imports replace the active archive and publish the actual version', async () => {
+    let saved = { bytes: archive(), checkedAt: 0 }
+    let published
+    const load = createLltLoader(undefined, {
+        readArchive: async () => saved,
+        writeArchive: async value => { saved = value },
+    }, undefined, { autoUpdate: () => false, publish: value => { published = value.version } })
+    await load()
+    await load.importArchive(archive('20111102'))
+    assert.equal((await load()).version, '20111102')
+    assert.equal(saved.imported, true)
+    assert.equal(published, '20111102')
+    const original = saved
+    await assert.rejects(load.importArchive(new Uint8Array([1, 2, 3])))
+    assert.equal(saved, original)
+    assert.equal((await load()).version, '20111102')
+})
+
+test('failed persistence preserves the active database, and automatic mode refuses imports', async () => {
+    let enabled = false
+    const load = createLltLoader(undefined, {
+        readArchive: async () => ({ bytes: archive(), checkedAt: 0 }),
+        writeArchive: async () => { throw new Error('Storage full') },
+    }, undefined, { autoUpdate: () => enabled })
+    await load()
+    await assert.rejects(load.importArchive(archive('20111102')), /Storage full/)
+    assert.equal((await load()).version, '20261004')
+    enabled = true
+    await assert.rejects(load.importArchive(archive('20111102')), /关闭自动更新/)
+})
+
+test('an in-flight download cannot overwrite a manual import after updates are disabled', async () => {
+    let enabled = true
+    let release
+    let downloading
+    const started = new Promise(resolve => { downloading = resolve })
+    const gate = new Promise(resolve => { release = resolve })
+    let saved = { bytes: archive('20261003'), checkedAt: 0 }
+    const load = createLltLoader(async url => {
+        if (url.endsWith('android.ver')) return new Response('{"version":{"data":"20261004"}}')
+        downloading()
+        await gate
+        return new Response(archive())
+    }, {
+        readArchive: async () => saved,
+        writeArchive: async value => { saved = value },
+    }, undefined, { autoUpdate: () => enabled })
+    await load()
+    await started
+    enabled = false
+    const imported = load.importArchive(archive('20111102'))
+    release()
+    await imported
+    assert.equal((await load()).version, '20111102')
+    assert.equal(saved.imported, true)
+})
+
 test('failed phone downloads retry immediately and merge concurrent retry requests', async () => {
     const urls = []
     let failing = true

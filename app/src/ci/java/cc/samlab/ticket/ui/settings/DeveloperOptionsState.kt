@@ -10,6 +10,15 @@ internal class DeveloperOptionsState(context: Context) {
     var visible by mutableStateOf(preferences.getBoolean("visible", false))
         private set
 
+    var showNonRunningTrains by mutableStateOf(preferences.getBoolean("showNonRunningTrains", false))
+        private set
+
+    fun changeShowNonRunningTrains(value: Boolean) {
+        if (!cc.samlab.ticket.BuildConfig.CI_BUILD) return
+        preferences.edit().putBoolean("showNonRunningTrains", value).apply()
+        showNonRunningTrains = value
+    }
+
     fun reveal() {
         preferences.edit().putBoolean("visible", true).apply()
         visible = true

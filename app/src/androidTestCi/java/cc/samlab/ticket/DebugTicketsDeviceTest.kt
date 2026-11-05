@@ -1,5 +1,9 @@
 package cc.samlab.ticket
 
+import cc.samlab.ticket.ui.settings.developer
+import cc.samlab.ticket.ui.settings.timetable
+import cc.samlab.ticket.ui.settings.debugTickets
+
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.pressBack
@@ -16,7 +20,12 @@ class DebugTicketsDeviceTest {
     @Test fun generationPageShowsEmptyResultsAndSavedHistory() {
         val fixture = TabletPageFixture(compose)
         val previous = fixture.evaluate("localStorage.getItem('crticket-device-tickets-v1')")
+        val originalNetwork = cc.samlab.ticket.network.NetworkFeatures.isAllowed()
         try {
+            fixture.instrumentation.runOnMainSync {
+                cc.samlab.ticket.network.NetworkFeatures.setEnabled(fixture.activity, true)
+            }
+            fixture.evaluate("localStorage.setItem('crticket-device-tickets-v1', '[]')")
             fixture.navigate("/settings/developer")
             compose.onNode(hasText(fixture.activity.getString(R.string.debug_tickets_title))
                 and hasClickAction()).performScrollTo().performClick()
@@ -28,7 +37,10 @@ class DebugTicketsDeviceTest {
             assertTrue(kotlin.math.abs(date.top - count.top) < 4f)
             fixture.capture("debug-tickets-empty")
             compose.onNodeWithTag("debug-tickets-date").performClick()
-            compose.onNodeWithText(fixture.activity.getString(R.string.action_cancel)).performClick()
+            compose.onNode(
+                hasText(fixture.activity.getString(R.string.action_cancel)) and
+                    hasAnyAncestor(hasTestTag("debug-tickets-date-dialog")),
+            ).performClick()
             fixture.evaluate("""
                 window.originalDebugGenerate = window.crticketDebugGenerate;
                 window.crticketDebugGenerate = (operation, date, count) => {
@@ -36,7 +48,7 @@ class DebugTicketsDeviceTest {
                         id: 'debug-device-fixture-' + index, user_id:'device',
                         ticket_number:'A12345678' + index, train_no:'G1',
                         departure_station:'北京南', arrival_station:'上海虹桥',
-                        travel_date:date.replace(/(\d{4})-(\d{2})-(\d{2})/, '\$1年\$2月\$3日'),
+                        travel_date:date.slice(0,4)+'年'+date.slice(5,7)+'月'+date.slice(8,10)+'日',
                         departure_time:'09:00', price:553, seat_type:'二等座',
                         seat_no:'01车01A号', distance:1318, use_credit:0,
                         has_conditioner:0, sell_place:'网', gate_info:'',
@@ -58,10 +70,10 @@ class DebugTicketsDeviceTest {
             pressBack()
             compose.onNodeWithTag("settings-developer").assertIsDisplayed()
             fixture.navigate("/history")
-            compose.waitUntil(20_000) {
-                compose.onAllNodesWithTag("history-record-debug-device-fixture-0")
-                    .fetchSemanticsNodes().isNotEmpty()
-            }
+            compose.onNodeWithTag("history-list").performScrollToNode(
+                hasTestTag("history-record-debug-device-fixture-0"),
+            )
+            compose.onNodeWithTag("history-record-debug-device-fixture-0").assertIsDisplayed()
             fixture.navigate("/settings/developer/tickets")
             fixture.evaluate("""
                 window.crticketDebugGenerate = operation => {
@@ -83,6 +95,9 @@ class DebugTicketsDeviceTest {
                 if (window.originalDebugGenerate) window.crticketDebugGenerate = window.originalDebugGenerate;
                 true
             """.trimIndent())
+            fixture.instrumentation.runOnMainSync {
+                cc.samlab.ticket.network.NetworkFeatures.setEnabled(fixture.activity, originalNetwork)
+            }
             fixture.close()
         }
     }
