@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,6 +42,7 @@ class ImportantNoticeTest {
         editor.commit()
     }
 
+    @Ignore("Important notice UI is currently removed")
     @Test fun confirmationWithoutOptOutLastsOnlyForThisLaunch() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             compose.onNodeWithTag("important-notice").assertIsDisplayed()
@@ -56,6 +58,7 @@ class ImportantNoticeTest {
         assertFalse(preferences.getBoolean(IMPORTANT_NOTICE_SUPPRESSED, false))
     }
 
+    @Ignore("Important notice UI is currently removed")
     @Test fun optOutIsSavedOnlyWhenConfirmedAndSurvivesANewLaunch() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             compose.onNodeWithTag("important-notice-opt-out").performClick()

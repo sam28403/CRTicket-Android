@@ -15,6 +15,7 @@ import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +28,10 @@ class HistoryAdaptiveTest {
     private lateinit var activity: MainActivity
 
     @Test fun wideAndFoldedHistoryKeepNavigationAndEditorDraft() {
+        assumeTrue(
+            "Wide history navigation requires a screen width of at least 840 dp",
+            instrumentation.targetContext.resources.configuration.screenWidthDp >= 840,
+        )
         activity = instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),

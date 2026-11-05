@@ -161,6 +161,7 @@ class HistoryDeviceTest {
             compose.onAllNodesWithText("请输入正确的车次").fetchSemanticsNodes().isNotEmpty()
         }
         capture("history-editor-error")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
         androidx.test.espresso.Espresso.pressBack()
         compose.onNodeWithTag("history-list").assertExists()
         compose.onNodeWithTag("history-editor").assertDoesNotExist()
@@ -254,7 +255,9 @@ class HistoryDeviceTest {
             val date = compose.onNodeWithTag("history-field-date")
             date.performScrollTo().assertTextContains("2026.10.16")
             date.performClick()
-            compose.onNode(hasText("17") and hasAnyAncestor(isDialog())).performClick()
+            compose.onNode(
+                hasText("2026年10月17日", substring = true) and hasAnyAncestor(isDialog()),
+            ).performClick()
             compose.onNodeWithText("确定").performClick()
             date.assertTextContains("2026.10.17")
             date.performClick()

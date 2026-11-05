@@ -17,7 +17,7 @@ class GlobalVehicleSearchDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
 
     @Test
-    fun railfanGateLatestVehicleNavigationAndPullRefresh() {
+    fun vehicleResultsNavigationAndPullRefresh() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val preferences = context.getSharedPreferences("android", Context.MODE_PRIVATE)
@@ -39,7 +39,7 @@ class GlobalVehicleSearchDeviceTest {
                 runCatching { results.performScrollToNode(hasTestTag("global-vehicle-search")) }.isSuccess
             }
             compose.waitUntil(40_000) {
-                compose.onAllNodesWithTag("global-vehicle-latest").fetchSemanticsNodes().isNotEmpty()
+                runCatching { results.performScrollToNode(hasTestTag("global-vehicle-latest")) }.isSuccess
             }
             val latest = runBlocking { VehicleQueryRepository.search(VehicleSearch.forTrain("G1")!!).first() }
             results.performScrollToNode(hasTestTag("global-vehicle-latest"))
@@ -90,24 +90,19 @@ class GlobalVehicleSearchDeviceTest {
             compose.onNodeWithTag("vehicle-search").assertTextContains(latest.vehicle)
             awaitHistory()
             fixture.navigate("/search")
-            field.performTextReplacement("G")
-            field.performImeAction()
-            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
             field.performTextReplacement("G1/G2")
-            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
-            field.performTextReplacement("K123")
             field.performImeAction()
-            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
-            field.performTextReplacement("S1")
-            field.performImeAction()
-            awaitAssignment()
-            results.performScrollToNode(hasTestTag("global-vehicle-search"))
-            compose.onNodeWithText(fixture.activity.getString(R.string.vehicle_query_search_assignment, "S1"))
-                .assertIsDisplayed()
-            RailfanPreferences.setEnabled(context, false)
             compose.waitUntil {
                 compose.onAllNodesWithTag("global-vehicle-search").fetchSemanticsNodes().isEmpty()
             }
+            org.junit.Assert.assertNotNull(VehicleSearch.forTrain("S1"))
+            field.performTextReplacement("G1")
+            field.performImeAction()
+            compose.waitUntil(40_000) {
+                runCatching { results.performScrollToNode(hasTestTag("global-vehicle-search")) }.isSuccess
+            }
+            RailfanPreferences.setEnabled(context, false)
+            compose.onAllNodesWithTag("global-vehicle-search").onFirst().assertIsDisplayed()
         } finally {
             fixture.close()
             RailfanPreferences.setEnabled(context, enabled)

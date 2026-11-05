@@ -64,9 +64,25 @@ class TrainQueryReturnTest {
             compose.onNodeWithTag("train-query-content").performScrollToNode(
                 hasText(fixture.activity.getString(R.string.train_map_disclaimer)),
             )
+            compose.waitForIdle()
             fun scroll() = compose.onNodeWithTag("train-query-content").fetchSemanticsNode()
                 .config[SemanticsProperties.VerticalScrollAxisRange].value()
-            val previousScroll = scroll()
+            fun settledScroll(): Float {
+                var last = scroll()
+                var stableSamples = 0
+                val deadline = android.os.SystemClock.elapsedRealtime() + 10_000
+                while (stableSamples < 5 && android.os.SystemClock.elapsedRealtime() < deadline) {
+                    Thread.sleep(100)
+                    val current = scroll()
+                    stableSamples = if (kotlin.math.abs(current - last) < 1f) stableSamples + 1 else 0
+                    last = current
+                }
+                check(stableSamples == 5) { "Train query scroll position did not settle" }
+                return last
+            }
+            val previousScroll = settledScroll()
+            val disclaimer = fixture.activity.getString(R.string.train_map_disclaimer)
+            val previousAnchor = compose.onNodeWithText(disclaimer).fetchSemanticsNode().boundsInRoot.top
             navigate("/train?train=G32&date=$date&source=llt")
             compose.waitUntil(10_000) { fixture.evaluate("window.returnRequests.length") == "2" }
             compose.waitForIdle()
@@ -77,7 +93,16 @@ class TrainQueryReturnTest {
             compose.waitForIdle()
             fixture.capture("train-query-return")
             assertEquals("2", fixture.evaluate("window.returnRequests.length"))
-            assertEquals(previousScroll, scroll(), 2f)
+            val returnedScroll = settledScroll()
+            val returnedAnchor = runCatching {
+                compose.onNodeWithText(disclaimer).fetchSemanticsNode().boundsInRoot.top
+            }.getOrNull()
+            assertEquals(
+                "Disclaimer top: before=$previousAnchor, after=$returnedAnchor",
+                previousScroll, returnedScroll, 2f,
+            )
+            org.junit.Assert.assertNotNull("Returned map disclaimer is not visible", returnedAnchor)
+            assertEquals(previousAnchor, returnedAnchor!!, 2f)
             compose.onNodeWithTag("train-query-content").performScrollToIndex(0)
             compose.onNodeWithTag("train-query-submit").performClick()
             compose.waitUntil(10_000) { fixture.evaluate("window.returnRequests.length") == "3" }

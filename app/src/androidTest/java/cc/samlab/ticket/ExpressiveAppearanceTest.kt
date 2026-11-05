@@ -12,6 +12,9 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
@@ -80,8 +83,14 @@ class ExpressiveAppearanceTest {
             compose.onNodeWithText("导入备份").performScrollTo()
             compose.waitForIdle()
             assertEquals(smallHeight, compose.onNodeWithTag("settings-header").fetchSemanticsNode().boundsInRoot.height)
-            compose.onNodeWithContentDescription("返回").performClick()
-            compose.waitUntil(10_000) { evaluate("location.hash.slice(1)") == "\"/home\"" }
+            if (activity.resources.configuration.screenWidthDp >= 840) {
+                compose.onNode(hasText("关于") and hasAnyAncestor(hasTestTag("navigation-menu")))
+                    .performScrollTo().performClick()
+                compose.waitUntil(10_000) { evaluate("location.hash.slice(1)") == "\"/about\"" }
+            } else {
+                compose.onNodeWithContentDescription("返回").performClick()
+                compose.waitUntil(10_000) { evaluate("location.hash.slice(1)") == "\"/home\"" }
+            }
             openSettings()
             assertEquals(smallHeight, compose.onNodeWithTag("settings-header").fetchSemanticsNode().boundsInRoot.height)
             compose.onNodeWithTag("settings-content").performTouchInput { swipeDown() }

@@ -60,6 +60,30 @@ class QuizShareDeviceTest {
     }
 
     @Test fun sharesPersonalizedImageAndScoreThroughNativeMenuWithoutChangingSummary() {
+        runBlocking { DailyQuizRepository(context).save(session.resetProgress()) }
+        val bootstrap = TabletPageFixture(compose)
+        try {
+            bootstrap.evaluate("window.crticketNavigate('/railfan/quiz')")
+            compose.waitUntil(30_000) {
+                compose.onAllNodesWithTag("quiz-summary").fetchSemanticsNodes().isNotEmpty() ||
+                    (0 until 20).any { index ->
+                        compose.onAllNodesWithTag("quiz-question-$index")
+                            .fetchSemanticsNodes().isNotEmpty()
+                    }
+            }
+            val current = QuizSessionCodec.decode(sessionFile.readText(), quizToday())
+            session = current.copy(
+                answers = current.questions.mapIndexed { index, question ->
+                    if (index == 0) (question.correctIndex + 1) % question.options.size
+                    else question.correctIndex
+                },
+                current = 20,
+                completed = true,
+            )
+        } finally {
+            bootstrap.close()
+        }
+        runBlocking { DailyQuizRepository(context).save(session) }
         val page = TabletPageFixture(compose)
         val sent = AtomicReference<Intent>()
         val callback = IntentCallback { intent -> if (intent.action == Intent.ACTION_CHOOSER) sent.set(intent) }
@@ -69,17 +93,17 @@ class QuizShareDeviceTest {
             val bytes = ByteArrayOutputStream().also { avatar.compress(Bitmap.CompressFormat.PNG, 100, it) }
             val encoded = Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP)
             avatar.recycle()
-            page.evaluate("""
-                window.__quizOriginalSettings = window.crticketSettings;
-                window.crticketSettings = (id, action, payload) => {
-                  if (action !== 'snapshot') return window.__quizOriginalSettings(id, action, payload);
-                  CRTicketAndroid.settingsResult(JSON.stringify({id, success:true,
-                    state:{username:'分享测试用户',avatar:'data:image/png;base64,$encoded'}}));
-                }; true
-            """.trimIndent())
             page.evaluate("window.crticketNavigate('/railfan/quiz')")
             compose.waitUntil(20_000) {
                 compose.onAllNodesWithTag("quiz-share").fetchSemanticsNodes().isNotEmpty()
+            }
+            val settings = page.activity.testController<cc.samlab.ticket.ui.settings.NativeSettingsController>()
+            instrumentation.runOnMainSync {
+                settings.state = settings.state.copy(
+                    username = "分享测试用户",
+                    avatar = "data:image/png;base64,$encoded",
+                    loaded = true,
+                )
             }
             compose.onNodeWithTag("quiz-score").assertTextEquals("95")
             compose.onNodeWithText(context.getString(R.string.quiz_summary_heading)).assertIsDisplayed()
@@ -128,7 +152,6 @@ class QuizShareDeviceTest {
             compose.onNodeWithText("分享测试用户").assertDoesNotExist()
         } finally {
             IntentMonitorRegistry.getInstance().removeIntentCallback(callback)
-            page.evaluate("window.crticketSettings = window.__quizOriginalSettings; true")
             page.close()
         }
     }

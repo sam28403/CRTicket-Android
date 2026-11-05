@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -132,19 +131,24 @@ class UpdateDeviceTest {
                     activity.webView.evaluateJavascript("window.crticketNavigate('/settings')", null)
                 }
                 compose.waitUntil(10_000) {
-                    compose.onAllNodesWithText(context.getString(R.string.update_check))
-                        .fetchSemanticsNodes().isNotEmpty()
+                    compose.onAllNodesWithTag("settings-content").fetchSemanticsNodes().isNotEmpty()
                 }
                 if (compose.onAllNodesWithTag("important-notice-confirm")
                         .fetchSemanticsNodes().isNotEmpty()) {
                     compose.onNodeWithTag("important-notice-confirm").performClick()
                 }
-                compose.onNodeWithText(context.getString(R.string.update_check))
-                    .performScrollTo().assertIsDisplayed()
-                compose.onNodeWithText(context.getString(R.string.update_previews))
-                    .performScrollTo().assertIsDisplayed()
-                compose.onNodeWithText(context.getString(R.string.update_automatic))
-                    .performScrollTo().assertIsDisplayed()
+                if (BuildConfig.UPDATE_ENABLED) {
+                    compose.onNodeWithText(context.getString(R.string.update_check))
+                        .performScrollTo().assertIsDisplayed()
+                    compose.onNodeWithText(context.getString(R.string.update_previews))
+                        .performScrollTo().assertIsDisplayed()
+                    compose.onNodeWithText(context.getString(R.string.update_automatic))
+                        .performScrollTo().assertIsDisplayed()
+                } else {
+                    compose.onNodeWithText(context.getString(R.string.update_check)).assertDoesNotExist()
+                    compose.onNodeWithText(context.getString(R.string.update_previews)).assertDoesNotExist()
+                    compose.onNodeWithText(context.getString(R.string.update_automatic)).assertDoesNotExist()
+                }
                 screenshot("update-settings.png")
             } finally {
                 instrumentation.runOnMainSync { activity.finish() }
@@ -167,6 +171,12 @@ class UpdateDeviceTest {
                 activity.setContent {
                     MaterialTheme { Column { SettingsUpdates() } }
                 }
+            }
+            compose.waitUntil(20_000) {
+                runCatching {
+                    compose.onAllNodesWithText(context.getString(R.string.update_previews))
+                        .fetchSemanticsNodes().isNotEmpty()
+                }.getOrDefault(false)
             }
             compose.onNodeWithText(context.getString(R.string.update_previews)).performClick()
             compose.onNodeWithText(context.getString(R.string.update_automatic)).performClick()
@@ -206,9 +216,9 @@ class UpdateDeviceTest {
                 assertNull(model.release)
                 activity.setContent { MaterialTheme { Column { SettingsUpdates() } } }
             }
-            compose.onNodeWithText(context.getString(R.string.update_check)).assertIsNotEnabled()
-            compose.onNodeWithText(context.getString(R.string.update_previews)).assertIsNotEnabled()
-            compose.onNodeWithText(context.getString(R.string.update_automatic)).assertIsNotEnabled()
+            compose.onNodeWithText(context.getString(R.string.update_check)).assertDoesNotExist()
+            compose.onNodeWithText(context.getString(R.string.update_previews)).assertDoesNotExist()
+            compose.onNodeWithText(context.getString(R.string.update_automatic)).assertDoesNotExist()
         } finally {
             instrumentation.runOnMainSync { activity.finish() }
         }

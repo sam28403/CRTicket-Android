@@ -29,9 +29,15 @@ class SpeedometerDeviceTest {
         org.junit.Assume.assumeTrue(SpeedometerStore.current == null)
         val previous = SpeedometerStore.current
         val history = SpeedometerStore.history
+        val mapPreferences = context.getSharedPreferences("android", 0)
+        val originalMapSource = mapPreferences.getString("mapSource", null)
         try {
+            mapPreferences.edit().putString("mapSource", "osm").commit()
             launch("/railfan/speedometer").use {
                 instrumentation.runOnMainSync { SpeedometerStore.history = emptyList() }
+                compose.waitUntil(20_000) {
+                    runCatching { compose.onNodeWithText("配置本次行程").assertIsDisplayed() }.isSuccess
+                }
                 compose.onNodeWithText("配置本次行程").assertIsDisplayed()
                 compose.onNodeWithTag("speed-history-empty").assertIsDisplayed()
                 compose.onNodeWithText("开始记录").performClick()
@@ -124,26 +130,40 @@ class SpeedometerDeviceTest {
                 compose.onNodeWithTag("train-card:G1").assertExists()
                 compose.onNodeWithTag("train-card:G1").performClick()
                 compose.onNodeWithText("行程轨迹").assertIsDisplayed()
-                Thread.sleep(3000)
                 var mapState = ""
-                scenario.onActivity { activity ->
-                    val mapView = webViews(activity.window.decorView).first { it !== activity.webView }
-                    mapView.evaluateJavascript("""
-                        JSON.stringify({scripts: [...document.scripts].map(s => s.src),
-                          paths: document.querySelectorAll('.leaflet-overlay-pane canvas').length,
-                          map: document.getElementById('map')?.getBoundingClientRect().toJSON(),
-                          panePosition: getComputedStyle(document.querySelector('.leaflet-pane')).position,
-                          styles: [...document.styleSheets].map(s => s.href),
-                          viewport: [innerWidth, innerHeight]})
-                    """.trimIndent()) { mapState = it }
+                compose.waitUntil(30_000) {
+                    val completed = java.util.concurrent.CountDownLatch(1)
+                    scenario.onActivity { activity ->
+                        val mapView = webViews(activity.window.decorView).first { it !== activity.webView }
+                        mapView.evaluateJavascript("""
+                            (() => {
+                              const pane = document.querySelector('.leaflet-pane');
+                              const map = document.getElementById('map');
+                              if (!pane || !map) return null;
+                              return JSON.stringify({
+                                paths: document.querySelectorAll('.leaflet-overlay-pane canvas').length,
+                                map: map.getBoundingClientRect().toJSON(),
+                                panePosition: getComputedStyle(pane).position
+                              });
+                            })()
+                        """.trimIndent()) { value ->
+                            mapState = value
+                            completed.countDown()
+                        }
+                    }
+                    completed.await(3, java.util.concurrent.TimeUnit.SECONDS) &&
+                        mapState != "null" && mapState.isNotEmpty()
                 }
-                compose.waitUntil(5000) { mapState.isNotEmpty() }
                 val state = org.json.JSONObject(org.json.JSONArray("[$mapState]").getString(0))
                 assertTrue("Map contains no track: $mapState", state.getInt("paths") > 0)
                 assertTrue("Map is not visible: $mapState", state.getJSONObject("map").getDouble("height") > 100)
                 capture("track")
             }
         } finally {
+            mapPreferences.edit().apply {
+                if (originalMapSource == null) remove("mapSource")
+                else putString("mapSource", originalMapSource)
+            }.commit()
             instrumentation.runOnMainSync {
                 SpeedometerStore.current = previous
                 SpeedometerStore.history = history

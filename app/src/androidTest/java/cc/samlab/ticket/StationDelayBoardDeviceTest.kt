@@ -53,6 +53,8 @@ class StationDelayBoardDeviceTest {
                     state.gridState.requestScrollToItem(25, 19)
                 }
                 compose.waitUntil(10_000) { state.gridState.firstVisibleItemIndex == 25 }
+                compose.waitForIdle()
+                val beforeIndex = state.gridState.firstVisibleItemIndex
                 val before = state.gridState.firstVisibleItemScrollOffset
                 compose.onNodeWithTag("station-refresh").performClick()
                 compose.runOnIdle {
@@ -62,7 +64,7 @@ class StationDelayBoardDeviceTest {
                 }
                 compose.waitForIdle()
                 assertEquals(tab, state.selectedTab)
-                assertEquals(25, state.gridState.firstVisibleItemIndex)
+                assertEquals(beforeIndex, state.gridState.firstVisibleItemIndex)
                 assertEquals(before, state.gridState.firstVisibleItemScrollOffset)
                 assertFalse(state.follow)
                 if (tab == StationTab.ALL) {

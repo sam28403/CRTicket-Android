@@ -147,10 +147,12 @@ class DelayCacheDeviceTest {
 
     private fun navigate(fixture: TabletPageFixture, location: String) {
         fixture.evaluate("window.crticketNavigate(${JSONObject.quote(location)})")
-        val path = JSONObject.quote("#${location.substringBefore('?')}")
-        compose.waitUntil(10_000) {
-            fixture.evaluate("location.hash.split('?')[0] === $path") == "true"
+        val pageTag = when (location.substringBefore('?')) {
+            "/train" -> "train-query-content"
+            "/station" -> "station-refresh"
+            else -> error("Unsupported delay-cache route: $location")
         }
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag(pageTag).fetchSemanticsNodes().isNotEmpty() }
         compose.waitForIdle()
     }
 

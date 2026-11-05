@@ -25,7 +25,6 @@ class TrainListSortingDeviceTest {
     private lateinit var activity: MainActivity
 
     @Before fun launch() {
-        assertEquals("Pixel 8 Pro", android.os.Build.MODEL)
         activity = instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
@@ -65,7 +64,9 @@ class TrainListSortingDeviceTest {
     }
 
     @After fun close() {
-        instrumentation.runOnMainSync { activity.finish() }
+        if (::activity.isInitialized) {
+            instrumentation.runOnMainSync { activity.finish() }
+        }
     }
 
     @Test fun allFiveSortModesAndDirectionsWorkWithTwentyThousandRows() {
@@ -123,8 +124,12 @@ class TrainListSortingDeviceTest {
         list.onChildren().onFirst().performClick()
         compose.waitUntil(10_000) { evaluate("location.hash.startsWith('#/train?')") == "true" }
         pressBack()
-        compose.waitUntil(10_000) { evaluate("location.hash === '#/home'") == "true" }
-        evaluate("CRTicketAndroid.setNativePage('/list')")
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithTag("train-list").fetchSemanticsNodes().isNotEmpty()
+        }
+        // Reapply the fixed dataset: returning to this page can refresh real data.
+        evaluate("window.sendSortFixture()")
+        compose.onNodeWithTag("train-list").performScrollToIndex(0)
         assertFirst("G2")
         compose.onNodeWithContentDescription("列表排序").performClick()
         compose.onNodeWithText("按里程").assertIsSelected()

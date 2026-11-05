@@ -34,7 +34,7 @@ class TicketMonitorWebViewTest {
         }
         val cached = TicketMonitorStore.read(context)
             .put("trains", JSONArray().put(JSONObject()
-                .put("id", "native-cached-result").put("train", "TEST000")
+                .put("id", "native-cached-result").put("train", "G0000")
                 .put("from", "北京南").put("to", "上海虹桥")
                 .put("departure", "09:00").put("arrival", "13:30")
                 .put("duration", "04:30").put("canBuy", false)
@@ -44,7 +44,7 @@ class TicketMonitorWebViewTest {
         TicketMonitorStore.save(context, cached)
         navigate("/monitor")
         compose.waitUntil(15_000) {
-            compose.onAllNodesWithTag("monitor-ticket-TEST000").fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithTag("monitor-ticket-G0000").fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithTag("monitor-from").assertTextContains("北京南")
         compose.onNodeWithTag("monitor-to").assertTextContains("上海虹桥")
@@ -63,7 +63,7 @@ class TicketMonitorWebViewTest {
         compose.onNodeWithText("3600 秒").assertExists()
         pressBack()
         awaitRoute("/monitor")
-        compose.onNodeWithTag("monitor-ticket-TEST000").assertExists()
+        compose.onNodeWithTag("monitor-ticket-G0000").assertExists()
     }
 
     @Test fun nativeSwitchStartsStopsAndReloadKeepsItStopped() = fixture.withSnapshot {
@@ -79,7 +79,7 @@ class TicketMonitorWebViewTest {
         compose.waitUntil(10_000) { compose.onAllNodesWithText("上海虹桥").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("上海虹桥", useUnmergedTree = true).performClick()
         // Set a protective non-matching train filter through the same bridge as the settings UI.
-        request("edit", "trainFilters", JSONArray().put("TEST000"))
+        request("edit", "trainFilters", JSONArray().put("G0000"))
         // Notification permission has separate coverage. Simulate its denied result
         // so this test exercises the switch without modifying the user's grants.
         fixture.evaluate("""
@@ -103,7 +103,7 @@ class TicketMonitorWebViewTest {
         compose.waitUntil(10_000) {
             runCatching { compose.onNodeWithTag("monitor-toggle").assertIsOn(); true }.getOrDefault(false)
         }
-        assertEquals("TEST000", TicketMonitorStore.status(context).getJSONObject("config")
+        assertEquals("G0000", TicketMonitorStore.status(context).getJSONObject("config")
             .getJSONObject("filters").getJSONArray("trainFilters").getString(0))
         compose.onNodeWithTag("monitor-toggle").performClick()
         fixture.await("Native switch did not stop monitor") {
@@ -237,6 +237,14 @@ class TicketMonitorWebViewTest {
         pressBack()
         awaitRoute("/monitor")
         compose.onNodeWithTag("monitor-query").assertExists()
+        if (compose.onAllNodesWithTag("navigation-menu").fetchSemanticsNodes().isNotEmpty()) {
+            // Wide navigation keeps a top-level destination beside the persistent menu.
+            fixture.predictiveBack(null)
+            fixture.predictiveBack(0.7f)
+            fixture.predictiveBack(null, cancel = true)
+            awaitRoute("/monitor")
+            return@withSnapshot
+        }
         val monitorWidth = compose.onNodeWithTag("navigation-page:/monitor")
             .fetchSemanticsNode().boundsInRoot.width
         fixture.predictiveBack(null)

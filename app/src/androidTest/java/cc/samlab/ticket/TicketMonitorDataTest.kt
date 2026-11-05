@@ -115,6 +115,9 @@ class TicketMonitorDataTest {
                 config.getJSONObject("filters").put("seatFilters", JSONArray().put("business"))
                 TicketMonitorService.update(fixture.context, config.toString())
             }
+            fixture.await("Updated monitor did not enter the foreground") {
+                fixture.notice(TicketMonitorNotifications.ID) != null
+            }
             val changed = TicketMonitorStore.read(fixture.context)
             assertTrue(changed.getBoolean("active"))
             assertEquals(0, changed.getJSONObject("previous").length())

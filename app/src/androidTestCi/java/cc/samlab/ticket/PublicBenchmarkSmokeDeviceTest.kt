@@ -42,9 +42,18 @@ class PublicBenchmarkSmokeDeviceTest {
                     .bufferedReader().use { it.readText() }
             }
             await { automation.rootInActiveWindow?.packageName?.toString() == targetPackage }
-            val start = runCatching { label("welcome_start") }.getOrNull()
-            if (start != null) find(automation.rootInActiveWindow) { it.text?.toString() == start }
-                ?.let(::click)
+            val welcomeButtons = listOfNotNull(
+                runCatching { label("welcome_start") }.getOrNull(),
+                runCatching { label("welcome_next") }.getOrNull(),
+                "开始使用", "開始使用", "继续", "繼續", "Get started", "Continue",
+            ).toSet()
+            repeat(3) {
+                val button = find(automation.rootInActiveWindow) {
+                    it.text?.toString() in welcomeButtons
+                } ?: return@repeat
+                click(button)
+                SystemClock.sleep(300)
+            }
             val settings = label("home_settings")
             scrollFind(automation, settings).let(::click)
             await {

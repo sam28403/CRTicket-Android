@@ -26,6 +26,29 @@ class ArrivalNotificationNavigationTest {
     private val context = instrumentation.targetContext
     private lateinit var activity: MainActivity
 
+    @Test fun successiveNotificationsOpenTheirOwnStations() {
+        val welcome = WelcomeTestState(context)
+        val fixture = TabletPageFixture(compose)
+        try {
+            for (station in listOf("金山卫", "绣峰", "莘庄")) {
+                ArrivalNotifications(context).build(station).contentIntent.send()
+                compose.waitUntil(30_000) {
+                    runCatching {
+                        compose.onNodeWithTag("station-query").fetchSemanticsNode()
+                            .config[SemanticsProperties.EditableText].text == station
+                    }.getOrDefault(false)
+                }
+                assertEquals(
+                    org.json.JSONObject.quote(station),
+                    fixture.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('station')"),
+                )
+            }
+        } finally {
+            fixture.close()
+            welcome.close()
+        }
+    }
+
     @Test fun notificationShadeClickOpensCorrectStationWithRunningAndClosedActivity() {
         org.junit.Assume.assumeFalse(
             "Unlock the device before testing notification-shade clicks",

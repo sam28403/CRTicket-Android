@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
+import org.json.JSONObject
 import org.junit.Assert.assertTrue
 import java.io.File
 import java.util.concurrent.CountDownLatch
@@ -53,8 +54,11 @@ internal class TabletPageFixture(
     }
 
     fun navigate(route: String) {
-        evaluate("window.crticketNavigate('$route')")
-        compose.waitUntil(20_000) { evaluate("location.hash.split('?')[0] === '#$route'") == "true" }
+        evaluate("window.crticketNavigate(${JSONObject.quote(route)})")
+        val expectedPath = JSONObject.quote("#${route.substringBefore('?')}")
+        compose.waitUntil(20_000) {
+            evaluate("location.hash.split('?')[0] === $expectedPath") == "true"
+        }
         compose.waitForIdle()
         Thread.sleep(400)
     }

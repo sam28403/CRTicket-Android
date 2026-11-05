@@ -84,7 +84,7 @@ class GlobalSearchTest {
             field.performTextInput("G25")
             field.performImeAction()
             compose.waitUntil(15_000) {
-                compose.onAllNodesWithTag("search-trains-title").fetchSemanticsNodes().isNotEmpty()
+                runCatching { results.performScrollToNode(hasTestTag("search-trains-title")) }.isSuccess
             }
             results.performScrollToNode(hasText("G251"))
             compose.onNodeWithText("G252").assertDoesNotExist()
@@ -119,8 +119,9 @@ class GlobalSearchTest {
             field.performTextReplacement("D")
             field.performImeAction()
             compose.waitUntil(15_000) {
-                compose.onAllNodesWithText("D1").fetchSemanticsNodes().isNotEmpty()
+                runCatching { results.performScrollToNode(hasText("D1")) }.isSuccess
             }
+            compose.onNodeWithText("D1").assertIsDisplayed()
             results.performScrollToNode(hasTestTag("search-stations-expand"))
             compose.onNodeWithTag("search-stations-expand").performClick()
             results.performScrollToNode(hasText("德州东"))

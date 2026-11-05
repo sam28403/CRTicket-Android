@@ -57,6 +57,7 @@ class QuizDeviceTest {
             fixture = page
             page.evaluate("window.crticketNavigate('/railfan/quiz')")
             awaitTag("quiz-question-0")
+            initial = QuizSessionCodec.decode(sessionFile.readText(), quizToday())
             compose.onNodeWithTag("quiz-previous").assertIsNotEnabled()
             val wrong = (initial.questions[0].correctIndex + 1) % 4
             compose.onNodeWithText(initial.questions[0].options[wrong].label)
@@ -67,6 +68,7 @@ class QuizDeviceTest {
             page.capture("daily-quiz-wrong")
 
             compose.onNodeWithTag("quiz-next").performClick()
+            awaitTag("quiz-question-1")
             val correct = initial.questions[1].correctIndex
             compose.onNodeWithText(initial.questions[1].options[correct].label)
                 .performScrollTo().performClick()
@@ -84,6 +86,7 @@ class QuizDeviceTest {
             page.capture("daily-quiz-unfinished")
             repeat(17) { compose.onNodeWithTag("quiz-previous").performClick() }
             for (index in 2..19) {
+                awaitTag("quiz-question-$index")
                 val choice = (initial.questions[index].correctIndex + 1) % 4
                 compose.onNodeWithText(initial.questions[index].options[choice].label)
                     .performScrollTo().performClick()
@@ -166,6 +169,7 @@ class QuizDeviceTest {
 
     @Test fun ciCanReplaceTheCompletedSetAndResumeItAfterReopening() {
         org.junit.Assume.assumeTrue(BuildConfig.CI_BUILD)
+        loadActualQuestions()
         runBlocking {
             DailyQuizRepository(context).save(initial.copy(
                 answers = List(20) { 0 }, current = 20, completed = true,
@@ -207,6 +211,7 @@ class QuizDeviceTest {
     }
 
     @Test fun perfectScoreFillsSummaryAndShowsFiniteConfetti() {
+        loadActualQuestions()
         runBlocking {
             DailyQuizRepository(context).save(initial.copy(
                 answers = initial.questions.map { it.correctIndex }, current = 20, completed = true,
@@ -242,6 +247,17 @@ class QuizDeviceTest {
                 page.capture("daily-quiz-perfect-settled")
             } finally { compose.mainClock.autoAdvance = true }
         } finally { page.close() }
+    }
+
+    private fun loadActualQuestions() {
+        val page = TabletPageFixture(compose)
+        try {
+            page.evaluate("window.crticketNavigate('/railfan/quiz')")
+            awaitTag("quiz-question-0")
+            initial = QuizSessionCodec.decode(sessionFile.readText(), quizToday())
+        } finally {
+            page.close()
+        }
     }
 
     private fun awaitTag(tag: String) {

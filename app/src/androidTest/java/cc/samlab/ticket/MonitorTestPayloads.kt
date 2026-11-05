@@ -20,7 +20,7 @@ object MonitorTestPayloads {
         .put("date", LocalDate.now(zone).plusDays(1).toString())
         .put("interval", 10)
         // Query the real upstream without replacing an existing availability alert.
-        .put("filters", JSONObject().put("trainFilters", JSONArray().put("TEST000")))
+        .put("filters", JSONObject().put("trainFilters", JSONArray().put("G0000")))
         .toString()
 
     fun train(arrived: Boolean = false): String {

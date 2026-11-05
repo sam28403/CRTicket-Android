@@ -85,12 +85,22 @@ class UpdateBackupDeviceTest {
                         assertTrue(native.getBoolean("updatePreviews"))
                         assertFalse(native.getBoolean("updateAutomatic"))
                         scenario.onActivity {
-                            it.updates().changePreviews(false)
-                            it.updates().changeAutomatic(true)
+                            if (it.updates().enabled) {
+                                it.updates().changePreviews(false)
+                                it.updates().changeAutomatic(true)
+                            } else {
+                                preferences.edit().putBoolean("previews", false)
+                                    .putBoolean("automatic", true).commit()
+                            }
                         }
                         assertTrue(fixture.import(exported.toString(), settings = true).getBoolean("success"))
-                        compose.waitUntil(5_000) {
-                            activity.updates().previews && !activity.updates().automatic
+                        if (activity.updates().enabled) {
+                            compose.waitUntil(5_000) {
+                                activity.updates().previews && !activity.updates().automatic
+                            }
+                        } else {
+                            assertFalse(activity.updates().previews)
+                            assertFalse(activity.updates().automatic)
                         }
                         assertTrue(preferences.getBoolean("previews", false))
                         assertFalse(preferences.getBoolean("automatic", true))
@@ -101,8 +111,13 @@ class UpdateBackupDeviceTest {
                         assertFalse(excludedNative?.has("updateAutomatic") == true)
 
                         scenario.onActivity {
-                            it.updates().changePreviews(false)
-                            it.updates().changeAutomatic(true)
+                            if (it.updates().enabled) {
+                                it.updates().changePreviews(false)
+                                it.updates().changeAutomatic(true)
+                            } else {
+                                preferences.edit().putBoolean("previews", false)
+                                    .putBoolean("automatic", true).commit()
+                            }
                         }
                         val selectable = JSONObject(exported.toString())
                             .put("contents", JSONArray(listOf("tickets", "settings")))

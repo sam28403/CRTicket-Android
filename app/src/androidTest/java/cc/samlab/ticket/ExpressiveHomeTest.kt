@@ -176,10 +176,11 @@ class ExpressiveHomeTest {
             instrumentation.runOnMainSync { assertTrue(activity.webView.parent === originalParent) }
             evaluate("window.crticketNavigate('/')")
             awaitRoute("/")
-            compose.waitUntil(20_000) {
-                evaluate("Boolean(document.querySelector('.main-layout'))") == "true"
+            compose.onNodeWithText(activity.getString(R.string.generator_title)).assertIsDisplayed()
+            instrumentation.runOnMainSync {
+                assertTrue(activity.webView.parent === originalParent)
+                assertFalse(activity.webView.isShown)
             }
-            instrumentation.runOnMainSync { assertTrue(activity.webView.isShown) }
             pressBack()
             awaitRoute("/home")
         }
@@ -199,10 +200,12 @@ class ExpressiveHomeTest {
             compose.onNodeWithText(label).performScrollTo().performClick()
             awaitRoute(route)
             when (route) {
+                "/" -> compose.onNodeWithText(activity.getString(R.string.generator_title)).assertIsDisplayed()
                 "/monitor" -> compose.onNodeWithTag("monitor-screen").assertIsDisplayed()
                 "/history" -> compose.onNodeWithContentDescription("历史记录排序").assertIsDisplayed()
                 "/list" -> compose.onNodeWithTag("train-list-date").assertIsDisplayed()
                 "/station" -> compose.onNodeWithTag("station-screen").assertIsDisplayed()
+                "/train" -> compose.onNodeWithTag("train-query-screen").assertIsDisplayed()
                 else -> compose.waitUntil(20_000) {
                     evaluate("Boolean(document.querySelector('$selector'))") == "true"
                 }
@@ -215,7 +218,9 @@ class ExpressiveHomeTest {
         awaitRoute("/about")
         compose.onNodeWithContentDescription(activity.getString(R.string.about_icon)).assertIsDisplayed()
         compose.onNodeWithText(activity.getString(R.string.home_title)).assertIsDisplayed()
-        compose.onNodeWithText("版本 ${BuildConfig.VERSION_NAME}").assertIsDisplayed()
+        compose.onNodeWithText(
+            activity.getString(R.string.about_version, cc.samlab.ticket.ui.appVersionLabel),
+        ).assertIsDisplayed()
         compose.onNodeWithContentDescription("GitHub").assertIsDisplayed()
         assertEquals("https://github.com/sam28403/CRTicket-Android",
             activity.getString(R.string.about_github_url))

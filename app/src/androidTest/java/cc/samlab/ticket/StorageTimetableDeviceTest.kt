@@ -44,9 +44,11 @@ class StorageTimetableDeviceTest {
                 hasText(context.getString(R.string.storage_timetable)) and hasClickAction(),
             )
             compose.waitUntil(10_000) {
-                database.fetchSemanticsNode().config.let {
-                    !it.contains(androidx.compose.ui.semantics.SemanticsProperties.Disabled)
-                }
+                runCatching {
+                    database.fetchSemanticsNode().config.let {
+                        !it.contains(androidx.compose.ui.semantics.SemanticsProperties.Disabled)
+                    }
+                }.getOrDefault(false)
             }
             fixture.capture("storage-timetable-overview")
             database.performScrollTo().performClick()

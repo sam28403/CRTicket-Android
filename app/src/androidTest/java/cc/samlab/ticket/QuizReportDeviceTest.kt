@@ -55,6 +55,25 @@ class QuizReportDeviceTest {
     }
 
     @Test fun summaryOpensThirdLevelReportAndCopiesCompleteTemplate() {
+        val bootstrap = TabletPageFixture(compose)
+        try {
+            bootstrap.evaluate("window.crticketNavigate('/railfan/quiz')")
+            await("quiz-question-0")
+            val current = QuizSessionCodec.decode(sessionFile.readText(), quizToday())
+            val time = session.answerTimes[0]!!
+            session = current.copy(
+                answers = current.questions.mapIndexed { index, question ->
+                    if (index == 0) (question.correctIndex + 1) % question.options.size
+                    else question.correctIndex
+                },
+                current = 20,
+                completed = true,
+                answerTimes = List(20) { time + it * 1000L },
+            )
+        } finally {
+            bootstrap.close()
+        }
+        runBlocking { DailyQuizRepository(context).save(session) }
         val page = TabletPageFixture(compose)
         try {
             page.evaluate("window.crticketNavigate('/railfan/quiz')")
@@ -67,8 +86,8 @@ class QuizReportDeviceTest {
             compose.onNodeWithTag("quiz-report-copy").performClick()
             val clipboard = context.getSystemService(ClipboardManager::class.java)
             fun clip() = clipboard.primaryClip!!.getItemAt(0).text.toString()
-            assertTrue(clip().contains("A. 北京南"))
-            assertTrue(clip().contains("B. 上海虹桥"))
+            assertTrue(clip().contains("A. ${session.questions[0].options[0].label}"))
+            assertTrue(clip().contains("B. ${session.questions[0].options[1].label}"))
             assertTrue(clip().contains(quizReportTime(session.answerTimes[0]!!)))
             assertTrue(clip().contains(context.getString(R.string.quiz_report_reason_hint)))
             compose.onNodeWithTag("quiz-report-reason").performScrollTo().performTextInput("需要核对站点坐标。")

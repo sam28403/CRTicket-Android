@@ -80,7 +80,14 @@ class SpeedometerMockRouteTest {
             var pausedAt = 0L
             var pausedDistance = 0.0
             var nextReport = 0
-            while ((SpeedometerStore.current?.elapsed ?: 0) < 65_000) {
+            while (true) {
+                val recording = checkNotNull(SpeedometerStore.current) {
+                    "$name recording stopped before the route completed"
+                }
+                if (recording.elapsed >= 65_000) break
+                check(SystemClock.elapsedRealtime() - start < 120_000) {
+                    "$name did not complete within 120 seconds; active=${recording.elapsed}"
+                }
                 val seconds = (SystemClock.elapsedRealtime() - start) / 1000.0
                 if (route == 2 && seconds >= 15 && !paused) {
                     command(SpeedometerService.PAUSE)

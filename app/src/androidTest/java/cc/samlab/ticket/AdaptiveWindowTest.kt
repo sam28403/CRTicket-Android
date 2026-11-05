@@ -28,11 +28,15 @@ class AdaptiveWindowTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private lateinit var activity: MainActivity
 
-    @Test fun wideMenuDefaultsToAboutAndWebDestinationsUseFullWindow() {
+    @Test fun wideMenuSelectsAboutAndNativeGenerator() {
         if (instrumentation.targetContext.resources.configuration.smallestScreenWidthDp < 600) return
         launch()
         try {
             compose.onNodeWithTag("navigation-shell").assertExists()
+            menu("关于").performScrollTo().performClick()
+            compose.waitUntil(20_000) {
+                runCatching { menu("关于").assertIsSelected() }.isSuccess
+            }
             menu("关于").assertIsSelected()
             compose.onNodeWithText("GitHub").assertExists()
             compose.onNodeWithText("车站版本 ${BuildConfig.STATION_DATA_VERSION}").assertExists()
@@ -56,11 +60,10 @@ class AdaptiveWindowTest {
             menu("车票生成").performScrollTo().performClick()
             compose.waitUntil(10_000) { evaluate("location.hash.slice(1)") == "\"/\"" }
             compose.waitUntil(10_000) {
-                compose.onAllNodesWithTag("navigation-menu").fetchSemanticsNodes().isEmpty()
+                runCatching { menu("车票生成").assertIsSelected() }.isSuccess
             }
-            compose.onNodeWithTag("navigation-menu").assertDoesNotExist()
-            assertWebFillsWindow()
-            androidx.test.espresso.Espresso.pressBack()
+            compose.onNodeWithText(activity.getString(R.string.generator_title)).assertIsDisplayed()
+            menu("关于").performScrollTo().performClick()
             compose.waitUntil(10_000) { evaluate("location.hash.slice(1)") == "\"/about\"" }
             menu("关于").assertIsSelected()
         } finally {

@@ -62,7 +62,14 @@ class TrainTrackingExpiryTest {
             assertEquals(1_800_000L, terminal.timeoutAfter)
             assertEquals(1_200_000L, later.timeoutAfter)
 
-            fixture.start(payload)
+            val nextJourney = org.json.JSONObject(payload)
+                .put("train", "G98")
+                .put("queryTrain", "G98")
+            val stops = nextJourney.getJSONArray("stops")
+            for (index in 0 until stops.length()) {
+                stops.getJSONObject(index).put("train", "G98")
+            }
+            fixture.start(nextJourney.toString())
             val replacement = requireNotNull(TrainTrackingStore.session(context))
             assertNotEquals(original.id, replacement.id)
             terminal.deleteIntent.send()

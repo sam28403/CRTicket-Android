@@ -9,6 +9,8 @@ import androidx.window.testing.layout.FoldingFeature
 import androidx.window.testing.layout.TestWindowLayoutInfo
 import androidx.window.testing.layout.WindowLayoutInfoPublisherRule
 import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,8 +21,11 @@ class TabletNativePagesTest {
     @get:Rule val compose = createEmptyComposeRule()
     @get:Rule val windows = WindowLayoutInfoPublisherRule()
 
+    @Before fun requireTablet() {
+        assumeTrue("This test requires a Pixel Tablet", android.os.Build.MODEL == "Pixel Tablet")
+    }
+
     @Test fun inspectTabletAndFoldPostures() {
-        assertEquals("Pixel Tablet", android.os.Build.MODEL)
         val fixture = TabletPageFixture(compose)
         try {
             for (orientation in listOf<Fold.Orientation?>(null, Fold.Orientation.VERTICAL, Fold.Orientation.HORIZONTAL)) {
@@ -86,7 +91,6 @@ class TabletNativePagesTest {
     }
 
     @Test fun portraitAndLandscapeKeepListPositionAndArrivalControls() {
-        assertEquals("Pixel Tablet", android.os.Build.MODEL)
         val fixture = TabletPageFixture(compose)
         val rotation = fixture.shell("settings get system user_rotation").trim()
         val automatic = fixture.shell("settings get system accelerometer_rotation").trim() == "1"
@@ -98,14 +102,14 @@ class TabletNativePagesTest {
                 runCatching { compose.onNodeWithTag("train-list").onChildren().fetchSemanticsNodes().size > 1 }
                     .getOrDefault(false)
             }
-            compose.onNodeWithTag("train-list").performScrollToIndex(8000)
             for ((angle, expected) in listOf(0 to Configuration.ORIENTATION_PORTRAIT, 3 to Configuration.ORIENTATION_LANDSCAPE)) {
+                compose.onNodeWithTag("train-list").performScrollToIndex(8000)
                 fixture.shell("wm user-rotation lock $angle")
                 compose.waitUntil(10_000) { fixture.activity.resources.configuration.orientation == expected }
                 compose.waitForIdle()
                 val index = compose.onNodeWithTag("train-list").fetchSemanticsNode()
                     .config[SemanticsProperties.VerticalScrollAxisRange].value()
-                assertTrue("Rotation lost list position", index > 0)
+                assertTrue("Rotation to $angle lost list position", index > 0)
                 fixture.capture("rotation-$angle-list")
                 fixture.navigate("/settings")
                 compose.onNodeWithText("到站检测", substring = false).performScrollTo().performClick()

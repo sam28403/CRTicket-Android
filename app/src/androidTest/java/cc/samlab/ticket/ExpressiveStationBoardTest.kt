@@ -22,8 +22,12 @@ class ExpressiveStationBoardTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private lateinit var activity: MainActivity
+    private var originalMapSource: String? = null
 
     @Before fun launch() {
+        val preferences = instrumentation.targetContext.getSharedPreferences("android", 0)
+        originalMapSource = preferences.getString("mapSource", null)
+        preferences.edit().putString("mapSource", "osm").commit()
         activity = instrumentation.startActivitySync(
             Intent(instrumentation.targetContext, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
@@ -42,18 +46,23 @@ class ExpressiveStationBoardTest {
         }
     }
 
-    @After fun close() { instrumentation.runOnMainSync { activity.finish() } }
+    @After fun close() {
+        if (::activity.isInitialized) instrumentation.runOnMainSync { activity.finish() }
+        instrumentation.targetContext.getSharedPreferences("android", 0).edit().apply {
+            originalMapSource?.let { putString("mapSource", it) } ?: remove("mapSource")
+        }.commit()
+    }
 
     @Test fun liveQueryTabsFollowMapAndOfflineNavigation() {
         compose.onNode(hasText("车站大屏") and hasAnyAncestor(hasTestTag("station-screen")))
             .assertIsDisplayed()
         compose.onNodeWithTag("station-tab-all").assertDoesNotExist()
         compose.onNodeWithTag("station-query").performTextInput("beijingnan")
-        compose.waitUntil(10_000) { compose.onAllNodesWithText("北京南").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNode(
-            hasText("北京南") and hasAnyAncestor(isPopup()),
-            useUnmergedTree = true,
-        ).performClick()
+        val suggestion = hasText("北京南") and hasAnyAncestor(isPopup())
+        compose.waitUntil(10_000) {
+            compose.onAllNodes(suggestion, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNode(suggestion, useUnmergedTree = true).performClick()
         compose.onNodeWithTag("station-submit").performClick()
         compose.waitUntil(120_000) {
             compose.onAllNodesWithTag("station-tab-all").fetchSemanticsNodes().isNotEmpty()
@@ -107,7 +116,7 @@ class ExpressiveStationBoardTest {
             putString("stream", "Train code tap destination: ${evaluate("location.hash")}\n")
         })
         compose.waitUntil(10_000) { evaluate("location.hash.startsWith('#/train?')") == "true" }
-        assertEquals("true", evaluate("location.hash.includes('source=llt')"))
+        assertEquals("null", evaluate("new URLSearchParams(location.hash.split('?')[1]).get('source')"))
     }
 
     @Test fun invalidQueryAndEmptyResultCanBeRetried() {
@@ -120,7 +129,7 @@ class ExpressiveStationBoardTest {
         compose.waitUntil(120_000) {
             compose.onAllNodesWithText("共 0 趟").fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onNodeWithText("本站当天没有该类型的车次").assertIsDisplayed()
+        compose.onNodeWithText(activity.getString(R.string.station_board_empty)).assertIsDisplayed()
         capture("station-empty")
     }
 

@@ -8,7 +8,10 @@ async function installDelayCacheFixture(apiFile) {
   const bridge = window.CRTicketAndroid
   window.CRTicketAndroid = new Proxy(bridge, {
     get(target, key) {
-      if (key !== 'queryTrainDelay' && key !== 'queryStationDelay') return target[key]
+      if (key !== 'queryTrainDelay' && key !== 'queryStationDelay') {
+        const value = target[key]
+        return typeof value === 'function' ? value.bind(target) : value
+      }
       return (id, payload) => {
         const data = JSON.parse(payload)
         const isTrain = key === 'queryTrainDelay'
