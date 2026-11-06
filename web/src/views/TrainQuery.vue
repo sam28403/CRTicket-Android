@@ -89,8 +89,8 @@ async function switchSource() {
 }
 
 async function exportData() {
-  if (!result.value?.stops.length || exporting.value) return
-  const snapshot = result.value
+  if (!schedule.value?.stops.length || exporting.value) return
+  const snapshot = schedule.value
   exporting.value = true
   try {
     const { downloadTrainInfoPdf } = await import('@/utils/trainInfoPdf.js')

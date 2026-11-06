@@ -25,6 +25,71 @@ class DelayCacheDeviceTest {
 
     @After fun restoreStartup() = welcome.close()
 
+    @Test fun trainPdfAlwaysUsesScheduledTimes() {
+        val fixture = prepare()
+        val automation = fixture.instrumentation.uiAutomation
+        fun pickerOpen() = automation.rootInActiveWindow?.packageName
+            ?.toString()?.endsWith("documentsui") == true
+        fun exportPixels(name: String): android.graphics.Bitmap {
+            compose.onNodeWithTag("train-query-content")
+                .performScrollToNode(hasTestTag("train-query-export"))
+            compose.onNodeWithTag("train-query-export").assertIsEnabled().performClick()
+            compose.waitUntil(30_000) { pickerOpen() }
+            val file = fixture.activity.cacheDir.listFiles().orEmpty()
+                .filter { it.name.startsWith("export-") }.maxBy { it.lastModified() }
+            val folder = java.io.File(fixture.activity.getExternalFilesDir(null), "train-pdf")
+                .apply { mkdirs() }
+            file.copyTo(java.io.File(folder, "$name.pdf"), overwrite = true)
+            val bitmap = android.os.ParcelFileDescriptor.open(
+                file, android.os.ParcelFileDescriptor.MODE_READ_ONLY,
+            ).use { descriptor ->
+                android.graphics.pdf.PdfRenderer(descriptor).use { renderer ->
+                    assertEquals(1, renderer.pageCount)
+                    renderer.openPage(0).use { page ->
+                        android.graphics.Bitmap.createBitmap(
+                            page.width * 2, page.height * 2, android.graphics.Bitmap.Config.ARGB_8888,
+                        ).also {
+                            it.eraseColor(android.graphics.Color.WHITE)
+                            page.render(it, null, null,
+                                android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        }
+                    }
+                }
+            }
+            automation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK)
+            compose.waitUntil(10_000) { fixture.activity.hasWindowFocus() }
+            waitFor { compose.onNodeWithTag("train-query-export").assertIsEnabled() }
+            return bitmap
+        }
+        try {
+            navigate(fixture, "/train?train=G1&date=${today()}")
+            waitFor { compose.onNodeWithTag("train-query-stop-1").assert(hasText("20:00 (+7')")) }
+            fixture.capture("train-pdf-delay-enabled")
+            val delayed = exportPixels("delay-enabled")
+            compose.onNodeWithTag("train-query-content").performScrollToIndex(0)
+            compose.onNodeWithTag("train-query-delay").performClick()
+            waitFor { compose.onNodeWithTag("train-query-stop-1").assert(hasText("19:53")) }
+            val scheduled = exportPixels("scheduled")
+            fun pixels(bitmap: android.graphics.Bitmap) = IntArray(bitmap.width * bitmap.height).also {
+                bitmap.getPixels(it, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+            }
+            org.junit.Assert.assertArrayEquals("PDF must retain scheduled times and stay",
+                pixels(scheduled), pixels(delayed))
+            compose.onNodeWithTag("train-query-content").performScrollToIndex(0)
+            compose.onNodeWithTag("train-query-refresh").performClick()
+            waitFor { compose.onNodeWithTag("train-query-stop-1").assert(hasText("20:00 (+7')")) }
+            val refreshed = exportPixels("refreshed")
+            org.junit.Assert.assertArrayEquals("Refresh must not alter PDF",
+                pixels(scheduled), pixels(refreshed))
+            listOf(delayed, scheduled, refreshed).forEach { it.recycle() }
+        } finally {
+            if (pickerOpen()) automation.performGlobalAction(
+                android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK,
+            )
+            fixture.close()
+        }
+    }
+
     @Test fun trainRefreshFailuresKeepCachedTimesAndEnabledSwitch() {
         val fixture = prepare()
         try {

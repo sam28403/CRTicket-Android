@@ -37,11 +37,12 @@ export function trainPdfFilename(result) {
 }
 
 export function trainPdfRows(result) {
-  return result.stops.map((stop, index) => [
+  const stops = result.scheduledStops || result.stops
+  return stops.map((stop, index) => [
     String(stop.no || index + 1).padStart(2, '0'), stop.station,
     stop.arrival || '----',
     // 模板的终到站出发时间与到达时间相同；始发到达、两端停留均为 ----。
-    stop.departure || (index === result.stops.length - 1 ? stop.arrival : null) || '----',
+    stop.departure || (index === stops.length - 1 ? stop.arrival : null) || '----',
     stop.stay == null ? '----' : `${stop.stay}分钟`,
     stop.mileage == null ? '----' : `${stop.mileage} km`,
   ])

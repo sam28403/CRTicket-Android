@@ -5,6 +5,7 @@ import { PDFDocument, PageSizes } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import { buildTrainInfoPdf, planTrainPdf, trainPdfFilename, trainPdfRows, trainPdfTitle } from './trainInfoPdf.js'
 import { displayTrainCode, trainInfoForDisplay } from './trainDisplay.js'
+import { applyTrainDelay } from './delayCache.js'
 
 const fontBytes = await readFile(new URL('../../public/fonts/train-pdf.ttf', import.meta.url))
 const document = await PDFDocument.create()
@@ -31,6 +32,21 @@ test('模板仅含六列，里程含单位，两端空值及终到时间保持�
   result.stops[1].train = 'K1126'
   assert.equal(trainPdfTitle(result), 'K1127/6/7')
   assert.equal(trainPdfFilename({ ...result, train: 'K1127/K1126' }), 'K1127_2026-09-28.pdf')
+})
+
+test('加载正晚点后导出仍使用图定到发时间和停留时长', () => {
+  const schedule = fixture(3)
+  schedule.stops[1].departure = '12:55'
+  const expected = trainPdfRows(schedule)
+  const corrected = applyTrainDelay(schedule, [
+    { departureOffset: 10 },
+    { arrivalOffset: 10, departureOffset: 15 },
+    { arrivalOffset: -5 },
+  ])
+  assert.notEqual(corrected.stops[1].arrival, schedule.stops[1].arrival)
+  assert.notEqual(corrected.stops[1].stay, schedule.stops[1].stay)
+  assert.deepEqual(trainPdfRows(corrected), expected)
+  assert.deepEqual(trainPdfRows(schedule), expected)
 })
 
 test('优先 14 pt，一页放不下改 12 pt，仍放不下再分页且不丢站', () => {
