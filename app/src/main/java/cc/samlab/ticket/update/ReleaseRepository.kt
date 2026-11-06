@@ -75,8 +75,7 @@ internal class ReleaseRepository {
                     !it.optString("name").contains("unsigned", ignoreCase = true) &&
                     it.optString("state") == "uploaded" && it.optLong("size") > 0
             }
-        val apk = apks.firstOrNull { it.optString("name").contains("universal", true) }
-            ?: apks.singleOrNull()
+        val apk = selectReleaseApk(apks) { it.optString("name") }
         val url = apk?.optString("browser_download_url")?.takeIf(::isReleaseDownload)
         return AppRelease(json.getString("tag_name"), json.optString("body"), url)
     }

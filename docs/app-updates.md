@@ -39,13 +39,16 @@ CI 包使用独立包名 `.ci`，当前 GitHub Release 不提供同包名、同�
 因此 CI 包的三个更新设置均禁用，自动检查、手动检查、下载及安装入口也在代码中拦截，
 不会通过更新功能下载正式 APK。
 
-发布时需附加已签名的 APK。优先使用名称含 universal 的 APK，否则使用唯一 APK；
+发布时需附加已签名的 APK。普通版和离线版同时存在时，应用内默认下载普通版。
+选择时先排除名称含 offline 的 APK，再优先使用名称含 universal 的 APK，否则使用唯一普通版 APK；
+只有一个可用 APK 时仍可下载该附件（包括仅提供离线版的发布）。
 不选择 unsigned APK、AAB 或 APKS。缺少可用 APK 时保留更新日志并提示暂不可下载。
 下载地址只接受本仓库 GitHub Releases 的 HTTPS 附件地址。
 
 ## 验证
 
 `ReleaseVersionTest` 覆盖版本比较与下载来源检查。
+`ReleaseApkTest` 覆盖普通版与离线版的选择、附件顺序和单附件回退。
 `UpdateDeviceTest` 覆盖发布渠道选择、APK 选择、更新日志操作及开关默认值和保存。
 CI 包运行禁用状态测试；可用的开关操作测试在 `debug` 变体运行。
 可使用独立 CI 包进行设备测试，避免覆盖日常安装的应用：

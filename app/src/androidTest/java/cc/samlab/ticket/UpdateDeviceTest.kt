@@ -56,6 +56,22 @@ class UpdateDeviceTest {
         val unsigned = release("v1.1.0")
         unsigned.getJSONArray("assets").getJSONObject(0).put("name", "app-unsigned.apk")
         assertNull(repository.selectRelease(listOf(unsigned), false, current)?.downloadUrl)
+        val dual = release("v1.1.0")
+        val regularUrl = "https://github.com/sam28403/CRTicket-Android/releases/" +
+            "download/v1.1.0/CRTicket-v1.1.0.apk"
+        val regular = dual.getJSONArray("assets").getJSONObject(0)
+            .put("name", "CRTicket-v1.1.0.apk")
+            .put("browser_download_url", regularUrl)
+        val offline = JSONObject(regular.toString())
+            .put("name", "CRTicket-v1.1.0-offline.apk")
+            .put("browser_download_url", regularUrl.replace(".apk", "-offline.apk"))
+        for (assets in listOf(listOf(regular, offline), listOf(offline, regular))) {
+            dual.put("assets", org.json.JSONArray(assets))
+            assertEquals(
+                regularUrl,
+                repository.selectRelease(listOf(dual), false, current)?.downloadUrl,
+            )
+        }
     }
 
     @Test fun updateNotesUseDownloadAndLaterActions() {
