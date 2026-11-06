@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="train_comparison_title">新旧车号对比</string>
+    <string name="train_comparison_description">查询新旧车号对应关系</string>
+    <string name="train_comparison_hint">新旧车次</string>
+    <string name="train_comparison_invalid">请输入有效车次</string>
+    <string name="train_comparison_missing">未找到对应车次</string>
+    <string name="train_comparison_error">数据加载失败，请重试</string>
+</resources>

@@ -36,6 +36,7 @@ internal fun TrainListItem(
     showStationCount: Boolean = true,
     showDetails: Boolean = true,
     showMetrics: Boolean = true,
+    stationCountLabel: String? = null,
     onClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -76,7 +77,7 @@ internal fun TrainListItem(
                     color = colors.secondaryContainer,
                 ) {
                     Text(
-                        stringResource(R.string.train_list_station_count, row.stations),
+                        stationCountLabel ?: stringResource(R.string.train_list_station_count, row.stations),
                         Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = colors.onSecondaryContainer,

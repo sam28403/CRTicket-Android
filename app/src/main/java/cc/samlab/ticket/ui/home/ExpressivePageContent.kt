@@ -83,6 +83,9 @@ internal class ExpressivePageContent(
                 dark, pureBlack, embedded, onBack, onNavigate,
             )
             "/price/list" -> cc.samlab.ticket.ui.fare.FareTableScreen(dark, pureBlack, onBack)
+            "/train-comparison" -> cc.samlab.ticket.ui.comparison.TrainComparisonScreen(
+                dark, pureBlack, embedded, onBack,
+            )
             "/sale-time" -> cc.samlab.ticket.ui.sale.SaleTimeScreen(
                 station, dark, pureBlack, embedded, active, onBack, onNavigate,
             )
