@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="train_comparison_title">Train number comparison</string>
-    <string name="train_comparison_description">Find old and new train numbers</string>
-    <string name="train_comparison_hint">Old or new train number</string>
-    <string name="train_comparison_invalid">Enter a valid train number</string>
-    <string name="train_comparison_missing">No matching train found</string>
-    <string name="train_comparison_error">Unable to load data. Please retry</string>
-</resources>
