@@ -16,9 +16,17 @@
     <string name="llt_import_title">Import LuLuTong database</string>
     <string name="llt_import_button">Import</string>
     <string name="llt_current_version">Current LuLuTong database version</string>
+    <string name="llt_official_version">Versão oficial</string>
     <string name="llt_version_empty">No database</string>
     <string name="llt_import_success">LuLuTong database imported</string>
     <string name="llt_import_failed">Unable to import LuLuTong database</string>
+    <string name="llt_import_duplicate">Base de dados idêntica ignorada</string>
+    <string name="llt_import_summary">Importadas %1$d, duplicadas %2$d, falhas %3$d</string>
+    <string name="llt_switch_failed">Não foi possível trocar de base de dados</string>
+    <string name="llt_saved_versions">Versões importadas</string>
+    <string name="llt_delete_failed">Não foi possível excluir a base de dados</string>
+    <string name="llt_restore_failed">Não foi possível restaurar a base de dados</string>
+    <string name="llt_same_date_version">Versão %1$d</string>
     <string name="network_features_enabled">Use online features</string>
     <string name="network_features_disabled">Online features are turned off</string>
     <string name="developer_show_non_running_trains">Show trains not running today</string>

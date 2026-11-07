@@ -16,9 +16,17 @@
     <string name="llt_import_title">匯入路路通資料庫</string>
     <string name="llt_import_button">匯入</string>
     <string name="llt_current_version">目前路路通資料庫版本</string>
+    <string name="llt_official_version">官方版本</string>
     <string name="llt_version_empty">尚無資料庫</string>
     <string name="llt_import_success">路路通資料庫匯入成功</string>
     <string name="llt_import_failed">路路通資料庫匯入失敗</string>
+    <string name="llt_import_duplicate">已有相同的路路通資料庫，已略過</string>
+    <string name="llt_import_summary">已匯入 %1$d 個，重複 %2$d 個，失敗 %3$d 個</string>
+    <string name="llt_switch_failed">路路通資料庫切換失敗</string>
+    <string name="llt_saved_versions">已匯入的版本</string>
+    <string name="llt_delete_failed">路路通資料庫刪除失敗</string>
+    <string name="llt_restore_failed">路路通資料庫復原失敗</string>
+    <string name="llt_same_date_version">版本 %1$d</string>
     <string name="network_features_enabled">使用連線功能</string>
     <string name="network_features_disabled">連線功能已關閉</string>
     <string name="developer_show_non_running_trains">顯示當日不開行車次</string>

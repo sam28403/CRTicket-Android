@@ -16,9 +16,17 @@
     <string name="llt_import_title">Import LuLuTong database</string>
     <string name="llt_import_button">Import</string>
     <string name="llt_current_version">Current LuLuTong database version</string>
+    <string name="llt_official_version">অফিশিয়াল সংস্করণ</string>
     <string name="llt_version_empty">No database</string>
     <string name="llt_import_success">LuLuTong database imported</string>
     <string name="llt_import_failed">Unable to import LuLuTong database</string>
+    <string name="llt_import_duplicate">একই ডেটাবেস আগে থেকেই আছে, তাই বাদ দেওয়া হয়েছে</string>
+    <string name="llt_import_summary">আমদানি %1$d, সদৃশ %2$d, ব্যর্থ %3$d</string>
+    <string name="llt_switch_failed">ডেটাবেস বদলানো যায়নি</string>
+    <string name="llt_saved_versions">আমদানি করা সংস্করণ</string>
+    <string name="llt_delete_failed">ডেটাবেস মুছে ফেলা যায়নি</string>
+    <string name="llt_restore_failed">ডেটাবেস পুনরুদ্ধার করা যায়নি</string>
+    <string name="llt_same_date_version">সংস্করণ %1$d</string>
     <string name="network_features_enabled">Use online features</string>
     <string name="network_features_disabled">Online features are turned off</string>
     <string name="developer_show_non_running_trains">Show trains not running today</string>

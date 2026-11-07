@@ -16,9 +16,17 @@
     <string name="llt_import_title">Import LuLuTong database</string>
     <string name="llt_import_button">Import</string>
     <string name="llt_current_version">Current LuLuTong database version</string>
+    <string name="llt_official_version">공식 버전</string>
     <string name="llt_version_empty">No database</string>
     <string name="llt_import_success">LuLuTong database imported</string>
     <string name="llt_import_failed">Unable to import LuLuTong database</string>
+    <string name="llt_import_duplicate">동일한 데이터베이스가 있어 건너뛰었습니다</string>
+    <string name="llt_import_summary">가져옴 %1$d개, 중복 %2$d개, 실패 %3$d개</string>
+    <string name="llt_switch_failed">데이터베이스를 전환할 수 없습니다</string>
+    <string name="llt_saved_versions">가져온 버전</string>
+    <string name="llt_delete_failed">데이터베이스를 삭제할 수 없습니다</string>
+    <string name="llt_restore_failed">데이터베이스를 복원할 수 없습니다</string>
+    <string name="llt_same_date_version">버전 %1$d</string>
     <string name="network_features_enabled">Use online features</string>
     <string name="network_features_disabled">Online features are turned off</string>
     <string name="developer_show_non_running_trains">Show trains not running today</string>

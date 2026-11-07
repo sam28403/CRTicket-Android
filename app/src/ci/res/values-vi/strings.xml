@@ -16,9 +16,17 @@
     <string name="llt_import_title">Import LuLuTong database</string>
     <string name="llt_import_button">Import</string>
     <string name="llt_current_version">Current LuLuTong database version</string>
+    <string name="llt_official_version">Phiên bản chính thức</string>
     <string name="llt_version_empty">No database</string>
     <string name="llt_import_success">LuLuTong database imported</string>
     <string name="llt_import_failed">Unable to import LuLuTong database</string>
+    <string name="llt_import_duplicate">Đã bỏ qua cơ sở dữ liệu trùng khớp</string>
+    <string name="llt_import_summary">Đã nhập %1$d, trùng lặp %2$d, thất bại %3$d</string>
+    <string name="llt_switch_failed">Không thể chuyển cơ sở dữ liệu</string>
+    <string name="llt_saved_versions">Các phiên bản đã nhập</string>
+    <string name="llt_delete_failed">Không thể xoá cơ sở dữ liệu</string>
+    <string name="llt_restore_failed">Không thể khôi phục cơ sở dữ liệu</string>
+    <string name="llt_same_date_version">Phiên bản %1$d</string>
     <string name="network_features_enabled">Use online features</string>
     <string name="network_features_disabled">Online features are turned off</string>
     <string name="developer_show_non_running_trains">Show trains not running today</string>

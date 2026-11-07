@@ -16,9 +16,17 @@
     <string name="llt_import_title">Import LuLuTong database</string>
     <string name="llt_import_button">Import</string>
     <string name="llt_current_version">Current LuLuTong database version</string>
+    <string name="llt_official_version">Versi rasmi</string>
     <string name="llt_version_empty">No database</string>
     <string name="llt_import_success">LuLuTong database imported</string>
     <string name="llt_import_failed">Unable to import LuLuTong database</string>
+    <string name="llt_import_duplicate">Pangkalan data yang sama dilangkau</string>
+    <string name="llt_import_summary">Diimport %1$d, pendua %2$d, gagal %3$d</string>
+    <string name="llt_switch_failed">Tidak dapat menukar pangkalan data</string>
+    <string name="llt_saved_versions">Versi yang diimport</string>
+    <string name="llt_delete_failed">Tidak dapat memadamkan pangkalan data</string>
+    <string name="llt_restore_failed">Tidak dapat memulihkan pangkalan data</string>
+    <string name="llt_same_date_version">Versi %1$d</string>
     <string name="network_features_enabled">Use online features</string>
     <string name="network_features_disabled">Online features are turned off</string>
     <string name="developer_show_non_running_trains">Show trains not running today</string>
