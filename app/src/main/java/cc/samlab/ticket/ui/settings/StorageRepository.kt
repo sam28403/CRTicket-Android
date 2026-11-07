@@ -1,6 +1,7 @@
 package cc.samlab.ticket.ui.settings
 
 import android.content.Context
+import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.railfan.VehiclePhotoCache
 import cc.samlab.ticket.diagnostics.ErrorReports
@@ -14,7 +15,7 @@ internal enum class StorageKind(val title: Int) {
     SHARES(R.string.storage_shares),
     EXPORTS(R.string.storage_exports),
     ERROR_LOGS(R.string.storage_error_logs),
-    TEST_SCREENSHOTS(R.string.storage_test_screenshots),
+    TEST_ARTIFACTS(R.string.storage_test_artifacts),
 }
 
 internal data class StorageSnapshot(
@@ -28,7 +29,7 @@ internal class StorageRepository(private val context: Context) {
     private fun targets(kind: StorageKind): List<File> = when (kind) {
         StorageKind.TIMETABLE -> emptyList()
         StorageKind.ERROR_LOGS -> listOf(ErrorReports.directory(context))
-        StorageKind.TEST_SCREENSHOTS -> StorageTestScreenshots.files(context)
+        StorageKind.TEST_ARTIFACTS -> privateTestTargets() + externalTestTargets()
         StorageKind.WEB -> listOf(
             File(context.cacheDir, "WebView/Default/HTTP Cache"),
             File(context.cacheDir, "WebView/Default/Cache"),
@@ -43,24 +44,32 @@ internal class StorageRepository(private val context: Context) {
     }
 
     fun scan(archiveBytes: Long): StorageSnapshot {
-        val screenshots = targets(StorageKind.TEST_SCREENSHOTS)
+        val privateTests = privateTestTargets()
+        val externalTests = externalTestTargets()
+        val privateTestBytes = privateTests.sumOf(::size)
         val kinds = StorageKind.entries.filter {
-            it != StorageKind.TEST_SCREENSHOTS || screenshots.isNotEmpty()
+            it != StorageKind.TEST_ARTIFACTS || privateTests.isNotEmpty() || externalTests.isNotEmpty()
         }
         return StorageSnapshot(
             kinds.associateWith { kind ->
                 when (kind) {
                     StorageKind.TIMETABLE -> archiveBytes
-                    StorageKind.TEST_SCREENSHOTS -> screenshots.sumOf(::size)
+                    StorageKind.TEST_ARTIFACTS -> privateTestBytes + externalTests.sumOf(::size)
                     else -> targets(kind).sumOf(::size)
                 }
             },
             (size(context.filesDir) + size(File(context.dataDir, "shared_prefs")) +
                 size(File(context.dataDir, "app_webview")) -
                 size(File(context.dataDir, "app_webview/Default/HTTP Cache")) -
-                size(ErrorReports.directory(context)) - archiveBytes).coerceAtLeast(0),
+                size(ErrorReports.directory(context)) - privateTestBytes - archiveBytes).coerceAtLeast(0),
         )
     }
+
+    private fun privateTestTargets(): List<File> =
+        if (BuildConfig.CI_BUILD) StorageTestArtifacts.privateTargets(context.filesDir) else emptyList()
+
+    private fun externalTestTargets(): List<File> =
+        StorageTestArtifacts.externalTargets(context, BuildConfig.CI_BUILD)
 
     fun clear(kind: StorageKind) {
         require(kind != StorageKind.WEB && kind != StorageKind.TIMETABLE)

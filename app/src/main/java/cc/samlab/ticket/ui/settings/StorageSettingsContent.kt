@@ -42,7 +42,7 @@ internal fun StorageSettingsContent(controller: StorageController, visible: Bool
             clearAll = true
             pending = kinds.filter {
                 (snapshot.sizes[it] ?: 0) > 0 ||
-                    it == StorageKind.TEST_SCREENSHOTS || it == StorageKind.VEHICLE_PHOTOS
+                    it == StorageKind.TEST_ARTIFACTS || it == StorageKind.VEHICLE_PHOTOS
             }.toSet()
         }
         SettingsGroup(stringResource(R.string.storage_categories)) {
@@ -52,7 +52,7 @@ internal fun StorageSettingsContent(controller: StorageController, visible: Bool
                     SettingsRow(
                         stringResource(kind.title), format(bytes), index, kinds.size,
                         controller.loaded && !controller.busy &&
-                            (bytes > 0 || kind == StorageKind.TEST_SCREENSHOTS),
+                            (bytes > 0 || kind == StorageKind.TEST_ARTIFACTS),
                         {
                             clearAll = false
                             pending = setOf(kind)
@@ -133,7 +133,7 @@ private fun StorageOverview(
                 onClick = onClear,
                 enabled = controller.loaded && !controller.busy &&
                     (controller.snapshot.cleanable > 0 ||
-                        StorageKind.TEST_SCREENSHOTS in controller.snapshot.sizes),
+                        StorageKind.TEST_ARTIFACTS in controller.snapshot.sizes),
                 modifier = Modifier.fillMaxWidth().testTag("storage-clear-all"),
                 contentPadding = PaddingValues(16.dp),
             ) { Text(stringResource(R.string.storage_clear_all)) }
