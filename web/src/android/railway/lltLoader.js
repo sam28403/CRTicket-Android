@@ -1,7 +1,7 @@
 import { timetableAutoUpdate } from '../networkFeatures.js'
 import { nativeFetch } from './nativeFetch.js'
 import { parseLltArchive } from './lltParser.js'
-import { readArchive, writeArchive, clearArchive } from './archiveStore.js'
+import { readEffectiveArchive, writeArchive, clearArchive } from './archiveStore.js'
 
 const base = 'http://down.lltskb.com'
 const fallback = 'http://223.107.87.50:8011/an.db'
@@ -27,7 +27,7 @@ export async function decodeArchive(bytes) {
 
 export function createLltLoader(
     fetchImpl = nativeFetch,
-    store = { readArchive, writeArchive, clearArchive },
+    store = { readArchive: readEffectiveArchive, writeArchive, clearArchive },
     bundledArchive,
     options = {},
 ) {
@@ -45,6 +45,7 @@ export function createLltLoader(
     let initialization
     let pending
     let clearing
+    let importing
     let generation = 0
     let refreshController
     let revision = 0
@@ -76,7 +77,7 @@ export function createLltLoader(
         if (manifest && (typeof version !== 'string' || !/^\d{8}$/.test(version))) {
             throw new Error('路路通版本响应异常')
         }
-        if (!cached || !version || cached.version !== version) {
+        if (!cached || imported || !version || cached.version !== version) {
             let bytes
             if (manifest) {
                 try {
@@ -98,19 +99,20 @@ export function createLltLoader(
             revision++
             publish(cached)
             checkedAt = Date.now()
-            await store.writeArchive({ bytes, checkedAt }).catch(() => {})
+            await store.writeArchive({ bytes, checkedAt, version: next.version }).catch(() => {})
         } else {
             checkedAt = Date.now()
         }
         return cached
     }
 
-    async function load() {
+    async function load(fresh = false, localOnly = false) {
         await clearing
+        if (importing) await Promise.allSettled([importing])
         const currentGeneration = generation
         if (!initialization) {
             initialization = (async () => {
-                const saved = await store.readArchive().catch(() => null)
+                const saved = await store.readArchive(autoUpdate()).catch(() => null)
                 if (saved) {
                     try {
                         cached = await decodeArchive(new Uint8Array(saved.bytes))
@@ -133,25 +135,23 @@ export function createLltLoader(
         await initialization
         if (currentGeneration !== generation) throw new DOMException('Cache cleared', 'AbortError')
         if (cached) publish(cached)
+        if (localOnly) return cached
         if (!autoUpdate()) {
             if (!cached) throw new Error('本机暂无路路通数据库')
             return cached
         }
-        if (cached && Date.now() - checkedAt < 3600000) return cached
+        if (!fresh && cached && Date.now() - checkedAt < 3600000) return cached
         if (!pending) {
             // Failed refreshes do not advance checkedAt; the next query retries immediately.
             pending = refresh().finally(() => { pending = null })
             if (cached) pending.catch(() => {})
         }
         // An already downloaded database is immediately available while checking updates.
-        return cached || pending
+        return fresh ? pending : cached || pending
     }
 
     // Quiz counts require a successful online version check, never stale fallback.
-    load.fresh = async function fresh() {
-        await load()
-        return autoUpdate() ? pending || refresh() : cached
-    }
+    load.fresh = () => load(true)
 
     load.pauseUpdates = async function pauseUpdates() {
         refreshController?.abort(new DOMException('Updates disabled', 'AbortError'))
@@ -159,23 +159,45 @@ export function createLltLoader(
     }
 
     if (typeof __CRTICKET_CI__ === 'undefined' || __CRTICKET_CI__) {
-        load.importArchive = async function importArchive(bytes) {
-            if (autoUpdate()) throw new Error('请先关闭自动更新')
-            const next = await decodeArchive(bytes)
+        load.local = () => load(false, true)
+
+        load.reloadSelection = async function reloadSelection() {
             await clearing
-            await load.pauseUpdates()
-            await Promise.allSettled([initialization])
-            if (autoUpdate()) throw new Error('请先关闭自动更新')
-            // Commit before replacing memory so a failed save preserves the current database.
-            await store.writeArchive({ bytes, checkedAt: 0, imported: true })
-            generation++
-            cached = next
-            imported = true
-            revision++
-            checkedAt = 0
-            initialization = Promise.resolve()
-            publish(next)
-            return next
+            await Promise.allSettled([importing, initialization])
+            if (imported) {
+                generation++
+                revision++
+                cached = undefined
+                published = undefined
+                imported = false
+                initialization = undefined
+                checkedAt = 0
+                publishVersion({ version: '' })
+            }
+        }
+
+        load.importArchive = function importArchive(bytes, commit = archive => store.writeArchive(archive)) {
+            if (importing) return Promise.reject(new Error('正在导入路路通数据'))
+            const previousClear = clearing
+            importing = (async () => {
+                if (autoUpdate()) throw new Error('请先关闭自动更新')
+                const next = await decodeArchive(bytes)
+                await previousClear
+                await load.pauseUpdates()
+                await Promise.allSettled([initialization])
+                if (autoUpdate()) throw new Error('请先关闭自动更新')
+                // Commit before replacing memory so a failed save preserves the current database.
+                await commit({ bytes, checkedAt: 0, imported: true }, next.version)
+                generation++
+                cached = next
+                imported = true
+                revision++
+                checkedAt = 0
+                initialization = Promise.resolve()
+                publish(next)
+                return next
+            })().finally(() => { importing = undefined })
+            return importing
         }
 
     }
@@ -187,7 +209,7 @@ export function createLltLoader(
         refreshController?.abort(new DOMException('Cache cleared', 'AbortError'))
         clearing = (async () => {
             // An initialization or download must not write the archive back after cleanup.
-            await Promise.allSettled([initialization, pending])
+            await Promise.allSettled([initialization, pending, importing])
             if (imported && cached) {
                 await store.clearArchive()
                 initialization = Promise.resolve()

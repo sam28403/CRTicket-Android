@@ -57,6 +57,10 @@ function convertSegments(bytes) {
     return Buffer.concat([count, ...records])
 }
 
+if (process.argv.length < 3) {
+    throw new Error('请提供一个或多个旧版数据目录')
+}
+
 for (const argument of process.argv.slice(2)) {
     const directory = resolve(argument)
     const source = {}
@@ -65,9 +69,6 @@ for (const argument of process.argv.slice(2)) {
         source[name] = await readFile(resolve(directory, name))
     }
     const version = source['ver.txt'].toString().trim()
-    if (!['20180118', '20191108'].includes(version)) {
-        throw new Error(`尚未核验的旧版格式：${version}`)
-    }
     // Preserve every source byte separately; old optional metadata has a different layout.
     const files = Object.fromEntries(Object.entries(source).map(([name, bytes]) =>
         [`original/${name}`, bytes]))
@@ -79,15 +80,28 @@ for (const argument of process.argv.slice(2)) {
         // Some old masks contain unused high bits; only one period is meaningful.
         return `${period} ${mask % 2 ** period}`
     }).join('\n'))
-    for (let i = 0; i < 20; i++) {
-        files[`T${i}.dat`] = convertTrains(source[`t${i}.dat`], version === '20180118' ? 13 : 14)
+    if (source['xw.dat']) files['xw.dat'] = convertSegments(source['xw.dat'])
+    const candidates = []
+    for (const headerSize of [13, 14]) {
+        try {
+            const converted = { ...files }
+            for (let i = 0; i < 20; i++) {
+                converted[`T${i}.dat`] = convertTrains(source[`t${i}.dat`], headerSize)
+            }
+            const bytes = zipSync(converted, { level: 9 })
+            const database = parseLltArchive(bytes)
+            candidates.push({ headerSize, bytes, database })
+        } catch {
+            // Try the other known record layout.
+        }
     }
-    files['xw.dat'] = convertSegments(source['xw.dat'])
-    const bytes = zipSync(files, { level: 9 })
-    const database = parseLltArchive(bytes)
+    if (candidates.length !== 1) {
+        throw new Error(`无法唯一识别版本 ${version} 的数据格式（有效方案：${candidates.length}）`)
+    }
+    const { headerSize, bytes, database } = candidates[0]
     await writeFile(resolve(directory, 'an.db'), bytes)
     console.log(JSON.stringify({
-        directory, version: database.version, trains: database.trains.size,
+        directory, version: database.version, headerSize, trains: database.trains.size,
         stops: [...database.trains.values()].reduce((sum, train) => sum + train.stops.length, 0),
         segmentedTrains: [...database.trains.values()].filter(train =>
             train.stops.some(stop => stop.arrivalTrain)).length,

@@ -1,9 +1,10 @@
 package cc.samlab.ticket.ui.settings
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
@@ -11,6 +12,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun TimetableDeveloperGroup(controller: TimetableSettingsController, onImport: () -> Unit) {
@@ -25,33 +28,61 @@ internal fun TimetableDeveloperGroup(controller: TimetableSettingsController, on
                 SettingsSwitch(controller.autoUpdate, canUpdate, title, controller::changeAutoUpdate)
             }
         }
-        val enabled = !controller.autoUpdate && !controller.busy
+        val enabled = !controller.busy
         Box(Modifier.alpha(if (enabled) 1f else 0.38f).testTag("llt-import-entry")) {
             SettingsRow(stringResource(R.string.llt_import_title), "", 1, 2, enabled, onImport)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun TimetableImportContent(controller: TimetableSettingsController, visible: Boolean) {
     if (!BuildConfig.CI_BUILD) return
     LaunchedEffect(visible) { if (visible) controller.refresh() }
-    SettingsPanel(rememberScrollState(), "llt-import-content") {
-        Button(
-            onClick = controller::chooseFile,
-            enabled = !controller.autoUpdate && !controller.busy,
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp).heightIn(min = 56.dp)
-                .testTag("llt-import-button"),
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    var undoJob by remember { mutableStateOf<Job?>(null) }
+    val deleted = stringResource(R.string.speed_deleted)
+    val undo = stringResource(R.string.speed_undo)
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.align(Alignment.TopCenter).widthIn(max = 640.dp).fillMaxSize()
+                .testTag("llt-import-content"),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 68.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            if (controller.busy) LoadingIndicator(Modifier.size(24.dp))
-            else Text(stringResource(R.string.llt_import_button))
+            item(key = "import-button") {
+                val colors = ButtonDefaults.buttonColors()
+                Button(
+                    onClick = controller::chooseFile,
+                    enabled = !controller.busy,
+                    colors = colors.copy(
+                        disabledContainerColor = colors.containerColor,
+                        disabledContentColor = colors.contentColor,
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp).heightIn(min = 56.dp)
+                        .testTag("llt-import-button"),
+                ) {
+                    Text(stringResource(R.string.llt_import_button))
+                }
+            }
+            timetableVersionItems(controller, !controller.busy && !controller.autoUpdate) { id ->
+                controller.delete(id) {
+                    undoJob?.cancel()
+                    snackbar.currentSnackbarData?.dismiss()
+                    undoJob = scope.launch {
+                        var restored = false
+                        try {
+                            restored = snackbar.showSnackbar(deleted, undo, duration = SnackbarDuration.Short) ==
+                                SnackbarResult.ActionPerformed
+                            if (restored) controller.restore(id)
+                        } finally {
+                            if (!restored) controller.discardUndo(id)
+                        }
+                    }
+                }
+            }
         }
-        SettingsGroup(stringResource(R.string.llt_current_version)) {
-            SettingsRow(
-                controller.version.ifEmpty { stringResource(R.string.llt_version_empty) },
-                "", 0, 1, false, {}, trailing = {},
-            )
-        }
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
 }

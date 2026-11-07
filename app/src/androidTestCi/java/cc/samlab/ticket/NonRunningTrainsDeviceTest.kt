@@ -4,7 +4,6 @@ import cc.samlab.ticket.ui.settings.developer
 import cc.samlab.ticket.ui.settings.timetable
 import cc.samlab.ticket.ui.settings.debugTickets
 
-import android.net.Uri
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -50,8 +49,7 @@ class NonRunningTrainsDeviceTest {
                 "window.crticketTimetable.configure().then(() => window.nonRunningStore('save'))")
             awaitStore(fixture)
             assets.open("non-running-trains.db").use { input -> file.outputStream().use { output -> input.copyTo(output) } }
-            fixture.instrumentation.runOnMainSync { settings.timetable.importFile(Uri.fromFile(file)) }
-            compose.waitUntil(30_000) { !settings.timetable.busy }
+            importAndSelectTimetable(fixture, compose, settings.timetable, file)
             assertEquals("20000101", settings.timetable.version)
             fixture.evaluate("window.dispatchEvent(new Event('crticket-timetable-visibility-changed'))")
 

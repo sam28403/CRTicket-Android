@@ -4,7 +4,6 @@ import cc.samlab.ticket.ui.settings.developer
 import cc.samlab.ticket.ui.settings.timetable
 import cc.samlab.ticket.ui.settings.debugTickets
 
-import android.net.Uri
 import android.os.Debug
 import android.os.SystemClock
 import androidx.compose.ui.test.*
@@ -66,8 +65,7 @@ class ImportedTimetablePerformanceDeviceTest {
             report.put("appPssBeforeKiB", Debug.getPss())
             fixture.evaluate("window.timetablePerfStart()")
             val importStart = SystemClock.elapsedRealtime()
-            fixture.instrumentation.runOnMainSync { settings.timetable.importFile(Uri.fromFile(source)) }
-            compose.waitUntil(60_000) { !settings.timetable.busy }
+            importAndSelectTimetable(fixture, compose, settings.timetable, source)
             report.put("importMs", SystemClock.elapsedRealtime() - importStart)
                 .put("importJs", JSONObject(fixture.evaluate("window.timetablePerfStop()")))
                 .put("importFrames", frames.summary()).put("appPssAfterKiB", Debug.getPss())

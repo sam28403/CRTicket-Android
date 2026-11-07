@@ -1,13 +1,41 @@
 import { loadLltDatabase } from './railway/lltLoader.js'
+import {
+  deleteTimetable, importTimetable, restoreTimetable, selectOfficialTimetable, selectTimetable, timetableCatalog,
+} from './railway/importedArchives.js'
+import { timetableAutoUpdate } from './networkFeatures.js'
 
 export function initializeTimetableSettings() {
   let transfer
-  let importing = false
-  const send = (id, success) => globalThis.CRTicketAndroid?.settingsResult(JSON.stringify({ id, success }))
+  let busy = false
+  let removed
+  let snapshotSequence = 0
+  const send = (id, status, details) => globalThis.CRTicketAndroid?.settingsResult(JSON.stringify({
+    id, status, success: status === 'success', ...details,
+  }))
+  const manual = () => globalThis.CRTicketDeveloper?.lltAutoUpdate?.() === false
+
+  async function change(id, action, manualOnly = true) {
+    if (busy || (manualOnly && !manual())) return send(id, 'failed')
+    busy = true
+    const revision = loadLltDatabase.revision
+    let status
+    try {
+      status = await action()
+      if (manualOnly && status === 'success' && revision !== loadLltDatabase.revision) {
+        await loadLltDatabase().catch(() => {})
+        window.dispatchEvent(new Event('crticket-timetable-replaced'))
+      }
+    } catch {
+      status = 'failed'
+    } finally {
+      busy = false
+    }
+    send(id, status)
+  }
+
   window.crticketTimetable = {
     begin(id, size) {
-      if (importing || globalThis.CRTicketDeveloper?.lltAutoUpdate?.() !== false
-        || !Number.isInteger(size) || size <= 0 || size > 16 * 1024 * 1024) return false
+      if (busy || !Number.isInteger(size) || size <= 0 || size > 16 * 1024 * 1024) return false
       transfer = { id, bytes: new Uint8Array(size), offset: 0 }
       return true
     },
@@ -19,37 +47,63 @@ export function initializeTimetableSettings() {
       transfer.offset += chunk.length
       return true
     },
-    async finish(id) {
-      if (!transfer || transfer.id !== id || importing) return send(id, false)
+    finish(id) {
+      if (!transfer || transfer.id !== id) return send(id, 'failed')
       const current = transfer
       transfer = null
-      importing = true
-      try {
+      return change(id, async () => {
         if (current.offset !== current.bytes.length) throw new Error('文件不完整')
-        await loadLltDatabase.importArchive(current.bytes)
-        window.dispatchEvent(new Event('crticket-timetable-replaced'))
-        send(id, true)
-      } catch {
-        send(id, false)
-      } finally {
-        importing = false
-      }
+        return await importTimetable(current.bytes) ? 'success' : 'duplicate'
+      }, false)
+    },
+    cancel(id) {
+      if (transfer?.id === id) transfer = null
+    },
+    select(id, archiveId) {
+      return change(id, async () => {
+        if (archiveId) await selectTimetable(archiveId)
+        else await selectOfficialTimetable()
+        return 'success'
+      })
+    },
+    delete(id, archiveId) {
+      return change(id, async () => {
+        removed = await deleteTimetable(archiveId)
+        return 'success'
+      })
+    },
+    restore(id, archiveId) {
+      return change(id, async () => {
+        if (removed?.id !== archiveId) return 'failed'
+        await restoreTimetable(removed)
+        removed = null
+        return 'success'
+      })
+    },
+    discardUndo(archiveId) {
+      if (removed?.id === archiveId) removed = null
     },
     async configure() {
-      await loadLltDatabase.pauseUpdates()
-      if (globalThis.CRTicketDeveloper?.lltAutoUpdate?.() !== false) {
-        await loadLltDatabase().catch(() => {})
+      if (!timetableAutoUpdate()) {
+        await loadLltDatabase.pauseUpdates()
+        return
       }
+      const revision = loadLltDatabase.revision
+      await selectOfficialTimetable().catch(() => {})
+      await loadLltDatabase.fresh().catch(() => {})
+      if (revision !== loadLltDatabase.revision) window.dispatchEvent(new Event('crticket-timetable-replaced'))
     },
-    async snapshot() {
+    async snapshot(localOnly = false) {
+      const sequence = ++snapshotSequence
+      const database = await (localOnly ? loadLltDatabase.local() : loadLltDatabase()).catch(() => null)
+      const version = database?.version ?? null
       try {
-        const database = await loadLltDatabase()
-        send('timetable:snapshot', true)
-        return database.version
+        const catalog = await timetableCatalog(version, timetableAutoUpdate())
+        if (sequence === snapshotSequence) send('timetable:snapshot', 'success', { ...catalog, version })
       } catch {
-        send('timetable:snapshot', false)
-        return null
+        if (sequence === snapshotSequence) send('timetable:snapshot', 'failed')
       }
+      return version
     },
   }
 }

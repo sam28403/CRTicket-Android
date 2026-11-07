@@ -45,9 +45,11 @@ class AndroidBridge(
 ) {
     @JavascriptInterface
     fun lltVersion(version: String) {
+        val versions = activity.getSharedPreferences("data-versions", 0)
         if (version.matches(Regex("\\d{8}"))) {
-            activity.getSharedPreferences("data-versions", 0).edit()
-                .putString("llt", version).apply()
+            versions.edit().putString("llt", version).apply()
+        } else if (cc.samlab.ticket.BuildConfig.CI_BUILD && version.isEmpty()) {
+            versions.edit().remove("llt").apply()
         }
     }
 

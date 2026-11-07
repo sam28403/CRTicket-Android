@@ -50,12 +50,7 @@ internal fun SettingsRow(
         onClick = onClick,
         enabled = enabled,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shape = RoundedCornerShape(
-            topStart = if (index == 0) 28.dp else 4.dp,
-            topEnd = if (index == 0) 28.dp else 4.dp,
-            bottomStart = if (index == count - 1) 28.dp else 4.dp,
-            bottomEnd = if (index == count - 1) 28.dp else 4.dp,
-        ),
+        shape = settingsRowShape(index, count),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
@@ -74,6 +69,12 @@ internal fun SettingsRow(
             trailing()
         }
     }
+}
+
+internal fun settingsRowShape(index: Int, count: Int): RoundedCornerShape {
+    val top = if (index == 0) 28.dp else 4.dp
+    val bottom = if (index == count - 1) 28.dp else 4.dp
+    return RoundedCornerShape(topStart = top, topEnd = top, bottomStart = bottom, bottomEnd = bottom)
 }
 
 @Composable

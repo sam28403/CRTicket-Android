@@ -1,5 +1,6 @@
 package cc.samlab.ticket.ui.settings
 
+import android.net.Uri
 import android.util.Base64
 import android.webkit.WebView
 import android.widget.Toast
@@ -9,12 +10,17 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.lifecycleScope
 import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 import kotlin.coroutines.resume
+
+internal data class TimetableVersion(val id: String, val date: String)
 
 internal class TimetableSettingsController(
     private val activity: ComponentActivity,
@@ -37,44 +43,124 @@ internal class TimetableSettingsController(
 
     var version by mutableStateOf(versions.getString("llt", "").orEmpty())
         private set
+    var catalog by mutableStateOf(emptyList<TimetableVersion>())
+        private set
+    var activeId by mutableStateOf("")
+        private set
+    var officialVersion by mutableStateOf("")
+        private set
     var busy by mutableStateOf(false)
         private set
-    private var operation = ""
-    private val timeout = Runnable { finish(false) }
-    private val picker = activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri == null) {
+    private var pending: Pair<String, CompletableDeferred<String>>? = null
+    private val picker = activity.registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        if (uris.isEmpty()) {
             busy = false
-        } else importFile(uri)
+        } else importFiles(uris)
     }
 
-    internal fun importFile(uri: android.net.Uri) {
+    internal fun importFile(uri: Uri) {
+        if (!busy) importFiles(listOf(uri))
+    }
+
+    private fun importFiles(uris: List<Uri>) {
+        busy = true
+        activity.lifecycleScope.launch {
+            var imported = 0
+            var duplicates = 0
+            var failed = 0
+            try {
+                for (uri in uris) {
+                    when (runOperation { id -> transfer(uri, id) }) {
+                        "success" -> imported++
+                        "duplicate" -> duplicates++
+                        else -> failed++
+                    }
+                }
+                val message = if (uris.size > 1) {
+                    activity.getString(R.string.llt_import_summary, imported, duplicates, failed)
+                } else {
+                    activity.getString(when {
+                        imported > 0 -> R.string.llt_import_success
+                        duplicates > 0 -> R.string.llt_import_duplicate
+                        else -> R.string.llt_import_failed
+                    })
+                }
+                Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+            } finally {
+                finish()
+            }
+        }
+    }
+
+    private suspend fun transfer(uri: Uri, id: String) {
+        val bytes = withContext(Dispatchers.IO) {
+            readSettingsFile(activity, uri, 16 * 1024 * 1024)
+        }
+        check(evaluate("window.crticketTimetable?.begin($id, ${bytes.size})") == "true")
+        var offset = 0
+        while (offset < bytes.size) {
+            val count = minOf(192 * 1024, bytes.size - offset)
+            val chunk = withContext(Dispatchers.Default) {
+                Base64.encodeToString(bytes, offset, count, Base64.NO_WRAP)
+            }
+            check(evaluate("window.crticketTimetable.append($id, ${JSONObject.quote(chunk)})") == "true")
+            offset += count
+        }
+        check(evaluate("Boolean(window.crticketTimetable?.finish($id))") == "true")
+    }
+
+    fun select(id: String) {
+        if (id == activeId) return
+        changeCatalog("select", id, R.string.llt_switch_failed)
+    }
+
+    fun delete(id: String, onDeleted: () -> Unit) {
+        changeCatalog("delete", id, R.string.llt_delete_failed, onDeleted)
+    }
+
+    fun restore(id: String) {
+        changeCatalog("restore", id, R.string.llt_restore_failed)
+    }
+
+    fun discardUndo(id: String) {
+        web.evaluateJavascript("window.crticketTimetable?.discardUndo(${JSONObject.quote(id)})", null)
+    }
+
+    private fun changeCatalog(action: String, id: String, failure: Int, onSuccess: () -> Unit = {}) {
+        if (autoUpdate || busy) return
         busy = true
         activity.lifecycleScope.launch {
             try {
-                check(!autoUpdate && BuildConfig.CI_BUILD)
-                val bytes = withContext(Dispatchers.IO) {
-                    readSettingsFile(activity, uri, 16 * 1024 * 1024)
+                val result = runOperation { operation ->
+                    val arguments = "$operation, ${JSONObject.quote(id)}"
+                    check(evaluate("Boolean(window.crticketTimetable?.$action($arguments))") == "true")
                 }
-                check(bytes.isNotEmpty())
-                operation = "timetable:${java.util.UUID.randomUUID()}"
-                val id = JSONObject.quote(operation)
-                check(evaluate("window.crticketTimetable?.begin($id, ${bytes.size})") == "true")
-                var offset = 0
-                while (offset < bytes.size) {
-                    val count = minOf(192 * 1024, bytes.size - offset)
-                    val chunk = withContext(Dispatchers.Default) {
-                        Base64.encodeToString(bytes, offset, count, Base64.NO_WRAP)
-                    }
-                    check(evaluate("window.crticketTimetable.append($id, ${JSONObject.quote(chunk)})") == "true")
-                    offset += count
-                }
-                web.postDelayed(timeout, 90_000)
-                evaluate("window.crticketTimetable.finish($id); true")
-            } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                throw cancelled
-            } catch (_: Exception) {
-                finish(false)
+                if (result == "success") onSuccess()
+                else Toast.makeText(activity, failure, Toast.LENGTH_LONG).show()
+            } finally {
+                finish()
             }
+        }
+    }
+
+    private suspend fun runOperation(action: suspend (String) -> Unit): String {
+        if (!BuildConfig.CI_BUILD) return "failed"
+        val operation = "timetable:${java.util.UUID.randomUUID()}"
+        val id = JSONObject.quote(operation)
+        val result = CompletableDeferred<String>()
+        pending = operation to result
+        return try {
+            withTimeoutOrNull(90_000) {
+                action(id)
+                result.await()
+            } ?: "failed"
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            "failed"
+        } finally {
+            pending = null
+            web.evaluateJavascript("window.crticketTimetable?.cancel($id)", null)
         }
     }
 
@@ -88,38 +174,46 @@ internal class TimetableSettingsController(
 
     fun refresh() {
         version = versions.getString("llt", "").orEmpty()
-        web.evaluateJavascript("window.crticketTimetable?.snapshot()", null)
+        web.evaluateJavascript("window.crticketTimetable?.snapshot(true)", null)
     }
 
     fun chooseFile() {
-        if (!BuildConfig.CI_BUILD || autoUpdate || busy) return
+        if (!BuildConfig.CI_BUILD || busy) return
         busy = true
         try {
             picker.launch("*/*")
         } catch (_: Exception) {
-            finish(false)
+            busy = false
+            Toast.makeText(activity, R.string.llt_import_failed, Toast.LENGTH_LONG).show()
         }
     }
 
     fun receive(result: JSONObject) {
         version = versions.getString("llt", "").orEmpty()
-        if (result.optString("id") == "timetable:snapshot") return
-        if (!busy || result.optString("id") != operation) return
-        finish(result.optBoolean("success"))
+        val id = result.optString("id")
+        if (id == "timetable:snapshot") {
+            val entries = result.optJSONArray("entries") ?: return
+            activeId = if (result.isNull("activeId")) "" else result.getString("activeId")
+            version = if (result.isNull("version")) "" else result.getString("version")
+            officialVersion = if (result.isNull("officialVersion")) "" else result.getString("officialVersion")
+            catalog = List(entries.length()) { index ->
+                val entry = entries.getJSONObject(index)
+                TimetableVersion(entry.getString("id"), entry.getString("version"))
+            }
+            return
+        }
+        pending?.let { (operation, response) ->
+            if (id == operation) response.complete(result.optString("status", "failed"))
+        }
     }
 
     fun close() {
         preferences.unregisterOnSharedPreferenceChangeListener(autoUpdateListener)
-        web.removeCallbacks(timeout)
     }
 
-    private fun finish(success: Boolean) {
-        web.removeCallbacks(timeout)
+    private fun finish() {
+        refresh()
         busy = false
-        operation = ""
-        version = versions.getString("llt", "").orEmpty()
-        Toast.makeText(activity, if (success) R.string.llt_import_success else R.string.llt_import_failed,
-            Toast.LENGTH_LONG).show()
     }
 
     private suspend fun evaluate(script: String): String = suspendCancellableCoroutine { continuation ->

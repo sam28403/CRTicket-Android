@@ -315,6 +315,26 @@ test('quiz fresh load rejects failed online checks even with a usable cached arc
     assert.equal((await load.fresh()).version, '20261004')
 })
 
+test('resuming automatic updates replaces a manual archive even with the same version date', async () => {
+    let enabled = false
+    let saved = { bytes: archive(), imported: true, checkedAt: 0 }
+    const requests = []
+    const load = createLltLoader(async url => {
+        requests.push(url)
+        return new Response(url.endsWith('android.ver')
+            ? '{"version":{"data":"20261004"}}' : archive())
+    }, {
+        readArchive: async () => saved,
+        writeArchive: async archive => { saved = archive },
+    }, undefined, { autoUpdate: () => enabled })
+
+    const manual = await load()
+    enabled = true
+    assert.notEqual(await load.fresh(), manual)
+    assert.equal(saved.imported, undefined)
+    assert.deepEqual(requests, ['http://down.lltskb.com/android.ver', 'http://down.lltskb.com/an.db'])
+})
+
 
 test('bundled timetable works on first launch while the network is unavailable', async () => {
     let reads = 0

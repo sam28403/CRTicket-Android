@@ -43,14 +43,34 @@ class TimetableImportDeviceTest {
             store(fixture, "persist")
             fixture.instrumentation.runOnMainSync { controller.timetable.changeAutoUpdate(true) }
             fixture.navigate("/settings/developer")
-            compose.onNodeWithText(context.getString(R.string.llt_import_title)).assertIsNotEnabled()
-            compose.onNodeWithText(context.getString(R.string.llt_auto_update)).performScrollTo().performClick()
-            compose.onNodeWithText(context.getString(R.string.llt_import_title)).performScrollTo().performClick()
+            compose.onNodeWithText(context.getString(R.string.llt_import_title)).performScrollTo()
+                .assertIsEnabled().performClick()
             compose.onNodeWithTag("llt-import-button").assertIsEnabled()
             fixture.instrumentation.runOnMainSync { controller.timetable.importFile(Uri.fromFile(source)) }
-            compose.waitUntil(30_000) { !controller.timetable.busy }
+            compose.waitUntil(30_000) {
+                !controller.timetable.busy && controller.timetable.catalog.any { it.date == "20000101" }
+            }
+            val imported = controller.timetable.catalog.first { it.date == "20000101" }
+            assertTrue(controller.timetable.autoUpdate)
+            assertTrue(controller.timetable.activeId.isEmpty())
+            fixture.navigate("/settings/developer")
+            compose.onNodeWithText(context.getString(R.string.llt_auto_update)).performScrollTo().performClick()
+            compose.onNodeWithText(context.getString(R.string.llt_import_title)).performScrollTo().performClick()
+            if (controller.timetable.activeId != imported.id) {
+                compose.onNode(hasText(imported.date) and hasClickAction()).performScrollTo().performClick()
+            }
+            compose.waitUntil(30_000) { controller.timetable.activeId == imported.id }
             assertEquals("20000101", controller.timetable.version)
             compose.onNodeWithText("20000101").assertIsDisplayed()
+            compose.onNodeWithTag("llt-version:${imported.id}").performScrollTo()
+                .performTouchInput { swipeLeft() }
+            val deleted = compose.onAllNodesWithText(context.getString(R.string.speed_deleted))
+            compose.waitUntil(15_000) {
+                controller.timetable.catalog.none { it.id == imported.id } &&
+                    deleted.fetchSemanticsNodes().isNotEmpty()
+            }
+            compose.onNodeWithText(context.getString(R.string.speed_undo)).performClick()
+            compose.waitUntil(30_000) { controller.timetable.activeId == imported.id }
             val invalid = File(context.cacheDir, "invalid-import.db").apply { writeText("invalid") }
             try {
                 fixture.instrumentation.runOnMainSync { controller.timetable.importFile(Uri.fromFile(invalid)) }

@@ -16,9 +16,17 @@
     <string name="llt_import_title">导入路路通数据库</string>
     <string name="llt_import_button">导入</string>
     <string name="llt_current_version">当前路路通数据库版本</string>
+    <string name="llt_official_version">官方版本</string>
     <string name="llt_version_empty">暂无数据库</string>
     <string name="llt_import_success">路路通数据库导入成功</string>
     <string name="llt_import_failed">路路通数据库导入失败</string>
+    <string name="llt_import_duplicate">已存在相同的路路通数据库，已跳过</string>
+    <string name="llt_import_summary">已导入 %1$d 个，重复 %2$d 个，失败 %3$d 个</string>
+    <string name="llt_switch_failed">路路通数据库切换失败</string>
+    <string name="llt_saved_versions">已导入的版本</string>
+    <string name="llt_delete_failed">路路通数据库删除失败</string>
+    <string name="llt_restore_failed">路路通数据库恢复失败</string>
+    <string name="llt_same_date_version">版本 %1$d</string>
     <string name="network_features_enabled">使用联网功能</string>
     <string name="network_features_disabled">联网功能已关闭</string>
     <string name="developer_show_non_running_trains">显示当日不开行车次</string>

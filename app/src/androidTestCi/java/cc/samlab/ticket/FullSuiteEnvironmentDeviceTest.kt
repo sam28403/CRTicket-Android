@@ -1,6 +1,5 @@
 package cc.samlab.ticket
 
-import android.net.Uri
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -55,8 +54,7 @@ class FullSuiteEnvironmentDeviceTest {
                 backup.writeText(original.toString())
                 val source = File(context.getExternalFilesDir(null), "llt-performance/an.db")
                 assertTrue(source.isFile)
-                fixture.instrumentation.runOnMainSync { settings.timetable.importFile(Uri.fromFile(source)) }
-                compose.waitUntil(60_000) { !settings.timetable.busy }
+                importAndSelectTimetable(fixture, compose, settings.timetable, source)
                 assertEquals("20261108", settings.timetable.version)
                 archive("cache")
                 fixture.instrumentation.runOnMainSync {
