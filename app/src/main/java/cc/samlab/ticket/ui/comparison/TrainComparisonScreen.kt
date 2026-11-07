@@ -12,20 +12,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
+import cc.samlab.ticket.ui.trainlist.BindTrainListScroll
 import cc.samlab.ticket.ui.trainlist.TrainListItem
+import cc.samlab.ticket.ui.trainlist.TrainListScrollView
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun TrainComparisonScreen(
     dark: Boolean,
@@ -33,10 +38,33 @@ internal fun TrainComparisonScreen(
     embedded: Boolean,
     onBack: () -> Unit,
 ) {
+    val back by rememberUpdatedState(onBack)
+    AndroidView(
+        factory = { TrainListScrollView(it).apply { id = R.id.expressive_train_comparison_view } },
+        modifier = Modifier.fillMaxSize(),
+        onRelease = { it.disposeContent() },
+        update = { scroll ->
+            scroll.setContent {
+                TrainComparisonContent(dark, pureBlack, embedded, scroll) { back() }
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun TrainComparisonContent(
+    dark: Boolean,
+    pureBlack: Boolean,
+    embedded: Boolean,
+    scroll: TrainListScrollView,
+    onBack: () -> Unit,
+) {
     val context = LocalContext.current
     val keyboard = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
     val list = rememberLazyGridState()
+    BindTrainListScroll(scroll.adapter, list)
     var input by rememberSaveable { mutableStateOf("") }
     var selected by rememberSaveable { mutableStateOf("") }
     var data by remember { mutableStateOf<TrainComparisonIndex?>(null) }
@@ -75,6 +103,9 @@ internal fun TrainComparisonScreen(
 
     MaterialExpressiveTheme(colorScheme = homeColorScheme(context, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
+        SideEffect {
+            scroll.updateColor(colors.primary.toArgb(), colors.onSurfaceVariant.toArgb())
+        }
         Surface(Modifier.fillMaxSize(), color = colors.surfaceContainer) {
             Column(Modifier.fillMaxSize()) {
                 TopAppBar(
@@ -100,7 +131,9 @@ internal fun TrainComparisonScreen(
                     else -> LazyVerticalGrid(
                         columns = GridCells.Adaptive(minSize = 320.dp),
                         state = list,
-                        modifier = Modifier.weight(1f).fillMaxWidth().testTag("train-comparison-list"),
+                        modifier = Modifier.weight(1f).fillMaxWidth()
+                            .testTag("train-comparison-list")
+                            .onGloballyPositioned { scroll.updateBounds(it.boundsInRoot()) },
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
