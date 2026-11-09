@@ -139,15 +139,9 @@ CI 的独立 artifact 名称为 `CRTicket-ci-offline-<提交 SHA>`。
 Release 新增附件 `CRTicket-vX.Y.Z-offline.apk`，纳入正式签名验证与 `SHA256SUMS.txt`；
 现有 APK、APKS 保留，APKS 不含内置时刻表。
 
-每次构建 `ciOffline` 或 `releaseOffline` 都会联网检查路路通的两个下载源，
-校验数据库可解析且包含车次，并打包可用来源中版本最新的数据。同一次 Gradle
-调用如果构建两个变体，两者共用同一份下载结果。打包清单记录数据版本、大小、来源和 SHA-256。
+构建 `ciOffline` 或 `releaseOffline` 时，从 `data/` 中选择版本号最大的`YYYYMMDD.db`，校验数据库版本与文件名一致且包含车次，然后生成打包清单。
 
-`offline-data/manifest.json` 中的版本作为构建的最低版本。如果所有来源均不可用、
-校验失败，或可用的最新数据低于此版本，离线包构建会失败。普通包无需执行这项下载。
-维护仓库快照时，可用 `node tools/offline-snapshot.mjs update` 下载新数据，
-或手动替换 `offline-data/an.db` 后用 `node tools/offline-snapshot.mjs import` 重建清单。
-下载源使用 HTTP，SHA-256 用于核对打包内容。
+新增数据请按数据库版本命名并放入 `data/`，保留已有文件。也可运行 `node tools/offline-snapshot.mjs update` 从路路通下载最新数据；同版本文件内容不一致时命令会报错，避免覆盖历史数据。打包不依赖网络。SHA-256 用于核对打包内容。
 
 首次无缓存时，离线包立即加载内置数据并在后台检查更新；已有有效缓存优先使用缓存，
 不会被内置数据覆盖。清除缓存后仍可使用内置数据。普通包无内置文件时继续联网下载。
