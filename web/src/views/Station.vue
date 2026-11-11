@@ -11,6 +11,7 @@ import StationBoardDiscovery from '@/components/StationBoardDiscovery.vue'
 import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useStationBoard } from '@/composables/useStationBoard.js'
 import { boardTabs, stationBoardRows } from '@/utils/stationBoard.js'
+import { isVientianeStation } from '@/utils/stationTimeZone.js'
 import { useNativeStationBoard } from '@/composables/useNativeStationBoard.js'
 
 const StationLocationMap = defineAsyncComponent(() => import('@/components/StationLocationMap.vue'))
@@ -36,9 +37,10 @@ const follow = ref(true)
 const rows = computed(() => activeTab.value === 'map'
   ? []
   : stationBoardRows(result.value?.trains || [], activeTab.value))
+const vientiane = computed(() => isVientianeStation(result.value?.station || station.value))
 const updatedTime = computed(() => result.value
   ? new Date(result.value.generatedAt).toLocaleTimeString('zh-CN', {
-    timeZone: 'Asia/Shanghai', hour12: false,
+    timeZone: vientiane.value ? 'Asia/Vientiane' : 'Asia/Shanghai', hour12: false,
   }) : '')
 const warningSummary = computed(() => {
   if (!result.value?.warnings?.length) return ''
@@ -88,7 +90,7 @@ function refresh() {
           </el-form-item>
         </el-form>
         <div class="heading-actions">
-          <time class="system-clock">北京时间 {{ clock.date }} {{ clock.time }}</time>
+          <time class="system-clock">{{ vientiane ? '万象时间' : '北京时间' }} {{ clock.date }} {{ clock.time }}</time>
           <el-button @click="$router.push('/train')">车次查询</el-button>
           <el-button :disabled="loading || !result" @click="refresh">刷新</el-button>
         </div>

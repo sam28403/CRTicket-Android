@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import cc.samlab.ticket.network.NetworkFeatures
 import cc.samlab.ticket.ui.settings.NativeSettingsController
 import cc.samlab.ticket.ui.settings.timetable
+import cc.samlab.ticket.ui.trainquery.NativeTrainQueryController
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -55,15 +56,15 @@ class TimetableImportDeviceTest {
             assertTrue(controller.timetable.activeId.isEmpty())
             fixture.navigate("/settings/developer")
             compose.onNodeWithText(context.getString(R.string.llt_auto_update)).performScrollTo().performClick()
-            compose.onNodeWithText(context.getString(R.string.llt_import_title)).performScrollTo().performClick()
+            compose.waitUntil(20_000) { !controller.timetable.autoUpdate && !controller.timetable.busy }
+            fixture.navigate("/settings/developer/timetable")
             if (controller.timetable.activeId != imported.id) {
-                compose.onNode(hasText(imported.date) and hasClickAction()).performScrollTo().performClick()
+                fixture.instrumentation.runOnMainSync { controller.timetable.select(imported.id) }
             }
             compose.waitUntil(30_000) { controller.timetable.activeId == imported.id }
             assertEquals("20000101", controller.timetable.version)
-            compose.onNodeWithText("20000101").assertIsDisplayed()
-            compose.onNodeWithTag("llt-version:${imported.id}").performScrollTo()
-                .performTouchInput { swipeLeft() }
+            val versionRow = scrollToVersion(imported.id)
+            versionRow.assertIsDisplayed().performTouchInput { swipeLeft() }
             val deleted = compose.onAllNodesWithText(context.getString(R.string.speed_deleted))
             compose.waitUntil(15_000) {
                 controller.timetable.catalog.none { it.id == imported.id } &&
@@ -80,7 +81,11 @@ class TimetableImportDeviceTest {
                 invalid.delete()
             }
             fixture.navigate("/about")
-            compose.onNodeWithText(context.getString(R.string.about_llt_version, "20000101")).assertIsDisplayed()
+            compose.onNodeWithText(context.getString(R.string.about_llt_version, "20000101"))
+                .performScrollTo().assertIsDisplayed()
+            fixture.navigate("/train")
+            compose.waitUntil(20_000) { fixture.evaluate("location.hash.includes('source=llt')") == "true" }
+            assertImportedTrainQuery(fixture)
             fixture.evaluate("window.crticketStorage('timetable-test', 'clear').then(() => window.lltCleanDone = true)")
             compose.waitUntil(20_000) { fixture.evaluate("window.lltCleanDone") == "true" }
             fixture.close()
@@ -89,7 +94,7 @@ class TimetableImportDeviceTest {
             fixture.navigate("/settings/developer/timetable")
             fixture.evaluate("window.crticketTimetable.snapshot().then(v => window.reopenedLltVersion = v)")
             compose.waitUntil(20_000) { fixture.evaluate("window.reopenedLltVersion") == "\"20000101\"" }
-            compose.onNodeWithText("20000101").assertIsDisplayed()
+            scrollToVersion(imported.id).assertIsDisplayed()
         } finally {
             if (fixture.activity.isDestroyed) fixture = TabletPageFixture(compose)
             fixture.evaluate(script)
@@ -104,6 +109,29 @@ class TimetableImportDeviceTest {
             source.delete()
             fixture.close()
         }
+    }
+
+    private fun scrollToVersion(id: String): SemanticsNodeInteraction {
+        val content = "llt-import-content"
+        compose.waitUntil(15_000) { compose.onAllNodesWithTag(content).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag(content).performScrollToKey(id)
+        return compose.onNodeWithTag("llt-version:$id")
+    }
+
+    private fun assertImportedTrainQuery(fixture: TabletPageFixture) {
+        lateinit var query: NativeTrainQueryController
+        fixture.instrumentation.runOnMainSync {
+            query = fixture.activity.testController<NativeTrainQueryController>()
+            query.edit(code = "G2", day = "2000-01-01")
+            query.dispatch("query")
+        }
+        compose.waitUntil(20_000) {
+            query.state.optJSONObject("result")?.optJSONArray("stops")?.length() == 2
+        }
+        val result = query.state.getJSONObject("result")
+        assertEquals("G2", result.getString("train"))
+        assertEquals("2000-01-01", result.getString("date"))
+        assertEquals("20000101", result.getString("mileageVersion"))
     }
 
     private fun store(fixture: TabletPageFixture, action: String) {

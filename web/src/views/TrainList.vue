@@ -17,7 +17,7 @@ const error = ref('')
 const errorKey = ref('')
 const result = shallowRef(null)
 const sortBy = ref({ key: 'train', order: 'asc' })
-const rows = computed(() => (result.value?.trains || []).map(row => {
+const rows = computed(() => (result.value?.trains || []).map((row, index) => {
   const parts = row.duration?.split(':').map(Number)
   const durationMinutes = parts?.length === 2 && parts.every(Number.isFinite)
     ? parts[0] * 60 + parts[1]
@@ -25,7 +25,7 @@ const rows = computed(() => (result.value?.trains || []).map(row => {
   const speed = row.mileage != null && durationMinutes > 0
     ? row.mileage * 60 / durationMinutes
     : null
-  return { ...row, durationMinutes, speed }
+  return { ...row, rowId: index, durationMinutes, speed }
 }))
 const sortedRows = computed(() => {
   const { key, order } = sortBy.value
@@ -78,7 +78,8 @@ const columns = computed(() => {
           query: {
             train: cellData,
             date: result.value.date,
-            ...(rowData.notRunning ? { source: 'llt' } : {}),
+            ...(rowData.notRunning || rowData.dataset === 'lcr' ? { source: 'llt' } : {}),
+            ...(rowData.dataset === 'lcr' ? { dataset: 'lcr' } : {}),
           },
         },
       }, () => cellData),
@@ -287,7 +288,7 @@ onBeforeUnmount(() => {
             :height="height"
             :row-height="compactTable ? 60 : 48"
             :header-height="48"
-            row-key="train"
+            row-key="rowId"
             fixed
             @column-sort="sortColumns"
             @scroll="rememberScroll"

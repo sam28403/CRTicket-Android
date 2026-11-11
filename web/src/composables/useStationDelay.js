@@ -6,6 +6,7 @@ import { displayTrainCode } from '../utils/trainDisplay.js'
 import { applyStationDelay } from '../utils/stationDelay.js'
 import { useDailyDelayCache } from './useDailyDelayCache.js'
 import { mergeDelayOffsets, stationDelayCacheKey, stationDelayRowKey } from '../utils/delayCache.js'
+import { isVientianeStation } from '../utils/stationTimeZone.js'
 import { trainQueryRange } from '../utils/trainQueryDate.js'
 
 async function queryNativeDelay(payload, signal) {
@@ -29,7 +30,7 @@ export function useStationDelay(schedule, queryDelay = queryNativeDelay) {
   async function refresh() {
     cancel()
     const snapshot = schedule.value
-    if (!online.value || !snapshot?.trains.length) return
+    if (!online.value || !snapshot?.trains.length || isVientianeStation(snapshot.station)) return
     const id = generation
     const day = trainQueryRange().today
     const key = stationDelayCacheKey(snapshot)

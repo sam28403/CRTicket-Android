@@ -35,7 +35,7 @@ internal fun ExpressiveStationBoardScreen(
     val hasTrains = controller.tabs[StationTab.ALL].orEmpty().isNotEmpty()
     val failed = !controller.loading && controller.error.isNotEmpty() && !hasTrains
     val textResources = rememberAppText()
-    val timing by rememberStationBoardTiming(rows, active)
+    val timing by rememberStationBoardTiming(rows, active, controller.vientiane)
     val index = timing.currentIndex
     LaunchedEffect(list, index, controller.follow, controller.revision, active) {
         if (active && controller.follow && rows.isNotEmpty()) list.animateToCurrentTrain(index)

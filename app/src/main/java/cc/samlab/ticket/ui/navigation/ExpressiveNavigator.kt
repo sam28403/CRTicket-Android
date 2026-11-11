@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cc.samlab.ticket.network.NetworkFeatures
 
 /** One native back stack, with the web router mirroring only committed locations. */
 internal class ExpressiveNavigator {
@@ -53,12 +54,15 @@ internal class ExpressiveNavigator {
         replace: Boolean = false,
         reset: Boolean = false,
     ): Boolean {
-        val target = location.ifEmpty { "/" }
+        val requested = location.ifEmpty { "/" }
         val nav = controller
         if (nav == null) {
-            pending = Request(target, fromWeb, replace, reset)
+            pending = Request(requested, fromWeb, replace, reset)
             return true
         }
+        val target = if (!fromWeb && !NetworkFeatures.isAllowed()) {
+            ExpressiveRoutes.offlineTrainLocation(requested)
+        } else requested
         if (!reset && (currentLocation == target ||
             (fromWeb && currentLocation?.let(ExpressiveRoutes::webLocation) == target))) return false
         mirror = !fromWeb

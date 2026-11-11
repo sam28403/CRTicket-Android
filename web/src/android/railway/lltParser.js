@@ -11,6 +11,8 @@ function readBigEndian(bytes, offset) {
 
 const maxArchiveBytes = 16 * 1024 * 1024
 const maxFileBytes = 4 * 1024 * 1024
+const maxUncompressedBytes = 32 * 1024 * 1024
+const maxArchiveEntries = 256
 
 // an.db 的字典长度是标准大端整数；T*.dat 的索引、里程使用 255 进制。
 // 实测 20261004 包的 18783 条车次，全部车次及站点索引均能对应字典。
@@ -145,9 +147,17 @@ export function parseLltFiles(files) {
 
 export function parseLltArchive(bytes) {
   if (bytes.byteLength > maxArchiveBytes) throw new Error('路路通数据包过大')
+  const names = new Set()
+  let entries = 0
+  let total = 0
   const files = unzipSync(bytes, { filter: entry => {
+    if (++entries > maxArchiveEntries) throw new Error('路路通数据包文件过多')
     if (!/^(?:[st]\.i|t\.rule|extra\.dat|jlb\.dat|xw\.dat|ver\.txt|T\d{1,2}\.dat)$/.test(entry.name)) return false
+    if (names.has(entry.name)) throw new Error('路路通数据包包含重复文件')
     if (entry.originalSize > maxFileBytes) throw new Error('路路通数据文件过大')
+    total += entry.originalSize
+    if (total > maxUncompressedBytes) throw new Error('路路通解压数据过大')
+    names.add(entry.name)
     return true
   } })
   return parseLltFiles(files)

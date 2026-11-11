@@ -16,6 +16,7 @@ import { buildTrainRouteData, trainRouteViewport } from '@/utils/maps/trainRoute
 import { InfoFilled } from "@element-plus/icons-vue";
 
 const props = defineProps({
+  showDepartureDay: Boolean,
   train: { type: String, default: '' },
   stops: { type: Array, required: true }
 })
@@ -23,7 +24,7 @@ const { isDark, resolvedTheme } = useTheme()
 const mapRef = ref(null)
 const loading = ref(false)
 const error = ref('')
-const routeData = computed(() => buildTrainRouteData(props.stops))
+const routeData = computed(() => buildTrainRouteData(props.stops, undefined, props.showDepartureDay))
 let chart
 let observer
 let renderId = 0
@@ -102,9 +103,9 @@ async function renderMap() {
         if (params.seriesType !== 'effectScatter') return ''
         const stop = params.data
         const arrival = stop.isFirst ? '始发站' : (stop.arrival || '—')
-        const day = stop.arrival && stop.arrivalDay > 0 ? `（+${stop.arrivalDay} 天）` : ''
+        const day = (clock, offset) => clock && offset ? `（${offset > 0 ? '+' : ''}${offset} 天）` : ''
         const departure = stop.isLast ? '终到站' : (stop.departure || '—')
-        return `${stop.no}. ${stop.name}\n到达：${arrival}${day}\n出发：${departure}`
+        return `${stop.no}. ${stop.name}\n到达：${arrival}${day(stop.arrival, stop.arrivalDay)}\n出发：${departure}${day(stop.departure, stop.departureDay)}`
       }
     },
     geo: createRailwayGeo(trainRouteViewport(points, chart.getWidth(), chart.getHeight())),

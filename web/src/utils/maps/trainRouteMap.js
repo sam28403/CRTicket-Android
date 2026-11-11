@@ -1,7 +1,7 @@
 import stationCoordinates from './stationCoordinates.js'
 import { normalizeStationName } from '../stationName.js'
 
-export function buildTrainRouteData(stops, coordinates = stationCoordinates) {
+export function buildTrainRouteData(stops, coordinates = stationCoordinates, showDepartureDay = false) {
   const points = []
   const lines = []
   const missingStations = []
@@ -23,6 +23,7 @@ export function buildTrainRouteData(stops, coordinates = stationCoordinates) {
       arrival: stop.arrival,
       departure: stop.departure,
       arrivalDay: stop.arrivalDay,
+      ...(showDepartureDay ? { departureDay: stop.departureDay } : {}),
       isFirst: index === 0,
       isLast: index === stops.length - 1
     })

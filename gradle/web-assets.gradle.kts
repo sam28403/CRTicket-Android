@@ -15,6 +15,7 @@ fun registerWebAssets(taskName: String, ci: Boolean) = tasks.register<Exec>(task
     inputs.dir(rootProject.file("web/public"))
     inputs.files(rootProject.fileTree("tools") { include("*.mjs") })
     inputs.files(
+        rootProject.file("data/lcr-offline-rules.json"),
         rootProject.file("gradle.properties"),
         rootProject.file("web/package.json"),
         rootProject.file("web/package-lock.json"),

@@ -49,6 +49,17 @@ test('加载正晚点后导出仍使用图定到发时间和停留时长', () =>
   assert.deepEqual(trainPdfRows(schedule), expected)
 })
 
+test('时区版 PDF 分别标注到达与出发的跨日数', async () => {
+  const result = { ...fixture(3), displayTimeZone: '万象时间' }
+  result.stops[0].departureDay = -1
+  result.stops[1].departureDay = 2
+  assert.equal(trainPdfRows(result)[0][3], '18:22 (-1)')
+  assert.deepEqual(trainPdfRows(result)[1].slice(2, 4), ['12:52 (+1)', '18:22 (+2)'])
+  assert.equal(trainPdfRows(result)[2][3], '12:52 (+1)')
+  const pdf = await buildTrainInfoPdf(result, fontBytes)
+  assert.equal(pdf.pageCount, 1)
+})
+
 test('优先 14 pt，一页放不下改 12 pt，仍放不下再分页且不丢站', () => {
   const short = planTrainPdf(fixture(16), font)
   assert.equal(short.fontSize, 14)

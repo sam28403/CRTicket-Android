@@ -155,7 +155,14 @@ internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
     selected?.let { stop ->
         val arrival = if (stop.optBoolean("isFirst")) textResources(R.string.station_origin) else stop.optString("arrival", "—")
         val departure = if (stop.optBoolean("isLast")) textResources(R.string.station_terminal) else stop.optString("departure", "—")
-        val day = stop.optInt("arrivalDay")
+        fun dayLabel(field: String): String {
+            val day = stop.optInt("${field}Day")
+            return when {
+                stop.isNull(field) || day == 0 -> ""
+                day > 0 -> textResources(R.string.calendar_day_offset, day)
+                else -> " ($day)"
+            }
+        }
         AlertDialog(
             onDismissRequest = { selected = null },
             title = { Text("${stop.optString("no")}. ${stop.optString("name")}") },
@@ -163,8 +170,8 @@ internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
                 Text(textResources(
                     R.string.train_map_stop_times,
                     arrival,
-                    if (day > 0) textResources(R.string.calendar_day_offset, day) else "",
-                    departure,
+                    dayLabel("arrival"),
+                    departure + dayLabel("departure"),
                 ))
             },
             confirmButton = { TextButton(onClick = { selected = null }) { Text(textResources(R.string.action_confirm)) } },

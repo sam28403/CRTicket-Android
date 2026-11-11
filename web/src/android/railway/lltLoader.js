@@ -50,6 +50,7 @@ export function createLltLoader(
     let refreshController
     let revision = 0
     Object.defineProperty(load, 'revision', { get: () => revision })
+    Object.defineProperty(load, 'usingImported', { get: () => imported })
 
     async function download(url, loadSignal, timeout) {
         const signal = AbortSignal.any([loadSignal, AbortSignal.timeout(timeout)])

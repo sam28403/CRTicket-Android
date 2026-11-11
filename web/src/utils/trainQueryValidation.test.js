@@ -26,3 +26,11 @@ test('离线列表和通知入口保留完整换号记录，方案后缀不绕�
   }
   assert.notEqual(getTrainQueryNumberError('G97B', true), '')
 })
+
+test('导入时刻表接受旧车次格式，在线与普通离线仍按各自规则校验', () => {
+  assert.equal(getTrainQueryNumberError('Q97', true, '', true), '')
+  assert.equal(getTrainQueryNumberError('P98/P99B', true, '', true), '')
+  assert.notEqual(getTrainQueryNumberError('Q97', false, '', true), '')
+  assert.notEqual(getTrainQueryNumberError('Q97', true), '')
+  assert.notEqual(getTrainQueryNumberError('P98/', true, '', true), '')
+})

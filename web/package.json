@@ -7,7 +7,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "test:android": "node --test src/android/*.test.js src/android/railway/*.test.js src/stores/user.test.js src/utils/stationBoard.test.js src/utils/stationBoardTime.test.js src/utils/stationNavigation.test.js src/utils/trainInfoPdf.test.js src/utils/trainPdfFont.test.js src/utils/maps/trainRouteMap.test.js src/utils/maps/stationCoordinates.test.js ../tools/package-arrival-stations.test.mjs ../tools/update-sale-times.test.mjs src/utils/trainQuerySource.test.js src/utils/trainQueryDate.test.js src/utils/maps/stationLocationMap.test.js src/utils/maps/tileLayerHealth.test.js src/utils/maps/transportConnection.test.js src/utils/pullRefreshGesture.test.js src/utils/historyValidation.test.js src/utils/ticketFacePrice.test.js src/utils/generatorSaveFlow.test.js src/utils/ticketShared.test.js src/utils/trainTypeRules.test.js src/utils/trainQueryValidation.test.js src/utils/trainQueryCache.test.js src/utils/ordinaryFare.test.js",
+    "test:android": "node --test src/android/*.test.js src/android/railway/*.test.js src/stores/user.test.js src/utils/stationBoard.test.js src/utils/stationBoardTime.test.js src/utils/stationNavigation.test.js src/utils/trainInfoPdf.test.js src/utils/trainTimeZoneDisplay.test.js src/utils/ticketExport.test.js src/utils/trainPdfFont.test.js src/utils/maps/trainRouteMap.test.js src/utils/maps/stationCoordinates.test.js ../tools/package-arrival-stations.test.mjs ../tools/update-sale-times.test.mjs src/utils/trainQuerySource.test.js src/utils/trainQueryDate.test.js src/utils/maps/stationLocationMap.test.js src/utils/maps/tileLayerHealth.test.js src/utils/maps/transportConnection.test.js src/utils/pullRefreshGesture.test.js src/utils/historyValidation.test.js src/utils/ticketFacePrice.test.js src/utils/generatorSaveFlow.test.js src/utils/ticketShared.test.js src/utils/trainTypeRules.test.js src/utils/trainQueryValidation.test.js src/utils/trainQueryCache.test.js src/utils/ordinaryFare.test.js",
     "test:maps": "node --test src/utils/maps/*.test.js",
     "test:discovery": "node --test src/utils/trainDiscovery.test.js src/utils/stationDiscovery.test.js",
     "dev": "vite",
@@ -25,7 +25,6 @@
     "element-plus": "2.14.7",
     "fflate": "^0.8.3",
     "html2canvas": "^1.4.1",
-    "jspdf": "4.2.1",
     "leaflet": "^1.9.4",
     "maplibre-gl": "6.14.0",
     "pdf-lib": "^1.17.1",

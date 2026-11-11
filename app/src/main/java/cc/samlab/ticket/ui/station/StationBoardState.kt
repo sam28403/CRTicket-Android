@@ -13,6 +13,7 @@ internal class StationBoardState(
     var station by mutableStateOf(initialStation)
     var loading by mutableStateOf(false)
     var error by mutableStateOf("")
+    var vientiane by mutableStateOf(false)
     var date by mutableStateOf("")
     var resultStation by mutableStateOf("")
     var tabs by mutableStateOf<Map<StationTab, List<StationBoardRow>>>(emptyMap())

@@ -2,6 +2,7 @@ import { onBeforeUnmount, watch } from 'vue'
 import { native } from '@/android/platform.js'
 import { queryStationSearch } from './useTicketShared.js'
 import { boardTabs, stationBoardRows } from '@/utils/stationBoard.js'
+import { isVientianeStation } from '@/utils/stationTimeZone.js'
 import { stationTrainLocation } from '@/utils/stationNavigation.js'
 import { displayTrainCode } from '@/utils/trainDisplay.js'
 
@@ -44,6 +45,7 @@ export function useNativeStationBoard(board) {
     native.stationBoardResult(JSON.stringify({
       kind: 'board', station: station.value, loading: loading.value,
       error: error.value, date: data?.date, resultStation: data?.station, tabs,
+      vientiane: isVientianeStation(data?.station),
     }))
   }, { immediate: true, flush: 'post' })
   onBeforeUnmount(() => {

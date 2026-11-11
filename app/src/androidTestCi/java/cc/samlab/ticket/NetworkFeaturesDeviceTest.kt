@@ -26,6 +26,48 @@ import java.util.concurrent.atomic.AtomicInteger
 class NetworkFeaturesDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
 
+    @Test fun homeOpensTrainQueryDirectlyInOfflineMode() {
+        val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        val original = NetworkFeatures.isAllowed()
+        val preferences = context.getSharedPreferences("developer-options", 0)
+        val autoUpdate = preferences.getBoolean("lltAutoUpdate", true)
+        WelcomeTestState(context).use {
+            val fixture = TabletPageFixture(compose)
+            try {
+                instrumentation.runOnMainSync { NetworkFeatures.setEnabled(context, false) }
+                fixture.evaluate("window.dispatchEvent(new Event('crticket-network-changed'))")
+                fixture.navigate("/home")
+                fixture.evaluate("""
+                    window.trainEntries = [];
+                    for (const method of ['pushState', 'replaceState']) {
+                        const commit = history[method].bind(history);
+                        history[method] = (...args) => {
+                            const previous = location.hash;
+                            commit(...args);
+                            if (location.hash !== previous && /^#\/train(?:\?|$)/.test(location.hash)) {
+                                window.trainEntries.push(location.hash);
+                            }
+                        };
+                    }
+                """.trimIndent())
+                compose.onNode(hasText(fixture.activity.getString(R.string.home_train)) and hasClickAction())
+                    .performScrollTo().performClick()
+                compose.waitUntil(20_000) {
+                    fixture.evaluate("location.hash") == "\"#/train?source=llt\""
+                }
+                compose.onNodeWithTag("train-query-source").assertIsNotEnabled()
+                assertEquals("[\"#/train?source=llt\"]", fixture.evaluate("window.trainEntries"))
+            } finally {
+                instrumentation.runOnMainSync {
+                    NetworkFeatures.setEnabled(context, original)
+                    preferences.edit().putBoolean("lltAutoUpdate", autoUpdate).commit()
+                }
+                fixture.close()
+            }
+        }
+    }
+
     @Test fun onlineSwitchBlocksFeaturesAndKeepsOfflineTrainQueries() {
         val fixture = TabletPageFixture(compose)
         val context = fixture.activity

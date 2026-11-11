@@ -13,6 +13,7 @@ class UpstreamPolicyTest : StringResourceTest() {
             "https://kyfw.12306.cn/otn/queryTrainInfo/query",
             "https://kyfw.12306.cn/otn/czxx/init",
             "https://kyfw.12306.cn/otn/czxx/query?train_station_code=VNP",
+            "https://laosbustickets.com/data/laos-train-timetable.json",
             "http://down.lltskb.com/an.db",
             "http://223.107.87.50:8011/an.db"
         )
@@ -29,7 +30,10 @@ class UpstreamPolicyTest : StringResourceTest() {
             "https://kyfw.12306.cn/otn/czxx/unrelated",
             "https://kyfw.12306.cn/otn/leftTicket/../../other",
             "https://a:b@kyfw.12306.cn/otn/leftTicket/queryG",
-            "http://down.lltskb.com/unrelated"
+            "http://down.lltskb.com/unrelated",
+            "http://laosbustickets.com/data/laos-train-timetable.json",
+            "https://laosbustickets.com/data/other.json",
+            "https://laosbustickets.com/data/laos-train-timetable.json?other=1"
         )
         for (url in urls) {
             assertThrows(IllegalArgumentException::class.java) {

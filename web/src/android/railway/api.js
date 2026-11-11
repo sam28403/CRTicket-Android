@@ -7,9 +7,14 @@ import { listLltTrains, validListDate } from './lltList.js'
 import { lltTrainDetail } from './lltDetail.js'
 import { queryLeftTicket } from './leftTicket.js'
 import { requestStation } from './station.js'
+import { waitForRequest } from '../../utils/requests.js'
+import { createLcrTimetableLoader } from './lcrTimetable.js'
+import { combineTrainResults, lcrTrainDetail, listLcrTrains } from './lcrOffline.js'
+import { hasLcrOperatingRule } from './lcrOperatingDays.js'
 import { listStationSummaries } from './stationDiscovery.js'
 
 const summaries = new WeakMap()
+const loadLcrTimetable = createLcrTimetableLoader(nativeFetch)
 
 export async function requestRailway(path, signal) {
     const url = new URL(path, 'https://phone.invalid')
@@ -26,19 +31,36 @@ export async function requestRailway(path, signal) {
         if (error) throw new Error(error)
         const fetchImpl = (upstream, options) => nativeFetch(upstream, {
             ...options,
-            signal: signal || options.signal,
+            signal: signal && options.signal ? AbortSignal.any([signal, options.signal]) : signal || options.signal,
         })
-        return { success: true, ...await queryTrainInfo(train, query.date, fetchImpl) }
+        return { success: true, ...await waitForRequest(queryTrainInfo(train, query.date, fetchImpl, loadLltDatabase, loadLcrTimetable), signal) }
     }
     if (!validListDate(query.date)) throw new Error('请选择有效日期')
-    const database = await loadLltDatabase()
+    const isDetail = url.pathname === '/llt-trains/detail'
+    if (isDetail && query.dataset && query.dataset !== 'lcr') throw new Error('请选择有效时刻表')
+    const lcr = isDetail ? lcrTrainDetail(query.train, query.date) : null
+    const hasLcrCalendar = isDetail && hasLcrOperatingRule(query.train)
+    if (isDetail && query.dataset === 'lcr') return lcr
+    const lcrList = url.pathname === '/llt-trains' ? listLcrTrains(query.date) : null
+    let database
+    try {
+        database = await loadLltDatabase()
+    } catch (error) {
+        if (lcr?.stops.length || hasLcrCalendar) return lcr
+        if (lcrList?.total) return { success: true, ...lcrList }
+        throw error
+    }
     if (url.pathname === '/station/discovery') {
         return { success: true, date: query.date,
             stations: listStationSummaries(database, query.date) }
     }
     const includeNotRunning = showNonRunningTrains()
     if (url.pathname === '/llt-trains/detail') {
-        return lltTrainDetail(database, query.train, query.date, includeNotRunning)
+        const domestic = lltTrainDetail(database, query.train, query.date, includeNotRunning)
+        if (loadLltDatabase.usingImported) return domestic
+        if (!domestic.stops.length && (lcr.stops.length || hasLcrCalendar)) return lcr
+        if (!lcr.stops.length) return domestic
+        return combineTrainResults([domestic, lcr, ...(lcr.alternatives || [])])
     }
     if (url.pathname !== '/llt-trains') throw new Error('未知的铁路接口')
     let cache = summaries.get(database)
@@ -46,7 +68,8 @@ export async function requestRailway(path, signal) {
     const key = `${query.date}:${includeNotRunning}`
     if (!cache.has(key)) {
         if (cache.size >= 8) cache.delete(cache.keys().next().value)
-        cache.set(key, listLltTrains(database, query.date, includeNotRunning))
+        const list = listLltTrains(database, query.date, includeNotRunning)
+        cache.set(key, loadLltDatabase.usingImported ? list : listLcrTrains(query.date, list))
     }
     return { success: true, ...cache.get(key) }
 }

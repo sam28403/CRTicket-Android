@@ -62,6 +62,17 @@ test('归档保留 xw.dat，并将换号里程关联到每站车次', () => {
   assert.deepEqual(stops.map(stop => stop.train), ['G100', 'G100', 'G97'])
 })
 
+test('限制离线归档的条目数、单文件大小和解压总量', () => {
+  const manyFiles = Object.fromEntries(Array.from({ length: 257 }, (_, i) => [
+    `ignored-${i}`, new Uint8Array(),
+  ]))
+  assert.throws(() => parseLltArchive(zipSync(manyFiles)), /文件过多/)
+  const chunk = new Uint8Array(4 * 1024 * 1024)
+  assert.throws(() => parseLltArchive(zipSync({ 'T0.dat': new Uint8Array(chunk.length + 1) })), /文件过大/)
+  const largeArchive = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`T${i}.dat`, chunk]))
+  assert.throws(() => parseLltArchive(zipSync(largeArchive)), /解压数据过大/)
+})
+
 test('开行日期使用小端 128 进制，循环规则按零基索引关联', () => {
   const files = fixture()
   files['T0.dat'].set([60, 80, 84, 9], 5) // 20260924

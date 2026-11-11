@@ -26,6 +26,15 @@ internal object ExpressiveRoutes {
 
     fun isNative(location: String) = path(location) in pages
 
+    fun offlineTrainLocation(location: String): String {
+        val uri = Uri.parse(location)
+        if (uri.path != "/train" || uri.getQueryParameter("source") == "llt") return location
+        val parameters = uri.encodedQuery.orEmpty().split('&').filter {
+            it.isNotEmpty() && Uri.decode(it.substringBefore('=')) != "source"
+        }
+        return uri.buildUpon().encodedQuery((parameters + "source=llt").joinToString("&")).build().toString()
+    }
+
     fun addsDefaultDate(original: String, updated: String): Boolean {
         val before = Uri.parse(original)
         val after = Uri.parse(updated)

@@ -1,8 +1,8 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { native, saveFile } from '@/android/platform.js'
+import { native } from '@/android/platform.js'
 import { createDefaultTicket, disableAirSeats, seatOptions, themeOptions } from '@/utils/ticketShared.js'
 import { stations } from './useTicketShared.js'
-import { renderTicketImage, downloadTicketPNG } from '@/utils/ticketExport.js'
+import { renderTicketImage, downloadTicketPDF, downloadTicketPNG } from '@/utils/ticketExport.js'
 import { validateHistoryTicket } from '@/utils/historyValidation.js'
 import { storeGeneratedTicket } from '@/utils/generatorMutations.js'
 import { createGeneratorSaveFlow } from '@/utils/generatorSaveFlow.js'
@@ -51,10 +51,7 @@ export function useTicketGenerator({ ticket, credit, conditioner, ticketRef, own
     await nextTick()
     const image = await renderTicketImage(ticketRef.value)
     if (format === 'image') return downloadTicketPNG(image, value.number)
-    const { default: jsPDF } = await import('jspdf')
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'cm', format: [8.6, 5.4] })
-    pdf.addImage(image, 'PNG', 0, 0, 8.6, 5.4)
-    return saveFile(pdf.output('blob'), `${value.number}.pdf`)
+    return downloadTicketPDF(image, value.number)
   }
 
   const save = createGeneratorSaveFlow({

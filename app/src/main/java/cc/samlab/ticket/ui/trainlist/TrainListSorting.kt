@@ -16,6 +16,7 @@ internal data class TrainListRow(
     val speedKmh: Double?,
     val stationCount: Double?,
     val notRunning: Boolean = false,
+    val dataset: String = "",
 ) {
     val durationMinutes: Double? = parseTrainListDuration(duration)
 }

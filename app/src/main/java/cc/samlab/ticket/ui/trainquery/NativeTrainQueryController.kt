@@ -29,6 +29,7 @@ class NativeTrainQueryController(
             .put("train", code)
             .put("date", uri.getQueryParameter("date") ?: date)
             .put("loading", code.isNotEmpty())
+            .put("offline", uri.getQueryParameter("source") == "llt")
     }
 
     fun edit(code: String = train, day: String = date) {
@@ -37,8 +38,8 @@ class NativeTrainQueryController(
         dispatch("edit")
     }
 
-    fun dispatch(action: String) {
-        val detail = JSONObject().put("action", action).put("train", train).put("date", date)
+    fun dispatch(action: String, value: String = "") {
+        val detail = JSONObject().put("action", action).put("train", train).put("date", date).put("value", value)
         webView.evaluateJavascript(
             "window.dispatchEvent(new CustomEvent('crticket-train-query-request',{detail:$detail}))",
             null,

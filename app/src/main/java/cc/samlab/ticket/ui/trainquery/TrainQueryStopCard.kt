@@ -28,6 +28,7 @@ internal fun TrainQueryStopCard(
     highlight: QueryStopHighlight,
     dark: Boolean,
     onNavigate: (String) -> Unit,
+    showDepartureDay: Boolean = false,
 ) {
     val textResources = rememberAppText()
     val colors = MaterialTheme.colorScheme
@@ -89,6 +90,9 @@ internal fun TrainQueryStopCard(
                     textResources(R.string.station_departure_time),
                     if (index == total - 1) textResources(R.string.station_terminal) else stop.delayText("departure"),
                     Modifier.weight(1f),
+                    day = if (showDepartureDay && index < total - 1 && !stop.isNull("departure")) {
+                        stop.optInt("departureDay")
+                    } else 0,
                     valueColor = stop.delayColor("departure", dark),
                 )
             }
@@ -142,14 +146,14 @@ private fun StopDetail(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(value, style = MaterialTheme.typography.titleMedium, color = valueColor)
-            if (day > 0) Surface(
+            if (day != 0) Surface(
                 shape = RoundedCornerShape(6.dp),
                 color = content.copy(alpha = 0.12f),
                 contentColor = content,
                 border = BorderStroke(1.dp, content.copy(alpha = 0.3f)),
             ) {
                 Text(
-                    "+$day",
+                    if (day > 0) "+$day" else day.toString(),
                     Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     style = MaterialTheme.typography.labelMedium,
                 )

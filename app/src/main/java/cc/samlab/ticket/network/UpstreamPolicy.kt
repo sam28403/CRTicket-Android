@@ -13,6 +13,8 @@ object UpstreamPolicy {
             appString(R.string.network_error_url_format)
         }
         val allowed = when (url.host) {
+            "laosbustickets.com" -> url.scheme == "https" && url.port == 443 &&
+                url.encodedPath == "/data/laos-train-timetable.json" && url.query == null
             "search.12306.cn" -> url.scheme == "https" && url.port == 443 &&
                 url.encodedPath == "/search/v1/train/search"
             "kyfw.12306.cn" -> url.scheme == "https" && url.port == 443 && (

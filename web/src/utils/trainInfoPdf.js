@@ -38,11 +38,17 @@ export function trainPdfFilename(result) {
 
 export function trainPdfRows(result) {
   const stops = result.scheduledStops || result.stops
+  const formatTime = (clock, day) => {
+    if (!clock) return '----'
+    return result.displayTimeZone && day ? `${clock} (${day > 0 ? '+' : ''}${day})` : clock
+  }
   return stops.map((stop, index) => [
     String(stop.no || index + 1).padStart(2, '0'), stop.station,
-    stop.arrival || '----',
+    formatTime(stop.arrival, stop.arrivalDay),
     // 模板的终到站出发时间与到达时间相同；始发到达、两端停留均为 ----。
-    stop.departure || (index === stops.length - 1 ? stop.arrival : null) || '----',
+    stop.departure
+      ? formatTime(stop.departure, stop.departureDay)
+      : formatTime(index === stops.length - 1 ? stop.arrival : null, stop.arrivalDay),
     stop.stay == null ? '----' : `${stop.stay}分钟`,
     stop.mileage == null ? '----' : `${stop.mileage} km`,
   ])
@@ -67,7 +73,7 @@ export function planTrainPdf(result, font) {
   const titleLines = wrapText(title, font, titleSize, tableWidth)
   const titleHeight = font.heightAtSize(titleSize)
   const tableTop = titleTop + titleLines.length * titleHeight + 4
-  const availableHeight = pageSize[1] - tableTop - bottomMargin
+  const availableHeight = pageSize[1] - tableTop - bottomMargin - (result.displayTimeZone ? 18 : 0)
   const rows = [headers, ...trainPdfRows(result)]
   const measure = size => rows.map(cells => {
     const sizes = cells.map((text, column) => column === 1 && [...String(text)].length === 5
@@ -154,6 +160,9 @@ export async function buildTrainInfoPdf(result, fontBytes) {
       })
       top -= row.height
       rule(top)
+    }
+    if (result.displayTimeZone) {
+      drawCentered(result.displayTimeZone, 10, pageSize[0] / 2, tableBottom - 14)
     }
     for (let column = 0; column <= 6; column++) {
       const x = tableLeft + column * columnWidth

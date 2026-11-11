@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import MainView from '../views/MainView.vue'
 import { useUserStore } from '@/stores/user.js'
 import { ElMessage } from 'element-plus'
+import { networkEnabled } from '../android/networkFeatures.js'
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -26,6 +27,9 @@ const router = createRouter({
 })
 
 router.beforeEach(async to => {
+    if (to.path === '/train' && !networkEnabled() && to.query.source !== 'llt') {
+        return { path: to.path, query: { ...to.query, source: 'llt' }, hash: to.hash }
+    }
     const user = useUserStore()
     user.init()
     if (to.path === '/history' || to.path === '/user') {

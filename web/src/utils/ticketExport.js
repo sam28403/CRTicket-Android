@@ -61,6 +61,21 @@ export async function renderTicketImage(ticketNode) {
   return canvas.toDataURL('image/png')
 }
 
+export async function buildTicketPdf(imageData) {
+  const { PDFDocument } = await import('pdf-lib')
+  const pdf = await PDFDocument.create()
+  const pointsPerCm = 72 / 2.54
+  const page = pdf.addPage([8.6 * pointsPerCm, 5.4 * pointsPerCm])
+  const image = await pdf.embedPng(imageData)
+  page.drawImage(image, { x: 0, y: 0, width: page.getWidth(), height: page.getHeight() })
+  return pdf.save()
+}
+
+export async function downloadTicketPDF(imageData, number) {
+  const bytes = await buildTicketPdf(imageData)
+  return saveFile(new Blob([bytes], { type: 'application/pdf' }), `${number}.pdf`)
+}
+
 export async function downloadTicketPNG(imageData, number) {
   const blob = await fetch(imageData).then(response => response.blob())
   return saveFile(blob, `${number}.png`)

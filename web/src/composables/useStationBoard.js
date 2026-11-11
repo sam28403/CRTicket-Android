@@ -13,8 +13,8 @@ export function useStationBoard() {
   const router = useRouter()
   const station = ref('')
   const now = ref(Date.now())
-  const clock = computed(() => stationClock(now.value))
-  const discovery = useStationDiscovery(clock)
+  const clock = computed(() => stationClock(now.value, station.value))
+  const discovery = useStationDiscovery(computed(() => stationClock(now.value)))
   const loading = ref(false)
   const schedule = shallowRef(null)
   const { result } = useStationDelay(schedule)
@@ -39,8 +39,8 @@ export function useStationBoard() {
     controller = new AbortController()
     const id = ++requestId
     now.value = Date.now()
-    const date = clock.value.date
     station.value = selected
+    const date = clock.value.date
     loading.value = true
     if (!preserve) schedule.value = null
     error.value = ''
@@ -92,7 +92,7 @@ export function useStationBoard() {
   watch(() => [route.path, route.query.station], ([path, name]) => {
     if (path !== '/station') return
     const selected = typeof name === 'string' ? stationLocation(name).query.station : ''
-    if (result.value?.station === selected && result.value.date === clock.value.date) return
+    if (result.value?.station === selected && result.value.date === stationClock(now.value, selected).date) return
     controller?.abort()
     requestId++
     loading.value = false
@@ -107,8 +107,8 @@ export function useStationBoard() {
     if (station.value) query()
   }, { immediate: true })
 
-  watch(() => clock.value.date, () => {
-    if (route.path !== '/station') return
+  watch([() => clock.value.date, station], ([, name], [, previousStation]) => {
+    if (route.path !== '/station' || name !== previousStation) return
     const selected = result.value?.station || station.value
     schedule.value = null
     controller?.abort()

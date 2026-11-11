@@ -1,5 +1,7 @@
 import { onBeforeUnmount, watch } from 'vue'
 import { native } from '@/android/platform.js'
+import { lcrOperatingDays } from '@/android/railway/lcrOperatingDays.js'
+import { trainStopsInTimeZone } from '@/utils/trainTimeZoneDisplay.js'
 import { buildTrainRouteData } from '@/utils/maps/trainRouteMap.js'
 import { useNextRouting } from './useNextRouting.js'
 
@@ -8,13 +10,15 @@ export function useNativeTrainQuery(state) {
   const { train, date, loading, error, result, offlineMode, trackingButton } = state
   const nextRouting = useNextRouting(result)
   function request(event) {
-    const { action, train: code, date: day } = event.detail || {}
+    const { action, train: code, date: day, value } = event.detail || {}
     if (action === 'clearHistory') return state.discovery.clearHistory()
     if (action === 'recommendations') return state.discovery.refresh()
     if (action === 'tracking') return trackingButton.value?.toggle()
     if (action === 'delay' && !offlineMode.value) return state.delay.toggle()
     if (action === 'refresh') return state.refresh()
     if (loading.value) return
+    if (action === 'route') return state.selectRoute(Number(value))
+    if (action === 'timeZone') return state.timeZone.select(value)
     if (action === 'edit') {
       train.value = code
       date.value = day
@@ -32,15 +36,29 @@ export function useNativeTrainQuery(state) {
     state.discovery.history, state.discovery.recommendations,
     state.discovery.recommendationDate, state.discovery.recommendationLoading,
     state.discovery.recommendationError,
-    state.location,
+    state.location, state.selectedRoute, state.timeZone.selected, state.importedTimetable,
   ], () => {
     const location = state.location()
     if (!/^\/train(?:\?|$)/.test(location)) return
+    const timing = state.timing.value
+    const beijingTiming = timing?.timeZone === 'vientiane'
+      ? { ...timing, stops: trainStopsInTimeZone(timing.stops, 'beijing', timing.timeZone) }
+      : timing
     native.trainQueryResult(JSON.stringify({
-      train: train.value, date: date.value, loading: loading.value,
+      train: train.value, date: date.value,
+      loading: loading.value || state.importedTimetable.value === null,
       location,
       error: error.value, result: result.value, offline: offlineMode.value,
-      route: result.value ? buildTrainRouteData(result.value.stops) : null,
+      imported: offlineMode.value && state.importedTimetable.value === true,
+      timing: beijingTiming,
+      operatingDays: lcrOperatingDays(timing),
+      routeOptions: state.routes.value.length > 1 ? state.routes.value.map(item =>
+        `${item.from} → ${item.to}（${item.source}）`) : [],
+      selectedRoute: state.selectedRoute.value,
+      timeZoneOptions: state.timeZone.options.value,
+      selectedTimeZone: state.timeZone.selected.value,
+      delayAvailable: state.delayAvailable.value,
+      route: result.value ? buildTrainRouteData(result.value.stops, undefined, Boolean(result.value.displayTimeZone)) : null,
       nextRouting: nextRouting.value,
       tracking: Boolean(trackingButton.value?.tracking),
       delayEnabled: !offlineMode.value && state.delay.enabled.value,

@@ -42,11 +42,17 @@ internal fun ExpressiveTrainQueryScreen(
     val stops = result?.optJSONArray("stops")
     val count = stops?.length() ?: 0
     val error = state.optString("error")
-    val timing by rememberQueryTiming(result, active)
-    val operatingCalendar by rememberOperatingCalendar(
-        train = if (online && count > 0) result!!.optString("train") else "",
+    val timing by rememberQueryTiming(state.optJSONObject("timing"), active)
+    val operatingDays = state.optJSONArray("operatingDays")
+    val bundledDays = remember(operatingDays) { bundledOperatingDays(operatingDays) }
+    val onlineCalendar by rememberOperatingCalendar(
+        train = if (bundledDays == null && online && count > 0 && !state.optBoolean("imported") &&
+            result?.optString("timeZone") != "vientiane" && result?.optString("dataset") != "lcr"
+        ) result!!.optString("train") else "",
         date = result?.optString("date").orEmpty(),
     )
+    val operatingCalendar = bundledDays?.let { OperatingCalendarState(it, loading = false) }
+        ?: onlineCalendar
     var datePicker by remember { mutableStateOf(false) }
     MaterialExpressiveTheme(colorScheme = homeColorScheme(LocalContext.current, dark, pureBlack)) {
         val colors = MaterialTheme.colorScheme
@@ -77,7 +83,7 @@ internal fun ExpressiveTrainQueryScreen(
                         controller, state, controller.state.optString("location") == location,
                         onDate = { datePicker = true },
                     )
-                    if (!loading && count == 0 && (error.isNotEmpty() || result != null)) {
+                    if (!loading && count == 0 && bundledDays == null && (error.isNotEmpty() || result != null)) {
                         QueryResultEmptyState(
                             message = if (error.isNotEmpty()) error
                                 else textResources(R.string.train_query_empty),
@@ -100,6 +106,11 @@ internal fun ExpressiveTrainQueryScreen(
                         if (state.optString("error").isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
                             Text(state.optString("error"), Modifier.padding(16.dp), color = colors.error)
                         }
+                        if (count > 0 && ((state.optJSONArray("routeOptions")?.length() ?: 0) > 1 ||
+                            (state.optJSONArray("timeZoneOptions")?.length() ?: 0) > 0)
+                        ) item(span = { GridItemSpan(maxLineSpan) }) {
+                            TrainQueryScheduleOptions(state, controller)
+                        }
                         if (count > 0) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 Row(
@@ -112,7 +123,7 @@ internal fun ExpressiveTrainQueryScreen(
                                         Text(result!!.optString("train"), style = MaterialTheme.typography.titleLarge, fontFamily = projectTitleFont)
                                         Text("${result.optString("from")} → ${result.optString("to")}", style = MaterialTheme.typography.titleMedium)
                                     }
-                                    if (online && !state.optBoolean("offline")) Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    if (online && state.optBoolean("delayAvailable")) Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
                                             textResources(R.string.train_query_delay),
                                             style = MaterialTheme.typography.labelMedium,
@@ -141,6 +152,7 @@ internal fun ExpressiveTrainQueryScreen(
                                 TrainQueryStopCard(
                                     stops!!.getJSONObject(index), index, count,
                                     timing.highlight(index), dark, onNavigate,
+                                    showDepartureDay = result.optString("displayTimeZone").isNotEmpty(),
                                 )
                             }
                             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -152,11 +164,19 @@ internal fun ExpressiveTrainQueryScreen(
                                         .testTag("train-query-export"),
                                 ) { Text(textResources(R.string.train_query_export)) }
                             }
-                            if (operatingCalendar.days != null) item(span = { GridItemSpan(maxLineSpan) }) {
-                                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
-                                    TrainOperatingCalendar(operatingCalendar, result!!.optString("date"), dark)
-                                }
+                        } else if (!loading) item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                if (result != null) textResources(R.string.train_query_empty) else textResources(R.string.train_query_hint),
+                                Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                                color = colors.onSurfaceVariant,
+                            )
+                        }
+                        if (operatingCalendar.days != null && result != null) item(span = { GridItemSpan(maxLineSpan) }) {
+                            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                                TrainOperatingCalendar(operatingCalendar, result.optString("date"), dark)
                             }
+                        }
+                        if (count > 0) {
                             state.optJSONObject("route")?.let { route ->
                                 item(span = { GridItemSpan(maxLineSpan) }) { TrainQueryRouteMap(route, result!!.optString("train")) }
                             }
@@ -165,12 +185,6 @@ internal fun ExpressiveTrainQueryScreen(
                                     TrainQueryNextRouting(next, result!!.optString("date"), onNavigate)
                                 }
                             }
-                        } else if (!loading) item(span = { GridItemSpan(maxLineSpan) }) {
-                            Text(
-                                if (result != null) textResources(R.string.train_query_empty) else textResources(R.string.train_query_hint),
-                                Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-                                color = colors.onSurfaceVariant,
-                            )
                         }
                         if (result == null && !loading) {
                             trainQueryDiscovery(controller, state, onNavigate)

@@ -26,14 +26,26 @@ class ExpressiveNavigationTest {
         }
         listOf(
             "tickets" to "车票制作与历史记录",
+            "query" to "车次、车站与离线查询",
             "backup" to "备份、恢复与本机数据",
+            "arrival" to "到站检测与到访记录",
+            "monitor" to "余票监控与列车追踪",
+            "sale" to "起售查询与预约提醒",
             "speed" to "车速表与轨迹",
+            "vehicle" to "车迷工具与车辆查询",
             "lines" to "线路查询与普速票价",
             "quiz" to "每日小测验",
+            "general" to "外观、隐私与问题反馈",
         ).forEach { (id, title) ->
             compose.onNodeWithText(title).performScrollTo().performClick()
             compose.onNodeWithTag("help-$id").assertExists()
             compose.onNodeWithText("使用规则").assertExists()
+            val updatedText = when (id) {
+                "query" -> "开行日历"
+                "quiz" -> "365 天"
+                else -> null
+            }
+            updatedText?.let { compose.onNodeWithText(it, substring = true).performScrollTo().assertIsDisplayed() }
             pressBack()
             compose.onNodeWithTag("help-index").assertExists()
         }

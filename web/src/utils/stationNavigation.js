@@ -18,7 +18,8 @@ export function stationTrainLocation(row, source, date) {
       ...(record && record !== row.train ? { record } : {}),
       // 本站当天到发的列车可能在前一天或更早始发。
       date: row.trainDate || date,
-      ...(row.notRunning ? { source: 'llt' } : {}),
+      ...(row.notRunning || row.dataset === 'lcr' ? { source: 'llt' } : {}),
+      ...(row.dataset === 'lcr' ? { dataset: 'lcr' } : {}),
     },
   }
 }

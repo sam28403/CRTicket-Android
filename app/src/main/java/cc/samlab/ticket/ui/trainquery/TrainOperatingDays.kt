@@ -3,9 +3,18 @@ package cc.samlab.ticket.ui.trainquery
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import org.json.JSONArray
 
 internal data class TrainOperatingDays(val dates: Map<LocalDate, Boolean>) {
     val months: List<YearMonth> = dates.keys.map(YearMonth::from).distinct().sorted()
+}
+
+internal fun bundledOperatingDays(rows: JSONArray?): TrainOperatingDays? {
+    if (rows == null || rows.length() == 0) return null
+    val dates = (0 until rows.length()).mapNotNull { index ->
+        rows.optJSONArray(index)?.let { it.optString(0) to it.optString(1) }
+    }
+    return trainOperatingDays(dates).takeIf { it.dates.isNotEmpty() }
 }
 
 internal fun trainOperatingDays(rows: List<Pair<String, String>>): TrainOperatingDays {

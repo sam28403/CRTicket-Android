@@ -133,6 +133,7 @@ class NativeStationBoardController(
                     val state = board(value.optString("station"))
                     state.loading = value.optBoolean("loading")
                     state.error = value.optString("error")
+                    state.vientiane = value.optBoolean("vientiane")
                     state.date = if (data == null) "" else value.optString("date")
                     state.resultStation = if (data == null) "" else value.optString("resultStation")
                     if (data != null) state.preparePresentation(state.date)

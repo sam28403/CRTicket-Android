@@ -29,15 +29,19 @@ internal fun stationBoardTiming(rows: List<StationBoardRow>, seconds: Int) = Sta
 )
 
 @Composable
-internal fun rememberStationBoardTiming(rows: List<StationBoardRow>, active: Boolean): State<StationBoardTiming> {
+internal fun rememberStationBoardTiming(
+    rows: List<StationBoardRow>,
+    active: Boolean,
+    vientiane: Boolean,
+): State<StationBoardTiming> {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val seconds = remember {
-        mutableIntStateOf(ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).toLocalTime().toSecondOfDay())
+    val zone = remember(vientiane) { ZoneId.of(if (vientiane) "Asia/Vientiane" else "Asia/Shanghai") }
+    val seconds = remember(zone) {
+        mutableIntStateOf(ZonedDateTime.now(zone).toLocalTime().toSecondOfDay())
     }
-    LaunchedEffect(active, lifecycle) {
+    LaunchedEffect(active, lifecycle, zone) {
         if (!active) return@LaunchedEffect
         lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            val zone = ZoneId.of("Asia/Shanghai")
             while (true) {
                 seconds.intValue = ZonedDateTime.now(zone).toLocalTime().toSecondOfDay()
                 delay(1000)
@@ -45,5 +49,5 @@ internal fun rememberStationBoardTiming(rows: List<StationBoardRow>, active: Boo
         }
     }
     // Equal highlight sets suppress recomposition between actual train events.
-    return remember(rows) { derivedStateOf { stationBoardTiming(rows, seconds.intValue) } }
+    return remember(rows, seconds) { derivedStateOf { stationBoardTiming(rows, seconds.intValue) } }
 }
