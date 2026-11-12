@@ -9,7 +9,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import cc.samlab.ticket.MainActivity
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.home.homeColorScheme
@@ -27,6 +28,7 @@ class WelcomeActivity : AppCompatActivity() {
                 .putExtra(EXTRA_RELEASE_NOTES_ONLY, true)
     }
 
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CRTicket)
         super.onCreate(savedInstanceState)
@@ -37,7 +39,7 @@ class WelcomeActivity : AppCompatActivity() {
                 .bufferedReader().use { it.readText() }
         }.getOrElse { getString(R.string.welcome_changes_fallback) }
         setContent {
-            MaterialTheme(colorScheme = homeColorScheme(this, cc.samlab.ticket.ui.ThemePreference.isDark(this),
+            MaterialExpressiveTheme(colorScheme = homeColorScheme(this, cc.samlab.ticket.ui.ThemePreference.isDark(this),
                 cc.samlab.ticket.ui.ThemePreference.isPureBlack(this))) {
                 WelcomeScreen(
                     firstUse = firstUse,

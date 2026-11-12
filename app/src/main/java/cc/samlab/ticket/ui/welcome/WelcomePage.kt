@@ -16,6 +16,7 @@ import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.components.MarkdownText
 
 @Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 internal fun WelcomePage(
     page: Int,
     firstUse: Boolean,
@@ -43,7 +44,7 @@ internal fun WelcomePage(
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             Spacer(Modifier.height(8.dp))
-            LinearProgressIndicator(
+            LinearWavyProgressIndicator(
                 progress = { if (firstUse) (page + 1) / 3f else if (page == 0) 0.5f else 1f },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -52,6 +53,7 @@ internal fun WelcomePage(
                     WelcomeBackupPrompt(wide, Modifier.weight(1f).fillMaxWidth())
                     Button(
                         onClick = onImportBackup,
+                        shapes = ButtonDefaults.shapes(),
                         modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
                             .align(Alignment.End).testTag("welcome-import-backup"),
                     ) { Text(stringResource(R.string.settings_import_backup)) }
@@ -65,6 +67,7 @@ internal fun WelcomePage(
                     WelcomeIntro(firstUse, wide, Modifier.weight(1f).fillMaxWidth())
                     Button(
                         onClick = onNext,
+                        shapes = ButtonDefaults.shapes(),
                         modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f)
                             .align(Alignment.End).testTag("welcome-next"),
                     ) { Text(stringResource(R.string.welcome_next)) }
@@ -96,6 +99,7 @@ internal fun WelcomePage(
                         firstUse -> WelcomeTermsActions(wide, canAccept, onAccept, onExit)
                         else -> Button(
                             onClick = onComplete,
+                            shapes = ButtonDefaults.shapes(),
                             modifier = Modifier.fillMaxWidth(if (wide) 0.5f else 1f).align(Alignment.End),
                         ) { Text(stringResource(R.string.welcome_start)) }
                     }

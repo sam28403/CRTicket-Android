@@ -27,7 +27,7 @@ defineProps({ discovery: { type: Object, required: true } })
     <div class="recommendations">
       <button
         v-for="row in discovery.recommendations.value" :key="row.train"
-        class="train-card" @click="discovery.open(row.queryTrain)"
+        class="train-card" @click="discovery.open(row.queryTrain, row)"
       >
         <div class="card-heading">
           <strong>{{ row.train }}</strong>

@@ -12,6 +12,7 @@ import { queryStationSearch } from '@/composables/useTicketShared.js'
 import { useStationBoard } from '@/composables/useStationBoard.js'
 import { boardTabs, stationBoardRows } from '@/utils/stationBoard.js'
 import { isVientianeStation } from '@/utils/stationTimeZone.js'
+import { lcrText } from '@/utils/lcrText.js'
 import { useNativeStationBoard } from '@/composables/useNativeStationBoard.js'
 
 const StationLocationMap = defineAsyncComponent(() => import('@/components/StationLocationMap.vue'))
@@ -90,7 +91,7 @@ function refresh() {
           </el-form-item>
         </el-form>
         <div class="heading-actions">
-          <time class="system-clock">{{ vientiane ? '万象时间' : '北京时间' }} {{ clock.date }} {{ clock.time }}</time>
+          <time class="system-clock">{{ vientiane ? lcrText.vientiane : lcrText.beijing }} {{ clock.date }} {{ clock.time }}</time>
           <el-button @click="$router.push('/train')">车次查询</el-button>
           <el-button :disabled="loading || !result" @click="refresh">刷新</el-button>
         </div>

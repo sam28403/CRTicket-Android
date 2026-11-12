@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createLcrTimetableLoader, queryLcrTimetable } from './lcrTimetable.js'
-import { queryTrainInfo } from './trainInfo.js'
+import { queryLcrTrainInfo, queryTrainInfo } from './trainInfo.js'
+import { lcrTrainDetail } from './lcrOffline.js'
 
 const date = '2026-11-11'
 const stops = [
@@ -76,4 +77,26 @@ test('C85 和 C86 优先显示昆明与香格里拉之间的班次，国内班�
     assert.equal(withoutDomestic.from, '万象')
     assert.equal(withoutDomestic.alternatives, undefined)
   }
+})
+
+test('从中老铁路车次入口优先显示在线时刻，缺少可用在线结果时使用同日快照', async () => {
+  const load = createLcrTimetableLoader(async () => response(feed()))
+  const online = await queryLcrTrainInfo('C85', date, load)
+  assert.equal(online.source, 'Laos Bus Tickets')
+  assert.equal(online.dataset, 'lcr')
+  assert.equal(online.stops[0].departure, '23:45')
+
+  const offline = await queryLcrTrainInfo('C85', date, async () => { throw new Error('network') })
+  assert.deepEqual(offline, { ...lcrTrainDetail('C85', date), offlineFallback: true })
+  assert.equal(offline.from, '琅勃拉邦')
+  assert.deepEqual(await queryLcrTrainInfo('C85', '2026-11-12', load), {
+    ...lcrTrainDetail('C85', '2026-11-12'), offlineFallback: true,
+  })
+  const unavailable = await queryLcrTrainInfo('C85', '2027-01-16', load)
+  assert.deepEqual(unavailable.stops, [])
+  assert.equal(unavailable.dataset, 'lcr')
+
+  const generic = await queryTrainInfo('C85', date, async () => { throw new Error('12306') },
+    async () => { throw new Error('路路通') }, async () => undefined)
+  assert.deepEqual(generic, offline)
 })

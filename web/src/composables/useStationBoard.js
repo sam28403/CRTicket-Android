@@ -14,7 +14,7 @@ export function useStationBoard() {
   const station = ref('')
   const now = ref(Date.now())
   const clock = computed(() => stationClock(now.value, station.value))
-  const discovery = useStationDiscovery(computed(() => stationClock(now.value)))
+  const discovery = useStationDiscovery(now)
   const loading = ref(false)
   const schedule = shallowRef(null)
   const { result } = useStationDelay(schedule)

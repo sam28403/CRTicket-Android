@@ -2,7 +2,8 @@ package cc.samlab.ticket.update
 
 import androidx.activity.ComponentActivity
 import android.widget.Toast
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
@@ -18,6 +19,7 @@ internal fun ComponentActivity.updates(): UpdateViewModel =
     ViewModelProvider(this)[UpdateViewModel::class.java]
 
 @Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 internal fun UpdateHost(activity: ComponentActivity, dark: Boolean, pureBlack: Boolean) {
     val model = activity.updates()
     if (!BuildConfig.UPDATE_ENABLED) return
@@ -35,7 +37,7 @@ internal fun UpdateHost(activity: ComponentActivity, dark: Boolean, pureBlack: B
         onDismissRequest = model::dismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
-        MaterialTheme(colorScheme = homeColorScheme(activity, dark, pureBlack)) {
+        MaterialExpressiveTheme(colorScheme = homeColorScheme(activity, dark, pureBlack)) {
             WelcomeScreen(
                 firstUse = false,
                 changes = "# ${release.tag}\n\n" + release.notes.ifBlank {

@@ -157,12 +157,7 @@ class NativeTrainListController(
     }
 
     internal fun open(row: TrainListRow, navigate: (String) -> Unit) {
-        val source = when {
-            row.dataset == "lcr" -> "&source=llt&dataset=lcr"
-            row.notRunning -> "&source=llt"
-            else -> ""
-        }
-        navigate("/train?train=${android.net.Uri.encode(row.train)}&date=$date$source")
+        navigate(row.queryRoute(date))
     }
 
     fun close() {

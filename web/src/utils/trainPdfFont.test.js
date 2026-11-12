@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises'
 import { PDFDocument, PDFName, decodePDFRawStream } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import { buildTrainInfoPdf, trainPdfRows, trainPdfTitle } from './trainInfoPdf.js'
+import { getLcrText } from './lcrText.js'
 
 const mobileBytes = await readFile(new URL('../../public/fonts/train-pdf.ttf', import.meta.url))
 const originalBytes = await readFile(new URL('../../public/google_sans_rounded_regular.ttf', import.meta.url))
@@ -19,6 +20,7 @@ for (const count of [16, 60]) {
     const result = {
       train: 'K1127/K1126',
       date: '2026-10-10',
+      displayTimeZone: getLcrText('zh-TW').vientiane,
       stops: Array.from({ length: count }, (_, index) => ({
         no: index + 1,
         train: index < count / 2 ? 'K1127' : 'K1126',
@@ -55,7 +57,7 @@ for (const count of [16, 60]) {
     }
 
     const expectedText = [
-      trainPdfTitle(result), '站序站名到站时间出发时间停留时间里程',
+      trainPdfTitle(result), result.displayTimeZone, '站序站名到站时间出发时间停留时间里程',
       ...trainPdfRows(result).flat(),
     ].join('')
     for (const character of expectedText) {

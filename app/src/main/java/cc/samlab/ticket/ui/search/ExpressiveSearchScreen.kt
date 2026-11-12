@@ -144,7 +144,7 @@ internal fun ExpressiveSearchScreen(
                                 searchResultGroup("trains", trainsTitle, query,
                                     trains, trainsExpanded, { trainsExpanded = !trainsExpanded }) { row, _, _ ->
                                     TrainListItem(row) {
-                                        navigateResult("/train?train=${Uri.encode(row.train)}&date=${result.optString("date")}")
+                                        navigateResult(row.queryRoute(result.optString("date")))
                                     }
                                 }
                                 searchResultGroup("stations", stationsTitle, query,

@@ -1,10 +1,12 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  addStationHistory, busyStationPicks, dailyStationPicks, stationSummaryNow,
+  addStationHistory, busyStationPicks, dailyStationPicks, stationDiscoveryDates, stationSummaryNow,
 } from './stationDiscovery.js'
 import { bureauForTelecode, stationBureau } from './stationBureau.js'
 import { listStationSummaries } from '../android/railway/stationDiscovery.js'
+import { queryStation } from '../android/railway/station.js'
+import { lcrTrainDetail } from '../android/railway/lcrOffline.js'
 
 test('station history normalizes, deduplicates, and limits recent queries', () => {
   assert.deepEqual(addStationHistory(['北京南', '上海虹桥'], ' 上海虹桥 '), ['上海虹桥', '北京南'])
@@ -96,4 +98,44 @@ test('summaries count overnight origin dates, terminals and passing trains consi
   assert.equal(stationSummaryNow(yesterdayPassing, '23:49:59').passing, 0)
   assert.equal(stationSummaryNow(yesterdayPassing, '23:50').passing, 1)
   assert.deepEqual(listStationSummaries(database, '2026-10-21'), [])
+})
+
+test('万象车站卡片与大屏共用车次，按当地日期合并并去重', async () => {
+  const date = '2026-11-12'
+  const schedule = { startDate: date, endDate: '2026-11-13' }
+  const trains = ['D83', 'D84', 'D87', 'D88'].map(train => ({
+    train, schedule, stops: [
+      { station: '万象', departure: '10:00' },
+      { station: '磨憨', arrival: '14:00' },
+    ],
+  }))
+  const database = { trains: new Map(trains.map(item => [item.train, item])) }
+  const loadDatabase = async () => database
+  const card = (day, options) => listStationSummaries(database, day, options)
+    .find(row => row.station === '万象')
+
+  assert.equal(card(date).total, 4)
+  assert.equal(card(date, { includeLcr: true }).total, 11)
+
+  const c96 = lcrTrainDetail('C96', date)
+  const overlapping = { trains: new Map([...database.trains, ['C96', { ...c96, schedule }]]) }
+  const dates = stationDiscoveryDates(Date.parse('2026-11-12T16:30:00Z'))
+  assert.deepEqual(dates, { date: '2026-11-13', vientianeDate: date })
+  const cards = listStationSummaries(overlapping, dates.date, {
+    includeLcr: true, vientianeDate: dates.vientianeDate,
+  })
+  const vientiane = cards.find(row => row.station === '万象')
+  const board = await queryStation({ name: '万象' }, date, { loadDatabase: async () => overlapping })
+  assert.equal(vientiane.total, board.trains.length)
+  assert.equal(vientiane.total, 11)
+  assert.equal(vientiane.origin, 8)
+  assert.equal(vientiane.terminal, 3)
+  assert.equal(stationSummaryNow(vientiane, '08:59').handled, 1)
+  assert.equal(stationSummaryNow(vientiane, '09:00').handled, 5)
+  assert.ok(cards.some(row => row.station === '琅勃拉邦' && row.total > 0))
+
+  loadDatabase.usingImported = true
+  const imported = await queryStation({ name: '万象' }, date, { loadDatabase })
+  assert.equal(card(date).total, imported.trains.length)
+  assert.equal(card('2026-11-13', { includeLcr: true }).total, 12)
 })

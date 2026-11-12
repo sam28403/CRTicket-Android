@@ -267,7 +267,10 @@ class AndroidBridge(
     fun setThemeAppearance(dark: Boolean, pureBlack: Boolean) = onUi { appearance.apply(dark, pureBlack) }
 
     @JavascriptInterface
-    fun configuration(): String = JSONObject().put("backend", "phone").toString()
+    fun configuration(): String = JSONObject()
+        .put("backend", "phone")
+        .put("locale", activity.resources.configuration.locales[0].toLanguageTag())
+        .toString()
 
     @JavascriptInterface
     fun external(url: String) {

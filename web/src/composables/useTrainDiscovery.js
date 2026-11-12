@@ -37,8 +37,13 @@ export function useTrainDiscovery(route, router) {
     try { localStorage.removeItem(historyKey) } catch { /* Optional storage. */ }
   }
 
-  function open(code) {
-    router.push({ path: '/train', query: { train: code, date: trainQueryRange().today } })
+  function open(code, row) {
+    router.push({ path: '/train', query: {
+      train: code,
+      date: row ? recommendationDate.value : trainQueryRange().today,
+      ...(row?.notRunning ? { source: 'llt' } : {}),
+      ...(row?.dataset === 'lcr' ? { dataset: 'lcr' } : {}),
+    } })
   }
 
   async function refresh() {

@@ -1,6 +1,19 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { getLcrText } from './lcrText.js'
 import { hasTrainTimeZoneOptions, trainStopsInTimeZone } from './trainTimeZoneDisplay.js'
+
+test('中老铁路来源和时区标签按语言显示', () => {
+  const labels = locale => {
+    const { offlineSource, vientiane } = getLcrText(locale)
+    return [offlineSource, vientiane]
+  }
+  assert.deepEqual(labels('zh-CN'), ['中老铁路（离线）', '万象时间'])
+  for (const locale of ['zh-TW', 'zh-HK', 'zh-Hant', 'zh-Hant-HK']) {
+    assert.deepEqual(labels(locale), ['中寮鐵路（離線）', '永珍時間'])
+  }
+  assert.deepEqual(labels('en-US'), ['Laos-China Railway (offline)', 'Vientiane time'])
+})
 
 test('时区选项只匹配指定车次，支持组合车次和离线方案', () => {
   for (const train of ['D83', 'D84/85', 'D86/D83B', 'd87', 'D88', 'Y25/Y28', 'Y26', 'Y27B', 'Y28']) {
@@ -50,7 +63,7 @@ test('旅游专列按实际站点处理全中国和全老挝线路，并保留�
   assert.deepEqual(trainStopsInTimeZone(laos, 'vientiane'), local)
 })
 
-test('老中铁路时刻以万象为基准，切换到北京时加一小时并更新跨日数', () => {
+test('中老铁路时刻以万象为基准，切换到北京时加一小时并更新跨日数', () => {
   const stops = [{ station: '万象', departure: '23:35', departureDay: 0 }]
   assert.equal(trainStopsInTimeZone(stops, 'vientiane', 'vientiane'), stops)
   const [stop] = trainStopsInTimeZone(stops, 'beijing', 'vientiane')

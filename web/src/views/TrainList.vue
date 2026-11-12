@@ -78,7 +78,7 @@ const columns = computed(() => {
           query: {
             train: cellData,
             date: result.value.date,
-            ...(rowData.notRunning || rowData.dataset === 'lcr' ? { source: 'llt' } : {}),
+            ...(rowData.notRunning ? { source: 'llt' } : {}),
             ...(rowData.dataset === 'lcr' ? { dataset: 'lcr' } : {}),
           },
         },

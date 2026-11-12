@@ -99,7 +99,8 @@ internal fun LazyGridScope.trainQueryDiscovery(
             val context = LocalContext.current
             val rows = remember(recommendations) { parseTrainListRows(context, recommendations) }
             val code = recommendations.getJSONObject(index).getString("queryTrain")
-            TrainListItem(rows[index]) { open(code) }
+            val row = rows[index]
+            TrainListItem(row) { onNavigate(row.queryRoute(state.optString("recommendationDate"), code)) }
         }
     }
 }

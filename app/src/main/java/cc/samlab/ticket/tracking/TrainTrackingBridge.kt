@@ -10,16 +10,18 @@ import android.os.ResultReceiver
 import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.appString
 import cc.samlab.ticket.notifications.MonitorNotifications
+import cc.samlab.ticket.ui.ExpressiveDialogHost
 import org.json.JSONObject
 
 class TrainTrackingBridge(
     private val activity: Activity,
+    dialogs: ExpressiveDialogHost,
     private val callback: (String, String, JSONObject) -> Unit,
 ) {
     private val notifications = TrainTrackingNotifications(activity)
     private val recovery = TrainTrackingRecovery(activity, notifications)
     private val permission = MonitorNotifications(
-        activity, callback,
+        activity, callback, dialogs,
         channelId = TrainTrackingNotifications.CHANNEL_ID,
         channelName = appString(R.string.tracking_channel_name),
         channelDescription = appString(R.string.tracking_channel_description),
@@ -52,6 +54,8 @@ class TrainTrackingBridge(
         permission.onRequestPermissionsResult(requestCode, grantResults)
 
     fun onActivityResult(requestCode: Int) = permission.onActivityResult(requestCode)
+
+    fun close() = permission.cancelPermissionRequest()
 
     fun restore() {
         recovery.restore()

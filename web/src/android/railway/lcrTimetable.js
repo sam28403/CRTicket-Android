@@ -1,4 +1,5 @@
 import { clockMinutes } from './clock.js'
+import { lcrText } from '../../utils/lcrText.js'
 
 const timetableUrl = 'https://laosbustickets.com/data/laos-train-timetable.json'
 const sourceUrl = 'https://laosbustickets.com/train-tickets-laos/#timetable'
@@ -61,7 +62,7 @@ export function normalizeLcrStops(rows, train) {
 function parseLcrTimetable(data) {
   const checkedAt = Date.parse(data?.checkedAt)
   if (!Number.isFinite(checkedAt) || !Array.isArray(data?.trains)) {
-    throw new Error('老中铁路时刻表格式异常')
+    throw new Error(lcrText.invalidTimetable)
   }
   const trains = new Map()
   for (const row of data.trains) {
@@ -81,7 +82,7 @@ export async function fetchLcrTimetable(fetchImpl = fetch) {
     signal: AbortSignal.timeout(5000),
     redirect: 'error',
   })
-  if (!response.ok) throw new Error('老中铁路时刻表下载失败')
+  if (!response.ok) throw new Error(lcrText.downloadFailed)
   return response.json()
 }
 
@@ -131,6 +132,7 @@ export async function queryLcrTimetable(train, date, load) {
       stops,
       source: 'Laos Bus Tickets',
       sourceUrl,
+      dataset: 'lcr',
       timeZone: 'vientiane',
       warnings: [],
     })

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
 
 @Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 internal fun WelcomeTermsActions(
     wide: Boolean,
     canAccept: Boolean,
@@ -35,6 +37,7 @@ internal fun WelcomeTermsActions(
         ) {
             Button(
                 onClick = onAccept,
+                shapes = ButtonDefaults.shapes(),
                 enabled = canAccept,
                 modifier = Modifier.weight(1f),
             ) {
@@ -54,7 +57,12 @@ internal fun WelcomeTermsActions(
         }
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Button(onClick = onAccept, enabled = canAccept, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onAccept,
+                shapes = ButtonDefaults.shapes(),
+                enabled = canAccept,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Text(acceptLabel)
             }
             TextButton(onClick = onExit, modifier = Modifier.fillMaxWidth()) {

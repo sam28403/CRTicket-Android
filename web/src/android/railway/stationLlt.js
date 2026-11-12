@@ -25,6 +25,10 @@ function originDate(date, day) {
     .toISOString().slice(0, 10)
 }
 
+export function listLltStationNames(database) {
+  return stationIndex(database).keys()
+}
+
 export function listLltStation(database, station, date, includeNotRunning = false) {
   const rows = []
   const offset = isVientianeStation(station) ? -60 : 0

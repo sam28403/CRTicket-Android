@@ -38,13 +38,14 @@ class ArrivalPermissions(
             },
             onDecline = { finish(false, activity.getString(R.string.arrival_not_enabled)) },
             onDismiss = { finish(false, activity.getString(R.string.arrival_cancelled)) },
+            owner = this,
         )
     }
 
     fun cancel() {
         waiting = false
         settingsReturn.cancel()
-        dialogs.dismiss()
+        dialogs.dismiss(this)
     }
 
     // 授权更改可能重建进程，已确认用途的请求无需再次显示开启说明。
@@ -100,6 +101,7 @@ class ArrivalPermissions(
             },
             onDecline = { finish(false, activity.getString(R.string.arrival_background_required)) },
             onDismiss = { finish(false, activity.getString(R.string.arrival_cancelled)) },
+            owner = this,
         )
     }
 

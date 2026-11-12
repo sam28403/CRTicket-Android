@@ -1,5 +1,6 @@
 package cc.samlab.ticket.ui.trainlist
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import cc.samlab.ticket.R
 
@@ -19,6 +20,12 @@ internal data class TrainListRow(
     val dataset: String = "",
 ) {
     val durationMinutes: Double? = parseTrainListDuration(duration)
+
+    fun queryRoute(date: String, code: String = train): String = buildString {
+        append("/train?train=").append(Uri.encode(code)).append("&date=").append(date)
+        if (notRunning) append("&source=llt")
+        if (dataset == "lcr") append("&dataset=lcr")
+    }
 }
 
 internal fun parseTrainListDuration(duration: String): Double? {

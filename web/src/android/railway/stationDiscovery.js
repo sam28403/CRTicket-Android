@@ -1,20 +1,27 @@
-import { listLltStation } from './stationLlt.js'
-import { normalizeStationName } from '../../utils/stationName.js'
+import { listLltStationNames } from './stationLlt.js'
+import { listLcrStationNames } from './lcrOffline.js'
+import { listStationRows } from './station.js'
 import { stationRowTiming } from '../../utils/stationBoardTime.js'
+import { isVientianeStation } from '../../utils/stationTimeZone.js'
 
 const caches = new WeakMap()
 
 // Reuse board rows so overnight trains follow exactly the same service-date rules.
-export function listStationSummaries(database, date) {
-  let cached = caches.get(database)
-  if (cached?.date === date) return cached.stations
-  const names = new Set()
-  for (const train of database.trains.values()) {
-    for (const stop of train.stops) names.add(normalizeStationName(stop.station))
+export function listStationSummaries(database, date, {
+  includeLcr = false,
+  vientianeDate = date,
+} = {}) {
+  const key = `${date}:${vientianeDate}:${includeLcr}`
+  const cached = caches.get(database)
+  if (cached?.key === key) return cached.stations
+  const names = new Set(listLltStationNames(database))
+  if (includeLcr) {
+    for (const station of listLcrStationNames()) names.add(station)
   }
   const stations = []
   for (const station of names) {
-    const rows = listLltStation(database, station, date)
+    const stationDate = isVientianeStation(station) ? vientianeDate : date
+    const rows = listStationRows(database, station, stationDate, { includeLcr })
     if (!rows.length) continue
     let origin = 0
     let terminal = 0
@@ -35,6 +42,6 @@ export function listStationSummaries(database, date) {
       passingWindows, completionTimes })
   }
   stations.sort((a, b) => b.total - a.total || a.station.localeCompare(b.station, 'zh-CN'))
-  caches.set(database, { date, stations })
+  caches.set(database, { key, stations })
   return stations
 }

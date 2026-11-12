@@ -1,7 +1,7 @@
 import { showNonRunningTrains } from '../timetableVisibility.js'
 import { requireNetwork } from '../networkFeatures.js'
 import { nativeFetch } from './nativeFetch.js'
-import { queryTrainInfo, validateTrainQuery } from './trainInfo.js'
+import { queryLcrTrainInfo, queryTrainInfo, validateTrainQuery } from './trainInfo.js'
 import { loadLltDatabase } from './lltLoader.js'
 import { listLltTrains, validListDate } from './lltList.js'
 import { lltTrainDetail } from './lltDetail.js'
@@ -29,6 +29,10 @@ export async function requestRailway(path, signal) {
         const train = query.train?.trim().toUpperCase()
         const error = validateTrainQuery({ train, date: query.date })
         if (error) throw new Error(error)
+        if (query.dataset === 'lcr') {
+            return { success: true, ...await waitForRequest(queryLcrTrainInfo(train, query.date, loadLcrTimetable), signal) }
+        }
+        if (query.dataset) throw new Error('请选择有效时刻表')
         const fetchImpl = (upstream, options) => nativeFetch(upstream, {
             ...options,
             signal: signal && options.signal ? AbortSignal.any([signal, options.signal]) : signal || options.signal,
@@ -51,8 +55,14 @@ export async function requestRailway(path, signal) {
         throw error
     }
     if (url.pathname === '/station/discovery') {
+        if (query.vientianeDate !== undefined && !validListDate(query.vientianeDate)) {
+            throw new Error('请选择有效日期')
+        }
         return { success: true, date: query.date,
-            stations: listStationSummaries(database, query.date) }
+            stations: listStationSummaries(database, query.date, {
+                includeLcr: !loadLltDatabase.usingImported,
+                vientianeDate: query.vientianeDate,
+            }) }
     }
     const includeNotRunning = showNonRunningTrains()
     if (url.pathname === '/llt-trains/detail') {

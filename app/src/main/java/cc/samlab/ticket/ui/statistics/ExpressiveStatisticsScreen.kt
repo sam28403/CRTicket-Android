@@ -3,6 +3,7 @@ package cc.samlab.ticket.ui.statistics
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -91,6 +92,9 @@ internal fun ExpressiveStatisticsScreen(
                 }
                 Box(Modifier.fillMaxWidth().weight(1f)) {
                     AndroidView(factory = { body }, modifier = Modifier.fillMaxSize())
+                    if (state.loading) LinearWavyProgressIndicator(
+                        Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                    )
                     if (state.empty && !state.loading) {
                         Surface(Modifier.fillMaxSize(), color = colors.surfaceContainer) {
                             StatisticsEmptyState(visible)

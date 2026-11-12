@@ -36,11 +36,13 @@ const router = useRouter()
 const discovery = useTrainDiscovery(route, router)
 const networkAllowed = useNetworkFeatures()
 const importedTimetable = ref(loadLltDatabase.local ? null : false)
-const preferImported = computed(() => importedTimetable.value && route.query.source !== 'online')
+const preferImported = computed(() => importedTimetable.value &&
+  route.query.source !== 'online' && route.query.dataset !== 'lcr')
 const offlineMode = computed(() => !networkAllowed.value || route.query.source === 'llt' || preferImported.value)
 const routes = ref([])
 const selectedRoute = ref(0)
-const delayAvailable = computed(() => !offlineMode.value && schedule.value?.timeZone !== 'vientiane')
+const delayAvailable = computed(() => !offlineMode.value &&
+  schedule.value?.timeZone !== 'vientiane' && schedule.value?.dataset !== 'lcr')
 const delay = useTrainDelay(schedule, undefined, delayAvailable)
 const timeZone = useTrainTimeZone(delay.result, schedule)
 const result = timeZone.result
@@ -68,7 +70,7 @@ const trainNumberError = computed(() => getTrainQueryNumberError(
   train.value, offlineMode.value, offlineRecord.value, importedTimetable.value,
 ))
 const resultQueryCode = ref('')
-const resultQuerySource = ref('')
+const resultQuerySource = computed(() => offlineMode.value || schedule.value?.offlineFallback ? 'llt' : '')
 const trackingButton = ref(null)
 const queryCache = createTrainQueryCache()
 const nativeQuery = useNativeTrainQuery({
@@ -84,6 +86,11 @@ function toast(message) {
 let controller
 let requestId = 0
 let previousRouteQuery
+
+function selectedDataset(code) {
+  return route.query.dataset === 'lcr' && code === String(route.query.train || '').trim().toUpperCase()
+    ? 'lcr' : undefined
+}
 
 async function refresh() {
   if (offlineMode.value || refreshing.value || loading.value) return
@@ -104,6 +111,7 @@ async function switchSource() {
     offline: !offlineMode.value,
     offlineRecord: offlineRecord.value,
     record: route.query.record,
+    dataset: selectedDataset(train.value.trim().toUpperCase()),
   })
   if (offlineMode.value && importedTimetable.value) location.query.source = 'online'
   if (location.query.date !== date.value) {
@@ -166,8 +174,7 @@ async function query() {
   discovery.record(code)
   const source = offlineMode.value ? 'llt' : undefined
   const requestCode = offlineMode.value && record ? record : code
-  const dataset = source === 'llt' && route.query.dataset === 'lcr'
-    && code === route.query.train ? 'lcr' : undefined
+  const dataset = selectedDataset(code)
   train.value = displayTrainCode(code)
   loading.value = true
   error.value = ''
@@ -198,11 +205,9 @@ async function query() {
       }
       setRoutes(data, code, record)
       resultQueryCode.value = requestCode
-      resultQuerySource.value = source === 'llt' ? 'llt' : ''
       queryCache.set(trainRecordCacheKey(code, record), selectedDate, source, {
         data,
         queryCode: resultQueryCode.value,
-        querySource: resultQuerySource.value,
         offlineRecord: offlineRecord.value,
       }, dataset)
       toast(`数据来源：${data.source}`)
@@ -210,7 +215,7 @@ async function query() {
   } catch (err) {
     if (id === requestId && err.code !== 'ERR_CANCELED') {
       if (source !== 'llt') {
-        toast('在线查询不可用，已切换为路路通离线查询')
+        toast(dataset === 'lcr' ? '在线查询不可用，已切换为离线查询' : '在线查询不可用，已切换为路路通离线查询')
         loading.value = false
         await switchSource()
         return
@@ -269,7 +274,6 @@ watch(
     if (saved) {
       setRoutes(saved.data, cacheCode, selectedRecord)
       resultQueryCode.value = saved.queryCode
-      resultQuerySource.value = saved.querySource
       offlineRecord.value = saved.offlineRecord
       return
     }

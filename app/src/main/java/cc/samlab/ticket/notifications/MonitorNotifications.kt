@@ -2,7 +2,6 @@ package cc.samlab.ticket.notifications
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -20,13 +19,13 @@ import org.json.JSONObject
 class MonitorNotifications(
     private val activity: Activity,
     private val callback: (String, String, JSONObject) -> Unit,
+    private val dialogs: ExpressiveDialogHost,
     private val channelId: String = CHANNEL_ID,
     private val channelName: String = activity.getString(R.string.notifications_ticket_channel),
     private val channelDescription: String = activity.getString(R.string.notifications_ticket_description),
     private val channelImportance: Int = NotificationManager.IMPORTANCE_HIGH,
     private val permissionRequest: Int = PERMISSION_REQUEST,
     private val settingsRequest: Int = SETTINGS_REQUEST,
-    private val dialogs: ExpressiveDialogHost? = null,
     private val resumeFromSettings: Boolean = false,
 ) {
     companion object {
@@ -92,23 +91,14 @@ class MonitorNotifications(
         }
         val title = activity.getString(R.string.notifications_enable_channel, channelName)
         val message = activity.getString(R.string.notifications_channel_settings, channelName)
-        if (dialogs != null) {
-            dialogs.show(
-                title = title,
-                message = message,
-                confirmLabel = activity.getString(R.string.action_open_settings),
-                onConfirm = openSettings,
-                onDecline = { finishPermission() },
-            )
-        } else {
-            AlertDialog.Builder(activity)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(activity.getString(R.string.action_open_settings)) { _, _ -> openSettings() }
-                .setNegativeButton(activity.getString(R.string.action_not_now)) { _, _ -> finishPermission() }
-                .setOnCancelListener { finishPermission() }
-                .show()
-        }
+        dialogs.show(
+            title = title,
+            message = message,
+            confirmLabel = activity.getString(R.string.action_open_settings),
+            onConfirm = openSettings,
+            onDecline = { finishPermission() },
+            owner = this,
+        )
     }
 
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
@@ -123,7 +113,7 @@ class MonitorNotifications(
     fun cancelPermissionRequest() {
         pending.clear()
         settingsReturn.cancel()
-        dialogs?.dismiss()
+        dialogs.dismiss(this)
     }
 
     fun onActivityResult(requestCode: Int) {

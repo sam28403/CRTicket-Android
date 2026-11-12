@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import cc.samlab.ticket.ui.trainlist.TrainListRow
 import org.json.JSONObject
 
 @Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 internal fun QuizOption(
     choice: QuizChoice,
     index: Int,
@@ -70,7 +73,7 @@ internal fun QuizOption(
         color = background,
         border = BorderStroke(2.dp, background),
     ) {
-        MaterialTheme(
+        MaterialExpressiveTheme(
             colorScheme = colors.copy(
                 primaryContainer = background,
                 onPrimaryContainer = foreground,

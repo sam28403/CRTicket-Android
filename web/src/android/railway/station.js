@@ -1,6 +1,7 @@
 import { showNonRunningTrains } from '../timetableVisibility.js'
 import { parseStations } from '../../utils/stations.js'
 import { stationQueryName } from '../../utils/stationName.js'
+import { lcrText } from '../../utils/lcrText.js'
 import { isVientianeStation, stationClock } from '../../utils/stationTimeZone.js'
 import { listLcrStation } from './lcrOffline.js'
 import { loadLltDatabase } from './lltLoader.js'
@@ -9,26 +10,38 @@ import { cancelledRequest, waitForRequest } from '../../utils/requests.js'
 
 const stations = new Map(parseStations().map(station => [station.name, station]))
 
+export function listStationRows(database, station, date, {
+  includeLcr = true,
+  includeNotRunning = false,
+} = {}) {
+  const lcr = includeLcr && isVientianeStation(station) ? listLcrStation(station, date) : []
+  if (!database) return lcr
+  const domestic = listLltStation(database, station, date, includeNotRunning)
+  if (!lcr.length) return domestic
+  const key = row => JSON.stringify([row.train, row.trainDate, row.from, row.to])
+  const curated = new Set(lcr.map(key))
+  return [...domestic.filter(row => !curated.has(key(row))), ...lcr]
+}
+
 export async function queryStation(station, date, {
   loadDatabase = loadLltDatabase,
   includeNotRunning = showNonRunningTrains(),
 } = {}) {
-  let lcr = isVientianeStation(station.name) ? listLcrStation(station.name, date) : []
   let database
   try {
     database = await loadDatabase()
   } catch (error) {
+    const lcr = listStationRows(null, station.name, date)
     if (!lcr.length) throw error
-    return { source: '老中铁路（离线）', trains: lcr, warnings: [] }
+    return { source: lcrText.offlineSource, trains: lcr, warnings: [] }
   }
-  if (loadDatabase.usingImported) lcr = []
-  const key = row => JSON.stringify([row.train, row.trainDate, row.from, row.to])
-  const curated = new Set(lcr.map(key))
-  const domestic = listLltStation(database, station.name, date, includeNotRunning)
   return {
     source: '路路通',
     version: database.version,
-    trains: [...domestic.filter(row => !curated.has(key(row))), ...lcr],
+    trains: listStationRows(database, station.name, date, {
+      includeLcr: !loadDatabase.usingImported,
+      includeNotRunning,
+    }),
     warnings: [],
   }
 }

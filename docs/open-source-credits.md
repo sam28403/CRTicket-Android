@@ -9,6 +9,8 @@
 此页面提供来源入口，已有许可文件继续保存在 `web/public/licenses`。
 按钮和页面标题的语言资源维护在各语言的 `strings.xml`。
 
+中老铁路老挝段的在线时刻表来源 [Laos Bus Tickets](https://laosbustickets.com/train-tickets-laos/#timetable) 已列入致谢。
+
 小测验的全对礼花使用`nl.dionsegijn:konfetti-compose:2.2.0`，与Android Easter Eggs
 项目采用同一动画库。项目来源同时加入致谢，Konfetti的ISC许可保存于
 `web/public/licenses/konfetti.txt`并随网页资产打包。本项目使用独立的粒子配置，

@@ -12,13 +12,13 @@ export function trainQueryEntryLocation(query, now = Date.now()) {
 }
 
 export function requiresOfflineTrainQuery(source, result) {
-  return source !== 'llt' && (
+  return source !== 'llt' && result.dataset !== 'lcr' && (
     !result.stops?.length || result.offlineFallback === true ||
     String(result.source || '').startsWith('路路通')
   )
 }
 
-export function trainQuerySourceLocation({ train, date, offline, offlineRecord = '', record = '' }) {
+export function trainQuerySourceLocation({ train, date, offline, offlineRecord = '', record = '', dataset }) {
   const entered = train.trim().toUpperCase()
   const selectedRecord = matchingTrainRecord(entered, record)
   const recordedTrain = displayTrainCode(offlineRecord)
@@ -36,6 +36,7 @@ export function trainQuerySourceLocation({ train, date, offline, offlineRecord =
       date: !offline && !isTrainQueryDateInRange(date) ? trainQueryRange().today : date,
       source: offline ? 'llt' : undefined,
       ...(selectedRecord && selectedRecord !== code ? { record: selectedRecord } : {}),
+      ...(dataset === 'lcr' ? { dataset } : {}),
     },
   }
 }

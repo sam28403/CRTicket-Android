@@ -77,7 +77,9 @@ class TrainTrackingDeviceFixture(private val instrumentation: Instrumentation) {
         var result = JSONObject()
         instrumentation.runOnMainSync {
             prepare()
-            TrainTrackingBridge(activity) { _, _, data -> result = data }.state("fixture")
+            TrainTrackingBridge(activity, cc.samlab.ticket.ui.ExpressiveDialogHost(activity)) { _, _, data ->
+                result = data
+            }.state("fixture")
         }
         return result
     }

@@ -33,6 +33,7 @@ internal val projectCredits = listOf(
     ProjectCredit("moerail", "https://github.com/Arnie97/moerail"),
     ProjectCredit("12306", "https://www.12306.cn/"),
     ProjectCredit("路路通", "http://www.lltskb.com/"),
+    ProjectCredit("Laos Bus Tickets", "https://laosbustickets.com/train-tickets-laos/#timetable"),
     ProjectCredit("rail.re", "https://rail.re/"),
     ProjectCredit("下关站", "http://www.xiaguanzhan.com/"),
     ProjectCredit("中国动车组（China-EMU）", "https://www.china-emu.cn/"),

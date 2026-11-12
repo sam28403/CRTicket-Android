@@ -4,7 +4,7 @@ import { normalizeStationName } from '../../utils/stationName.js'
 import { loadLltDatabase } from './lltLoader.js'
 import { clockMinutes } from './clock.js'
 import { queryLcrTimetable } from './lcrTimetable.js'
-import { combineTrainResults } from './lcrOffline.js'
+import { combineTrainResults, lcrTrainDetail } from './lcrOffline.js'
 
 const origin = 'https://kyfw.12306.cn'
 const stationCodes = new Map(stationData.split('@').filter(Boolean).map(row => {
@@ -121,16 +121,26 @@ async function query12306(train, date, fetchImpl) {
   }
 }
 
+export async function queryLcrTrainInfo(train, date, loadLcr) {
+  const online = await queryLcrTimetable(train, date, loadLcr).catch(() => [])
+  if (online.length) return combineTrainResults(online)
+  const { alternatives = [], ...primary } = lcrTrainDetail(train, date)
+  return combineTrainResults([primary, ...alternatives].map(item => ({ ...item, offlineFallback: true })))
+}
+
 export async function queryTrainInfo(train, date, fetchImpl = fetch, loadDatabase = loadLltDatabase, loadLcr) {
-  const lcrRequest = loadLcr ? queryLcrTimetable(train, date, loadLcr) : []
+  const lcrRequest = loadLcr && queryLcrTrainInfo(train, date, loadLcr)
   let online
   let onlineError
   try { online = await query12306(train, date, fetchImpl) } catch (error) { onlineError = error }
-  const lcrResults = await lcrRequest
-  if (lcrResults.length && !online?.stops.length) return combineTrainResults(lcrResults)
+  const lcr = await lcrRequest
+  if (lcr?.stops.length && !online?.stops.length) return lcr
 
   const domestic = await resolveDomesticTrain(train, date, online, onlineError, loadDatabase)
-  if (lcrResults.length && (train === 'C85' || train === 'C86')) {
+  if (!lcr?.stops.length) return domestic
+  const { alternatives = [], ...lcrPrimary } = lcr
+  const lcrResults = [lcrPrimary, ...alternatives]
+  if (train === 'C85' || train === 'C86') {
     const endpoints = [domestic.from, domestic.to].map(normalizeStationName)
     if (endpoints.includes('昆明') && endpoints.includes('香格里拉')) {
       return combineTrainResults([domestic, ...lcrResults])

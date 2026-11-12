@@ -1,5 +1,10 @@
 import { stationQueryName } from './stationName.js'
 import { stationBureau } from './stationBureau.js'
+import { stationClock } from './stationTimeZone.js'
+
+export function stationDiscoveryDates(now = Date.now()) {
+  return { date: stationClock(now).date, vientianeDate: stationClock(now, '万象').date }
+}
 
 export function busyStationPicks(stations) {
   return stations.filter(row => row.total > 0).slice()

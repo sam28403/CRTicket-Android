@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,7 @@ internal fun ExpressivePermissionDialog(
     prompt: ExpressivePrompt,
     dark: Boolean,
     onConfirm: () -> Unit,
-    onDecline: () -> Unit,
+    onDecline: (() -> Unit)?,
     onDismiss: () -> Unit,
     pureBlack: Boolean = false,
 ) {
@@ -35,16 +36,19 @@ internal fun ExpressivePermissionDialog(
     val colors = homeColorScheme(context, dark, pureBlack)
     MaterialExpressiveTheme(colorScheme = colors) {
         AlertDialog(
+            modifier = Modifier.testTag("expressive-dialog"),
             onDismissRequest = onDismiss,
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_notification_ticket),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            },
-            title = { Text(prompt.title) },
+            icon = if (prompt.showIcon) {
+                {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_notification_ticket),
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            } else null,
+            title = prompt.title?.let { title -> { Text(title) } },
             text = {
                 Text(
                     text = prompt.message,
@@ -60,9 +64,11 @@ internal fun ExpressivePermissionDialog(
                     Text(prompt.confirmLabel)
                 }
             },
-            dismissButton = {
-                TextButton(onClick = onDecline) {
-                    Text(stringResource(R.string.action_not_now))
+            dismissButton = onDecline?.let { decline ->
+                {
+                    TextButton(onClick = decline) {
+                        Text(stringResource(R.string.action_not_now))
+                    }
                 }
             },
         )

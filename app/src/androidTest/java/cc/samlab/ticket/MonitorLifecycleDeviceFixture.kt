@@ -127,7 +127,8 @@ class MonitorLifecycleDeviceFixture(private val instrumentation: Instrumentation
     fun trainState(): JSONObject {
         var state = JSONObject()
         onMain {
-            TrainTrackingBridge(requireNotNull(activity)) { _, _, result -> state = result }
+            val host = requireNotNull(activity)
+            TrainTrackingBridge(host, cc.samlab.ticket.ui.ExpressiveDialogHost(host)) { _, _, result -> state = result }
                 .state("lifecycle-fixture")
         }
         return state

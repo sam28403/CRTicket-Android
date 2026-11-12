@@ -1,11 +1,12 @@
 import { normalizeStationName } from './stationName.js'
 import { displayTrainCode } from './trainDisplay.js'
 import { isVientianeStation, shiftClock } from './stationTimeZone.js'
+import { lcrText } from './lcrText.js'
 
 export const trainTimeZones = [
-  { value: 'local', label: '当地时间' },
-  { value: 'beijing', label: '北京时间' },
-  { value: 'vientiane', label: '万象时间' },
+  { value: 'local', label: lcrText.local },
+  { value: 'beijing', label: lcrText.beijing },
+  { value: 'vientiane', label: lcrText.vientiane },
 ]
 
 export function hasTrainTimeZoneOptions(code) {

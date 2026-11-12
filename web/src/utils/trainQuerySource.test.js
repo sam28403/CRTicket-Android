@@ -42,6 +42,20 @@ test('切换离线来源保留车次和日期，并设置路路通参数', () =>
   })
 })
 
+test('中老铁路车次切换来源保留线路，自动回退仍显示同一线路的结果', () => {
+  for (const offline of [true, false]) {
+    assert.deepEqual(trainQuerySourceLocation({ train: 'C85', date, offline, dataset: 'lcr' }).query, {
+      train: 'C85', date, source: offline ? 'llt' : undefined, dataset: 'lcr',
+    })
+  }
+  assert.equal(requiresOfflineTrainQuery(undefined, {
+    dataset: 'lcr', offlineFallback: true, stops: [{ station: '万象' }],
+  }), false)
+  assert.equal(requiresOfflineTrainQuery(undefined, {
+    dataset: 'lcr', offlineFallback: true, stops: [],
+  }), false)
+})
+
 test('离线双车次切换在线时使用单车次，并可切回完整离线记录', () => {
   const offlineRecord = 'G1/G2B'
   const online = trainQuerySourceLocation({ train: 'G1/G2', date, offline: false })

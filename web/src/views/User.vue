@@ -8,7 +8,7 @@
       </button>
       <h1>运转数据</h1>
     </header>
-    <main class="user-main" v-loading="statisticsLoading || mapLoading">
+    <main class="user-main" v-loading="!nativeStatistics && (statisticsLoading || mapLoading)">
       <div v-if="hasTicketData" class="operations-grid">
         <section class="chart-section station-section" aria-labelledby="station-title">
           <h2 id="station-title">最常到达站点统计</h2>

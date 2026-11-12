@@ -18,7 +18,7 @@ test('离线车次按星期与闭区间筛选并保留同号线路', () => {
   assert.equal(rows[1].dataset, 'lcr')
 })
 
-test('万象大屏在北京时间零点后仍查询当地当天，并从同一数据源打开详情', async () => {
+test('万象大屏在北京时间零点后仍查询当地当天，详情默认查询同一线路的在线时刻', async () => {
   const request = createStationQuery({
     now: () => Date.parse('2026-11-11T16:30:00Z'),
     loadDatabase: async () => { throw new Error('offline') },
@@ -28,7 +28,7 @@ test('万象大屏在北京时间零点后仍查询当地当天，并从同一�
   const row = board.trains.find(item => item.train === 'C85')
   assert.equal(board.date, date)
   assert.deepEqual(stationTrainLocation(row, board.source, date).query, {
-    train: 'C85', date, source: 'llt', dataset: 'lcr',
+    train: 'C85', date, dataset: 'lcr',
   })
   const beijing = lcrTrainDetail('C85', date).stops.find(stop => stop.station === '万象')
   assert.equal(row.arrival, `${String(Number(beijing.arrival.slice(0, 2)) - 1).padStart(2, '0')}${beijing.arrival.slice(2)}`)

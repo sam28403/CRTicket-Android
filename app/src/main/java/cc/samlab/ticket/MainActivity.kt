@@ -1,6 +1,5 @@
 package cc.samlab.ticket
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -47,8 +46,8 @@ class MainActivity : AppCompatActivity() {
     private val worker = Executors.newFixedThreadPool(4)
     private val phoneHttp by lazy { PhoneHttp(worker, ::callback) }
     private val preferences by lazy { getSharedPreferences("android", MODE_PRIVATE) }
-    private val notifications by lazy { MonitorNotifications(this, ::callback) }
-    private val trainTracking by lazy { TrainTrackingBridge(this, ::callback) }
+    private val notifications by lazy { MonitorNotifications(this, ::callback, dialogs) }
+    private val trainTracking by lazy { TrainTrackingBridge(this, dialogs, ::callback) }
     private val ticketMonitor by lazy { TicketMonitorBridge(this, ::callback) }
     private val dialogs by lazy { ExpressiveDialogHost(this) }
     private val refresh by lazy { ExpressiveRefreshHost(this, webView) }
@@ -210,11 +209,13 @@ class MainActivity : AppCompatActivity() {
                 message: String,
                 result: JsResult,
             ): Boolean {
-                AlertDialog.Builder(this@MainActivity)
-                    .setMessage(message)
-                    .setPositiveButton(R.string.action_confirm) { _, _ -> result.confirm() }
-                    .setOnCancelListener { result.cancel() }
-                    .show()
+                dialogs.show(
+                    message = message,
+                    confirmLabel = getString(R.string.action_confirm),
+                    onConfirm = result::confirm,
+                    onDismiss = result::cancel,
+                    showIcon = false,
+                )
                 return true
             }
         }
@@ -452,6 +453,9 @@ class MainActivity : AppCompatActivity() {
         home.close()
         settings.close()
         stationArrival.close()
+        trainTracking.close()
+        notifications.cancelPermissionRequest()
+        dialogs.close()
         refresh.close()
         files.closeChooser()
         phoneHttp.close()

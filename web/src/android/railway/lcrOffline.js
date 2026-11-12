@@ -1,6 +1,7 @@
 import snapshot from './lcr-offline.json' with { type: 'json' }
+import { lcrText } from '../../utils/lcrText.js'
 import { compareTrains, listLltTrains, runsOnDate } from './lltList.js'
-import { listLltStation } from './stationLlt.js'
+import { listLltStation, listLltStationNames } from './stationLlt.js'
 
 const database = {
   version: snapshot.checkedAt,
@@ -16,7 +17,7 @@ export function lcrTrainDetail(train, date) {
     success: true,
     train,
     date,
-    source: '老中铁路（离线）',
+    source: lcrText.offlineSource,
     dataset: 'lcr',
     timeZone: 'beijing',
     defaultTimeZone: 'vientiane',
@@ -39,4 +40,8 @@ export function listLcrTrains(date, domestic) {
 export function listLcrStation(station, date) {
   return listLltStation(database, station, date)
     .map(row => ({ ...row, id: `lcr-${row.id}`, dataset: 'lcr' }))
+}
+
+export function listLcrStationNames() {
+  return listLltStationNames(database)
 }

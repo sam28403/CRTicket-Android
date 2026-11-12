@@ -4,7 +4,7 @@ import { listStationSummaries } from './railway/stationDiscovery.js'
 import { onBeforeUnmount } from 'vue'
 import { native } from './platform.js'
 import { stationClock } from '../utils/stationBoard.js'
-import { stationSummaryNow } from '../utils/stationDiscovery.js'
+import { stationDiscoveryDates, stationSummaryNow } from '../utils/stationDiscovery.js'
 import { stationQueryName } from '../utils/stationName.js'
 import { parseStations } from '../utils/stations.js'
 import { stationBureau } from '../utils/stationBureau.js'
@@ -12,22 +12,23 @@ import { stationBureau } from '../utils/stationBureau.js'
 export function useVisitedStationCards() {
   if (typeof native?.stationBoardResult !== 'function') return
   const controller = new AbortController()
-  let cachedDate = ''
+  let cachedKey = ''
   let cachedRows
-  async function rowsFor(date) {
-    if (cachedDate !== date || !cachedRows) {
-      cachedDate = date
-      cachedRows = import('../api.js').then(({ default: api, timetableTimeout }) => api.get(
+  async function rowsFor(dates) {
+    const { date, vientianeDate } = dates
+    const key = `${date}:${vientianeDate}:${loadLltDatabase.revision}`
+    if (cachedKey !== key || !cachedRows) {
+      cachedKey = key
+      const task = import('../api.js').then(({ default: api, timetableTimeout }) => api.get(
         '/station/discovery', {
-          params: { date }, timeout: timetableTimeout, signal: controller.signal,
+          params: dates, timeout: timetableTimeout, signal: controller.signal,
         },
       )).then(({ data }) => {
         if (!data.success || data.date !== date) throw new Error('Invalid station date')
         return new Map((data.stations || []).map(row => [stationQueryName(row.station), row]))
-      }).catch(error => {
-        if (cachedDate === date) cachedRows = null
-        throw error
       })
+      cachedRows = task
+      task.catch(() => { if (cachedRows === task) cachedRows = null })
     }
     return cachedRows
   }
@@ -56,18 +57,21 @@ export function useVisitedStationCards() {
       kind: 'saleCatalog', names, loading: true,
     }))
     try {
-      const clock = stationClock(Date.now())
-      const rows = await rowsFor(clock.date)
+      const dates = stationDiscoveryDates()
+      const rows = await rowsFor(dates)
+      const now = Date.now()
+      const currentDates = stationDiscoveryDates(now)
+      if (dates.date !== currentDates.date || dates.vientianeDate !== currentDates.vientianeDate) {
+        return request(event)
+      }
       if (saleCatalog) {
         native.stationBoardResult(JSON.stringify({
-          kind: 'saleCatalog', date: clock.date,
+          kind: 'saleCatalog', date: dates.date,
           names,
           stations: [...rows.values()].map(row => ({ station: row.station, total: row.total })),
         }))
         return
       }
-      const now = stationClock(Date.now())
-      if (now.date !== clock.date) return request(event)
       native.stationBoardResult(JSON.stringify({
         kind: 'visits', requestId,
         stations: stations.map(station => {
@@ -76,7 +80,7 @@ export function useVisitedStationCards() {
             station, total: 0, origin: 0, terminal: 0,
             completionTimes: [], passingWindows: [],
           }
-          return { ...stationSummaryNow(row, now.time), station }
+          return { ...stationSummaryNow(row, stationClock(now, station).time), station }
         }),
       }))
     } catch (error) {
