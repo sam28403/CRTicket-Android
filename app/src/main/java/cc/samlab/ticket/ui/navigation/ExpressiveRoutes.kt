@@ -19,6 +19,7 @@ internal object ExpressiveRoutes {
         "/help/general", "/help/lines", "/help/quiz",
         "/monitor", "/monitor/settings", "/about/report", "/about/credits",
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer",
+        "/railfan/historical-train",
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track",
     ) + cc.samlab.ticket.ui.settings.extraSettingsRoutes
 
@@ -56,6 +57,7 @@ internal object ExpressiveRoutes {
         "/help" -> "/home"
         "/train-comparison", "/sale-time", "/sale-time/reminders" -> "/home"
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
+        "/railfan/historical-train" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"
         "/about/report", "/about/credits" -> "/about"
         "/settings/arrival", "/settings/permissions", "/settings/storage", "/settings/map",

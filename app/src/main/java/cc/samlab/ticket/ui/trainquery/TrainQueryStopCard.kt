@@ -2,6 +2,7 @@ package cc.samlab.ticket.ui.trainquery
 
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -27,7 +28,7 @@ internal fun TrainQueryStopCard(
     total: Int,
     highlight: QueryStopHighlight,
     dark: Boolean,
-    onNavigate: (String) -> Unit,
+    onNavigate: ((String) -> Unit)?,
     showDepartureDay: Boolean = false,
 ) {
     val textResources = rememberAppText()
@@ -47,13 +48,16 @@ internal fun TrainQueryStopCard(
         QueryStopHighlight.UPCOMING -> textResources(R.string.station_upcoming)
         QueryStopHighlight.NONE -> ""
     }
+    val action = if (onNavigate == null) Modifier else Modifier.clickable {
+        onNavigate("/station?station=${Uri.encode(stop.optString("station"))}")
+    }
     Surface(
-        onClick = { onNavigate("/station?station=${Uri.encode(stop.optString("station"))}") },
         shape = RoundedCornerShape(20.dp),
         color = background,
         contentColor = foreground,
         border = BorderStroke(1.dp, if (status.isEmpty()) colors.outlineVariant else foreground.copy(alpha = 0.45f)),
         modifier = Modifier.fillMaxWidth().testTag("train-query-stop-$index")
+            .then(action)
             .semantics { stateDescription = status },
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {

@@ -22,6 +22,10 @@ internal val railfanDestinations = listOf(
         R.drawable.ic_home_lines, "/railfan/lines",
     ),
     HomeDestination(
+        R.string.historical_train_title, R.string.historical_train_description,
+        R.drawable.ic_home_historical_train, "/railfan/historical-train",
+    ),
+    HomeDestination(
         R.string.railfan_visits, R.string.visits_description,
         R.drawable.ic_home_visits, "/railfan/visits",
     ),

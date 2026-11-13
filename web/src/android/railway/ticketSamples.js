@@ -55,6 +55,7 @@ export async function queryTicketSample(date, {
   const database = await loadDatabase()
   const candidates = [...database.trains.values()].filter(item =>
     /^[GCDZTKLYS]?\d{1,4}(?:\/[A-Z]?\d{1,4})*$/.test(item.train)
+    && item.mileageReliable !== false
     && runsOnDate(item.schedule, date)
     && sampleInterval(item.stops, date, () => 0))
   if (!candidates.length) throw new Error('离线库中没有该日期开行且里程完整的可用车次')

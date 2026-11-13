@@ -32,7 +32,11 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 @Composable
-internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
+internal fun TrainQueryRouteMap(
+    route: JSONObject,
+    train: String,
+    disclaimer: Int = R.string.train_map_disclaimer,
+) {
     val textResources = rememberAppText()
     val assets = LocalContext.current.assets
     val outline by produceState(emptyList<List<GeoPoint>>(), assets) {
@@ -148,7 +152,7 @@ internal fun TrainQueryRouteMap(route: JSONObject, train: String) {
                     contentDescription = textResources(R.string.label_hint),
                     modifier = Modifier.size(18.dp),
                 )
-                Text(textResources(R.string.train_map_disclaimer), style = MaterialTheme.typography.bodySmall)
+                Text(textResources(disclaimer), style = MaterialTheme.typography.bodySmall)
             }
         }
     }

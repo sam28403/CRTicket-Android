@@ -40,6 +40,21 @@ test('按 255 进制解析车次索引、站点索引和累计里程', () => {
   assert.deepEqual(stops.map(stop => stop.arrivalDay), [0, 0, 1])
 })
 
+test('读取历史快照的原始倒序时刻和里程，标记里程不可用于补全', () => {
+  const files = fixture()
+  files['stops.json'] = Buffer.from(JSON.stringify([['G1', [
+    [1, '23:58', '23:54', 0, 1, 1436, 1023],
+    [2, '01:00', null, 2, 2, null, 900],
+  ]]]))
+  const train = parseLltArchive(zipSync(files)).trains.get('G1')
+  assert.equal(train.stops[1].departure, '23:54')
+  assert.equal(train.stops[1].departureDay, 1)
+  assert.equal(train.stops[1].stay, 1436)
+  assert.equal(train.stops[2].arrivalDay, 2)
+  assert.deepEqual(train.stops.map(stop => stop.mileage), [0, 1023, 900])
+  assert.equal(train.mileageReliable, false)
+})
+
 test('拒绝损坏数据，里程倒退的记录不参与补全', () => {
   const files = fixture()
   files['T0.dat'][36] = 0

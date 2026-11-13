@@ -167,7 +167,8 @@ async function resolveDomesticTrain(train, date, online, onlineError, loadDataba
         ...stop, ...(matched[0].stops[index].isTurn === true ? { isTurn: true } : {}),
       })) }
     }
-    if (matched.length !== 1 || matched[0].stops.some(stop => stop.mileage == null)) {
+    if (matched.length !== 1 || matched[0].mileageReliable === false
+      || matched[0].stops.some(stop => stop.mileage == null)) {
       return { ...online, warnings: ['路路通未找到站序一致且里程完整的车次记录，里程暂缺。'] }
     }
     return { ...online, mileageVersion: database.version,

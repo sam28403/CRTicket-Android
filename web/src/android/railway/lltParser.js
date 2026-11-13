@@ -2,6 +2,7 @@ import { unzipSync } from 'fflate'
 import { applyLltTurnStations } from './lltTurnStations.js'
 import { parseLltRouting } from './lltRouting.js'
 import { applyLltTrainSegments } from './lltTrainSegments.js'
+import { applyLltStopOverrides } from './lltStopOverrides.js'
 
 const decode = bytes => new TextDecoder().decode(new Uint8Array(bytes))
 function readBigEndian(bytes, offset) {
@@ -142,6 +143,7 @@ export function parseLltFiles(files) {
   if (trains.size !== trainNames.length) throw new Error('路路通车次字典与记录数量不一致')
   applyLltTrainSegments(files['xw.dat'], trainNames, trains)
   applyLltTurnStations(files['extra.dat'], trainNames, stationNames, trains)
+  applyLltStopOverrides(files['stops.json'], trains)
   return { version, trains, routing: files['jlb.dat'] ? parseLltRouting(files['jlb.dat']) : null }
 }
 
@@ -152,7 +154,7 @@ export function parseLltArchive(bytes) {
   let total = 0
   const files = unzipSync(bytes, { filter: entry => {
     if (++entries > maxArchiveEntries) throw new Error('路路通数据包文件过多')
-    if (!/^(?:[st]\.i|t\.rule|extra\.dat|jlb\.dat|xw\.dat|ver\.txt|T\d{1,2}\.dat)$/.test(entry.name)) return false
+    if (!/^(?:[st]\.i|t\.rule|extra\.dat|jlb\.dat|xw\.dat|ver\.txt|stops\.json|T\d{1,2}\.dat)$/.test(entry.name)) return false
     if (names.has(entry.name)) throw new Error('路路通数据包包含重复文件')
     if (entry.originalSize > maxFileBytes) throw new Error('路路通数据文件过大')
     total += entry.originalSize

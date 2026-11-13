@@ -113,6 +113,9 @@ internal class ExpressivePageContent(
             "/railfan/visits" -> cc.samlab.ticket.ui.railfan.VisitedStationsScreen(
                 station, dark, pureBlack, embedded, active, onBack, onNavigate,
             )
+            "/railfan/historical-train" -> cc.samlab.ticket.ui.railfan.historical.HistoricalTrainScreen(
+                web, dark, pureBlack, embedded, active, onBack,
+            )
             in railfanDestinations.map { it.route } -> {
                 val destination = railfanDestinations.first {
                     it.route == ExpressiveRoutes.path(location)

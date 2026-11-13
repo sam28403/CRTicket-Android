@@ -1,5 +1,6 @@
 import { createNativeCalls } from './nativeCalls.js'
 import { createNativeRouteReporter, createNativeRouteSync } from './nativeRouteSync.js'
+import { buildTrainRouteData } from '../utils/maps/trainRouteMap.js'
 
 export const native = globalThis.window?.CRTicketAndroid
 export const configuration = native ? JSON.parse(native.configuration()) : { backend: 'phone' }
@@ -60,6 +61,7 @@ export async function saveFile(blob, filename, messages = {}) {
 
 export function initializePlatform(router) {
   if (!native) return
+  window.crticketBuildTrainRoute = stops => buildTrainRouteData(stops)
   const hasNativeHome = typeof native.setHomeVisible === 'function'
   window.crticketNavigate = route => router.push(route)
   window.crticketSyncNativeRoute = createNativeRouteSync({
