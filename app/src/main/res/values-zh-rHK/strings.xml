@@ -873,4 +873,11 @@
     <string name="vehicle_query_vehicle_count">查詢到%1$d個記錄</string>
     <string name="vehicle_query_train_count">查詢到%1$d個記錄</string>
     <string name="vehicle_query_image_unavailable">暫無車頭圖片</string>
+    <string name="historical_train_title">歷時車次查詢</string>
+    <string name="historical_train_description">查詢2003年至今的車次</string>
+    <string name="historical_train_date">查詢日期</string>
+    <string name="historical_train_hint">輸入車次並選擇查詢日期</string>
+    <string name="historical_train_dates_error">無法取得查詢日期</string>
+    <string name="historical_train_query_error">無法取得歷史時刻表</string>
+    <string name="historical_train_map_disclaimer">地圖顯示現時的站名和位置，可能與歷史站址不同。如有疑問，請聯絡 API 供應商 RailLog。</string>
 </resources>
