@@ -3,6 +3,7 @@ package cc.samlab.ticket
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import cc.samlab.ticket.ui.railfan.RailfanPreferences
 import cc.samlab.ticket.ui.railfan.VehicleQueryRepository
 import cc.samlab.ticket.ui.railfan.VehicleSearch
 import kotlinx.coroutines.runBlocking
@@ -19,7 +20,9 @@ class GlobalNumericSearchDeviceTest {
         val expected = runBlocking { VehicleQueryRepository.search(VehicleSearch.parse("5033")!!) }
         assertTrue("The live vehicle query must return 5033 records", expected.isNotEmpty())
         val fixture = TabletPageFixture(compose)
+        val railfanEnabled = RailfanPreferences.enabled(fixture.activity)
         try {
+            fixture.instrumentation.runOnMainSync { RailfanPreferences.setEnabled(fixture.activity, true) }
             fixture.navigate("/search")
             val field = compose.onNodeWithTag("global-search-field")
             val results = compose.onNodeWithTag("global-search-results")
@@ -49,6 +52,9 @@ class GlobalNumericSearchDeviceTest {
             }
             fixture.capture("global-5033-details")
         } finally {
+            fixture.instrumentation.runOnMainSync {
+                RailfanPreferences.setEnabled(fixture.activity, railfanEnabled)
+            }
             fixture.capture("global-5033-final")
             fixture.close()
         }

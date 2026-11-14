@@ -26,15 +26,46 @@ class GlobalVehicleSearchDeviceTest {
         val history = context.getSharedPreferences("vehicle-query", Context.MODE_PRIVATE)
         val saved = history.getString("history", null)
         preferences.edit().putBoolean(IMPORTANT_NOTICE_SUPPRESSED, true).commit()
-        RailfanPreferences.setEnabled(context, false)
+        RailfanPreferences.setEnabled(context, true)
         instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_WAKEUP").close()
         val fixture = TabletPageFixture(compose)
         try {
-            fixture.navigate("/search")
+            fixture.evaluate("""
+                const dispatch = window.dispatchEvent.bind(window);
+                window.dispatchEvent = event => {
+                    if (event.type !== 'crticket-search-request' || event.detail.query !== 'G1') {
+                        return dispatch(event);
+                    }
+                    window.dispatchEvent = dispatch;
+                    const g1 = {train: 'G1', from: '北京南', to: '上海虹桥',
+                        duration: '04:54', mileage: 1318, stationCount: 7};
+                    window.releaseSearchTimetable = () => CRTicketAndroid.searchResult(JSON.stringify({
+                        requestId: event.detail.requestId, trains: [g1], routing: [g1],
+                    }));
+                    return true;
+                };
+            """.trimIndent())
+            fixture.navigate("/home")
+            compose.onNodeWithContentDescription(fixture.activity.getString(R.string.home_search))
+                .performClick()
+            compose.waitUntil(10_000) {
+                compose.onAllNodesWithTag("global-search-field").fetchSemanticsNodes().isNotEmpty()
+            }
             val field = compose.onNodeWithTag("global-search-field")
             val results = compose.onNodeWithTag("global-search-results")
             field.performTextReplacement("G1")
             field.performImeAction()
+            compose.waitUntil(40_000) {
+                fixture.evaluate("typeof window.releaseSearchTimetable === 'function'") == "true" &&
+                    compose.onAllNodesWithTag("global-vehicle-search").fetchSemanticsNodes().isNotEmpty()
+            }
+            compose.onNodeWithTag("search-trains-title").assertDoesNotExist()
+            fixture.evaluate("window.releaseSearchTimetable()")
+            compose.waitUntil(40_000) {
+                runCatching {
+                    compose.onAllNodesWithTag("train-card:G1").onFirst().assertIsDisplayed()
+                }.isSuccess
+            }
             compose.waitUntil(40_000) {
                 runCatching { results.performScrollToNode(hasTestTag("global-vehicle-search")) }.isSuccess
             }
@@ -46,6 +77,14 @@ class GlobalVehicleSearchDeviceTest {
             compose.onAllNodesWithTag("global-vehicle-latest").onFirst().assertIsDisplayed()
             compose.onAllNodesWithText(latest.displayVehicle).onFirst().assertExists()
             fixture.capture("global-vehicle-preview")
+            results.performScrollToNode(hasTestTag("search-routing-title"))
+            results.performScrollToNode(hasTestTag("global-vehicle-search"))
+            fixture.instrumentation.runOnMainSync { RailfanPreferences.setEnabled(context, false) }
+            results.performScrollToIndex(0)
+            compose.onNodeWithTag("train-card:G1").assertIsDisplayed()
+            compose.onNodeWithTag("search-routing-title").assertDoesNotExist()
+            compose.onNodeWithTag("global-vehicle-search").assertDoesNotExist()
+            fixture.instrumentation.runOnMainSync { RailfanPreferences.setEnabled(context, true) }
             results.performScrollToNode(hasTestTag("global-vehicle-search"))
             compose.onNodeWithTag("global-vehicle-search").performClick()
             compose.waitUntil(20_000) {
@@ -101,8 +140,6 @@ class GlobalVehicleSearchDeviceTest {
             compose.waitUntil(40_000) {
                 runCatching { results.performScrollToNode(hasTestTag("global-vehicle-search")) }.isSuccess
             }
-            RailfanPreferences.setEnabled(context, false)
-            compose.onAllNodesWithTag("global-vehicle-search").onFirst().assertIsDisplayed()
         } finally {
             fixture.close()
             RailfanPreferences.setEnabled(context, enabled)

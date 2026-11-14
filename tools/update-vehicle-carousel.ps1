@@ -16,6 +16,7 @@ $iconCount = [regex]::Matches($html, 'class="series-list-item-icon"').Count
 if ($entries.Count -ne $iconCount -or $entries.Count -eq 0) {
     throw "Catalog markup changed: $iconCount cards but $($entries.Count) parsed models"
 }
+$excludedModels = @('700T', 'N700T', 'N700ST')
 $models = @($entries | ForEach-Object {
     $name = [System.Net.WebUtility]::HtmlDecode(
         ($_.Groups[2].Value -replace '<[^>]*>', '').Trim()
@@ -28,7 +29,7 @@ $models = @($entries | ForEach-Object {
         name = $name
         image = if ($path -match '/none\.png$') { $null } else { $path }
     }
-})
+} | Where-Object { $_.name -notin $excludedModels })
 [ordered]@{
     source = $sourceUrl
     models = $models

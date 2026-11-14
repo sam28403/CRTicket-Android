@@ -76,8 +76,7 @@ class GlobalLineSearchDeviceTest {
             compose.onNodeWithTag("global-search-field").assertTextContains("沪昆")
             compose.onNodeWithTag("search-line:沪昆线").assertIsDisplayed()
             fixture.instrumentation.runOnMainSync { RailfanPreferences.setEnabled(fixture.activity, false) }
-            compose.onNodeWithTag("search-line:沪昆线").assertIsDisplayed()
-            compose.onNodeWithTag("search-line:沪昆高速线").assertIsDisplayed()
+            compose.onNodeWithTag("search-lines-group").assertDoesNotExist()
         } finally {
             fixture.close()
         }

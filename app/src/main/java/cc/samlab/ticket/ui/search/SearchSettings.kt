@@ -22,13 +22,14 @@ internal data class SearchSetting(
 @Composable
 internal fun searchSettings(
     controller: NativeSettingsController,
+    railfanEnabled: Boolean,
     onNavigate: (String) -> Unit,
 ): List<SearchSetting> {
     val state = controller.state
     val enabled = true
     val theme = settingsThemeModes.firstOrNull { it.first == state.themeMode }?.second
         ?: R.string.theme_system
-    val destinations = additionalSearchSettings(onNavigate)
+    val destinations = additionalSearchSettings(railfanEnabled, onNavigate)
     val entries = listOf(
         SearchSetting("name", stringResource(R.string.settings_display_name), state.username, enabled) {
             controller.ui.open("name")

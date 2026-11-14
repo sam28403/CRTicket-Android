@@ -14,15 +14,11 @@
       "image": "/assets/imgs/Trains/Cute/CR450AF-J.png"
     },
     {
-      "name": "CR450AF(样车2)",
+      "name": "CR450AF",
       "image": "/assets/imgs/Trains/Cute/CR450AF-0.png"
     },
     {
-      "name": "CR450AF",
-      "image": null
-    },
-    {
-      "name": "CR450AF-A(样车)",
+      "name": "CR450AF-A",
       "image": "/assets/imgs/Trains/Cute/CR450AF-0.png"
     },
     {
@@ -30,15 +26,11 @@
       "image": "/assets/imgs/Trains/Cute/CR450BF-J.png"
     },
     {
-      "name": "CR450BF(样车2)",
+      "name": "CR450BF",
       "image": "/assets/imgs/Trains/Cute/CR450BF-0.png"
     },
     {
-      "name": "CR450BF",
-      "image": null
-    },
-    {
-      "name": "CR450BF-A(样车)",
+      "name": "CR450BF-A",
       "image": "/assets/imgs/Trains/Cute/CR450BF-0.png"
     },
     {
@@ -138,7 +130,7 @@
       "image": "/assets/imgs/Trains/Cute/CR400AF-C.png"
     },
     {
-      "name": "CR400AF-AE(二阶段)",
+      "name": "CR400AF-EX",
       "image": "/assets/imgs/Trains/Cute/CR400AF-C.png"
     },
     {
@@ -282,10 +274,6 @@
       "image": "/assets/imgs/Trains/Cute/CR452AF.png"
     },
     {
-      "name": "CR300AF ",
-      "image": null
-    },
-    {
       "name": "CR300BF(样车)",
       "image": "/assets/imgs/Trains/Cute/CR300BF-0.png"
     },
@@ -302,7 +290,7 @@
       "image": "/assets/imgs/Trains/Cute/CR300BF-H2.png"
     },
     {
-      "name": "CRRC Tiger (411/419)",
+      "name": "CRRC Tiger",
       "image": "/assets/imgs/Trains/Cute/CR200XS.png"
     },
     {
@@ -322,7 +310,7 @@
       "image": "/assets/imgs/Trains/Cute/CR220J.png"
     },
     {
-      "name": "CR220J1-H",
+      "name": "CR220J1-H(试制)",
       "image": "/assets/imgs/Trains/Cute/CR220J-H.png"
     },
     {
@@ -338,7 +326,7 @@
       "image": "/assets/imgs/Trains/Cute/CR220J.png"
     },
     {
-      "name": "CR220J3-H",
+      "name": "CR220J3-H(试制)",
       "image": "/assets/imgs/Trains/Cute/CR220J-H.png"
     },
     {
@@ -582,6 +570,10 @@
       "image": "/assets/imgs/Trains/Cute/CRH380D.png"
     },
     {
+      "name": "CRH380DL",
+      "image": null
+    },
+    {
       "name": "CRH1A-200",
       "image": "/assets/imgs/Trains/Cute/CRH1A.png"
     },
@@ -634,7 +626,7 @@
       "image": "/assets/imgs/Trains/Cute/CRH2B.png"
     },
     {
-      "name": "CRH2B(2A头型)",
+      "name": "CRH2B(统型)",
       "image": "/assets/imgs/Trains/Cute/CRH2A.png"
     },
     {
@@ -650,11 +642,11 @@
       "image": "/assets/imgs/Trains/Cute/CRH2A.png"
     },
     {
-      "name": "CRH2C(综合检测车)",
+      "name": "CRH2C(一阶段)",
       "image": "/assets/imgs/Trains/Cute/CRH2C.png"
     },
     {
-      "name": "CRH2C(一阶段)",
+      "name": "CRH2C(综合检测车)",
       "image": "/assets/imgs/Trains/Cute/CRH2C.png"
     },
     {
@@ -786,12 +778,12 @@
       "image": "/assets/imgs/Trains/Cute/CRH6A-AZ.png"
     },
     {
-      "name": "下一代市域动车组",
-      "image": "/assets/imgs/Trains/Cute/CR200AF-0.png"
-    },
-    {
       "name": "Cinova H2",
       "image": "/assets/imgs/Trains/Cute/CinovaH2.png"
+    },
+    {
+      "name": "下一代市域动车组",
+      "image": "/assets/imgs/Trains/Cute/CR200AF-0.png"
     },
     {
       "name": "CRH6A",
@@ -910,7 +902,7 @@
       "image": "/assets/imgs/Trains/Cute/City/TS200.png"
     },
     {
-      "name": "暂无型号",
+      "name": "暂无 型号",
       "image": "/assets/imgs/Trains/Cute/City/GSYE61.png"
     },
     {
@@ -970,8 +962,20 @@
       "image": "/assets/imgs/Trains/Cute/City/CCD5086.png"
     },
     {
+      "name": "CCD5089",
+      "image": "/assets/imgs/Trains/Cute/City/CCD5089.png"
+    },
+    {
       "name": "暂无型号",
       "image": "/assets/imgs/Trains/Cute/City/CJ3-BJDX.png"
+    },
+    {
+      "name": "CJ6(样车)",
+      "image": "/assets/imgs/Trains/Cute/CJ6s.png"
+    },
+    {
+      "name": "CJ6",
+      "image": "/assets/imgs/Trains/Cute/CJ6.png"
     },
     {
       "name": "ZEMU01",
@@ -1002,19 +1006,11 @@
       "image": "/assets/imgs/Trains/Cute/CR300J.png"
     },
     {
-      "name": "CJ6(样车)",
-      "image": "/assets/imgs/Trains/Cute/CJ6s.png"
-    },
-    {
-      "name": "CJ6",
-      "image": "/assets/imgs/Trains/Cute/CJ6.png"
-    },
-    {
       "name": "SYC",
       "image": "/assets/imgs/Trains/Cute/CJ6-B.png"
     },
     {
-      "name": "SRC160SZ",
+      "name": "SRC160CZ",
       "image": "/assets/imgs/Trains/Cute/City/CJ6-GZ18.png"
     },
     {

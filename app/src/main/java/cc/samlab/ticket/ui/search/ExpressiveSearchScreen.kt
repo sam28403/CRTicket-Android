@@ -29,6 +29,7 @@ import cc.samlab.ticket.ui.trainlist.NativeTrainListController
 import cc.samlab.ticket.ui.trainlist.parseTrainListRows
 import kotlinx.coroutines.delay
 import org.json.JSONArray
+import cc.samlab.ticket.ui.railfan.RailfanPreferences
 import cc.samlab.ticket.ui.railfan.VehicleSearch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -53,9 +54,10 @@ internal fun ExpressiveSearchScreen(
     val list = rememberLazyListState()
     val context = LocalContext.current
     val result = controller.result
+    val railfanEnabled by RailfanPreferences.rememberEnabled()
     val online = cc.samlab.ticket.network.NetworkFeatures.enabled
-    val lines = rememberLineSearchResults(query, online)
-    val assignments = if (online) listOfNotNull(
+    val lines = rememberLineSearchResults(query, railfanEnabled && online)
+    val assignments = if (railfanEnabled && online) listOfNotNull(
         VehicleSearch.forTrain(query), VehicleSearch.parse(query),
     ).distinct() else emptyList()
     val vehicleStates = assignments.associateWith { controller.assignmentState(it) }
@@ -69,7 +71,7 @@ internal fun ExpressiveSearchScreen(
     LaunchedEffect(query, active) {
         if (active && controller.prepareSearch(query)) {
             // Invalidate the previous request before debouncing the next one.
-            list.scrollToItem(0)
+            list.requestScrollToItem(0)
             if (query.isNotBlank()) {
                 delay(180)
                 controller.search(query.trim())
@@ -79,8 +81,10 @@ internal fun ExpressiveSearchScreen(
     val trains = remember(result) {
         parseTrainListRows(context, result.optJSONArray("trains") ?: JSONArray())
     }
-    val routing = remember(result) {
-        parseTrainListRows(context, result.optJSONArray("routing") ?: JSONArray())
+    val routing = remember(result, railfanEnabled) {
+        if (railfanEnabled) {
+            parseTrainListRows(context, result.optJSONArray("routing") ?: JSONArray())
+        } else emptyList()
     }
     val stations = remember(result) {
         val values = result.optJSONArray("stations") ?: JSONArray()
@@ -106,14 +110,14 @@ internal fun ExpressiveSearchScreen(
             val stationsTitle = stringResource(R.string.search_stations)
             val settingsTitle = stringResource(R.string.home_settings)
             val helpTitle = stringResource(R.string.home_help)
-            val helpMatches = searchHelp(navigateResult).filter {
+            val helpMatches = searchHelp(railfanEnabled, navigateResult).filter {
                 query.isNotBlank() && (it.title.contains(query.trim(), true)
                     || it.keywords.contains(query.trim(), true))
             }
             val vehicleTitle = stringResource(R.string.railfan_vehicle)
             val routingTitle = stringResource(R.string.railfan_routing)
             val linesTitle = stringResource(R.string.railfan_lines)
-            val matches = searchSettings(settings, navigateResult).filter {
+            val matches = searchSettings(settings, railfanEnabled, navigateResult).filter {
                 query.isNotBlank() && (it.title.contains(query.trim(), ignoreCase = true)
                     || it.subtitle.contains(query.trim(), ignoreCase = true)
                     || it.keywords.contains(query.trim(), ignoreCase = true))
@@ -141,6 +145,11 @@ internal fun ExpressiveSearchScreen(
                                         active, compactEmpty)
                                 }
                             } else {
+                                if (controller.loading) {
+                                    item(key = "search-loading") {
+                                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                                    }
+                                }
                                 searchResultGroup("trains", trainsTitle, query,
                                     trains, trainsExpanded, { trainsExpanded = !trainsExpanded }) { row, _, _ ->
                                     TrainListItem(row) {
@@ -199,15 +208,13 @@ internal fun ExpressiveSearchScreen(
                                         }
                                     }
                                 }
-                                if (controller.loading) {
-                                    item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
-                                } else if (result.optBoolean("error")) {
+                                if (!controller.loading && result.optBoolean("error")) {
                                     item {
                                         TextButton(onClick = { controller.search(query) }, Modifier.fillMaxWidth()) {
                                             Text(stringResource(R.string.search_error))
                                         }
                                     }
-                                } else if (trains.isEmpty() && stations.isEmpty() && matches.isEmpty()
+                                } else if (!controller.loading && trains.isEmpty() && stations.isEmpty() && matches.isEmpty()
                                     && lines.isEmpty() && helpMatches.isEmpty() && routing.isEmpty() && !hasVehicles && !loadingVehicles) {
                                     item {
                                         SearchEmptyState(R.string.search_no_results, R.string.search_no_results_hint,

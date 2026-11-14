@@ -13,8 +13,12 @@ import cc.samlab.ticket.ui.home.ticketDestinations
 import cc.samlab.ticket.ui.home.railfanDestinations
 
 @Composable
-internal fun additionalSearchSettings(onNavigate: (String) -> Unit): List<SearchSetting> {
+internal fun additionalSearchSettings(
+    railfanEnabled: Boolean,
+    onNavigate: (String) -> Unit,
+): List<SearchSetting> {
     val languages = AppLanguages.supported(LocalContext.current)
+    val destinations = if (railfanEnabled) ticketDestinations + railfanDestinations else ticketDestinations
     return listOf(
         SearchSetting("language-options", stringResource(R.string.settings_language), "",
             keywords = languages.joinToString("\n") { it.nativeName + " " + it.tag }
@@ -136,7 +140,7 @@ internal fun additionalSearchSettings(onNavigate: (String) -> Unit): List<Search
             ).joinToString("\n"),
         ) { onNavigate("/settings/permissions") },
     ).filter { BuildConfig.UPDATE_ENABLED || it.key != "page-2" } +
-        (ticketDestinations + railfanDestinations).filter {
+        destinations.filter {
             cc.samlab.ticket.network.NetworkFeatures.enabled ||
                 !cc.samlab.ticket.network.NetworkFeatures.blocksRoute(it.route)
         }.map { destination ->
@@ -150,8 +154,8 @@ internal fun additionalSearchSettings(onNavigate: (String) -> Unit): List<Search
 }
 
 @Composable
-internal fun searchHelp(onNavigate: (String) -> Unit): List<SearchSetting> =
-    helpTopics.map { topic ->
+internal fun searchHelp(railfanEnabled: Boolean, onNavigate: (String) -> Unit): List<SearchSetting> =
+    helpTopics.filter { railfanEnabled || it.id !in railfanHelpTopics }.map { topic ->
         SearchSetting("help-${topic.id}", stringResource(topic.title), "",
             keywords = listOf(
                 stringResource(topic.question),
@@ -160,3 +164,5 @@ internal fun searchHelp(onNavigate: (String) -> Unit): List<SearchSetting> =
             ).joinToString("\n"),
         ) { onNavigate(topic.route) }
     }
+
+private val railfanHelpTopics = setOf("speed", "vehicle", "lines", "quiz")

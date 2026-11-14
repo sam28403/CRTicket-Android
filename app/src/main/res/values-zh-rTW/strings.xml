@@ -632,7 +632,7 @@
     <string name="help_speed_rules">Stale fixes, accuracy worse than 50 metres and obvious jumps are filtered. After 10 seconds without updates, speed is hidden while time continues; recovery joins fixes with a straight line. Pause freezes time and distance; resume starts a new segment without counting paused movement. Average speed includes stops and signal gaps in unpaused time. After process termination the last snapshot becomes history, without adding elapsed time after termination. Dial limits do not cap measured speed values.</string>
     <string name="help_vehicle_title">Railfan tools and vehicle queries</string>
     <string name="help_vehicle_question">Why are vehicle links or history missing?</string>
-    <string name="help_vehicle_answer">從工具列表進入時，先在設定開啟車迷工具。首頁搜尋可獨立查詢車號、車型片段，以及符合規則的 G、D、C、S 車次配車，無需先完成時刻表查詢；僅在傳回記錄時顯示車輛結果，關閉車迷工具也不影響此搜尋。車輛歷史受上游涵蓋範圍限制，無記錄不代表從未擔當。實拍照片獨立載入，缺圖或載入緩慢不影響歷史查詢。</string>
+    <string name="help_vehicle_answer">先在設定開啟車迷工具。首頁搜尋可獨立查詢車號、車型片段，以及符合規則的 G、D、C、S 車次配車，無需先完成時刻表查詢；僅在傳回記錄時顯示車輛結果。車輛歷史受上游涵蓋範圍限制，無記錄不代表從未擔當。實拍照片獨立載入，缺圖或載入緩慢不影響歷史查詢。</string>
     <string name="help_vehicle_rules">歷史顯示介面傳回的記錄，車次摘要採用記錄對應日期的時刻表。首頁搜尋初始顯示三條記錄，支援展開。車輛查詢歷史在本機去重保留最近 10 條，下拉重新整理保留已有結果。逐層返回會恢復上一條查詢和結果，再回到搜尋初始頁。\n\n下關站實拍照片僅在車號匹配唯一時顯示，無歷史記錄也可顯示照片。CR400AFA1001、CR400AFA-1001 與 CR400AF-A-1001 視為同一車號。匹配有歧義或下載失敗時隱藏照片。詳情保留出處和作者，寬螢幕在圖片旁直接顯示。圖片與拍攝資訊在本機快取，拍攝資訊快取 24 小時，可在設定中清理車輛照片快取。車型圖、塗裝和照片不代表目前實際配屬。</string>
     <string name="help_general_title">Appearance, privacy and support</string>
     <string name="help_general_question">How do I change appearance or report an issue?</string>

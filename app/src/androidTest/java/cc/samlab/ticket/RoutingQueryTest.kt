@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import cc.samlab.ticket.ui.railfan.RailfanPreferences
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +17,9 @@ class RoutingQueryTest {
 
     @Test fun globalSearchOpensFullRouting() {
         val fixture = TabletPageFixture(compose)
+        val railfanEnabled = RailfanPreferences.enabled(fixture.activity)
         try {
+            fixture.instrumentation.runOnMainSync { RailfanPreferences.setEnabled(fixture.activity, true) }
             fixture.navigate("/search")
             val field = compose.onNodeWithTag("global-search-field")
             field.performTextInput("G1")
@@ -42,6 +45,9 @@ class RoutingQueryTest {
             routing.performScrollToNode(isNotSelected())
             fixture.capture("search-g1-full-routing")
         } finally {
+            fixture.instrumentation.runOnMainSync {
+                RailfanPreferences.setEnabled(fixture.activity, railfanEnabled)
+            }
             fixture.close()
         }
     }
