@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { validListDate } from '../web/src/android/railway/lltList.js'
 
 const base = 'https://api.raillog.top/api/train-timetables'
-let requestSpacingMs = 75
-const workers = 16
+let requestSpacingMs = 20
+const workers = 32
 let nextRequestAt = 0
 let retryAfterAt = 0
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
@@ -78,8 +78,15 @@ async function loadTrain(code, cache) {
     try {
         result = JSON.parse(await readFile(filename, 'utf8'))
     } catch (error) {
-        if (error.code !== 'ENOENT') throw error
-        result = await request('', { version, trainNumber: code })
+        if (error.code === 'ENOENT') {
+            result = await request('', { version, trainNumber: code })
+        } else if (error instanceof SyntaxError) {
+            console.warn(`${code}：缓存 JSON 无效，删除后重新下载`)
+            await rm(filename, { force: true })
+            result = await request('', { version, trainNumber: code })
+        } else {
+            throw error
+        }
     }
     assert.equal(result.version, version, `${code}：快照版本不匹配`)
     assert(Array.isArray(result.stops) && result.stops.length, `${code}：没有停站数据`)
