@@ -28,6 +28,7 @@ internal class DailyQuizGenerator(rawSources: QuizSources) {
             addAll(quizGeography(sources.stations, date, keep))
             addAll(quizCityQuestions(sources.stations, date, keep))
             addAll(quizTrainQuestions(today, date, keep))
+            addAll(quizStopCountQuestions(today, date, ordering, keep))
             addAll(quizStationCountQuestions(stationCounts.filterKeys { it in passengerStations }, date, keep))
             addAll(quizLineQuestions(sources, date, keep))
             addAll(quizRoutingQuestions(sources, date, keep))

@@ -758,6 +758,10 @@
     <string name="quiz_f_train_metric">Among these trains, %1$s has the greatest %2$s, at %3$s.</string>
     <string name="quiz_q_closest">Which train has a %1$s closest to %2$s?</string>
     <string name="quiz_f_closest">%1$s has a %2$s of %3$s, closest to %4$s among these trains.</string>
+    <string name="quiz_q_stop_count_most">གཤམ་གྱི་མེ་འཁོར་གང་ལ་འབབ་ཚུགས་མང་ཤོས་ཡོད།</string>
+    <string name="quiz_q_stop_count_fewest">གཤམ་གྱི་མེ་འཁོར་གང་ལ་འབབ་ཚུགས་ཉུང་ཤོས་ཡོད།</string>
+    <string name="quiz_q_stop_count_exact">གཤམ་གྱི་མེ་འཁོར་གང་ལ་འབབ་ཚུགས་ %1$s ཏག་ཏག་ཡོད།</string>
+    <string name="quiz_f_stop_count">མེ་འཁོར་ %1$s ལམ་ཐག་ཧྲིལ་པོར་འབབ་ཚུགས་ %2$s ལ་འགག་གི་ཡོད།</string>
     <string name="quiz_q_station_most">Which station handles the most trains today?</string>
     <string name="quiz_q_station_least">Which station handles the fewest trains today?</string>
     <string name="quiz_f_station_count">%1$s handles %2$s scheduled train services today.</string>
@@ -795,7 +799,7 @@
     <string name="quiz_report_template">དྲི་བ།: %1$s\n\nདཔྱད་གཞིའི་ལན།: %2$s\n\nངའི་ལན།: %3$s\n\nརྒྱུ་མཚན།: %4$s\n\nལན་བཏབ་པའི་ཚེས་གྲངས་དང་དུས་ཚོད།: %5$s</string>
     <string name="help_quiz_title">Daily quiz</string>
     <string name="help_quiz_question">How do I play the quiz or report an incorrect question?</string>
-    <string name="help_quiz_answer">Enable railfan tools in Settings and open Quiz at the bottom of the tool list. A correct answer advances automatically; an incorrect choice turns red, reveals the green reference answer and provides motion and haptic feedback. The summary lists incorrect answers as statements. Use the red report icon to open a separate report page, enter a reason, then copy the question or open the project Issues form. GitHub submission is confirmed by you. The summary uses a score ring and per-question result tiles, with side-by-side results and reference answers on wide screens. A perfect score plays confetti unless system animations are disabled. Score cards fit their content, and action buttons follow the content in the scrolling list. Each correct answer earns 5 points. Use the share button in the summary to share a result image with your avatar and name, plus a download link through the Android share menu.</string>
+    <string name="help_quiz_answer">Enable railfan tools in Settings and open Quiz at the bottom of the tool list. A correct answer advances automatically; an incorrect choice turns red, reveals the green reference answer and provides motion and haptic feedback. The summary lists incorrect answers as statements. Use the red report icon to open a separate report page, enter a reason, then copy the question or open the project Issues form. GitHub submission is confirmed by you. The summary uses a score ring and per-question result tiles, with side-by-side results and reference answers on wide screens. A perfect score plays confetti unless system animations are disabled. Score cards fit their content, and action buttons follow the content in the scrolling list. Each correct answer earns 5 points. Use the share button in the summary to share a result image with your avatar and name, plus a download link through the Android share menu. དྲི་བ་ཁ་ཤས་ཀྱིས་འབབ་ཚུགས་ཀྱི་གྲངས་བསྡུར་བའམ། འབབ་ཚུགས་ཀྱི་གྲངས་ངེས་ཅན་ཡོད་པའི་མེ་འཁོར་འདེམས་རྒྱུ་དྲི་གི་ཡོད།</string>
     <string name="help_quiz_rules">The quiz has 20 questions per Beijing calendar day. Opening it requires a connection to verify current timetable and station data. When verification fails, the quiz does not open. Questions and similar answer sets seen on this device in the preceding 365 days are excluded. Answer all questions to see the summary. Progress and answer times are saved on this device and are not included in backups.</string>
     <string name="help_lines_title">Railway lines and ordinary fares</string>
     <string name="help_lines_question">How do I view line stations, mileage and reference fares?</string>

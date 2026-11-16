@@ -765,6 +765,10 @@
     <string name="quiz_f_train_metric">这4个车次中，%1$s的%2$s最大，为%3$s。</string>
     <string name="quiz_q_closest">下面4个车次，%1$s最接近%2$s的是？</string>
     <string name="quiz_f_closest">%1$s的%2$s为%3$s，是这4个车次中最接近%4$s的。</string>
+    <string name="quiz_q_stop_count_most">下列车次中，停站数量最多的是？</string>
+    <string name="quiz_q_stop_count_fewest">下列车次中，停站数量最少的是？</string>
+    <string name="quiz_q_stop_count_exact">下列车次中，停站数量为 %1$s 的是？</string>
+    <string name="quiz_f_stop_count">%1$s 次列车全程停靠 %2$s 站。</string>
     <string name="quiz_q_station_most">下面4个车站，今日办理车次数量最多的是？</string>
     <string name="quiz_q_station_least">下面4个车站，今日办理车次数量最少的是？</string>
     <string name="quiz_f_station_count">按时刻表，%1$s站今日办理%2$s趟列车。</string>
@@ -802,7 +806,7 @@
     <string name="quiz_report_template">题目：%1$s\n\n参考答案：%2$s\n\n我的答案：%3$s\n\n理由：%4$s\n\n答题日期时间：%5$s</string>
     <string name="help_quiz_title">每日小测验</string>
     <string name="help_quiz_question">如何答题，或报告题目答案有误？</string>
-    <string name="help_quiz_answer">先在设置中开启车迷工具，再打开工具列表底部的小测验。答对后自动进入下一题；答错时所选项变红、参考答案变绿，并提供摇动与震动反馈。总结列出错题的正确答案陈述句。点击卡片右上角红色报告图标进入独立页面，填写理由后可复制题目或打开项目 Issues 表单，由你在 GitHub 确认提交。 总结采用环形成绩卡和逐题结果色块，宽屏并列显示成绩与错题答案。全部答对时播放礼花，系统关闭动画时保持静态。成绩卡按内容确定高度，操作按钮紧跟内容并随列表滚动。 每题答对得5分。结算页右上角可通过系统分享菜单分享成绩图片和下载链接，图片使用你的头像与用户名。</string>
+    <string name="help_quiz_answer">先在设置中开启车迷工具，再打开工具列表底部的小测验。答对后自动进入下一题；答错时所选项变红、参考答案变绿，并提供摇动与震动反馈。总结列出错题的正确答案陈述句。点击卡片右上角红色报告图标进入独立页面，填写理由后可复制题目或打开项目 Issues 表单，由你在 GitHub 确认提交。 总结采用环形成绩卡和逐题结果色块，宽屏并列显示成绩与错题答案。全部答对时播放礼花，系统关闭动画时保持静态。成绩卡按内容确定高度，操作按钮紧跟内容并随列表滚动。 每题答对得5分。结算页右上角可通过系统分享菜单分享成绩图片和下载链接，图片使用你的头像与用户名。 小测验包含车次停站数量比较和指定停站数量的题目。</string>
     <string name="help_quiz_rules">小测验按北京时间每天提供 20 题。每次打开时需要联网核对最新时刻表和车站数据，校验失败时暂不可作答。出题会排除本机前 365 天内出现过的题目和相似选项组合。全部作答后才能查看总结。答题进度和时间保存在本机，不随备份迁移。</string>
     <string name="help_lines_title">线路查询与普速票价</string>
     <string name="help_lines_question">如何查看线路站点、里程和参考票价？</string>

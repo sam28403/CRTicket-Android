@@ -758,6 +758,10 @@
     <string name="quiz_f_train_metric">這4個車次中，%1$s的%2$s最大，為%3$s。</string>
     <string name="quiz_q_closest">下面4個車次，%1$s最接近%2$s的是？</string>
     <string name="quiz_f_closest">%1$s的%2$s為%3$s，是這4個車次中最接近%4$s的。</string>
+    <string name="quiz_q_stop_count_most">下列車次中，停站數量最多的是？</string>
+    <string name="quiz_q_stop_count_fewest">下列車次中，停站數量最少的是？</string>
+    <string name="quiz_q_stop_count_exact">下列車次中，停站數量為 %1$s 的是？</string>
+    <string name="quiz_f_stop_count">%1$s 次列車全程停靠 %2$s 站。</string>
     <string name="quiz_q_station_most">下面4個車站，今日辦理車次數量最多的是？</string>
     <string name="quiz_q_station_least">下面4個車站，今日辦理車次數量最少的是？</string>
     <string name="quiz_f_station_count">按時刻表，%1$s站今日辦理%2$s趟列車。</string>
@@ -795,7 +799,7 @@
     <string name="quiz_report_template">題目：%1$s\n\n參考答案：%2$s\n\n我的答案：%3$s\n\n理由：%4$s\n\n答題日期時間：%5$s</string>
     <string name="help_quiz_title">每日小測驗</string>
     <string name="help_quiz_question">如何答題，或回報題目答案有誤？</string>
-    <string name="help_quiz_answer">先在設定中開啟車迷工具，再開啟工具清單底部的小測驗。答對後自動進入下一題；答錯時所選項變紅、參考答案變綠，並提供搖動與震動回饋。總結列出錯題的正確答案陳述句。點選卡片右上角紅色回報圖示進入獨立頁面，填寫理由後可複製題目或開啟專案 Issues 表單，由你在 GitHub 確認提交。 總結採用環形成績卡和逐題結果色塊，寬螢幕並列顯示成績與錯題答案。全部答對時播放禮花，系統關閉動畫時保持靜態。成績卡按內容決定高度，操作按鈕緊接內容並隨列表捲動。 每題答對得5分。結算頁右上角可透過系統分享選單分享成績圖片及下載連結，圖片使用你的頭像與使用者名稱。</string>
+    <string name="help_quiz_answer">先在設定中開啟車迷工具，再開啟工具清單底部的小測驗。答對後自動進入下一題；答錯時所選項變紅、參考答案變綠，並提供搖動與震動回饋。總結列出錯題的正確答案陳述句。點選卡片右上角紅色回報圖示進入獨立頁面，填寫理由後可複製題目或開啟專案 Issues 表單，由你在 GitHub 確認提交。 總結採用環形成績卡和逐題結果色塊，寬螢幕並列顯示成績與錯題答案。全部答對時播放禮花，系統關閉動畫時保持靜態。成績卡按內容決定高度，操作按鈕緊接內容並隨列表捲動。 每題答對得5分。結算頁右上角可透過系統分享選單分享成績圖片及下載連結，圖片使用你的頭像與使用者名稱。 小測驗包含車次停站數量比較和指定停站數量的題目。</string>
     <string name="help_quiz_rules">小測驗按北京時間每天提供 20 題。每次開啟時需要連線核對最新時刻表和車站資料，驗證失敗時暫不可作答。出題會排除本機前 365 天內出現過的題目和相似選項組合。全部作答後才能查看總結。答題進度和時間儲存在本機，不隨備份轉移。</string>
     <string name="help_lines_title">線路查詢與普速票價</string>
     <string name="help_lines_question">如何查看線路站點、里程和參考票價？</string>
