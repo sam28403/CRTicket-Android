@@ -66,6 +66,7 @@ function clearRoutes() {
 }
 const refreshing = ref(false)
 const offlineRecord = ref('')
+const hasTrainNumber = computed(() => Boolean(train.value.trim()))
 const trainNumberError = computed(() => getTrainQueryNumberError(
   train.value, offlineMode.value, offlineRecord.value, importedTimetable.value,
 ))
@@ -93,7 +94,7 @@ function selectedDataset(code) {
 }
 
 async function refresh() {
-  if (offlineMode.value || refreshing.value || loading.value) return
+  if (!hasTrainNumber.value || offlineMode.value || refreshing.value || loading.value) return
   refreshing.value = true
   try {
     if (schedule.value?.stops.length && delayAvailable.value) await delay.refresh()
@@ -150,7 +151,7 @@ function disabledDate(value) {
 }
 
 async function query() {
-  if (loading.value || importedTimetable.value === null) return
+  if (!hasTrainNumber.value || loading.value || importedTimetable.value === null) return
   if (trainNumberError.value) {
     error.value = trainNumberError.value
     toast(trainNumberError.value)
@@ -234,7 +235,7 @@ async function query() {
 watch(
   () => [route.path, route.query.train, route.query.date, route.query.source, route.query.record, route.query.dataset,
     networkAllowed.value, importedTimetable.value],
-  ([path, code, selectedDate, source, hint, dataset]) => {
+  ([path, code, selectedDate, source, hint, dataset], [previousPath] = []) => {
     if (path !== '/train' || importedTimetable.value === null) return
     if ((!networkAllowed.value || preferImported.value) && source !== 'llt') {
       controller?.abort()
@@ -249,8 +250,10 @@ watch(
       return
     }
     const routeQuery = [code, selectedDate, source, hint, dataset]
-    // 缓存页面仍会收到其他路由的变化，返回同一查询时保留表单和结果。
-    if (previousRouteQuery && routeQuery.every((value, index) => value === previousRouteQuery[index])) {
+    // 从其他页面进入无车次的查询入口时，重新初始化表单。
+    const enteringBlankQuery = previousPath !== '/train' && !code
+    if (!enteringBlankQuery && previousRouteQuery &&
+      routeQuery.every((value, index) => value === previousRouteQuery[index])) {
       return
     }
     previousRouteQuery = routeQuery
@@ -346,7 +349,7 @@ onBeforeUnmount(() => {
           </el-form-item>
           <el-form-item class="query-action">
             <div class="query-buttons">
-              <el-button type="primary" native-type="submit" :loading="loading">查询</el-button>
+              <el-button type="primary" native-type="submit" :loading="loading" :disabled="!hasTrainNumber">查询</el-button>
               <el-button native-type="button" :disabled="switchingSource || !networkAllowed" @click="switchSource">
                 {{ offlineMode ? '切换为在线查询' : '切换为路路通离线' }}
               </el-button>

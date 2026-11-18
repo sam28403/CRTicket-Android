@@ -37,7 +37,13 @@ internal fun ExpressiveTrainQueryScreen(
     val online = cc.samlab.ticket.network.NetworkFeatures.enabled
     val railfanEnabled by RailfanPreferences.rememberEnabled()
     val state = controller.stateFor(location)
+    val current = controller.state.optString("location") == location
+    val train = if (current) controller.train else state.optString("train")
     val loading = state.optBoolean("loading")
+    val refreshing = state.optBoolean("refreshing")
+    val canQuery = active && !loading && train.isNotBlank()
+    val offline = !online || state.optBoolean("offline")
+    val canRefresh = canQuery && !offline && !refreshing
     val result = state.optJSONObject("result")
     val stops = result?.optJSONArray("stops")
     val count = stops?.length() ?: 0
@@ -58,9 +64,10 @@ internal fun ExpressiveTrainQueryScreen(
         val colors = MaterialTheme.colorScheme
         Surface(Modifier.fillMaxSize().testTag("train-query-screen"), color = colors.surfaceContainer) {
             TrainQueryRefreshBox(
-                offline = !online || state.optBoolean("offline"),
-                refreshing = state.optBoolean("refreshing"),
-                onRefresh = { if (active && !loading) controller.dispatch("refresh") },
+                offline = offline,
+                enabled = canRefresh,
+                refreshing = refreshing,
+                onRefresh = { if (canRefresh) controller.dispatch("refresh") },
             ) {
                 Column {
                     TopAppBar(
@@ -71,8 +78,8 @@ internal fun ExpressiveTrainQueryScreen(
                             }
                         },
                         actions = {
-                            if (online && !state.optBoolean("offline")) TrainQueryRefreshButton(
-                                enabled = active && !loading && count > 0 && !state.optBoolean("refreshing"),
+                            if (!offline) TrainQueryRefreshButton(
+                                enabled = canRefresh && count > 0,
                                 onRefresh = { controller.dispatch("refresh") },
                             )
                         },
@@ -80,7 +87,11 @@ internal fun ExpressiveTrainQueryScreen(
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.surfaceContainer),
                     )
                     TrainQueryControls(
-                        controller, state, controller.state.optString("location") == location,
+                        controller = controller,
+                        state = state,
+                        train = train,
+                        date = if (current) controller.date else state.optString("date"),
+                        canQuery = canQuery,
                         onDate = { datePicker = true },
                     )
                     if (!loading && count == 0 && bundledDays == null && (error.isNotEmpty() || result != null)) {
@@ -195,7 +206,7 @@ internal fun ExpressiveTrainQueryScreen(
         }
         if (datePicker) TrainQueryDatePicker(
             date = controller.date,
-            offline = !online || state.optBoolean("offline"),
+            offline = offline,
             onDismiss = { datePicker = false },
             onSelect = { controller.edit(day = it) },
         )
