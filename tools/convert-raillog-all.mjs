@@ -20,20 +20,46 @@ await Promise.all([
     mkdir(join(root, 'logs'), { recursive: true }),
 ])
 
-let versionsResponse
+const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
+const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
+let versions
 for (let attempt = 0; ; attempt++) {
+    let response
     try {
-        versionsResponse = await fetch('https://api.raillog.top/api/train-timetables/versions', {
-            signal: AbortSignal.timeout(30000),
+        response = await fetch('https://api.raillog.top/api/train-timetables/versions', {
+            signal: AbortSignal.timeout(requestTimeoutMs),
         })
-        if (versionsResponse.ok || attempt >= 5) break
     } catch (error) {
-        if (attempt >= 5) throw error
+        if (attempt >= maxRetries) throw error
+        const waitMs = Math.min(30000, 2000 * 2 ** attempt)
+        console.warn(`RailLog 版本列表网络错误 ${error.cause?.code || error.name}，${waitMs}ms 后重试`)
+        await delay(waitMs)
+        continue
     }
-    await delay(Math.min(60000, 2000 * 2 ** attempt))
+    if (response.ok) {
+        try {
+            versions = await response.json()
+            break
+        } catch (error) {
+            if (attempt >= maxRetries) throw error
+            const waitMs = Math.min(30000, 2000 * 2 ** attempt)
+            console.warn(`RailLog 版本列表 JSON 无效，${waitMs}ms 后重试`)
+            await delay(waitMs)
+            continue
+        }
+    }
+    const status = response.status
+    if ((status >= 400 && status < 500 && status !== 408 && status !== 429) || attempt >= maxRetries) {
+        throw new Error(`RailLog 版本列表请求失败：HTTP ${status}`)
+    }
+    const retryAfter = response.headers.get('retry-after')
+    const retryAt = /^\d+$/.test(retryAfter)
+        ? Date.now() + Number(retryAfter) * 1000
+        : Date.parse(retryAfter) || 0
+    const waitMs = Math.max(Math.min(30000, 2000 * 2 ** attempt), retryAt - Date.now())
+    console.warn(`RailLog 版本列表 HTTP ${status}，${waitMs}ms 后重试`)
+    await delay(waitMs)
 }
-assert(versionsResponse.ok, `RailLog 版本列表请求失败：HTTP ${versionsResponse.status}`)
-const versions = await versionsResponse.json()
 assert(Array.isArray(versions) && versions.length, 'RailLog 版本列表为空')
 
 let progress = { source: 'https://api.raillog.top/api/train-timetables/versions', completed: [] }
