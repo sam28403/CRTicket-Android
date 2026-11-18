@@ -71,6 +71,10 @@ class ExpressiveTrainQueryTest {
             """.trimIndent())
             compose.waitUntil(10_000) { evaluate("Boolean(window.queryFixtureReady || window.queryFixtureError)") == "true" }
             assertEquals(evaluate("window.queryFixtureError"), "true", evaluate("window.queryFixtureReady"))
+            compose.waitUntil(20_000) {
+                compose.onAllNodes(hasTestTag("train-query-code") and isEnabled())
+                    .fetchSemanticsNodes().isNotEmpty()
+            }
             compose.onNodeWithTag("train-query-code").performTextInput("G1")
             compose.onNodeWithTag("train-query-submit").performClick()
             compose.waitUntil(20_000) {

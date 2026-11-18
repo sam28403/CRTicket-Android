@@ -27,7 +27,9 @@ import org.json.JSONObject
 internal fun TrainQueryControls(
     controller: NativeTrainQueryController,
     state: JSONObject,
-    current: Boolean,
+    train: String,
+    date: String,
+    canQuery: Boolean,
     onDate: () -> Unit,
 ) {
     val textResources = rememberAppText()
@@ -40,6 +42,7 @@ internal fun TrainQueryControls(
         keyboard?.hide()
     }
     fun submit() {
+        if (!canQuery) return
         dismissKeyboard()
         controller.dispatch("query")
     }
@@ -49,7 +52,7 @@ internal fun TrainQueryControls(
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
-                value = if (current) controller.train else state.optString("train"),
+                value = train,
                 onValueChange = { controller.edit(code = it) },
                 label = { Text(textResources(R.string.ticket_train)) },
                 placeholder = { Text(textResources(R.string.train_query_train_hint)) },
@@ -67,7 +70,7 @@ internal fun TrainQueryControls(
             )
             Box(Modifier.weight(1.4f)) {
                 OutlinedTextField(
-                    value = if (current) controller.date else state.optString("date"),
+                    value = date,
                     onValueChange = {},
                     label = { Text(textResources(R.string.train_query_start_date)) },
                     readOnly = true,
@@ -85,7 +88,7 @@ internal fun TrainQueryControls(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = { submit() },
-                enabled = !loading,
+                enabled = canQuery,
                 shapes = ButtonDefaults.shapes(),
                 modifier = Modifier.weight(1f).height(48.dp).testTag("train-query-submit"),
             ) { Text(textResources(R.string.action_query)) }

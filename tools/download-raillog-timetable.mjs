@@ -8,13 +8,14 @@ const base = 'https://api.raillog.top/api/train-timetables'
 const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20)
 let requestSpacingMs = baseRequestSpacingMs
 const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
-const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 2, 12)))
+const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 4, 16)))
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
 assert(Number.isInteger(maxWorkers) && maxWorkers >= workers, 'RAILLOG_MAX_WORKERS 必须不小于 RAILLOG_WORKERS')
 let nextRequestAt = 0
 let retryAfterAt = 0
 let transientErrors = 0
+let consecutiveSuccesses = 0
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
 if (!directory || !/^\d{4}\.\d{2}\.\d{2}$/.test(version)
     || !validListDate(version.replaceAll('.', '-'))) {
@@ -34,12 +35,19 @@ async function request(path, params) {
             response = await fetch(url, { signal: AbortSignal.timeout(20000) })
             if (response.ok) {
                 const result = await response.json()
+                consecutiveSuccesses++
                 requestSpacingMs = Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs * 0.9))
+                if (consecutiveSuccesses >= 8 && requestSpacingMs > baseRequestSpacingMs) {
+                    requestSpacingMs = baseRequestSpacingMs
+                    consecutiveSuccesses = 0
+                    console.log(`接口恢复稳定，请求间隔恢复为 ${requestSpacingMs}ms`)
+                }
                 return result
             }
         } catch (error) {
             if (attempt >= 3) throw error
             transientErrors++
+            consecutiveSuccesses = 0
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
             console.warn(
                 `RailLog 网络错误 ${error.cause?.code || error.name}，间隔调整为 ${requestSpacingMs}ms`,
@@ -52,6 +60,7 @@ async function request(path, params) {
         }
         if (status) {
             transientErrors++
+            consecutiveSuccesses = 0
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
             console.warn(
                 `RailLog HTTP ${status}，间隔调整为 ${requestSpacingMs}ms`,
@@ -143,10 +152,13 @@ async function downloadTrains() {
         }
         completed++
         successesSinceScale++
-        if (successesSinceScale >= 1000) {
+        if (successesSinceScale >= 500) {
             if (transientErrors === 0 && targetWorkers < maxWorkers) {
                 targetWorkers++
                 console.log(`接口稳定，下载并发提升至 ${targetWorkers}/${maxWorkers}`)
+            } else if (transientErrors >= 3 && targetWorkers > workers) {
+                targetWorkers--
+                console.warn(`近期接口重试较多，并发回调至 ${targetWorkers}/${maxWorkers}`)
             }
             successesSinceScale = 0
             transientErrors = 0
