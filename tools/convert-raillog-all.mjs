@@ -72,7 +72,8 @@ const writeProgress = async (current, error = null) => {
 
 function runNode(args, logPath) {
     return new Promise((resolveRun, rejectRun) => {
-        const child = spawn(process.execPath, args, { cwd: root, windowsHide: true })
+        // Preserve runtime flags such as --use-env-proxy in downloader and converter processes.
+        const child = spawn(process.execPath, [...process.execArgv, ...args], { cwd: root, windowsHide: true })
         let output = ''
         child.stdout.setEncoding('utf8')
         child.stderr.setEncoding('utf8')

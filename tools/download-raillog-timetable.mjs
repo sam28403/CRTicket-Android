@@ -5,8 +5,11 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { validListDate } from '../web/src/android/railway/lltList.js'
 
 const base = 'https://api.raillog.top/api/train-timetables'
-let requestSpacingMs = 20
-const workers = 32
+const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20)
+let requestSpacingMs = baseRequestSpacingMs
+const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
+assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
+assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
 let nextRequestAt = 0
 let retryAfterAt = 0
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
@@ -26,7 +29,11 @@ async function request(path, params) {
         let response
         try {
             response = await fetch(url, { signal: AbortSignal.timeout(20000) })
-            if (response.ok) return await response.json()
+            if (response.ok) {
+                const result = await response.json()
+                requestSpacingMs = Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs * 0.9))
+                return result
+            }
         } catch (error) {
             if (attempt >= 3) throw error
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
