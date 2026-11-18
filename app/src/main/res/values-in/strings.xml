@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">Tanggal jadwal tidak dapat dimuat</string>
     <string name="historical_train_query_error">Jadwal historis tidak dapat dimuat</string>
     <string name="historical_train_map_disclaimer">Peta menampilkan nama dan lokasi stasiun saat ini, yang mungkin berbeda dari lokasi historisnya. Jika ada pertanyaan, hubungi RailLog, penyedia API.</string>
+    <string name="date_picker_wheels">Pilih tanggal dengan menggulir</string>
+    <string name="date_picker_calendar">Tampilkan kalender</string>
+    <string name="date_picker_year">Tahun</string>
+    <string name="date_picker_month">Bulan</string>
+    <string name="date_picker_day">Hari</string>
 </resources>

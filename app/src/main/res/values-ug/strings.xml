@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">ۋاقىت جەدۋىلىنىڭ چېسلالىرىنى يۈكلىگىلى بولمىدى</string>
     <string name="historical_train_query_error">تارىخىي ۋاقىت جەدۋىلىنى يۈكلىگىلى بولمىدى</string>
     <string name="historical_train_map_disclaimer">خەرىتىدە بېكەتلەرنىڭ ھازىرقى نامى ۋە ئورنى كۆرسىتىلىدۇ، بۇلار تارىخىي ئورۇنلارغا ئوخشىماسلىقى مۇمكىن. سوئالىڭىز بولسا، API تەمىنلىگۈچى RailLog بىلەن ئالاقىلىشىڭ.</string>
+    <string name="date_picker_wheels">سىيرىپ چېسلا تاللاش</string>
+    <string name="date_picker_calendar">كالېندارنى كۆرسىتىش</string>
+    <string name="date_picker_year">يىل</string>
+    <string name="date_picker_month">ئاي</string>
+    <string name="date_picker_day">كۈن</string>
 </resources>

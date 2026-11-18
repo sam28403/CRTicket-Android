@@ -106,9 +106,11 @@ class TrainQueryLabelFitTest {
                                 Box(Modifier.widthIn(max = sample.width.dp).fillMaxWidth()) {
                                     Surface {
                                         TrainQueryControls(
-                                            query,
-                                            JSONObject().put("train", "G1").put("date", sample.date),
-                                            current = false,
+                                            controller = query,
+                                            state = JSONObject(),
+                                            train = "G1",
+                                            date = sample.date,
+                                            canQuery = true,
                                             onDate = {},
                                         )
                                     }

@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.components.ExpressiveDatePickerDialog
 import cc.samlab.ticket.ui.history.HistoryRecordCard
 import java.time.*
 
@@ -86,20 +87,15 @@ internal fun DebugTicketsContent(controller: DebugTicketsController, visible: Bo
                 }
             },
         )
-        DatePickerDialog(
+        ExpressiveDatePickerDialog(
+            state = state,
             modifier = Modifier.testTag("debug-tickets-date-dialog"),
-            onDismissRequest = { choosingDate = false },
-            confirmButton = {
-                TextButton(enabled = state.selectedDateMillis != null, onClick = {
-                    state.selectedDateMillis?.let {
-                        controller.date = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate().toString()
-                    }
-                    choosingDate = false
-                }) { Text(stringResource(R.string.action_confirm)) }
+            wheelRange = today.minusDays(2)..today.plusDays(13),
+            onDismiss = { choosingDate = false },
+            onSelect = { millis ->
+                controller.date = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate().toString()
+                choosingDate = false
             },
-            dismissButton = {
-                TextButton(onClick = { choosingDate = false }) { Text(stringResource(R.string.action_cancel)) }
-            },
-        ) { DatePicker(state) }
+        )
     }
 }

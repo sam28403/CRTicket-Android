@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">དུས་ཚོད་རེའུ་མིག་གི་ཚེས་གྲངས་ལེན་མ་ཐུབ།</string>
     <string name="historical_train_query_error">ལོ་རྒྱུས་དུས་ཚོད་རེའུ་མིག་ལེན་མ་ཐུབ།</string>
     <string name="historical_train_map_disclaimer">ས་ཁྲར་ད་ལྟའི་འབབ་ཚུགས་ཀྱི་མིང་དང་གནས་ས་སྟོན། སྔོན་གྱི་གནས་ས་དང་མི་འདྲ་སྲིད། དྲི་བ་ཡོད་ན་ API མཁོ་འདོན་པ་ RailLog དང་འབྲེལ་བ་གནོངས།</string>
+    <string name="date_picker_wheels">བཤུད་ནས་ཚེས་གྲངས་འདེམས།</string>
+    <string name="date_picker_calendar">ལོ་ཐོ་སྟོན།</string>
+    <string name="date_picker_year">ལོ།</string>
+    <string name="date_picker_month">ཟླ་བ།</string>
+    <string name="date_picker_day">ཚེས།</string>
 </resources>

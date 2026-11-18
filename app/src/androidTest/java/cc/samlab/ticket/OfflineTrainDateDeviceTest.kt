@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,6 +14,41 @@ import java.time.ZoneId
 @RunWith(AndroidJUnit4::class)
 class OfflineTrainDateDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
+
+    @Test fun trainListAndMonitorShowDateDialogs() {
+        val context = androidx.test.platform.app.InstrumentationRegistry
+            .getInstrumentation().targetContext
+        val welcome = WelcomeTestState(context)
+        val page = TabletPageFixture(compose)
+        try {
+            for ((route, tag) in listOf("/list" to "train-list-date", "/monitor" to "monitor-date")) {
+                page.navigate(route)
+                val field = compose.onNodeWithTag(tag)
+                compose.waitUntil(15_000) { runCatching { field.assertIsEnabled() }.isSuccess }
+                field.performClick()
+                compose.onNode(
+                    hasText(context.getString(R.string.action_confirm)) and hasAnyAncestor(isDialog()),
+                ).assertIsDisplayed()
+                page.capture(tag)
+                compose.onNodeWithTag("date-picker-wheel-toggle").performClick()
+                compose.onNodeWithTag("date-wheel-year").assertIsDisplayed()
+                compose.onNodeWithTag("date-wheel-month").assertIsDisplayed()
+                compose.onNodeWithTag("date-wheel-day").assertIsDisplayed()
+                val toggle = compose.onNodeWithTag("date-picker-wheel-toggle").fetchSemanticsNode().boundsInWindow
+                val wheels = compose.onNodeWithTag("date-wheel-year").fetchSemanticsNode().boundsInWindow
+                assertTrue(wheels.top >= toggle.bottom)
+                assertTrue(wheels.height <= 161 * page.activity.resources.displayMetrics.density)
+                page.capture("$tag-wheels")
+                compose.onNode(
+                    hasText(context.getString(R.string.action_cancel)) and hasAnyAncestor(isDialog()),
+                ).performClick()
+                compose.onNode(isDialog()).assertDoesNotExist()
+            }
+        } finally {
+            page.close()
+            welcome.close()
+        }
+    }
 
     @Test fun listEntriesKeepUnrestrictedOfflineDatesAndPickerSelection() {
         val context = androidx.test.platform.app.InstrumentationRegistry

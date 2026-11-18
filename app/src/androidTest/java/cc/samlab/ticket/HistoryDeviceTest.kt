@@ -22,8 +22,10 @@ class HistoryDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private lateinit var activity: MainActivity
+    private lateinit var welcome: WelcomeTestState
 
     @Before fun launch() {
+        welcome = WelcomeTestState(instrumentation.targetContext)
         instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_WAKEUP").use {
             android.os.ParcelFileDescriptor.AutoCloseInputStream(it).bufferedReader().use { reader -> reader.readText() }
         }
@@ -98,14 +100,20 @@ class HistoryDeviceTest {
     }
 
     @After fun close() {
-        // Remove only the record owned by this test; never replace the user's database.
-        evaluate("""
-            const testRecords = JSON.parse(localStorage.getItem('crticket-device-tickets-v1') || '[]');
-            localStorage.setItem('crticket-device-tickets-v1', JSON.stringify(
-                testRecords.filter(row => row.ticket_number !== 'CODEX_HISTORY_TEST')
-            ));
-        """.trimIndent())
-        instrumentation.runOnMainSync { activity.finish() }
+        try {
+            if (::activity.isInitialized) {
+                // Remove only the record owned by this test.
+                evaluate("""
+                    const testRecords = JSON.parse(localStorage.getItem('crticket-device-tickets-v1') || '[]');
+                    localStorage.setItem('crticket-device-tickets-v1', JSON.stringify(
+                        testRecords.filter(row => row.ticket_number !== 'CODEX_HISTORY_TEST')
+                    ));
+                """.trimIndent())
+            }
+        } finally {
+            if (::activity.isInitialized) instrumentation.runOnMainSync { activity.finish() }
+            if (::welcome.isInitialized) welcome.close()
+        }
     }
 
     @Test fun emptyHistoryUsesExpressiveArtworkAndOriginalPrompt() {
@@ -263,10 +271,16 @@ class HistoryDeviceTest {
             date.performClick()
             compose.onNodeWithText("确定").performClick()
             date.assertTextContains("2026.10.17")
+            date.performClick()
+            compose.onNodeWithTag("date-picker-wheel-toggle").performClick()
+            compose.onNodeWithTag("date-wheel-day").performTouchInput { swipeUp(durationMillis = 550) }
+            compose.onNodeWithTag("date-picker-wheel-toggle").performClick()
+            compose.onNodeWithText("确定").performClick()
+            date.assert(hasText("2026.10.17").not()).assertTextContains("2026.10", substring = true)
 
             val time = compose.onNodeWithTag("history-field-time")
             time.performScrollTo().performClick()
-            compose.onNodeWithTag("history-time-clock").assertExists()
+            compose.onNodeWithTag("history-time-scroll").assertIsDisplayed()
             compose.onNodeWithTag("history-time-mode-toggle").performClick()
             compose.onNodeWithTag("history-time-input").assertExists()
             val inputs = compose.onAllNodes(hasSetTextAction() and hasAnyAncestor(isDialog()))
@@ -276,13 +290,24 @@ class HistoryDeviceTest {
             time.assertTextContains("23:45")
 
             time.performClick()
-            compose.onNodeWithTag("history-time-clock").assertExists()
+            compose.onNodeWithTag("history-time-scroll").assertIsDisplayed()
             compose.onNodeWithTag("history-time-mode-toggle").performClick()
             compose.onNodeWithTag("history-time-mode-toggle").performClick()
-            compose.onNodeWithTag("history-time-clock").assertExists()
+            compose.onNodeWithTag("history-time-scroll").assertIsDisplayed()
             compose.onNode(hasText("取消") and hasAnyAncestor(isDialog())).performClick()
             time.assertTextContains("23:45")
             capture("history-$mode-date-time")
+
+            time.performClick()
+            val wheels = compose.onAllNodes(
+                hasAnyAncestor(hasTestTag("history-time-scroll")) and
+                    SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo),
+                useUnmergedTree = true,
+            ).assertCountEquals(2)
+            wheels[0].performTouchInput { swipeDown(durationMillis = 550) }
+            capture("history-$mode-time-scroll")
+            compose.onNodeWithText("确定").performClick()
+            time.assert(hasText("23:45").not()).assertTextContains(":45", substring = true)
             compose.onNodeWithContentDescription("返回").performClick()
         }
     }

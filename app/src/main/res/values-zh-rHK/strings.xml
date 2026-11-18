@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">無法取得查詢日期</string>
     <string name="historical_train_query_error">無法取得歷史時刻表</string>
     <string name="historical_train_map_disclaimer">地圖顯示現時的站名和位置，可能與歷史站址不同。如有疑問，請聯絡 API 供應商 RailLog。</string>
+    <string name="date_picker_wheels">捲動選擇日期</string>
+    <string name="date_picker_calendar">顯示日曆</string>
+    <string name="date_picker_year">年</string>
+    <string name="date_picker_month">月</string>
+    <string name="date_picker_day">日</string>
 </resources>

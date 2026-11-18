@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">시간표 날짜를 불러올 수 없습니다</string>
     <string name="historical_train_query_error">과거 시간표를 불러올 수 없습니다</string>
     <string name="historical_train_map_disclaimer">지도에는 현재 역 이름과 위치가 표시되며, 당시 역 위치와 다를 수 있습니다. 문의 사항은 API 제공업체 RailLog에 문의하세요.</string>
+    <string name="date_picker_wheels">스크롤하여 날짜 선택</string>
+    <string name="date_picker_calendar">캘린더 표시</string>
+    <string name="date_picker_year">연도</string>
+    <string name="date_picker_month">월</string>
+    <string name="date_picker_day">일</string>
 </resources>

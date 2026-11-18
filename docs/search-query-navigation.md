@@ -27,3 +27,24 @@ X 号段规则仍未启用，因此 X 搜索结果进入详情后的查询仍会
 `TrainQueryReturnTest`、`TrainQueryNextRoutingTest` 和 `SearchVehicleFailureTest`
 均在 Pixel 8 Pro 和 Pixel Tablet 上通过。搜索返回测试使用 40 条车次结果，
 并断言进入详情前滚动位置大于零，返回后位置和请求次数保持一致。
+
+## 首页车次查询入口
+
+输入框为空或只有空白字符时，查询按钮和下拉刷新均禁用，键盘搜索也不会发起查询。
+在初始界面执行这些操作后，历史记录和推荐车次仍可查看。
+
+提交无效车次时，当前页面显示校验错误。返回主页，再通过「车次查询」进入时，
+页面清空输入和校验错误，恢复默认始发日期，并显示历史记录和推荐车次。
+从其他页面返回带有车次的查询结果时，仍可恢复该结果和原滚动位置。
+
+### 真机回归
+
+2026-11-18 使用 CI 构建在 Pixel 8 Pro 和 Pixel Tablet 上验证，两台设备各通过 4 项测试。
+测试使用固定时刻表响应。
+
+- `TrainQueryDiscoveryTest` 验证空输入时点击按钮、下拉和键盘搜索的表现，
+  以及无效车次报错后从主页重新进入时的初始状态，并复测历史记录与推荐车次导航。
+- `TrainQueryReturnTest` 验证返回已有查询时恢复结果和滚动位置，且无需再次请求。
+
+设备日志为 `logs/train-reopen-pixel-8-pro-final.log` 和
+`logs/train-reopen-pixel-tablet-final.log`。

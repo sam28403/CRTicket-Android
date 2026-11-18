@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">समय-सारणी की तारीखें लोड नहीं हो सकीं</string>
     <string name="historical_train_query_error">ऐतिहासिक समय-सारणी लोड नहीं हो सकी</string>
     <string name="historical_train_map_disclaimer">नक्शे पर स्टेशनों के मौजूदा नाम और स्थान दिखते हैं, जो पुराने स्थानों से अलग हो सकते हैं। किसी भी सवाल के लिए API प्रदाता RailLog से संपर्क करें।</string>
+    <string name="date_picker_wheels">स्क्रॉल करके तारीख चुनें</string>
+    <string name="date_picker_calendar">कैलेंडर दिखाएँ</string>
+    <string name="date_picker_year">वर्ष</string>
+    <string name="date_picker_month">महीना</string>
+    <string name="date_picker_day">दिन</string>
 </resources>

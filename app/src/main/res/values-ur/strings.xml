@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">جدولِ اوقات کی تاریخیں لوڈ نہیں ہو سکیں</string>
     <string name="historical_train_query_error">تاریخی جدولِ اوقات لوڈ نہیں ہو سکا</string>
     <string name="historical_train_map_disclaimer">نقشے پر اسٹیشنوں کے موجودہ نام اور مقامات دکھائے گئے ہیں، جو تاریخی مقامات سے مختلف ہو سکتے ہیں۔ کسی سوال کے لیے API فراہم کنندہ RailLog سے رابطہ کریں۔</string>
+    <string name="date_picker_wheels">اسکرول کر کے تاریخ منتخب کریں</string>
+    <string name="date_picker_calendar">کیلنڈر دکھائیں</string>
+    <string name="date_picker_year">سال</string>
+    <string name="date_picker_month">مہینہ</string>
+    <string name="date_picker_day">دن</string>
 </resources>
