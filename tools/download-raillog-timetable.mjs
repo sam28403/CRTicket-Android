@@ -8,10 +8,13 @@ const base = 'https://api.raillog.top/api/train-timetables'
 const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20)
 let requestSpacingMs = baseRequestSpacingMs
 const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
+const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 2, 12)))
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
+assert(Number.isInteger(maxWorkers) && maxWorkers >= workers, 'RAILLOG_MAX_WORKERS 必须不小于 RAILLOG_WORKERS')
 let nextRequestAt = 0
 let retryAfterAt = 0
+let transientErrors = 0
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
 if (!directory || !/^\d{4}\.\d{2}\.\d{2}$/.test(version)
     || !validListDate(version.replaceAll('.', '-'))) {
@@ -36,6 +39,7 @@ async function request(path, params) {
             }
         } catch (error) {
             if (attempt >= 3) throw error
+            transientErrors++
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
             console.warn(
                 `RailLog 网络错误 ${error.cause?.code || error.name}，间隔调整为 ${requestSpacingMs}ms`,
@@ -47,6 +51,7 @@ async function request(path, params) {
             throw new Error(`RailLog HTTP ${status}：${url.pathname}?${url.searchParams}`)
         }
         if (status) {
+            transientErrors++
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
             console.warn(
                 `RailLog HTTP ${status}，间隔调整为 ${requestSpacingMs}ms`,
@@ -118,21 +123,38 @@ console.log(`${version}：${codes.length} 个车次待核对`)
 const results = new Array(codes.length)
 let next = 0
 let completed = 0
+let activeWorkers = 0
+let targetWorkers = workers
+let successesSinceScale = 0
 let failed
 async function downloadTrains() {
-    while (!failed && next < codes.length) {
+    while (!failed) {
+        while (!failed && activeWorkers >= targetWorkers && next < codes.length) await delay(50)
+        if (failed || next >= codes.length) return
         const index = next++
+        activeWorkers++
         try {
             results[index] = await loadTrain(codes[index], cache)
         } catch (error) {
             failed ??= error
             return
+        } finally {
+            activeWorkers--
         }
         completed++
+        successesSinceScale++
+        if (successesSinceScale >= 1000) {
+            if (transientErrors === 0 && targetWorkers < maxWorkers) {
+                targetWorkers++
+                console.log(`接口稳定，下载并发提升至 ${targetWorkers}/${maxWorkers}`)
+            }
+            successesSinceScale = 0
+            transientErrors = 0
+        }
         if (completed % 100 === 0) console.log(`已核对 ${completed}/${codes.length} 个车次`)
     }
 }
-await Promise.all(Array.from({ length: workers }, downloadTrains))
+await Promise.all(Array.from({ length: maxWorkers }, downloadTrains))
 if (failed) throw failed
 const trains = new Map(results.map(train => [train.train_codes, train]))
 const output = join(directory, requestedCodes.length ? `${version}-sample.json` : `${version}.json`)
