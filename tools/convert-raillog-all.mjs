@@ -21,7 +21,6 @@ await Promise.all([
 ])
 
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
-const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
 let versions
 for (let attempt = 0; ; attempt++) {
     let response
@@ -30,9 +29,8 @@ for (let attempt = 0; ; attempt++) {
             signal: AbortSignal.timeout(requestTimeoutMs),
         })
     } catch (error) {
-        if (attempt >= maxRetries) throw error
         const waitMs = Math.min(30000, 2000 * 2 ** attempt)
-        console.warn(`RailLog 版本列表网络错误 ${error.cause?.code || error.name}，${waitMs}ms 后重试`)
+        console.warn(`RailLog 版本列表网络错误 ${error.cause?.code || error.name}，${waitMs}ms 后持续重试`)
         await delay(waitMs)
         continue
     }
@@ -41,15 +39,14 @@ for (let attempt = 0; ; attempt++) {
             versions = await response.json()
             break
         } catch (error) {
-            if (attempt >= maxRetries) throw error
             const waitMs = Math.min(30000, 2000 * 2 ** attempt)
-            console.warn(`RailLog 版本列表 JSON 无效，${waitMs}ms 后重试`)
+            console.warn(`RailLog 版本列表 JSON 无效，${waitMs}ms 后持续重试`)
             await delay(waitMs)
             continue
         }
     }
     const status = response.status
-    if ((status >= 400 && status < 500 && status !== 408 && status !== 429) || attempt >= maxRetries) {
+    if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
         throw new Error(`RailLog 版本列表请求失败：HTTP ${status}`)
     }
     const retryAfter = response.headers.get('retry-after')
@@ -57,7 +54,7 @@ for (let attempt = 0; ; attempt++) {
         ? Date.now() + Number(retryAfter) * 1000
         : Date.parse(retryAfter) || 0
     const waitMs = Math.max(Math.min(30000, 2000 * 2 ** attempt), retryAt - Date.now())
-    console.warn(`RailLog 版本列表 HTTP ${status}，${waitMs}ms 后重试`)
+    console.warn(`RailLog 版本列表 HTTP ${status}，${waitMs}ms 后持续重试`)
     await delay(waitMs)
 }
 assert(Array.isArray(versions) && versions.length, 'RailLog 版本列表为空')
