@@ -37,7 +37,20 @@ async function request(path, params) {
         try {
             response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMs) })
             if (response.ok) {
-                const result = await response.json()
+                let result
+                try {
+                    result = await response.json()
+                } catch (error) {
+                    if (attempt >= 3) throw error
+                    transientErrors++
+                    errorsSinceRecovery++
+                    requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
+                    console.warn(
+                        `RailLog HTTP ${response.status} 返回无效 JSON，间隔调整为 ${requestSpacingMs}ms`,
+                    )
+                    retryAfterAt = Math.max(retryAfterAt, Date.now() + 1500 * 2 ** attempt)
+                    continue
+                }
                 successesSinceRecovery++
                 requestSpacingMs = Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs * 0.9))
                 if (successesSinceRecovery >= 16 && requestSpacingMs > baseRequestSpacingMs) {
