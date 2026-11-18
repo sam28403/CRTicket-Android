@@ -9,7 +9,7 @@ const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
 const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
-const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 4, 16)))
+const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 12, 20)))
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(requestTimeoutMs) && requestTimeoutMs > 0, 'RAILLOG_REQUEST_TIMEOUT_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
@@ -17,7 +17,8 @@ assert(Number.isInteger(maxWorkers) && maxWorkers >= workers, 'RAILLOG_MAX_WORKE
 let nextRequestAt = 0
 let retryAfterAt = 0
 let transientErrors = 0
-let consecutiveSuccesses = 0
+let successesSinceRecovery = 0
+let errorsSinceRecovery = 0
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
 if (!directory || !/^\d{4}\.\d{2}\.\d{2}$/.test(version)
     || !validListDate(version.replaceAll('.', '-'))) {
@@ -37,19 +38,24 @@ async function request(path, params) {
             response = await fetch(url, { signal: AbortSignal.timeout(requestTimeoutMs) })
             if (response.ok) {
                 const result = await response.json()
-                consecutiveSuccesses++
+                successesSinceRecovery++
                 requestSpacingMs = Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs * 0.9))
-                if (consecutiveSuccesses >= 8 && requestSpacingMs > baseRequestSpacingMs) {
-                    requestSpacingMs = baseRequestSpacingMs
-                    consecutiveSuccesses = 0
-                    console.log(`接口恢复稳定，请求间隔恢复为 ${requestSpacingMs}ms`)
+                if (successesSinceRecovery >= 16 && requestSpacingMs > baseRequestSpacingMs) {
+                    requestSpacingMs = errorsSinceRecovery <= 3
+                        ? baseRequestSpacingMs
+                        : Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs / 2))
+                    if (requestSpacingMs === baseRequestSpacingMs) {
+                        console.log(`接口恢复稳定，请求间隔恢复为 ${requestSpacingMs}ms`)
+                    }
+                    successesSinceRecovery = 0
+                    errorsSinceRecovery = 0
                 }
                 return result
             }
         } catch (error) {
             if (attempt >= 3) throw error
             transientErrors++
-            consecutiveSuccesses = 0
+            errorsSinceRecovery++
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
             console.warn(
                 `RailLog 网络错误 ${error.cause?.code || error.name}，间隔调整为 ${requestSpacingMs}ms`,
@@ -62,7 +68,7 @@ async function request(path, params) {
         }
         if (status) {
             transientErrors++
-            consecutiveSuccesses = 0
+            errorsSinceRecovery++
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
             console.warn(
                 `RailLog HTTP ${status}，间隔调整为 ${requestSpacingMs}ms`,
