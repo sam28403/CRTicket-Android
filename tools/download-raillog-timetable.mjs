@@ -28,10 +28,6 @@ let targetWorkers = workers
 function noteTransientError() {
     transientErrors++
     errorsSinceRecovery++
-    if (transientErrors % 3 === 0 && targetWorkers > minWorkers) {
-        targetWorkers--
-        console.warn(`接口短暂不稳定，并发临时调整至 ${targetWorkers}/${maxWorkers}`)
-    }
 }
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
 if (!directory || !/^\d{4}\.\d{2}\.\d{2}$/.test(version)
@@ -67,7 +63,7 @@ async function request(path, params) {
                 successesSinceRecovery++
                 requestSpacingMs = Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs * 0.9))
                 if (successesSinceRecovery >= 16 && requestSpacingMs > baseRequestSpacingMs) {
-                    requestSpacingMs = errorsSinceRecovery <= 3
+                    requestSpacingMs = errorsSinceRecovery <= 5
                         ? baseRequestSpacingMs
                         : Math.max(baseRequestSpacingMs, Math.floor(requestSpacingMs / 2))
                     if (requestSpacingMs === baseRequestSpacingMs) {
@@ -184,12 +180,12 @@ async function downloadTrains() {
         completed++
         successesSinceScale++
         if (successesSinceScale >= 500) {
-            if (transientErrors === 0 && targetWorkers < maxWorkers) {
+            if (transientErrors <= 4 && targetWorkers < maxWorkers) {
                 targetWorkers++
                 console.log(`接口稳定，下载并发提升至 ${targetWorkers}/${maxWorkers}`)
-            } else if (transientErrors >= 3 && targetWorkers > minWorkers) {
+            } else if (transientErrors >= 12 && targetWorkers > minWorkers) {
                 targetWorkers--
-                console.warn(`近期接口重试较多，并发回调至 ${targetWorkers}/${maxWorkers}`)
+                console.warn(`近期接口错误率偏高，并发回调至 ${targetWorkers}/${maxWorkers}`)
             }
             successesSinceScale = 0
             transientErrors = 0
