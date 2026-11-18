@@ -9,16 +9,30 @@ const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
 const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
+const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? Math.max(2, Math.floor(workers / 2)))
 const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 12, 20)))
+const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(requestTimeoutMs) && requestTimeoutMs > 0, 'RAILLOG_REQUEST_TIMEOUT_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
+assert(Number.isInteger(minWorkers) && minWorkers > 0 && minWorkers <= workers, 'RAILLOG_MIN_WORKERS 必须在 1 与 RAILLOG_WORKERS 之间')
 assert(Number.isInteger(maxWorkers) && maxWorkers >= workers, 'RAILLOG_MAX_WORKERS 必须不小于 RAILLOG_WORKERS')
+assert(Number.isInteger(maxRetries) && maxRetries >= 1, 'RAILLOG_MAX_RETRIES 必须是正整数')
 let nextRequestAt = 0
 let retryAfterAt = 0
 let transientErrors = 0
 let successesSinceRecovery = 0
 let errorsSinceRecovery = 0
+let targetWorkers = workers
+
+function noteTransientError() {
+    transientErrors++
+    errorsSinceRecovery++
+    if (transientErrors % 3 === 0 && targetWorkers > minWorkers) {
+        targetWorkers--
+        console.warn(`接口短暂不稳定，并发临时调整至 ${targetWorkers}/${maxWorkers}`)
+    }
+}
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
 if (!directory || !/^\d{4}\.\d{2}\.\d{2}$/.test(version)
     || !validListDate(version.replaceAll('.', '-'))) {
@@ -41,14 +55,13 @@ async function request(path, params) {
                 try {
                     result = await response.json()
                 } catch (error) {
-                    if (attempt >= 3) throw error
-                    transientErrors++
-                    errorsSinceRecovery++
+                    if (attempt >= maxRetries) throw error
+                    noteTransientError()
                     requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
                     console.warn(
                         `RailLog HTTP ${response.status} 返回无效 JSON，间隔调整为 ${requestSpacingMs}ms`,
                     )
-                    retryAfterAt = Math.max(retryAfterAt, Date.now() + 1500 * 2 ** attempt)
+                    retryAfterAt = Math.max(retryAfterAt, Date.now() + Math.min(30000, 1500 * 2 ** attempt))
                     continue
                 }
                 successesSinceRecovery++
@@ -66,22 +79,20 @@ async function request(path, params) {
                 return result
             }
         } catch (error) {
-            if (attempt >= 3) throw error
-            transientErrors++
-            errorsSinceRecovery++
+            if (attempt >= maxRetries) throw error
+            noteTransientError()
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
             console.warn(
                 `RailLog 网络错误 ${error.cause?.code || error.name}，间隔调整为 ${requestSpacingMs}ms`,
             )
-            retryAfterAt = Math.max(retryAfterAt, Date.now() + 1500 * 2 ** attempt)
+            retryAfterAt = Math.max(retryAfterAt, Date.now() + Math.min(30000, 1500 * 2 ** attempt))
         }
         const status = response?.status
-        if ((status && status !== 429 && status < 500) || attempt >= 3) {
+        if ((status >= 400 && status < 500 && status !== 408 && status !== 429) || attempt >= maxRetries) {
             throw new Error(`RailLog HTTP ${status}：${url.pathname}?${url.searchParams}`)
         }
         if (status) {
-            transientErrors++
-            errorsSinceRecovery++
+            noteTransientError()
             requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
             console.warn(
                 `RailLog HTTP ${status}，间隔调整为 ${requestSpacingMs}ms`,
@@ -91,7 +102,7 @@ async function request(path, params) {
         const retryAt = /^\d+$/.test(retryAfter)
             ? Date.now() + Number(retryAfter) * 1000
             : Date.parse(retryAfter) || 0
-        retryAfterAt = Math.max(retryAfterAt, retryAt, Date.now() + 2000 * 2 ** attempt)
+        retryAfterAt = Math.max(retryAfterAt, retryAt, Date.now() + Math.min(30000, 2000 * 2 ** attempt))
     }
 }
 
@@ -154,7 +165,6 @@ const results = new Array(codes.length)
 let next = 0
 let completed = 0
 let activeWorkers = 0
-let targetWorkers = workers
 let successesSinceScale = 0
 let failed
 async function downloadTrains() {
@@ -177,7 +187,7 @@ async function downloadTrains() {
             if (transientErrors === 0 && targetWorkers < maxWorkers) {
                 targetWorkers++
                 console.log(`接口稳定，下载并发提升至 ${targetWorkers}/${maxWorkers}`)
-            } else if (transientErrors >= 3 && targetWorkers > workers) {
+            } else if (transientErrors >= 3 && targetWorkers > minWorkers) {
                 targetWorkers--
                 console.warn(`近期接口重试较多，并发回调至 ${targetWorkers}/${maxWorkers}`)
             }
