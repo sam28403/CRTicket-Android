@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">No se pudieron cargar las fechas de los horarios</string>
     <string name="historical_train_query_error">No se pudo cargar el horario histórico</string>
     <string name="historical_train_map_disclaimer">El mapa muestra los nombres y ubicaciones actuales de las estaciones, que pueden diferir de las históricas. Si tienes alguna pregunta, contacta con RailLog, el proveedor de la API.</string>
+    <string name="date_picker_wheels">Elegir la fecha con ruedas</string>
+    <string name="date_picker_calendar">Mostrar calendario</string>
+    <string name="date_picker_year">Año</string>
+    <string name="date_picker_month">Mes</string>
+    <string name="date_picker_day">Día</string>
 </resources>

@@ -5,6 +5,7 @@
 应用内可从首页打开「帮助」，按功能查找常见问题。首次安装、更新或反馈问题时，可参考以下说明。
 
 - [帮助主题与内容维护](help.md)
+- [日期与时间选择器](date-time-pickers.md)
 - [应用更新](app-updates.md)
 - [欢迎页与更新说明](welcome-release-notes.md)
 - [WebView 兼容性](webview-compatibility.md)

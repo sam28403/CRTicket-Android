@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">Không tải được danh sách ngày của lịch trình</string>
     <string name="historical_train_query_error">Không tải được lịch trình trong quá khứ</string>
     <string name="historical_train_map_disclaimer">Bản đồ hiển thị tên và vị trí hiện tại của các ga, có thể khác với vị trí trước đây. Nếu có thắc mắc, hãy liên hệ RailLog, nhà cung cấp API.</string>
+    <string name="date_picker_wheels">Cuộn để chọn ngày</string>
+    <string name="date_picker_calendar">Hiện lịch</string>
+    <string name="date_picker_year">Năm</string>
+    <string name="date_picker_month">Tháng</string>
+    <string name="date_picker_day">Ngày</string>
 </resources>

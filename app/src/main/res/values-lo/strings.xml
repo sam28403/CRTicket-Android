@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">ໂຫຼດວັນທີຂອງຕາຕະລາງບໍ່ໄດ້</string>
     <string name="historical_train_query_error">ໂຫຼດຕາຕະລາງໃນອະດີດບໍ່ໄດ້</string>
     <string name="historical_train_map_disclaimer">ແຜນທີ່ສະແດງຊື່ ແລະທີ່ຕັ້ງສະຖານີໃນປັດຈຸບັນ ເຊິ່ງອາດຕ່າງຈາກໃນອະດີດ. ຖ້າມີຄຳຖາມ ກະລຸນາຕິດຕໍ່ RailLog ຜູ້ໃຫ້ບໍລິການ API.</string>
+    <string name="date_picker_wheels">ເລື່ອນເພື່ອເລືອກວັນທີ</string>
+    <string name="date_picker_calendar">ສະແດງປະຕິທິນ</string>
+    <string name="date_picker_year">ປີ</string>
+    <string name="date_picker_month">ເດືອນ</string>
+    <string name="date_picker_day">ວັນ</string>
 </resources>

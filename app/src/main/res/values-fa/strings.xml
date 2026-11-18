@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">تاریخ‌های برنامهٔ حرکت بارگیری نشد</string>
     <string name="historical_train_query_error">برنامهٔ تاریخی حرکت قطار بارگیری نشد</string>
     <string name="historical_train_map_disclaimer">نقشه نام‌ها و مکان‌های کنونی ایستگاه‌ها را نشان می‌دهد که ممکن است با مکان‌های تاریخی متفاوت باشند. در صورت وجود پرسش، با RailLog، ارائه‌دهندهٔ API، تماس بگیرید.</string>
+    <string name="date_picker_wheels">انتخاب تاریخ با پیمایش</string>
+    <string name="date_picker_calendar">نمایش تقویم</string>
+    <string name="date_picker_year">سال</string>
+    <string name="date_picker_month">ماه</string>
+    <string name="date_picker_day">روز</string>
 </resources>

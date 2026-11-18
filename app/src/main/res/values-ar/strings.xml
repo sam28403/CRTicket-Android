@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">تعذر تحميل تواريخ الجداول</string>
     <string name="historical_train_query_error">تعذر تحميل الجدول التاريخي</string>
     <string name="historical_train_map_disclaimer">تعرض الخريطة أسماء المحطات ومواقعها الحالية، وقد تختلف عن مواقعها التاريخية. للاستفسارات، تواصل مع RailLog، مزود واجهة API.</string>
+    <string name="date_picker_wheels">اختيار التاريخ بالتمرير</string>
+    <string name="date_picker_calendar">عرض التقويم</string>
+    <string name="date_picker_year">السنة</string>
+    <string name="date_picker_month">الشهر</string>
+    <string name="date_picker_day">اليوم</string>
 </resources>

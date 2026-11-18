@@ -1,18 +1,17 @@
 package cc.samlab.ticket.ui.monitor
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import cc.samlab.ticket.R
-import cc.samlab.ticket.i18n.rememberAppText
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import cc.samlab.ticket.ui.components.ExpressiveDatePickerDialog
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MonitorDatePicker(date: String, onDismiss: () -> Unit, onSelect: (String) -> Unit) {
-    val textResources = rememberAppText()
     val today = LocalDate.now(ZoneId.of("Asia/Shanghai"))
     val max = today.plusDays(14)
     val selected = runCatching { LocalDate.parse(date) }.getOrDefault(today).coerceIn(today, max)
@@ -29,16 +28,13 @@ internal fun MonitorDatePicker(date: String, onDismiss: () -> Unit, onSelect: (S
         initialSelectedDateMillis = selected.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
         selectableDates = selectable,
     )
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton({
-                state.selectedDateMillis?.let {
-                    onSelect(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate().toString())
-                }
-                onDismiss()
-            }, enabled = state.selectedDateMillis != null) { Text(textResources(R.string.action_confirm)) }
+    ExpressiveDatePickerDialog(
+        state = state,
+        wheelRange = today..max,
+        onDismiss = onDismiss,
+        onSelect = { millis ->
+            onSelect(Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate().toString())
+            onDismiss()
         },
-        dismissButton = { TextButton(onDismiss) { Text(textResources(R.string.action_cancel)) } },
-    ) { DatePicker(state, title = null, showModeToggle = false) }
+    )
 }

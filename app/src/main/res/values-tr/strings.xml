@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">Tarife tarihleri yüklenemedi</string>
     <string name="historical_train_query_error">Geçmiş tarife yüklenemedi</string>
     <string name="historical_train_map_disclaimer">Harita istasyonların güncel adlarını ve konumlarını gösterir. Bunlar geçmişteki konumlardan farklı olabilir. Sorularınız için API sağlayıcısı RailLog ile iletişime geçin.</string>
+    <string name="date_picker_wheels">Kaydırarak tarih seç</string>
+    <string name="date_picker_calendar">Takvimi göster</string>
+    <string name="date_picker_year">Yıl</string>
+    <string name="date_picker_month">Ay</string>
+    <string name="date_picker_day">Gün</string>
 </resources>

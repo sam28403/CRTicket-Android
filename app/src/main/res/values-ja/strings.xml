@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">時刻表の日付を取得できませんでした</string>
     <string name="historical_train_query_error">過去の時刻表を取得できませんでした</string>
     <string name="historical_train_map_disclaimer">地図は現在の駅名と位置を表示するため、当時の駅の位置とは異なる場合があります。ご不明な点は API 提供元の RailLog にお問い合わせください。</string>
+    <string name="date_picker_wheels">スクロールで日付を選択</string>
+    <string name="date_picker_calendar">カレンダーを表示</string>
+    <string name="date_picker_year">年</string>
+    <string name="date_picker_month">月</string>
+    <string name="date_picker_day">日</string>
 </resources>

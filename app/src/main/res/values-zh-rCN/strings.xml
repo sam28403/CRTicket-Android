@@ -884,4 +884,9 @@
     <string name="vehicle_query_vehicle_count">查询到%1$d个记录</string>
     <string name="vehicle_query_train_count">查询到%1$d个记录</string>
     <string name="vehicle_query_image_unavailable">暂无车头图片</string>
+    <string name="date_picker_wheels">滚动选择日期</string>
+    <string name="date_picker_calendar">显示日历</string>
+    <string name="date_picker_year">年</string>
+    <string name="date_picker_month">月</string>
+    <string name="date_picker_day">日</string>
 </resources>

@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">Хуваарийн огноог ачаалж чадсангүй</string>
     <string name="historical_train_query_error">Түүхэн хуваарийг ачаалж чадсангүй</string>
     <string name="historical_train_map_disclaimer">Газрын зурагт өртөөний одоогийн нэр, байршлыг харуулдаг тул түүхэн байршлаас зөрж болно. Асуух зүйл байвал API нийлүүлэгч RailLog-той холбогдоно уу.</string>
+    <string name="date_picker_wheels">Гүйлгэж огноо сонгох</string>
+    <string name="date_picker_calendar">Хуанли харуулах</string>
+    <string name="date_picker_year">Жил</string>
+    <string name="date_picker_month">Сар</string>
+    <string name="date_picker_day">Өдөр</string>
 </resources>

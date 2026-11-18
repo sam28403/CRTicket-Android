@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">โหลดวันที่ของตารางเวลาไม่ได้</string>
     <string name="historical_train_query_error">โหลดตารางเวลาเดินรถย้อนหลังไม่ได้</string>
     <string name="historical_train_map_disclaimer">แผนที่แสดงชื่อและตำแหน่งสถานีปัจจุบัน ซึ่งอาจต่างจากตำแหน่งในอดีต หากมีข้อสงสัย โปรดติดต่อ RailLog ผู้ให้บริการ API</string>
+    <string name="date_picker_wheels">เลื่อนเพื่อเลือกวันที่</string>
+    <string name="date_picker_calendar">แสดงปฏิทิน</string>
+    <string name="date_picker_year">ปี</string>
+    <string name="date_picker_month">เดือน</string>
+    <string name="date_picker_day">วัน</string>
 </resources>

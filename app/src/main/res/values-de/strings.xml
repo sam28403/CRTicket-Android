@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">Fahrplandaten konnten nicht geladen werden</string>
     <string name="historical_train_query_error">Historischer Fahrplan konnte nicht geladen werden</string>
     <string name="historical_train_map_disclaimer">Die Karte zeigt heutige Bahnhofsnamen und Standorte, die von historischen Standorten abweichen können. Wenden Sie sich bei Fragen an den API-Anbieter RailLog.</string>
+    <string name="date_picker_wheels">Datum mit Auswahlrädern wählen</string>
+    <string name="date_picker_calendar">Kalender anzeigen</string>
+    <string name="date_picker_year">Jahr</string>
+    <string name="date_picker_month">Monat</string>
+    <string name="date_picker_day">Tag</string>
 </resources>

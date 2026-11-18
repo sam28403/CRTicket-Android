@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">Не удалось загрузить даты расписаний</string>
     <string name="historical_train_query_error">Не удалось загрузить историческое расписание</string>
     <string name="historical_train_map_disclaimer">На карте указаны современные названия и местоположения станций, которые могут отличаться от исторических. По вопросам обращайтесь к поставщику API RailLog.</string>
+    <string name="date_picker_wheels">Выбрать дату прокруткой</string>
+    <string name="date_picker_calendar">Показать календарь</string>
+    <string name="date_picker_year">Год</string>
+    <string name="date_picker_month">Месяц</string>
+    <string name="date_picker_day">День</string>
 </resources>

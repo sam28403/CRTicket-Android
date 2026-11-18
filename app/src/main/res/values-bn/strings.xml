@@ -884,4 +884,9 @@
     <string name="historical_train_dates_error">সময়সূচির তারিখ লোড করা যায়নি</string>
     <string name="historical_train_query_error">ঐতিহাসিক সময়সূচি লোড করা যায়নি</string>
     <string name="historical_train_map_disclaimer">মানচিত্রে স্টেশনের বর্তমান নাম ও অবস্থান দেখানো হয়, যা ঐতিহাসিক অবস্থান থেকে আলাদা হতে পারে। কোনো প্রশ্ন থাকলে API প্রদানকারী RailLog-এর সঙ্গে যোগাযোগ করুন।</string>
+    <string name="date_picker_wheels">স্ক্রল করে তারিখ নির্বাচন করুন</string>
+    <string name="date_picker_calendar">ক্যালেন্ডার দেখান</string>
+    <string name="date_picker_year">বছর</string>
+    <string name="date_picker_month">মাস</string>
+    <string name="date_picker_day">দিন</string>
 </resources>
