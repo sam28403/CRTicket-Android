@@ -116,14 +116,19 @@ async function request(path, params) {
 
 async function listCodes() {
     const codes = new Set()
-    for (const prefix of '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-        const result = await request('/search', { version, trainNumber: prefix })
-        assert.equal(result.version, version)
-        for (const row of result.trains) {
-            assert(typeof row.train_codes === 'string' && row.train_codes.trim(), '缺少规范车次号')
-            codes.add(row.train_codes)
+    const prefixes = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    let nextPrefix = 0
+    await Promise.all(Array.from({ length: Math.min(4, prefixes.length) }, async () => {
+        while (nextPrefix < prefixes.length) {
+            const prefix = prefixes[nextPrefix++]
+            const result = await request('/search', { version, trainNumber: prefix })
+            assert.equal(result.version, version)
+            for (const row of result.trains) {
+                assert(typeof row.train_codes === 'string' && row.train_codes.trim(), '缺少规范车次号')
+                codes.add(row.train_codes)
+            }
         }
-    }
+    }))
     assert(codes.size > 0, '搜索未返回车次')
     return [...codes].sort()
 }

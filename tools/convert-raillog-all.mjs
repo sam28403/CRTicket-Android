@@ -100,8 +100,8 @@ function runNode(args, logPath) {
         let output = ''
         child.stdout.setEncoding('utf8')
         child.stderr.setEncoding('utf8')
-        child.stdout.on('data', chunk => { output += chunk })
-        child.stderr.on('data', chunk => { output += chunk })
+        child.stdout.on('data', chunk => { output += chunk; process.stdout.write(chunk) })
+        child.stderr.on('data', chunk => { output += chunk; process.stderr.write(chunk) })
         child.on('error', rejectRun)
         child.on('close', async code => {
             await appendFile(logPath, output)
