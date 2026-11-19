@@ -186,9 +186,10 @@ async function downloadTrains() {
         if (failed || next >= codes.length) return
         const index = next++
         activeWorkers++
+        let loaded
         try {
-        const loaded = await loadTrain(codes[index], cache)
-        results[index] = loaded.train
+            loaded = await loadTrain(codes[index], cache)
+            results[index] = loaded.train
         } catch (error) {
             failed ??= error
             return
