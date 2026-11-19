@@ -19,7 +19,7 @@ assert(Number.isInteger(minWorkers) && minWorkers > 0 && minWorkers <= workers, 
 assert(Number.isInteger(maxWorkers) && maxWorkers >= workers, 'RAILLOG_MAX_WORKERS 必须不小于 RAILLOG_WORKERS')
 assert(Number.isInteger(maxRetries) && maxRetries >= 1, 'RAILLOG_MAX_RETRIES 必须是正整数')
 let nextRequestAt = 0
-let retryAfterAt = 0
+let serverRetryAfterAt = 0
 let transientErrors = 0
 let successesSinceRecovery = 0
 let errorsSinceRecovery = 0
@@ -28,6 +28,18 @@ let targetWorkers = workers
 function noteTransientError() {
     transientErrors++
     errorsSinceRecovery++
+}
+
+function updateServerRetryAfter(response) {
+    const retryAfter = response?.headers.get('retry-after')
+    const retryAt = /^\d+$/.test(retryAfter)
+        ? Date.now() + Number(retryAfter) * 1000
+        : Date.parse(retryAfter) || 0
+    serverRetryAfterAt = Math.max(serverRetryAfterAt, retryAt)
+}
+
+function retryBackoffMs(attempt) {
+    return Math.min(30000, 2000 * 2 ** attempt) + Math.floor(Math.random() * 250)
 }
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
 if (!directory || !/^\d{4}\.\d{2}\.\d{2}$/.test(version)
@@ -39,8 +51,8 @@ async function request(path, params) {
     const url = new URL(base + path)
     url.search = new URLSearchParams(params)
     for (let attempt = 0; ; attempt++) {
-        while (Math.max(nextRequestAt, retryAfterAt) > Date.now()) {
-            await delay(Math.max(nextRequestAt, retryAfterAt) - Date.now())
+        while (Math.max(nextRequestAt, serverRetryAfterAt) > Date.now()) {
+            await delay(Math.max(nextRequestAt, serverRetryAfterAt) - Date.now())
         }
         nextRequestAt = Date.now() + requestSpacingMs
         let response
@@ -57,7 +69,8 @@ async function request(path, params) {
                     console.warn(
                         `RailLog HTTP ${response.status} 返回无效 JSON，间隔调整为 ${requestSpacingMs}ms`,
                     )
-                    retryAfterAt = Math.max(retryAfterAt, Date.now() + Math.min(30000, 1500 * 2 ** attempt))
+                    updateServerRetryAfter(response)
+                    await delay(retryBackoffMs(attempt))
                     continue
                 }
                 successesSinceRecovery++
@@ -81,7 +94,8 @@ async function request(path, params) {
             console.warn(
                 `RailLog 网络错误 ${error.cause?.code || error.name}，间隔调整为 ${requestSpacingMs}ms`,
             )
-            retryAfterAt = Math.max(retryAfterAt, Date.now() + Math.min(30000, 1500 * 2 ** attempt))
+            await delay(retryBackoffMs(attempt))
+            continue
         }
         const status = response?.status
         if ((status >= 400 && status < 500 && status !== 408 && status !== 429) || attempt >= maxRetries) {
@@ -94,11 +108,9 @@ async function request(path, params) {
                 `RailLog HTTP ${status}，间隔调整为 ${requestSpacingMs}ms`,
             )
         }
-        const retryAfter = response?.headers.get('retry-after')
-        const retryAt = /^\d+$/.test(retryAfter)
-            ? Date.now() + Number(retryAfter) * 1000
-            : Date.parse(retryAfter) || 0
-        retryAfterAt = Math.max(retryAfterAt, retryAt, Date.now() + Math.min(30000, 2000 * 2 ** attempt))
+        updateServerRetryAfter(response)
+        await response?.body?.cancel().catch(() => {})
+        await delay(retryBackoffMs(attempt))
     }
 }
 
