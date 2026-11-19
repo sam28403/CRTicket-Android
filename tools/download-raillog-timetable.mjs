@@ -65,9 +65,8 @@ async function request(path, params) {
                 } catch (error) {
                     if (attempt >= maxRetries) throw error
                     noteTransientError()
-                    requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
                     console.warn(
-                        `RailLog HTTP ${response.status} 返回无效 JSON，间隔调整为 ${requestSpacingMs}ms`,
+                        `RailLog HTTP ${response.status} 返回无效 JSON，单请求退避重试`,
                     )
                     updateServerRetryAfter(response)
                     await delay(retryBackoffMs(attempt))
@@ -90,9 +89,8 @@ async function request(path, params) {
         } catch (error) {
             if (attempt >= maxRetries) throw error
             noteTransientError()
-            requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
             console.warn(
-                `RailLog 网络错误 ${error.cause?.code || error.name}，间隔调整为 ${requestSpacingMs}ms`,
+                `RailLog 网络错误 ${error.cause?.code || error.name}，单请求退避重试`,
             )
             await delay(retryBackoffMs(attempt))
             continue
@@ -103,9 +101,8 @@ async function request(path, params) {
         }
         if (status) {
             noteTransientError()
-            requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
             console.warn(
-                `RailLog HTTP ${status}，间隔调整为 ${requestSpacingMs}ms`,
+                `RailLog HTTP ${status}，单请求退避重试`,
             )
         }
         updateServerRetryAfter(response)
@@ -141,15 +138,18 @@ function sameTrainCodes(left, right) {
 async function loadTrain(code, cache) {
     const filename = join(cache, Buffer.from(code).toString('hex') + '.json')
     let result
+    let downloaded = false
     try {
         result = JSON.parse(await readFile(filename, 'utf8'))
     } catch (error) {
         if (error.code === 'ENOENT') {
             result = await request('', { version, trainNumber: code })
+            downloaded = true
         } else if (error instanceof SyntaxError) {
             console.warn(`${code}：缓存 JSON 无效，删除后重新下载`)
             await rm(filename, { force: true })
             result = await request('', { version, trainNumber: code })
+            downloaded = true
         } else {
             throw error
         }
@@ -165,7 +165,7 @@ async function loadTrain(code, cache) {
     await writeFile(filename, JSON.stringify(result), { flag: 'wx' }).catch(error => {
         if (error.code !== 'EEXIST') throw error
     })
-    return result
+    return { train: result, downloaded }
 }
 
 const cache = join(directory, `cache-${version}`)
@@ -187,7 +187,8 @@ async function downloadTrains() {
         const index = next++
         activeWorkers++
         try {
-            results[index] = await loadTrain(codes[index], cache)
+        const loaded = await loadTrain(codes[index], cache)
+        results[index] = loaded.train
         } catch (error) {
             failed ??= error
             return
@@ -195,7 +196,7 @@ async function downloadTrains() {
             activeWorkers--
         }
         completed++
-        successesSinceScale++
+        if (loaded.downloaded) successesSinceScale++
         if (successesSinceScale >= 500) {
             if (transientErrors <= 4 && targetWorkers < maxWorkers) {
                 targetWorkers++
