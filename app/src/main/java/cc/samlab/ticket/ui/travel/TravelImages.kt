@@ -19,6 +19,9 @@ private val travelImages = object : LruCache<HttpUrl, Bitmap>(16 * 1024 * 1024) 
 }
 private val imageLocks = Array(8) { Mutex() }
 
+internal fun cachedTravelImage(url: HttpUrl?): ImageBitmap? =
+    url?.let { travelImages[it]?.asImageBitmap() }
+
 internal suspend fun loadTravelImage(url: HttpUrl?): Result<ImageBitmap> =
     withContext(Dispatchers.IO) {
         if (url == null) return@withContext Result.failure(IOException("Invalid image URL"))

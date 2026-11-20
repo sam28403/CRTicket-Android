@@ -151,7 +151,7 @@ function disabledDate(value) {
 }
 
 async function query() {
-  if (!hasTrainNumber.value || loading.value || importedTimetable.value === null) return
+  if (route.path !== '/train' || !hasTrainNumber.value || loading.value || importedTimetable.value === null) return
   if (trainNumberError.value) {
     error.value = trainNumberError.value
     toast(trainNumberError.value)
@@ -236,7 +236,16 @@ watch(
   () => [route.path, route.query.train, route.query.date, route.query.source, route.query.record, route.query.dataset,
     networkAllowed.value, importedTimetable.value],
   ([path, code, selectedDate, source, hint, dataset], [previousPath] = []) => {
-    if (path !== '/train' || importedTimetable.value === null) return
+    if (path !== '/train') {
+      if (previousPath === '/train') {
+        controller?.abort()
+        requestId++
+        loading.value = false
+        previousRouteQuery = undefined
+      }
+      return
+    }
+    if (importedTimetable.value === null) return
     if ((!networkAllowed.value || preferImported.value) && source !== 'llt') {
       controller?.abort()
       requestId++

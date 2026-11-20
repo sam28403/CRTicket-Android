@@ -9,11 +9,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal data class TravelTrainCardData(val row: TrainListRow, val queryTrain: String, val queryDate: String)
-
 internal data class TravelCardData(
-    val date: String = "",
-    val trains: Map<TravelBlock.Train, TravelTrainCardData> = emptyMap(),
+    val trains: Map<TravelBlock.Train, TrainListRow> = emptyMap(),
     val stations: Map<String, JSONObject> = emptyMap(),
 )
 
@@ -49,18 +46,14 @@ internal class TravelCardLookup(private val web: WebView) {
         val trainRows = result.optJSONArray("trains") ?: JSONArray()
         val trainData = parseTrainListRows(context, trainRows).mapIndexedNotNull { index, row ->
             val source = trainRows.getJSONObject(index)
-            trains.getOrNull(source.optInt("key", -1))?.let {
-                it to TravelTrainCardData(
-                    row, source.optString("queryTrain", row.train), source.optString("queryDate"),
-                )
-            }
+            trains.getOrNull(source.optInt("key", -1))?.let { it to row }
         }.toMap()
         val stationRows = result.optJSONArray("stations") ?: JSONArray()
         val stationData = (0 until stationRows.length()).associate { index ->
             val row = stationRows.getJSONObject(index)
             row.getString("key") to row
         }
-        return TravelCardData(result.optString("date"), trainData, stationData)
+        return TravelCardData(trainData, stationData)
     }
 
     fun receive(result: JSONObject) {

@@ -1,7 +1,6 @@
 package cc.samlab.ticket.ui.travel
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +8,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -18,20 +19,27 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cc.samlab.ticket.R
+import cc.samlab.ticket.ui.ExpressiveEmptyState
 import cc.samlab.ticket.ui.home.homeColorScheme
 import cc.samlab.ticket.ui.home.projectTitleFont
-import kotlinx.coroutines.CancellationException
+import cc.samlab.ticket.ui.trainlist.TrainListRefreshIndicator
+
+internal val TravelContentRevision = SemanticsPropertyKey<Int>("TravelContentRevision")
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -43,6 +51,7 @@ internal fun TravelScreen(
     cardLookup: TravelCardLookup,
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
+    page: TravelPageState = viewModel(),
 ) {
     val context = LocalContext.current
     val largeScreen = embedded || LocalConfiguration.current.smallestScreenWidthDp >= 600
@@ -50,7 +59,10 @@ internal fun TravelScreen(
     val article = remember(location) {
         TravelRepository.article(Uri.parse(location).getQueryParameter("file"))
     }
-    var refresh by rememberSaveable(location) { mutableIntStateOf(0) }
+    val refresh = { page.load(context.applicationContext, articlePage, article) }
+    LaunchedEffect(page) {
+        page.load(context.applicationContext, articlePage, article, initial = true)
+    }
     val indexTitle = stringResource(R.string.travel_title)
 
     MaterialExpressiveTheme(colorScheme = homeColorScheme(context, dark, pureBlack)) {
@@ -75,33 +87,37 @@ internal fun TravelScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { refresh++ }) {
+                        IconButton(onClick = refresh, enabled = !page.loading) {
                             Icon(Icons.Default.Refresh, stringResource(R.string.station_refresh))
                         }
                     },
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = surface),
                 )
-                Box(
-                    Modifier.weight(1f).fillMaxWidth(),
-                    contentAlignment = Alignment.TopCenter,
+                val pull = rememberPullToRefreshState()
+                val refreshing = page.loading && page.result != null
+                PullToRefreshBox(
+                    isRefreshing = refreshing,
+                    onRefresh = refresh,
+                    state = pull,
+                    modifier = Modifier.weight(1f).fillMaxWidth().testTag("travel-pull")
+                        .semantics { this[TravelContentRevision] = page.revision },
+                    indicator = {
+                        TrainListRefreshIndicator(pull, refreshing, stringResource(R.string.refresh_loading))
+                    },
                 ) {
-                    if (articlePage) {
-                        val result = travelContent(location, refresh) {
-                            TravelRepository.markdown(context, requireNotNull(article))
-                        }
-                        TravelResult(result, onRetry = { refresh++ }) { markdown ->
-                            if (article != null) TravelArticleBody(
-                                article, markdown, if (largeScreen) 600.dp else 400.dp, cardLookup, refresh, onNavigate,
-                            )
-                        }
-                    } else {
-                        val result = travelContent(location, refresh) { TravelRepository.articles(context) }
-                        TravelResult(result, onRetry = { refresh++ }) { articles ->
-                            if (articles.isEmpty()) {
-                                Text(stringResource(R.string.search_no_results), Modifier.padding(24.dp))
-                            } else {
-                                TravelArticleList(articles, onNavigate)
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                        TravelResult(page.result, page.loading, refresh) { content ->
+                            when (content) {
+                                is TravelContent.Body -> TravelArticleBody(
+                                    content.article, content.markdown, if (largeScreen) 600.dp else 400.dp,
+                                    cardLookup, page.revision, onNavigate, page.articleState,
+                                )
+                                is TravelContent.Index -> if (content.articles.isEmpty()) {
+                                    TravelEmptyState(R.string.search_no_results, page.loading, refresh)
+                                } else {
+                                    TravelArticleList(content.articles, onNavigate)
+                                }
                             }
                         }
                     }
@@ -144,29 +160,29 @@ private fun TravelArticleList(articles: List<TravelArticle>, onNavigate: (String
 }
 
 @Composable
-private fun <T> travelContent(location: String, revision: Int, load: suspend () -> T): Result<T>? {
-    var state by remember(location) { mutableStateOf<Result<T>?>(null) }
-    LaunchedEffect(location, revision) {
-        val result = try {
-            Result.success(load())
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Log.w("RailwayTravel", "Could not retrieve railway travel content", error)
-            Result.failure(error)
+private fun TravelEmptyState(message: Int, loading: Boolean, onRefresh: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("travel-empty"),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        ExpressiveEmptyState(stringResource(message), visible = true)
+        Button(onClick = onRefresh, enabled = !loading, modifier = Modifier.testTag("travel-empty-refresh")) {
+            Text(stringResource(R.string.station_refresh))
         }
-        if (result.isSuccess || state?.isSuccess != true) state = result
     }
-    return state
 }
 
 @Composable
-private fun <T> TravelResult(result: Result<T>?, onRetry: () -> Unit, content: @Composable (T) -> Unit) {
+private fun <T> TravelResult(
+    result: Result<T>?,
+    loading: Boolean,
+    onRefresh: () -> Unit,
+    content: @Composable (T) -> Unit,
+) {
     when {
         result == null -> CircularProgressIndicator(Modifier.padding(24.dp))
         result.isSuccess -> content(result.getOrThrow())
-        else -> OutlinedButton(onClick = onRetry, modifier = Modifier.padding(24.dp)) {
-            Text(stringResource(R.string.action_retry))
-        }
+        else -> TravelEmptyState(R.string.train_list_network_error, loading, onRefresh)
     }
 }

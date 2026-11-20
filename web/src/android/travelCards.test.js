@@ -17,11 +17,10 @@ const train = {
 }
 const database = { trains: new Map([[train.train, train]]) }
 
-test('a train appears even between operating days and opens the nearest service date', () => {
+test('a train appears without strike-through even between operating days', () => {
   const { trains } = summarizeTravelCards(
     database, [{ key: 0, train: 'V24' }], [], Date.parse('2026-11-20T04:00:00Z'), false,
   )
-  assert.equal(trains[0].queryDate, '2026-11-21')
   assert.equal(trains[0].notRunning, undefined)
   assert.equal(trains[0].stationCount, 3)
 })
@@ -32,7 +31,7 @@ test('an article section uses matching stops, elapsed time and distance from the
     Date.parse('2026-12-01T04:00:00Z'), false,
   )
   assert.deepEqual(trains[0], {
-    key: 0, train: 'V24', queryTrain: 'V24', queryDate: '2026-11-29',
+    key: 0, train: 'V24',
     from: '二连', to: '北京', duration: '03:15', stationCount: 2, mileage: 430,
   })
 })
