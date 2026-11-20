@@ -6,6 +6,7 @@ import androidx.navigation.NavBackStackEntry
 internal object ExpressiveRoutes {
     val pages = setOf(
         "/train-comparison",
+        "/travel", "/travel/article",
         "/railfan/quiz",
         "/railfan/quiz/report",
         "/price", "/price/list",
@@ -55,7 +56,7 @@ internal object ExpressiveRoutes {
         "/help/sale", "/help/speed", "/help/vehicle",
         "/help/general", "/help/lines", "/help/quiz",
         "/help" -> "/home"
-        "/train-comparison", "/sale-time", "/sale-time/reminders" -> "/home"
+        "/train-comparison", "/travel", "/travel/article", "/sale-time", "/sale-time/reminders" -> "/home"
         "/railfan/lines", "/railfan/vehicle", "/railfan/routing", "/railfan/visits", "/railfan/speedometer" -> "/home"
         "/railfan/historical-train" -> "/home"
         "/railfan/speedometer/guide", "/railfan/speedometer/live", "/railfan/speedometer/track" -> "/home"

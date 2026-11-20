@@ -889,4 +889,7 @@
     <string name="date_picker_year">السنة</string>
     <string name="date_picker_month">الشهر</string>
     <string name="date_picker_day">اليوم</string>
+    <string name="travel_title">السفر بالقطار</string>
+    <string name="travel_description">قراءة مقالات عن السفر بالقطار</string>
+    <string name="help_travel_answer">افتح السفر بالقطار من الشاشة الرئيسية واختر مقالًا. اضغط على بطاقة قطار أو محطة في المقال لفتح صفحة البحث الخاصة بها.</string>
 </resources>

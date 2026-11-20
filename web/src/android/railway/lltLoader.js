@@ -153,6 +153,7 @@ export function createLltLoader(
 
     // Quiz counts require a successful online version check, never stale fallback.
     load.fresh = () => load(true)
+    load.local = () => load(false, true)
 
     load.pauseUpdates = async function pauseUpdates() {
         refreshController?.abort(new DOMException('Updates disabled', 'AbortError'))
@@ -160,8 +161,6 @@ export function createLltLoader(
     }
 
     if (typeof __CRTICKET_CI__ === 'undefined' || __CRTICKET_CI__) {
-        load.local = () => load(false, true)
-
         load.reloadSelection = async function reloadSelection() {
             await clearing
             await Promise.allSettled([importing, initialization])

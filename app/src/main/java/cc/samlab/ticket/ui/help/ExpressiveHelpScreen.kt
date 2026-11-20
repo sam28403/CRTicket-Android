@@ -68,6 +68,11 @@ internal fun ExpressiveHelpScreen(
                             SettingsGroup(stringResource(R.string.help_questions), first = true) {
                                 HelpTextCard(stringResource(topic.question), stringResource(topic.answer))
                             }
+                            if (topic.id == "query") {
+                                SettingsGroup(stringResource(R.string.travel_title)) {
+                                    HelpTextCard(null, stringResource(R.string.help_travel_answer))
+                                }
+                            }
                             SettingsGroup(stringResource(R.string.help_rules)) {
                                 HelpTextCard(null, stringResource(topic.rules))
                             }

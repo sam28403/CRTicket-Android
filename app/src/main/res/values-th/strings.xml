@@ -889,4 +889,7 @@
     <string name="date_picker_year">ปี</string>
     <string name="date_picker_month">เดือน</string>
     <string name="date_picker_day">วัน</string>
+    <string name="travel_title">ท่องเที่ยวทางรถไฟ</string>
+    <string name="travel_description">อ่านบทความท่องเที่ยวทางรถไฟ</string>
+    <string name="help_travel_answer">เปิดท่องเที่ยวทางรถไฟจากหน้าหลักแล้วเลือกบทความ แตะการ์ดขบวนรถหรือสถานีในบทความเพื่อเปิดหน้าค้นหาที่เกี่ยวข้อง</string>
 </resources>

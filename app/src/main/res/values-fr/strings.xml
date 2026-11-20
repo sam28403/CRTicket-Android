@@ -889,4 +889,7 @@
     <string name="date_picker_year">Année</string>
     <string name="date_picker_month">Mois</string>
     <string name="date_picker_day">Jour</string>
+    <string name="travel_title">Tourisme ferroviaire</string>
+    <string name="travel_description">Lire des articles sur les voyages en train</string>
+    <string name="help_travel_answer">Ouvrez Tourisme ferroviaire depuis l’écran d’accueil et choisissez un article. Touchez une fiche de train ou de gare dans l’article pour ouvrir la recherche correspondante.</string>
 </resources>

@@ -889,4 +889,7 @@
     <string name="date_picker_year">Năm</string>
     <string name="date_picker_month">Tháng</string>
     <string name="date_picker_day">Ngày</string>
+    <string name="travel_title">Du lịch đường sắt</string>
+    <string name="travel_description">Đọc bài viết về du lịch bằng tàu hỏa</string>
+    <string name="help_travel_answer">Mở Du lịch đường sắt từ màn hình chính và chọn một bài viết. Nhấn vào thẻ chuyến tàu hoặc nhà ga trong bài để mở trang tra cứu tương ứng.</string>
 </resources>

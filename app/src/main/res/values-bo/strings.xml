@@ -889,4 +889,7 @@
     <string name="date_picker_year">ལོ།</string>
     <string name="date_picker_month">ཟླ་བ།</string>
     <string name="date_picker_day">ཚེས།</string>
+    <string name="travel_title">ལྕགས་ལམ་ཡུལ་སྐོར།</string>
+    <string name="travel_description">ལྕགས་ལམ་ཡུལ་སྐོར་གྱི་རྩོམ་ཡིག་ཀློག</string>
+    <string name="help_travel_answer">མདུན་ངོས་ནས་ལྕགས་ལམ་ཡུལ་སྐོར་ཁ་ཕྱེ་ནས་རྩོམ་ཡིག་འདེམས། རྩོམ་ཡིག་ནང་གི་མེ་འཁོར་རམ་འབབ་ཚུགས་ཀྱི་བྱང་བུ་མནན་ནས་འཚོལ་ཞིབ་ཤོག་ངོས་ཁ་ཕྱེ།</string>
 </resources>

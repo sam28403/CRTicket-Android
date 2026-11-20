@@ -889,4 +889,7 @@
     <string name="date_picker_year">Tahun</string>
     <string name="date_picker_month">Bulan</string>
     <string name="date_picker_day">Hari</string>
+    <string name="travel_title">Pelancongan Kereta Api</string>
+    <string name="travel_description">Baca artikel perjalanan kereta api</string>
+    <string name="help_travel_answer">Buka Pelancongan Kereta Api dari skrin utama dan pilih artikel. Ketik kad kereta api atau stesen dalam artikel untuk membuka halaman carian yang berkaitan.</string>
 </resources>

@@ -889,4 +889,7 @@
     <string name="date_picker_year">ປີ</string>
     <string name="date_picker_month">ເດືອນ</string>
     <string name="date_picker_day">ວັນ</string>
+    <string name="travel_title">ທ່ອງທ່ຽວທາງລົດໄຟ</string>
+    <string name="travel_description">ອ່ານບົດຄວາມການເດີນທາງດ້ວຍລົດໄຟ</string>
+    <string name="help_travel_answer">ເປີດທ່ອງທ່ຽວທາງລົດໄຟຈາກໜ້າຫຼັກ ແລ້ວເລືອກບົດຄວາມ. ແຕະບັດລົດໄຟ ຫຼື ສະຖານີໃນບົດຄວາມເພື່ອເປີດໜ້າຄົ້ນຫາ.</string>
 </resources>
