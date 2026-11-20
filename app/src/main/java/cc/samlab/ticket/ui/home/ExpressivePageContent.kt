@@ -21,6 +21,7 @@ import cc.samlab.ticket.ui.station.*
 import cc.samlab.ticket.ui.statistics.*
 import cc.samlab.ticket.ui.trainlist.*
 import cc.samlab.ticket.ui.trainquery.*
+import cc.samlab.ticket.ui.travel.TravelScreen
 import org.json.JSONObject
 
 /** Screen rendering is independent of navigation and never changes host View visibility. */
@@ -85,6 +86,9 @@ internal class ExpressivePageContent(
             "/price/list" -> cc.samlab.ticket.ui.fare.FareTableScreen(dark, pureBlack, onBack)
             "/train-comparison" -> cc.samlab.ticket.ui.comparison.TrainComparisonScreen(
                 dark, pureBlack, embedded, onBack,
+            )
+            "/travel", "/travel/article" -> TravelScreen(
+                location, dark, pureBlack, embedded, trainList.travelCards, onBack, onNavigate,
             )
             "/sale-time" -> cc.samlab.ticket.ui.sale.SaleTimeScreen(
                 station, dark, pureBlack, embedded, active, onBack, onNavigate,

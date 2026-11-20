@@ -889,4 +889,7 @@
     <string name="date_picker_year">يىل</string>
     <string name="date_picker_month">ئاي</string>
     <string name="date_picker_day">كۈن</string>
+    <string name="travel_title">تۆمۈريول ساياھىتى</string>
+    <string name="travel_description">پويىز ساياھىتى ھەققىدىكى ماقالىلەرنى ئوقۇڭ</string>
+    <string name="help_travel_answer">باش بەتتىن تۆمۈريول ساياھىتىنى ئېچىپ، بىر ماقالە تاللاڭ. سۈرۈشتۈرۈش بېتىنى ئېچىش ئۈچۈن ماقالىدىكى پويىز ياكى ۋوگزال كارتىسىنى چېكىڭ.</string>
 </resources>

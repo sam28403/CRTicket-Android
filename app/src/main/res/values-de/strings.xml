@@ -889,4 +889,7 @@
     <string name="date_picker_year">Jahr</string>
     <string name="date_picker_month">Monat</string>
     <string name="date_picker_day">Tag</string>
+    <string name="travel_title">Bahnreisen</string>
+    <string name="travel_description">Artikel über Bahnreisen lesen</string>
+    <string name="help_travel_answer">Öffne auf der Startseite „Bahnreisen“ und wähle einen Artikel aus. Tippe im Artikel auf eine Zug- oder Bahnhofskarte, um die entsprechende Suche zu öffnen.</string>
 </resources>

@@ -889,4 +889,7 @@
     <string name="date_picker_year">Año</string>
     <string name="date_picker_month">Mes</string>
     <string name="date_picker_day">Día</string>
+    <string name="travel_title">Turismo ferroviario</string>
+    <string name="travel_description">Lee artículos sobre viajes en tren</string>
+    <string name="help_travel_answer">Abre Turismo ferroviario desde la pantalla de inicio y elige un artículo. Toca una tarjeta de tren o estación del artículo para abrir la consulta correspondiente.</string>
 </resources>

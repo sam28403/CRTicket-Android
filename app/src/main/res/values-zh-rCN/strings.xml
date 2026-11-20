@@ -889,4 +889,7 @@
     <string name="date_picker_year">年</string>
     <string name="date_picker_month">月</string>
     <string name="date_picker_day">日</string>
+    <string name="travel_title">铁路旅游</string>
+    <string name="travel_description">阅读铁路游记</string>
+    <string name="help_travel_answer">从首页进入铁路旅游并选择文章。点击文章中的车次或车站卡片，即可进入相应查询页面。</string>
 </resources>

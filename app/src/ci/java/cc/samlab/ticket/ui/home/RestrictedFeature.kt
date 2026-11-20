@@ -13,10 +13,13 @@ internal fun renderRestrictedFeature(
 ): Boolean {
     val path = ExpressiveRoutes.path(location)
     if (NetworkFeatures.enabled || !NetworkFeatures.blocksRoute(path)) return false
-    val title = if (path == "/settings/map") R.string.settings_map
-        else (ticketDestinations + railfanDestinations).firstOrNull { it.route == path }?.title
+    val title = when (path) {
+        "/settings/map" -> R.string.settings_map
+        "/travel/article" -> R.string.travel_title
+        else -> (ticketDestinations + railfanDestinations).firstOrNull { it.route == path }?.title
             ?: R.string.network_features_enabled
-    RailfanPlaceholderScreen(title, dark, pureBlack, embedded, onBack,
+    }
+    RailfanPlaceholderScreen(title, dark, pureBlack, embedded && path != "/travel/article", onBack,
         stringResource(R.string.network_features_disabled))
     return true
 }

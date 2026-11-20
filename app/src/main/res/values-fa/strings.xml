@@ -889,4 +889,7 @@
     <string name="date_picker_year">سال</string>
     <string name="date_picker_month">ماه</string>
     <string name="date_picker_day">روز</string>
+    <string name="travel_title">گردشگری ریلی</string>
+    <string name="travel_description">خواندن مطالب سفر با قطار</string>
+    <string name="help_travel_answer">از صفحهٔ اصلی گردشگری ریلی را باز کنید و مطلبی را انتخاب کنید. برای باز کردن صفحهٔ جست‌وجوی مربوط، روی کارت قطار یا ایستگاه در مطلب بزنید.</string>
 </resources>

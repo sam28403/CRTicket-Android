@@ -889,4 +889,7 @@
     <string name="date_picker_year">वर्ष</string>
     <string name="date_picker_month">महीना</string>
     <string name="date_picker_day">दिन</string>
+    <string name="travel_title">रेल पर्यटन</string>
+    <string name="travel_description">रेल यात्रा के लेख पढ़ें</string>
+    <string name="help_travel_answer">होम स्क्रीन से रेल पर्यटन खोलें और कोई लेख चुनें। लेख में ट्रेन या स्टेशन कार्ड पर टैप करके उसका खोज पेज खोलें।</string>
 </resources>

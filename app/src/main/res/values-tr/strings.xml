@@ -889,4 +889,7 @@
     <string name="date_picker_year">Yıl</string>
     <string name="date_picker_month">Ay</string>
     <string name="date_picker_day">Gün</string>
+    <string name="travel_title">Demiryolu Turizmi</string>
+    <string name="travel_description">Tren yolculuğu yazılarını okuyun</string>
+    <string name="help_travel_answer">Ana ekrandan Demiryolu Turizmi bölümünü açın ve bir yazı seçin. İlgili sorgu sayfasını açmak için yazıdaki tren veya istasyon kartına dokunun.</string>
 </resources>

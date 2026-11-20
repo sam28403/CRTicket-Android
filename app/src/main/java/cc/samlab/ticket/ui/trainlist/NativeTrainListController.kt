@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService
 import org.json.JSONObject
 import org.json.JSONArray
 import cc.samlab.ticket.ui.railfan.VehicleHistory
+import cc.samlab.ticket.ui.travel.TravelCardLookup
 
 class NativeTrainListController(
     private val activity: ComponentActivity,
@@ -43,6 +44,7 @@ class NativeTrainListController(
     private var vehicleRequestId = 0
     @Volatile private var closed = false
     internal val routing = cc.samlab.ticket.ui.railfan.RoutingQueryController(activity, webView, worker)
+    internal val travelCards = TravelCardLookup(webView)
 
     fun request(selected: String = date) {
         if (loading && selected == date) return
@@ -56,6 +58,11 @@ class NativeTrainListController(
     // Called on the bridge thread. Parse and format the full snapshot off the UI thread.
     fun receive(payload: String) {
         if (payload.length > 16 * 1024 * 1024) return
+        if (payload.startsWith("{\"kind\":\"travelCards\"")) {
+            val value = runCatching { JSONObject(payload) }.getOrNull() ?: return
+            activity.runOnUiThread { if (!closed) travelCards.receive(value) }
+            return
+        }
         if (payload.contains("\"kind\":\"routing\"")) {
             routing.receive(payload)
             return

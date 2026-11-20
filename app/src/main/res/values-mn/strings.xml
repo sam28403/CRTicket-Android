@@ -889,4 +889,7 @@
     <string name="date_picker_year">Жил</string>
     <string name="date_picker_month">Сар</string>
     <string name="date_picker_day">Өдөр</string>
+    <string name="travel_title">Төмөр замын аялал</string>
+    <string name="travel_description">Галт тэрэгний аяллын нийтлэл унших</string>
+    <string name="help_travel_answer">Нүүр хуудаснаас Төмөр замын аяллыг нээгээд нийтлэл сонгоно уу. Нийтлэл доторх галт тэрэг эсвэл өртөөний картыг товшиж хайлтын хуудсыг нээнэ.</string>
 </resources>

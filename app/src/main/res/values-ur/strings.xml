@@ -889,4 +889,7 @@
     <string name="date_picker_year">سال</string>
     <string name="date_picker_month">مہینہ</string>
     <string name="date_picker_day">دن</string>
+    <string name="travel_title">ریل سیاحت</string>
+    <string name="travel_description">ریل کے سفر پر مضامین پڑھیں</string>
+    <string name="help_travel_answer">ہوم اسکرین سے ریل سیاحت کھولیں اور ایک مضمون منتخب کریں۔ متعلقہ تلاش کا صفحہ کھولنے کے لیے مضمون میں ٹرین یا اسٹیشن کے کارڈ پر ٹیپ کریں۔</string>
 </resources>

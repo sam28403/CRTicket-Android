@@ -896,4 +896,7 @@
     <string name="date_picker_year">Year</string>
     <string name="date_picker_month">Month</string>
     <string name="date_picker_day">Day</string>
+    <string name="travel_title">Railway Travel</string>
+    <string name="travel_description">Read railway travel articles</string>
+    <string name="help_travel_answer">Open Railway Travel from the home screen and choose an article. Tap a train or station card in the article to open its query page.</string>
 </resources>

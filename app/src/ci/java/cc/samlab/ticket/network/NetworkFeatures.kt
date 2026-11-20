@@ -52,6 +52,7 @@ internal object NetworkFeatures {
     fun blocksRoute(route: String): Boolean = route.substringBefore('?') in setOf(
         "/monitor", "/monitor/settings", "/railfan/vehicle", "/railfan/lines", "/railfan/historical-train",
         "/railfan/quiz", "/railfan/quiz/report", "/settings/map",
+        "/travel", "/travel/article",
     )
 
     val interceptor = Interceptor { chain ->

@@ -889,4 +889,7 @@
     <string name="date_picker_year">年</string>
     <string name="date_picker_month">月</string>
     <string name="date_picker_day">日</string>
+    <string name="travel_title">鉄道旅行</string>
+    <string name="travel_description">鉄道旅行の記事を読む</string>
+    <string name="help_travel_answer">ホーム画面から「鉄道旅行」を開き、記事を選びます。記事内の列車や駅のカードをタップすると、対応する検索画面が開きます。</string>
 </resources>

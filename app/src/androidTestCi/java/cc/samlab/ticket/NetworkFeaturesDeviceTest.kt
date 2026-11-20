@@ -26,6 +26,56 @@ import java.util.concurrent.atomic.AtomicInteger
 class NetworkFeaturesDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
 
+    @Test fun railwayTravelRequiresNetworking() {
+        val fixture = TabletPageFixture(compose)
+        val activity = fixture.activity
+        val original = NetworkFeatures.isAllowed()
+        val preferences = activity.getSharedPreferences("developer-options", 0)
+        val autoUpdate = preferences.getBoolean("lltAutoUpdate", true)
+        val hadAutoUpdate = preferences.contains("lltAutoUpdate")
+        val navigateTo = MainActivity::class.java.getDeclaredMethod("navigateTo", String::class.java).apply {
+            isAccessible = true
+        }
+        fun navigate(route: String) {
+            fixture.instrumentation.runOnMainSync { navigateTo.invoke(activity, route) }
+        }
+        fun assertTravelBlocked(route: String) {
+            val page = hasTestTag("navigation-page:$route")
+            val message = activity.getString(R.string.network_features_disabled)
+            val blocked = compose.onNode(hasText(message) and hasAnyAncestor(page))
+            compose.waitUntil(10_000) { blocked.isDisplayed() }
+            compose.onNodeWithTag("travel-pull").assertDoesNotExist()
+        }
+
+        try {
+            fixture.instrumentation.runOnMainSync { NetworkFeatures.setEnabled(activity, true) }
+            navigate("/home")
+            val entry = compose.onNode(hasText(activity.getString(R.string.travel_title)) and hasClickAction())
+            entry.performScrollTo().assertIsEnabled().performClick()
+            val travel = compose.onNodeWithTag("travel-pull")
+            compose.waitUntil(10_000) { travel.isDisplayed() }
+
+            fixture.instrumentation.runOnMainSync { NetworkFeatures.setEnabled(activity, false) }
+            assertTravelBlocked("/travel")
+            val article = "/travel/article?file=test.md"
+            navigate(article)
+            assertTravelBlocked(article)
+
+            navigate("/home")
+            entry.performScrollTo().assertIsNotEnabled()
+            fixture.instrumentation.runOnMainSync { NetworkFeatures.setEnabled(activity, true) }
+            entry.assertIsEnabled()
+        } finally {
+            fixture.instrumentation.runOnMainSync {
+                NetworkFeatures.setEnabled(activity, original)
+                val editor = preferences.edit()
+                if (hadAutoUpdate) editor.putBoolean("lltAutoUpdate", autoUpdate) else editor.remove("lltAutoUpdate")
+                editor.commit()
+            }
+            fixture.close()
+        }
+    }
+
     @Test fun homeOpensTrainQueryDirectlyInOfflineMode() {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
@@ -190,6 +240,9 @@ class NetworkFeaturesDeviceTest {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val original = NetworkFeatures.isAllowed()
+        val preferences = context.getSharedPreferences("developer-options", 0)
+        val autoUpdate = preferences.getBoolean("lltAutoUpdate", true)
+        val hadAutoUpdate = preferences.contains("lltAutoUpdate")
         val requests = AtomicInteger()
         val client = OkHttpClient.Builder()
             .addInterceptor(NetworkFeatures.interceptor)
@@ -202,6 +255,8 @@ class NetworkFeaturesDeviceTest {
         val request = Request.Builder().url("https://example.invalid/").build()
         try {
             instrumentation.runOnMainSync { NetworkFeatures.setEnabled(context, false) }
+            assertTrue(NetworkFeatures.blocksRoute("/travel"))
+            assertTrue(NetworkFeatures.blocksRoute("/travel/article?file=test.md"))
             try {
                 client.newCall(request).execute().close()
                 fail("Disabled networking reached the transport")
@@ -211,7 +266,12 @@ class NetworkFeaturesDeviceTest {
             client.newCall(request).execute().use { assertEquals(200, it.code) }
             assertEquals(1, requests.get())
         } finally {
-            instrumentation.runOnMainSync { NetworkFeatures.setEnabled(context, original) }
+            instrumentation.runOnMainSync {
+                NetworkFeatures.setEnabled(context, original)
+                val editor = preferences.edit()
+                if (hadAutoUpdate) editor.putBoolean("lltAutoUpdate", autoUpdate) else editor.remove("lltAutoUpdate")
+                editor.commit()
+            }
         }
     }
 }

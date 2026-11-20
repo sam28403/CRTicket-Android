@@ -889,4 +889,7 @@
     <string name="date_picker_year">বছর</string>
     <string name="date_picker_month">মাস</string>
     <string name="date_picker_day">দিন</string>
+    <string name="travel_title">রেল ভ্রমণ</string>
+    <string name="travel_description">রেল ভ্রমণের নিবন্ধ পড়ুন</string>
+    <string name="help_travel_answer">হোম স্ক্রিন থেকে রেল ভ্রমণ খুলে একটি নিবন্ধ বেছে নিন। নিবন্ধের ট্রেন বা স্টেশন কার্ডে ট্যাপ করে সংশ্লিষ্ট অনুসন্ধান পৃষ্ঠা খুলুন।</string>
 </resources>

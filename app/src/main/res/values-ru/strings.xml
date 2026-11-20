@@ -889,4 +889,7 @@
     <string name="date_picker_year">Год</string>
     <string name="date_picker_month">Месяц</string>
     <string name="date_picker_day">День</string>
+    <string name="travel_title">Железнодорожный туризм</string>
+    <string name="travel_description">Читать статьи о поездках на поезде</string>
+    <string name="help_travel_answer">Откройте «Железнодорожный туризм» на главном экране и выберите статью. Нажмите на карточку поезда или станции в статье, чтобы открыть соответствующий поиск.</string>
 </resources>

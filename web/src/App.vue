@@ -3,10 +3,12 @@ import PullToRefresh from '@/components/PullToRefresh.vue'
 import { useVisitedStationCards } from '@/android/visitedStationCards.js'
 import { useVehicleTrainCards } from '@/android/vehicleTrainCards.js'
 import { useRoutingQuery } from '@/android/routingQuery.js'
+import { useTravelCards } from '@/android/travelCards.js'
 
 useVisitedStationCards()
 useVehicleTrainCards()
 useRoutingQuery()
+useTravelCards()
 
 const standaloneMap = window.location.hash.split('?')[0] === '#/station-map'
 </script>
