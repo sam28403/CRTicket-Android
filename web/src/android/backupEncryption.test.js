@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { pbkdf2Sync, createDecipheriv } from 'node:crypto'
+import { pbkdf2Sync, createCipheriv, createDecipheriv } from 'node:crypto'
 import { encryptBackup, decryptBackup } from '../utils/backupEncryption.js'
 import { parseAppBackup } from '../utils/appBackup.js'
 
@@ -65,6 +65,21 @@ test('all historical plaintext formats still bypass encryption without a passwor
     assert.equal(await decryptBackup(text), text)
     parseAppBackup(await decryptBackup(text))
   }
+})
+
+test('imports plaintext and encrypted files beyond the previous byte limits', async () => {
+  const plain = JSON.stringify({ ...JSON.parse(fixture.plain), padding: 'x'.repeat(29 * 1024 * 1024) })
+  const value = structuredClone(fixture.encrypted)
+  const key = pbkdf2Sync(fixture.password, Buffer.from(value.kdf.salt, 'base64'),
+    value.kdf.iterations, 32, 'sha256')
+  const cipher = createCipheriv('aes-256-gcm', key, Buffer.from(value.cipher.iv, 'base64'))
+  cipher.setAAD(Buffer.from('CRTicketEncryptedBackup:1'))
+  value.data = Buffer.concat([cipher.update(plain), cipher.final(), cipher.getAuthTag()]).toString('base64')
+  assert.equal(await decryptBackup(plain), plain)
+  assert.equal(await decryptBackup(JSON.stringify(value), fixture.password), plain)
+  const exported = await encryptBackup(plain, fixture.password)
+  assert.ok(exported.length > 28 * 1024 * 1024)
+  assert.equal(await decryptBackup(exported, fixture.password), plain)
 })
 
 test('password whitespace and non-ASCII characters are preserved exactly', async () => {

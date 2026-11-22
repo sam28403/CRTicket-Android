@@ -11,7 +11,6 @@ import cc.samlab.ticket.ui.railfan.VehicleSearchHistory
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal const val MAX_BACKUP_NATIVE_LENGTH = 20 * 1024 * 1024
 
 internal class BackupRailfanData(private val context: Context) {
     fun snapshot(value: JSONObject): JSONObject = value

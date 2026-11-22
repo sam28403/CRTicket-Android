@@ -118,6 +118,7 @@ import AppBrand from '@/components/AppBrand.vue'
 import HistoryRecords from '@/components/HistoryRecords.vue'
 import { useNativeHistory } from '@/composables/useNativeHistory.js'
 import { saveHistoryTicket, removeHistoryTicket } from '@/utils/historyMutations.js'
+import { compareHistoryDeparture } from '@/utils/historySorting.js'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useTransition } from '@vueuse/core'
 import QRCode from 'qrcode'
@@ -239,9 +240,7 @@ const sortedTableData = computed(() => {
   const direction = order === 'ascending' ? 1 : -1
   return [...tableData.value].sort((a, b) => {
     if (prop === 'date') {
-      const aTime = a.date ? new Date(String(a.date).replace(/年|月/g, '/').replace(/日/g, '')).getTime() : 0
-      const bTime = b.date ? new Date(String(b.date).replace(/年|月/g, '/').replace(/日/g, '')).getTime() : 0
-      return (aTime - bTime) * direction
+      return compareHistoryDeparture(a, b, direction)
     }
 
     if (prop === 'price') {

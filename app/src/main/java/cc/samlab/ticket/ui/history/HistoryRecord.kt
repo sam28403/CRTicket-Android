@@ -26,14 +26,26 @@ internal enum class HistorySort(private val textId: Int) {
     val label: String get() = appString(textId)
 }
 
+private val departureTimePattern = Regex("(\\d{1,2}):(\\d{2})")
+
+private fun departureMinutes(time: String): Int? {
+    val (hours, minutes) = departureTimePattern.matchEntire(time)?.destructured ?: return null
+    val hour = hours.toInt()
+    val minute = minutes.toInt()
+    return (hour * 60 + minute).takeIf { hour < 24 && minute < 60 }
+}
+
 internal fun sortHistory(rows: List<HistoryRecord>, sort: HistorySort): List<HistoryRecord> {
     fun dateKey(row: HistoryRecord): String {
         val parts = Regex("\\d+").findAll(row.date).map { it.value.padStart(2, '0') }
         return parts.joinToString("")
     }
+    fun byDeparture(dateOrder: Comparator<HistoryRecord>, direction: Int): Comparator<HistoryRecord> =
+        dateOrder.thenBy { departureMinutes(it.time)?.times(direction) ?: Int.MAX_VALUE }
+
     return when (sort) {
-        HistorySort.NEWEST -> rows.sortedByDescending(::dateKey)
-        HistorySort.OLDEST -> rows.sortedBy(::dateKey)
+        HistorySort.NEWEST -> rows.sortedWith(byDeparture(compareByDescending(::dateKey), -1))
+        HistorySort.OLDEST -> rows.sortedWith(byDeparture(compareBy(::dateKey), 1))
         HistorySort.PRICE_HIGH -> rows.sortedByDescending { it.price }
         HistorySort.PRICE_LOW -> rows.sortedBy { it.price }
     }

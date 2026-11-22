@@ -1,7 +1,5 @@
 // Portable envelope v1. Keep this reader when adding future formats or app versions.
 export const BACKUP_FORMAT = 'CRTicketEncryptedBackup'
-export const MAX_BACKUP_BYTES = 20 * 1024 * 1024
-export const MAX_BACKUP_FILE_BYTES = 28 * 1024 * 1024
 const ITERATIONS = 600000
 const encoder = new TextEncoder()
 const aad = encoder.encode(`${BACKUP_FORMAT}:1`)
@@ -20,6 +18,7 @@ function cryptoApi() {
 }
 
 function base64(bytes) {
+  if (typeof bytes.toBase64 === 'function') return bytes.toBase64()
   let binary = ''
   for (let i = 0; i < bytes.length; i += 8192) {
     binary += String.fromCharCode(...bytes.subarray(i, i + 8192))
@@ -28,13 +27,19 @@ function base64(bytes) {
 }
 
 function unbase64(text, length) {
-  if (typeof text !== 'string' || text.length > MAX_BACKUP_FILE_BYTES
+  if (typeof text !== 'string' || (length && text.length !== Math.ceil(length / 3) * 4)
       || text.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(text)) {
     fail('backup_crypto_invalid')
   }
   let bytes
   try {
-    bytes = Uint8Array.from(atob(text), char => char.charCodeAt(0))
+    if (typeof Uint8Array.fromBase64 === 'function') {
+      bytes = Uint8Array.fromBase64(text)
+    } else {
+      const binary = atob(text)
+      bytes = new Uint8Array(binary.length)
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    }
   } catch {
     fail('backup_crypto_invalid')
   }
@@ -69,7 +74,6 @@ export async function encryptBackup(text, password) {
     fail('backup_password_invalid')
   }
   const plain = encoder.encode(text)
-  if (plain.length > MAX_BACKUP_BYTES) fail('backup_crypto_size')
   const api = cryptoApi()
   const salt = api.getRandomValues(new Uint8Array(16))
   const iv = api.getRandomValues(new Uint8Array(12))
@@ -91,11 +95,9 @@ export async function encryptBackup(text, password) {
 }
 
 export async function decryptBackup(text, password) {
-  if (encoder.encode(text).length > MAX_BACKUP_FILE_BYTES) fail('backup_crypto_size')
   let value
   try { value = JSON.parse(text) } catch { fail('backup_crypto_invalid') }
   if (!isEncryptedBackup(value)) {
-    if (encoder.encode(text).length > MAX_BACKUP_BYTES) fail('backup_crypto_size')
     return text // Legacy arrays and schemaVersion 1/2 remain readable without a password.
   }
   if (value.version !== 1) fail('backup_crypto_version')
@@ -107,7 +109,7 @@ export async function decryptBackup(text, password) {
   const salt = unbase64(value.kdf.salt, 16)
   const iv = unbase64(value.cipher.iv, 12)
   const data = unbase64(value.data)
-  if (data.length < 16 || data.length > MAX_BACKUP_BYTES + 16) fail('backup_crypto_invalid')
+  if (data.length < 16) fail('backup_crypto_invalid')
   const key = await deriveKey(password, salt, value.kdf.iterations)
   let plain
   try {

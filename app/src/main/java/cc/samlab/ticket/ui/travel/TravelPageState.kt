@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
 
 internal sealed interface TravelContent {
     data class Index(val articles: List<TravelArticle>) : TravelContent
@@ -18,8 +19,9 @@ internal sealed interface TravelContent {
 }
 
 internal class TravelPageState(
-    private val listArticles: suspend (Context) -> List<TravelArticle> = TravelRepository::articles,
-    private val readArticle: suspend (TravelArticle) -> String = TravelRepository::markdown,
+    private val listArticles: suspend (Context, Boolean) -> List<TravelArticle> = TravelRepository::articles,
+    private val readArticle: suspend (Context, TravelArticle, Boolean) -> String = TravelRepository::markdown,
+    val articleState: TravelArticleState = TravelArticleState(),
 ) : ViewModel() {
     var result by mutableStateOf<Result<TravelContent>?>(null)
         private set
@@ -27,7 +29,8 @@ internal class TravelPageState(
         private set
     var revision by mutableIntStateOf(0)
         private set
-    val articleState = TravelArticleState()
+    var imageRefresh by mutableStateOf<TravelImageRefresh?>(null)
+        private set
 
     fun load(context: Context, articlePage: Boolean, article: TravelArticle?, initial: Boolean = false) {
         if (loading || (initial && result != null)) return
@@ -36,10 +39,11 @@ internal class TravelPageState(
             try {
                 val content = if (articlePage) {
                     requireNotNull(article)
-                    TravelContent.Body(article, readArticle(article))
+                    TravelContent.Body(article, readArticle(context, article, true))
                 } else {
-                    TravelContent.Index(listArticles(context))
+                    TravelContent.Index(listArticles(context, true))
                 }
+                if (articlePage && !initial) imageRefresh = TravelImageRefresh()
                 result = Result.success(content)
                 revision++
             } catch (error: CancellationException) {
@@ -54,7 +58,9 @@ internal class TravelPageState(
     }
 }
 
-internal class TravelArticleState {
+internal class TravelArticleState(
+    val downloadImage: (HttpUrl, Long) -> ByteArray = TravelRepository::download,
+) {
     var cards by mutableStateOf(TravelCardData())
     var cardsRevision = -1
     val imageRatios = mutableStateMapOf<String, Float>()

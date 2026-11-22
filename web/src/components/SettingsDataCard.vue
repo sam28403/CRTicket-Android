@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import { performSettingsAction } from '@/android/settingsActions.js'
 import { parseAppBackup } from '@/utils/appBackup.js'
 import { BACKUP_CONTENTS, availableBackupContents } from '@/utils/backupContents.js'
-import { decryptBackup, isEncryptedBackup, MAX_BACKUP_FILE_BYTES } from '@/utils/backupEncryption.js'
+import { decryptBackup, isEncryptedBackup } from '@/utils/backupEncryption.js'
 import BackupPasswordDialog from './BackupPasswordDialog.vue'
 
 const busy = ref(false)
@@ -20,7 +20,6 @@ const cryptoMessages = {
   backup_crypto_failed: '密码错误或备份文件已损坏',
   backup_crypto_invalid: '加密备份格式无效',
   backup_crypto_version: '此备份格式需要更新的软件版本',
-  backup_crypto_size: '备份数据超过大小限制',
   backup_crypto_unavailable: '当前环境不支持安全加密，请使用 HTTPS 或本机应用',
   backup_password_invalid: '备份密码须为 8 至 1024 个字符',
 }
@@ -62,7 +61,6 @@ async function importFile(event) {
   event.target.value = ''
   if (!file) return
   try {
-    if (file.size > MAX_BACKUP_FILE_BYTES) throw new Error('备份文件不能超过 28MB')
     const text = await file.text()
     if (isEncryptedBackup(JSON.parse(text))) {
       encryptedText.value = text

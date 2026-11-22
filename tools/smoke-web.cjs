@@ -45,7 +45,7 @@ const server = createServer(async (req, res) => {
     await page.getByPlaceholder('例如：E351822734').fill('E351822734')
     await page.getByPlaceholder('输入站名或拼音').nth(0).fill('北京南')
     await page.getByPlaceholder('输入站名或拼音').nth(1).fill('上海虹桥')
-    await page.getByPlaceholder('例如：G25 或 1461').fill('G1')
+    await page.getByPlaceholder('例如：G25 或 V6061').fill('G1')
     await page.getByPlaceholder('请选择乘车日期').fill('2026年10月10日')
     await page.getByPlaceholder('请选择乘车日期').press('Enter')
     await page.getByPlaceholder('选择开车时间').fill('09:00')

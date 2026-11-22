@@ -5,7 +5,7 @@ import android.net.Uri
 import android.webkit.JavascriptInterface
 import cc.samlab.ticket.arrival.StationArrivalBridge
 import cc.samlab.ticket.backup.BackupPreferences
-import cc.samlab.ticket.backup.MAX_BACKUP_NATIVE_LENGTH
+import cc.samlab.ticket.backup.backupTextChunk
 import cc.samlab.ticket.files.DocumentFiles
 import cc.samlab.ticket.monitor.TicketMonitorBridge
 import cc.samlab.ticket.network.PhoneHttp
@@ -29,6 +29,7 @@ class AndroidBridge(
     private val ticketMonitor: TicketMonitorBridge,
     private val showNativePage: (String, Boolean) -> Unit,
     private val receiveSettings: (JSONObject) -> Unit,
+    private val readBackupInput: (String, Int) -> String,
     private val receiveTrainList: (String) -> Unit,
     private val receiveHistory: (String) -> Unit,
     private val receiveHistoryOperation: (String) -> Unit,
@@ -62,9 +63,18 @@ class AndroidBridge(
     @JavascriptInterface
     fun backupSettings(): String = backupPreferences.snapshot().toString()
 
+    private var backupSnapshot: String? = null
+
+    @JavascriptInterface
+    fun backupSettingsChunk(offset: Int): String {
+        val text = if (offset == 0) backupSettings().also { backupSnapshot = it } else backupSnapshot ?: return ""
+        val chunk = backupTextChunk(text, offset)
+        if (chunk.length == text.length - offset) backupSnapshot = null
+        return chunk
+    }
+
     @JavascriptInterface
     fun validateBackupSettings(payload: String): String = runCatching {
-        require(payload.length <= MAX_BACKUP_NATIVE_LENGTH)
         backupPreferences.validate(JSONObject(payload))
         ""
     }.getOrElse { it.message ?: "Invalid backup settings" }
@@ -72,7 +82,6 @@ class AndroidBridge(
     @JavascriptInterface
     fun restoreBackupSettings(id: String, payload: String) = onUi {
         val result = runCatching {
-            require(payload.length <= MAX_BACKUP_NATIVE_LENGTH)
             backupPreferences.restore(JSONObject(payload))
             JSONObject().put("success", true)
         }.getOrElse {
@@ -156,16 +165,20 @@ class AndroidBridge(
     fun settingsStrings(): String = settingsTextResources(activity)
 
     @JavascriptInterface
-    fun unlockedBackup(id: String, text: String) {
-        // Transfer raw JSON separately: settingsResult has a 500 KB message limit.
-        // Serializing a decrypted backup inside that envelope also doubles escaping.
-        val result = JSONObject().put("id", id)
-        if (text.length <= MAX_BACKUP_NATIVE_LENGTH) {
-            result.put("success", true).put("backupText", text)
-        } else {
-            result.put("success", false)
-                .put("message", activity.getString(cc.samlab.ticket.R.string.settings_file_too_large))
+    fun backupInputChunk(id: String, offset: Int): String = readBackupInput(id, offset)
+
+    private var unlockedBackupBuffer: Pair<String, StringBuilder>? = null
+
+    @JavascriptInterface
+    fun unlockedBackup(id: String, chunk: String, last: Boolean) {
+        val buffer = unlockedBackupBuffer?.takeIf { it.first == id }?.second ?: StringBuilder()
+        buffer.append(chunk)
+        if (!last) {
+            unlockedBackupBuffer = id to buffer
+            return
         }
+        unlockedBackupBuffer = null
+        val result = JSONObject().put("id", id).put("success", true).put("backupText", buffer.toString())
         onUi { receiveSettings(result) }
     }
 
@@ -289,4 +302,14 @@ class AndroidBridge(
     @JavascriptInterface
     fun save(id: String, filename: String, mime: String, data: String) =
         onUi { files.save(id, filename, mime, data) }
+
+    @JavascriptInterface
+    fun appendBackupExport(id: String, data: String): Boolean = files.appendBackupExport(id, data)
+
+    @JavascriptInterface
+    fun abortBackupExport(id: String) = files.abortBackupExport(id)
+
+    @JavascriptInterface
+    fun finishBackupExport(transferId: String, requestId: String, filename: String) =
+        onUi { files.finishBackupExport(transferId, requestId, filename) }
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import cc.samlab.ticket.R
+import cc.samlab.ticket.backup.backupTextChunk
 import java.util.concurrent.ExecutorService
 import org.json.JSONArray
 import org.json.JSONObject
@@ -91,6 +92,7 @@ class NativeSettingsController(
     }
     private var pickingFile = false
     private var welcomeBackup: android.net.Uri? = null
+    @Volatile private var backupInput: Pair<String, String>? = null
 
     private val avatarPicker = activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         pickingFile = false
@@ -117,7 +119,10 @@ class NativeSettingsController(
 
     private fun importBackup(uri: android.net.Uri) {
         readFile {
-            val text = readSettingsFile(activity, uri, 28 * 1024 * 1024).toString(Charsets.UTF_8)
+            val text = activity.contentResolver.openInputStream(uri).use { input ->
+                requireNotNull(input) { activity.getString(R.string.settings_file_unreadable) }
+                    .bufferedReader(Charsets.UTF_8).readText()
+            }
             val value = org.json.JSONTokener(text).nextValue()
             if ((value as? JSONObject)?.optString("format") == "CRTicketEncryptedBackup") {
                 activity.runOnUiThread {
@@ -126,15 +131,11 @@ class NativeSettingsController(
                         backupSecurity.encryptedText = text
                     }
                 }
-            } else previewBackup(text)
+            } else previewBackup(text, value)
         }
     }
 
-    private fun previewBackup(text: String) {
-        require(text.toByteArray(Charsets.UTF_8).size <= 20 * 1024 * 1024) {
-            activity.getString(R.string.settings_file_too_large)
-        }
-        val value = org.json.JSONTokener(text).nextValue()
+    private fun previewBackup(text: String, value: Any = org.json.JSONTokener(text).nextValue()) {
         val records = if (value is JSONArray) value else (value as? JSONObject)?.optJSONArray("tickets")
         requireNotNull(records) { activity.getString(R.string.settings_backup_no_tickets) }
         require(records.length() <= 10000) { activity.getString(R.string.settings_backup_limit) }
@@ -144,14 +145,16 @@ class NativeSettingsController(
         }
         val available = availableBackupContents(value)
         require(available.isNotEmpty()) { activity.getString(R.string.settings_backup_no_tickets) }
+        val count = records.length()
+        val includesSettings = (value as? JSONObject)?.optInt("schemaVersion") == 2
         activity.runOnUiThread {
             if (activity.isDestroyed) return@runOnUiThread
             backupSecurity.clear()
             backupAvailable = available
             backupSelected = available
             importText = text
-            importCount = records.length()
-            importIncludesSettings = (value as? JSONObject)?.optInt("schemaVersion") == 2
+            importCount = count
+            importIncludesSettings = includesSettings
         }
     }
 
@@ -170,6 +173,10 @@ class NativeSettingsController(
         pendingAction = action
         if (action != "snapshot") message = activity.getString(R.string.status_processing)
         val id = (++requestId).toString()
+        if (action == "import" || action == "unlockBackup") {
+            val text = payload.remove("text") as? String
+            backupInput = text?.let { id to it }
+        }
         if (action == "unlockBackup") webView.postDelayed(unlockTimeout, 60_000)
         val quotedId = JSONObject.quote(id)
         val unavailable = JSONObject.quote(activity.getString(R.string.settings_not_ready))
@@ -182,6 +189,11 @@ class NativeSettingsController(
         )
     }
 
+    internal fun readBackupInput(id: String, offset: Int): String {
+        val (request, text) = backupInput ?: return ""
+        return if (request == id) backupTextChunk(text, offset) else ""
+    }
+
     fun receive(result: JSONObject) {
         if (extras.receive(result)) return
         if (result.optString("id").startsWith("storage:")) {
@@ -189,6 +201,7 @@ class NativeSettingsController(
             return
         }
         if (result.optString("id") != requestId.toString()) return
+        backupInput = null
         webView.removeCallbacks(unlockTimeout)
         result.optJSONObject("state")?.let { value ->
             val arrival = readArrival()
@@ -330,6 +343,7 @@ class NativeSettingsController(
     }
 
     private fun fail(text: String) {
+        backupInput = null
         webView.removeCallbacks(unlockTimeout)
         if (activity.isDestroyed) return
         busy = false
@@ -340,6 +354,7 @@ class NativeSettingsController(
     }
 
     fun close() {
+        backupInput = null
         extras.close()
         storage.close()
         webView.removeCallbacks(unlockTimeout)

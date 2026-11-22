@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity() {
                 ticketMonitor,
                 ::receiveWebPage,
                 { result -> settings.receive(result) },
+                { id, offset -> settings.readBackupInput(id, offset) },
                 trainList::receive,
                 history::receive,
                 history::receiveOperation,
@@ -457,7 +458,7 @@ class MainActivity : AppCompatActivity() {
         notifications.cancelPermissionRequest()
         dialogs.close()
         refresh.close()
-        files.closeChooser()
+        files.close()
         phoneHttp.close()
         worker.shutdownNow()
         webView.removeJavascriptInterface("CRTicketAndroid")

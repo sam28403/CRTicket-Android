@@ -112,6 +112,7 @@ internal fun TravelScreen(
                                 is TravelContent.Body -> TravelArticleBody(
                                     content.article, content.markdown, if (largeScreen) 600.dp else 400.dp,
                                     cardLookup, page.revision, onNavigate, page.articleState,
+                                    imageRefresh = page.imageRefresh,
                                 )
                                 is TravelContent.Index -> if (content.articles.isEmpty()) {
                                     TravelEmptyState(R.string.search_no_results, page.loading, refresh)

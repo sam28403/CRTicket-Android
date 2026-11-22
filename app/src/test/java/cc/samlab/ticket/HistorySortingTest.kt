@@ -20,6 +20,25 @@ class HistorySortingTest : StringResourceTest() {
         assertEquals(listOf("a", "b", "c"), rows.map { it.id })
     }
 
+    @Test fun sameDayUsesDepartureTimeAndKeepsUnknownTimesLast() {
+        val rows = listOf(
+            record("missing", "2026-02-08", 20.0).copy(time = ""),
+            record("late", "2026年2月8日", 20.0).copy(time = "10:05"),
+            record("previous", "2026-02-07", 20.0).copy(time = "23:59"),
+            record("early", "2026/02/08", 20.0).copy(time = "9:15"),
+            record("tie", "2026-02-08", 20.0).copy(time = "09:15"),
+            record("invalid", "2026-02-08", 20.0).copy(time = "24:00"),
+        )
+        assertEquals(
+            listOf("late", "early", "tie", "missing", "invalid", "previous"),
+            sortHistory(rows, HistorySort.NEWEST).map { it.id },
+        )
+        assertEquals(
+            listOf("previous", "early", "tie", "late", "missing", "invalid"),
+            sortHistory(rows, HistorySort.OLDEST).map { it.id },
+        )
+    }
+
     @Test fun pricesAreNumericAndEqualPricesKeepTheirSourceOrder() {
         val rows = listOf(
             record("a", "", 100.0), record("b", "", 9.5), record("c", "", 100.0),

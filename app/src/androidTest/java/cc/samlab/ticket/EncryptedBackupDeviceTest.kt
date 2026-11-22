@@ -36,8 +36,9 @@ class EncryptedBackupDeviceTest {
                 .put("time", 1700000000000L + index).put("historical", false))
         }
         plain.getJSONObject("settings").put("native", JSONObject().put("stationVisits", visits))
-        assertTrue(plain.toString().length > 500_000)
+        plain.put("padding", "x".repeat(22 * 1024 * 1024))
         val encrypted = encryptTestBackup(plain.toString(), vector.getString("password"))
+        assertTrue(encrypted.length > 28 * 1024 * 1024)
         restoreBackup(encrypted, setOf("到访车站记录"))
     }
 

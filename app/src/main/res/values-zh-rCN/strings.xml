@@ -330,7 +330,7 @@
     <string name="history_save">保存记录</string>
     <string name="ticket_section_journey">行程信息</string>
     <string name="ticket_train">车次</string>
-    <string name="ticket_train_hint">例如：G25 或 1461</string>
+    <string name="ticket_train_hint">例如：G25 或 V6061</string>
     <string name="ticket_from">出发站</string>
     <string name="ticket_to">到达站</string>
     <string name="ticket_distance">里程（公里）</string>
@@ -612,7 +612,7 @@
     <string name="help_query_rules">在线结果依赖上游接口，离线列表与车站大屏依赖对应日期的时刻表。缓存和上游更新时间可能导致差异。已取得的正晚点预测按北京时间保留至当天结束，刷新失败或部分字段缺失时继续使用有效缓存；在线车次结果可通过右上角按钮刷新正晚点。临时停运、晚点、余票和起售调整以铁路官方信息为准。\n\n车次在沿途换号时，离线车站大屏按本站所在区段显示车次号，打开详情仍保留完整车次记录。\n\n中老铁路同号车次可切换线路。适用车次可选择按停靠站显示当地时间，或统一显示北京时间、万象时间。老挝境内班次默认使用万象时间。开行日历显示计划开行日期，车次时刻 PDF 使用所选时区。老挝段车站大屏使用万象时间。\n\n首页的新旧车次对比支持用旧车次或新车次精确查找，可拖动列表右侧的滑动条快速定位。\n\n在车迷工具中打开「历史车次查询」，输入最多五个字符的车次，只接受数字和最多一个英文字母，再从 RailLog 日期列表中选择查询日期。日期列表获取失败时可沿用上次缓存，查询时刻表需要联网。点击右上角刷新按钮或下拉，可重查上次提交的车次和日期。地图使用现有车站坐标，可能与历史站址不同。</string>
     <string name="help_backup_title">备份、恢复与本机数据</string>
     <string name="help_backup_question">如何备份、恢复或清理存储？</string>
-    <string name="help_backup_answer">更换设备、卸载或清除数据前，先在设置导出 JSON 备份。先选择内容，再设置至少 8 个字符的密码；默认启用加密。请同时保管文件和密码，忘记密码无法恢复。导入时先校验密码及完整性，再选择恢复内容，也兼容旧版明文备份。至少选择一项内容；明文数据上限 20 MiB，保存或导入的文件上限 28 MiB。\n\n在设置进入“清理存储”，查看占用并选择单项清理或清理全部缓存，确认后执行。支持网页与地图缓存、车辆照片及拍摄信息、路路通离线数据库、铁路线路缓存、分享图片和导出临时文件。</string>
+    <string name="help_backup_answer">更换设备、卸载或清除数据前，先在设置导出 JSON 备份。先选择内容，再设置至少 8 个字符的密码；默认启用加密。请同时保管文件和密码，忘记密码无法恢复。导入时先校验密码及完整性，再选择恢复内容，也兼容旧版明文备份。至少选择一项内容。\n\n在设置进入“清理存储”，查看占用并选择单项清理或清理全部缓存，确认后执行。支持网页与地图缓存、车辆照片及拍摄信息、路路通离线数据库、铁路线路缓存、分享图片和导出临时文件。</string>
     <string name="help_backup_rules">可备份车票、搜索记录、设置、个人资料、到访记录、测速轨迹、制票草稿和余票监控配置。未选择类别不覆盖本机数据。车票去重合并；到访按车站合并并保留更早时间；轨迹按 ID 合并且不覆盖同 ID 本机记录。旧车票备份只恢复车票。系统权限、通知渠道、离线缓存和运行任务不迁移；恢复的余票监控须手动启动。活动测速满一分钟可备份快照，恢复为历史，不恢复定位。\n\n清理存储会保留车票、提醒、偏好设置、个人资料、到访记录、测速轨迹和答题记录。清理路路通数据库会同时重置内存缓存。普通安装包下次查询需联网重新下载，离线安装包可使用内置版本。清理全部缓存也包含已下载的数据库。用户导出的备份会保留。清理存储不同于系统的清除全部应用数据。\n\n到站检测与起售闹钟模式仅在本机已具备所需权限时恢复；之后补齐权限不会自动开启。加密备份可凭文件和密码在其他设备恢复；图片、PDF、Excel 导出不受备份加密保护。</string>
     <string name="help_arrival_title">到站检测与到访记录</string>
     <string name="help_arrival_question">为什么没有收到到访通知？</string>
@@ -726,7 +726,6 @@
     <string name="backup_crypto_failed">密码错误或备份文件已损坏</string>
     <string name="backup_crypto_invalid">加密备份格式无效</string>
     <string name="backup_crypto_version">此备份格式需要更新的软件版本</string>
-    <string name="backup_crypto_size">备份数据超过大小限制</string>
     <string name="backup_crypto_unavailable">当前环境不支持安全加密</string>
     <string name="railfan_lines">线路查询</string>
     <string name="line_query_description">查询铁路沿线车站与里程</string>

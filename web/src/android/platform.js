@@ -44,19 +44,47 @@ export async function saveFile(blob, filename, messages = {}) {
     setTimeout(() => URL.revokeObjectURL(url), 60000)
     return true
   }
+  const result = messages.backup
+    ? await saveNativeBackup(blob, filename, messages)
+    : await saveNativeFile(blob, filename, messages)
+  if (result.cancelled) return false
+  if (result.success) return true
+  throw new Error(result.message || messages.saveFailed || '文件保存失败')
+}
+
+async function saveNativeFile(blob, filename, messages) {
   if (blob.size > 28 * 1024 * 1024) throw new Error(messages.sizeLimit || '导出文件不能超过28MB')
-  const data = await new Promise((resolve, reject) => {
+  const data = await readFileBase64(blob, messages)
+  return saves.call(id => {
+    native.save(id, filename, blob.type || 'application/octet-stream', data)
+  })
+}
+
+async function saveNativeBackup(blob, filename, messages) {
+  const chunkSize = 192 * 1024
+  let saveId
+  try {
+    // Stage one chunk at a time before asking Android to open the destination picker.
+    saveId = crypto.randomUUID()
+    for (let offset = 0; offset < blob.size; offset += chunkSize) {
+      const data = await readFileBase64(blob.slice(offset, offset + chunkSize), messages)
+      if (!native.appendBackupExport(saveId, data)) {
+        throw new Error(messages.saveFailed || '文件保存失败')
+      }
+    }
+    return await saves.call(id => native.finishBackupExport(saveId, id, filename))
+  } finally {
+    if (saveId) native.abortBackupExport(saveId)
+  }
+}
+
+function readFileBase64(blob, messages) {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result.split(',')[1])
     reader.onerror = () => reject(new Error(messages.readFailed || '无法读取导出文件'))
     reader.readAsDataURL(blob)
   })
-  const result = await saves.call(id => {
-    native.save(id, filename, blob.type || 'application/octet-stream', data)
-  })
-  if (result.cancelled) return false
-  if (result.success) return true
-  throw new Error(result.message || messages.saveFailed || '文件保存失败')
 }
 
 export function initializePlatform(router) {

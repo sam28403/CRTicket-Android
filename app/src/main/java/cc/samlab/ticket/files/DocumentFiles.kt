@@ -29,6 +29,7 @@ class DocumentFiles(
     private var pendingSave: File? = null
     private var pendingSaveId: String? = null
     private var saving = false
+    private val backupExport = BackupExportFile(activity.cacheDir)
 
     fun choose(callback: ValueCallback<Array<Uri>>, params: FileChooserParams): Boolean {
         closeChooser()
@@ -64,20 +65,7 @@ class DocumentFiles(
                 val file = File(activity.cacheDir, "export-${UUID.randomUUID()}.tmp")
                     .apply { writeBytes(bytes) }
                 activity.runOnUiThread {
-                    pendingSave = file
-                    pendingSaveId = id
-                    try {
-                        val safeName = filename.substringAfterLast('/').substringAfterLast('\\')
-                            .replace(Regex("[\\p{Cntrl}]"), "").take(180)
-                            .ifEmpty { "${activity.getString(R.string.home_title)}-export" }
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                            .addCategory(Intent.CATEGORY_OPENABLE)
-                            .setType(mime.substringBefore(';').ifEmpty { "application/octet-stream" })
-                            .putExtra(Intent.EXTRA_TITLE, safeName)
-                        activity.startActivityForResult(intent, SAVE_REQUEST)
-                    } catch (error: Exception) {
-                        finishSave(false, error.message ?: activity.getString(R.string.files_saver_failed))
-                    }
+                    chooseDestination(id, filename, mime, file)
                 }
             } catch (error: Exception) {
                 activity.runOnUiThread {
@@ -85,6 +73,45 @@ class DocumentFiles(
                     reply(id, false, error.message)
                 }
             }
+        }
+    }
+
+    fun appendBackupExport(id: String, data: String): Boolean = backupExport.append(id, data)
+
+    fun abortBackupExport(id: String) = backupExport.abort(id)
+
+    fun finishBackupExport(transferId: String, requestId: String, filename: String) {
+        if (saving) {
+            backupExport.abort(transferId)
+            reply(requestId, false, activity.getString(R.string.files_save_pending))
+            return
+        }
+        val file = backupExport.finish(transferId) ?: run {
+            reply(requestId, false, activity.getString(R.string.files_save_failed))
+            return
+        }
+        saving = true
+        chooseDestination(requestId, filename, "application/json", file)
+    }
+
+    private fun chooseDestination(id: String, filename: String, mime: String, file: File) {
+        if (activity.isDestroyed) {
+            file.delete()
+            return
+        }
+        pendingSave = file
+        pendingSaveId = id
+        try {
+            val safeName = filename.substringAfterLast('/').substringAfterLast('\\')
+                .replace(Regex("[\\p{Cntrl}]"), "").take(180)
+                .ifEmpty { "${activity.getString(R.string.home_title)}-export" }
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType(mime.substringBefore(';').ifEmpty { "application/octet-stream" })
+                .putExtra(Intent.EXTRA_TITLE, safeName)
+            activity.startActivityForResult(intent, SAVE_REQUEST)
+        } catch (error: Exception) {
+            finishSave(false, error.message ?: activity.getString(R.string.files_saver_failed))
         }
     }
 
@@ -158,5 +185,10 @@ class DocumentFiles(
     fun closeChooser() {
         chooser?.onReceiveValue(null)
         chooser = null
+    }
+
+    fun close() {
+        closeChooser()
+        backupExport.close()
     }
 }
