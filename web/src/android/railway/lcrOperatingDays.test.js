@@ -9,16 +9,22 @@ test('老挝班次日历使用原规则的开行区间和星期', () => {
   assert.equal(daily.has('20270116'), false)
 
   const c95 = new Map(lcrOperatingDays({ train: 'C95', timeZone: 'vientiane' }))
-  assert.equal(c95.get('20261112'), '0')
+  assert.equal(c95.get('20261112'), '1')
   assert.equal(c95.get('20261113'), '1')
   const c96 = new Map(lcrOperatingDays({ train: 'C96', dataset: 'lcr' }))
   assert.equal(c96.get('20261112'), '1')
-  assert.equal(c96.get('20261117'), '0')
+  assert.equal(c96.get('20261117'), '1')
 
   const k11 = new Map(lcrOperatingDays({ train: 'K11', dataset: 'lcr', stops: [] }))
   assert.equal(k11.get('20261121'), '1')
-  assert.equal(k11.get('20261122'), '0')
+  assert.equal(k11.get('20261122'), '1')
   assert.equal(k11.has('20261125'), false)
+
+  const v159 = new Map(lcrOperatingDays({ train: 'V159', dataset: 'lcr' }))
+  assert.equal(v159.has('20261124'), false)
+  assert.equal(v159.get('20261125'), '1')
+  assert.equal(v159.get('20270115'), '1')
+  assert.equal(v159.has('20270116'), false)
 })
 
 test('同号国内线路与 D 字头不使用老挝段离线规则', () => {

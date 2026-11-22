@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 class LcrStationCardDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
 
-    @Test fun vientianeCardAndBoardShowElevenTrains() {
+    @Test fun vientianeCardAndBoardShowTwelveTrains() {
         val fixture = TabletPageFixture(compose)
         val preferences = fixture.activity.getSharedPreferences("developer-options", 0)
         val autoUpdate = preferences.getBoolean("lltAutoUpdate", true)
@@ -46,16 +46,16 @@ class LcrStationCardDeviceTest {
             val card = hasTestTag("station-random-card:万象")
             compose.waitUntil(30_000) { compose.onAllNodes(card).fetchSemanticsNodes().isNotEmpty() }
             assertEquals("true", fixture.evaluate("window.vientianeFixtureLoaded"))
-            val total = fixture.activity.getString(R.string.train_list_total, 11)
+            val total = fixture.activity.getString(R.string.train_list_total, 12)
             compose.onNode(card).assertTextContains(total)
-            fixture.capture("vientiane-station-card-11")
+            fixture.capture("vientiane-station-card-12")
             compose.onNode(card).performClick()
             val boardTotal = hasText(total) and hasAnyAncestor(hasTestTag("station-controls"))
             compose.waitUntil(30_000) {
                 compose.onAllNodes(boardTotal, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
             }
             compose.onNode(boardTotal, useUnmergedTree = true).assertIsDisplayed()
-            fixture.capture("vientiane-station-board-11")
+            fixture.capture("vientiane-station-board-12")
         } finally {
             fixture.evaluate("indexedDB.deleteDatabase('lcr-station-card-test'); null")
             preferences.edit().putBoolean("lltAutoUpdate", autoUpdate).apply()
