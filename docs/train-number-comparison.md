@@ -6,7 +6,8 @@
 
 使用用户提供的 `trainPrefix.cc6215b.js`，仅提取数据数组，不执行文件代码，也不纳入其示例和页面说明。
 源文件 SHA-256：`f2664b6ea160d0dc786cd99e38b48b0ee54f6f3edbde2fc421780b1048bea3e3`。
-本地资源 `app/src/main/assets/train-number-comparison.json` 共 1640 条记录，每行依次为原车号、起点、终点、新车号。
+本地资源 `app/src/main/assets/train-number-comparison.json` 共 1642 条记录，每行依次为原车号、起点、终点、新车号。
+根据[中老铁路离线时刻表](lcr-timetable.md)补充磨丁至万象的 K11 → V159，以及万象至磨丁的 K12 → V160。
 记录、新车号、原车号各自无重复。本功能展示给定数据的对应关系，不推断实施日期或实时运行状态。
 
 ## 交互与性能

@@ -5,17 +5,27 @@ import { listLltStation } from './stationLlt.js'
 import { createStationQuery } from './station.js'
 import { stationTrainLocation } from '../../utils/stationNavigation.js'
 
-test('离线车次按星期与闭区间筛选并保留同号线路', () => {
+test('离线车次按有效期筛选并保留同号线路', () => {
   assert.equal(lcrTrainDetail('C85', '2027-01-15').dataset, 'lcr')
   assert.equal(lcrTrainDetail('C85', '2027-01-16').stops.length, 0)
-  assert.equal(lcrTrainDetail('C95', '2026-11-11').stops.length, 0)
-  assert.ok(lcrTrainDetail('C95', '2026-11-13').stops.length)
-  assert.equal(lcrTrainDetail('K11', '2026-11-25').stops.length, 0)
+  assert.ok(lcrTrainDetail('C95', '2026-11-11').stops.length)
+  assert.ok(lcrTrainDetail('C96', '2026-11-17').stops.length)
   assert.equal(lcrTrainDetail('D88', '2026-11-11').stops.length, 0)
   const domestic = { trains: [{ train: 'C85', from: '昆明', to: '香格里拉' }] }
   const rows = listLcrTrains('2026-11-11', domestic).trains.filter(row => row.train === 'C85')
   assert.equal(rows.length, 2)
   assert.equal(rows[1].dataset, 'lcr')
+})
+
+test('11 月 25 日起更换车次号并沿用原停站与时刻', () => {
+  for (const [previous, next] of [['K11', 'V159'], ['K12', 'V160']]) {
+    const oldStops = lcrTrainDetail(previous, '2026-11-24').stops
+    const newStops = lcrTrainDetail(next, '2026-11-25').stops
+    assert.ok(oldStops.length)
+    assert.deepEqual(newStops, oldStops.map(stop => ({ ...stop, train: next })))
+    assert.equal(lcrTrainDetail(previous, '2026-11-25').stops.length, 0)
+    assert.equal(lcrTrainDetail(next, '2026-11-24').stops.length, 0)
+  }
 })
 
 test('万象大屏在北京时间零点后仍查询当地当天，详情默认查询同一线路的在线时刻', async () => {
