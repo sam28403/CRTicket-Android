@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import cc.samlab.ticket.ui.components.rememberMarkdownRenderer
 import cc.samlab.ticket.ui.station.StationDiscoveryCard
 import cc.samlab.ticket.ui.trainlist.TrainListItem
 import cc.samlab.ticket.ui.trainlist.parseTrainListRow
+import okhttp3.HttpUrl
 import org.json.JSONObject
 
 internal val travelPagePadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 28.dp)
@@ -50,6 +52,7 @@ internal fun TravelArticleBody(
     refresh: Int,
     onNavigate: (String) -> Unit,
     articleState: TravelArticleState = remember { TravelArticleState() },
+    imageRefresh: TravelImageRefresh? = null,
 ) {
     val context = LocalContext.current
     val renderer = rememberMarkdownRenderer()
@@ -58,6 +61,14 @@ internal fun TravelArticleBody(
         if (articleState.cardsRevision != refresh) {
             articleState.cards = cardLookup.load(context, blocks)
             articleState.cardsRevision = refresh
+        }
+    }
+    LaunchedEffect(blocks, article, imageRefresh) {
+        if (imageRefresh != null) {
+            blocks.filterIsInstance<TravelBlock.Picture>()
+                .mapNotNull { travelImageUrl(article, it.destination) }.distinct().forEach { url ->
+                    loadTravelImage(context, url, imageRefresh, articleState.downloadImage, onlyCached = true)
+                }
         }
     }
     val cards = articleState.cards
@@ -78,7 +89,10 @@ internal fun TravelArticleBody(
                         status = if (row == null) stringResource(R.string.display_unavailable) else null,
                     ) { onNavigate("/station?station=${Uri.encode(block.name)}") }
                 }
-                is TravelBlock.Picture -> TravelPicture(article, block, refresh, articleState)
+                is TravelBlock.Picture -> {
+                    val url = remember(article, block.destination) { travelImageUrl(article, block.destination) }
+                    key(url) { TravelPicture(url, block, imageRefresh, articleState) }
+                }
             }
         }
     }
@@ -106,17 +120,15 @@ private fun TravelTrainCard(block: TravelBlock.Train, cards: TravelCardData, onN
 
 @Composable
 private fun TravelPicture(
-    article: TravelArticle,
+    url: HttpUrl?,
     block: TravelBlock.Picture,
-    refresh: Int,
+    imageRefresh: TravelImageRefresh?,
     articleState: TravelArticleState,
 ) {
-    val url = remember(article, block.destination) {
-        TravelRepository.articleUrl(article).resolve(block.destination)?.takeIf { it.isHttps }
-    }
+    val context = LocalContext.current
     val initial = remember(url) { cachedTravelImage(url)?.let { Result.success(it) } }
-    val photo by produceState<Result<ImageBitmap>?>(initial, url, refresh) {
-        val result = loadTravelImage(url)
+    val photo by produceState<Result<ImageBitmap>?>(initial, url, imageRefresh) {
+        val result = loadTravelImage(context, url, imageRefresh, articleState.downloadImage)
         result.getOrNull()?.let { image ->
             articleState.imageRatios[block.destination] = image.width.toFloat() / image.height
         }
@@ -139,7 +151,7 @@ private fun TravelPicture(
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
             Box(Modifier.padding(16.dp), contentAlignment = Alignment.Center) {
-                if (photo == null) CircularProgressIndicator()
+                if (photo == null && ratio == null) CircularProgressIndicator()
                 else if (block.description.isNotBlank()) Text(block.description)
             }
         }

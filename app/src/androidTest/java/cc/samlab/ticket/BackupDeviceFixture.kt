@@ -72,16 +72,33 @@ internal class BackupDeviceFixture(
               }
             }); true
         """.trimIndent())
+        try {
+            requestExport(excluded, password)
+            return JSONObject(stringValue(evaluate("window.__backupExport")))
+        } finally {
+            evaluate("window.Blob = window.__originalBlob; true")
+        }
+    }
+
+    fun exportTo(destination: File, excluded: Set<String>, password: String? = null) {
+        evaluate("window.__backupTestResult = null; true")
+        val result = requestExport(excluded, password, destination)
+        assertTrue(result.toString(), result.getBoolean("success"))
+    }
+
+    private fun requestExport(excluded: Set<String>, password: String?, destination: File? = null): JSONObject {
         val monitor = instrumentation.addMonitor(
             IntentFilter(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 addDataType("application/json")
             },
-            ActivityResult(Activity.RESULT_CANCELED, null), true,
+            if (destination == null) ActivityResult(Activity.RESULT_CANCELED, null)
+            else ActivityResult(Activity.RESULT_OK, Intent().setData(Uri.fromFile(destination))),
+            true,
         )
         try {
             compose.onNodeWithText("导出备份").performScrollTo().performClick()
-            capture("export-selection.png")
+            if (destination == null) capture("export-selection.png")
             excluded.forEach { label ->
                 compose.onNode(hasText(label) and isToggleable()).assertIsOn().performScrollTo().performClick()
             }
@@ -94,11 +111,9 @@ internal class BackupDeviceFixture(
                 compose.onNodeWithTag("backup-password-confirm").performTextInput(password)
             }
             compose.onNodeWithTag("backup-password-submit").performClick()
-            result()
-            return JSONObject(stringValue(evaluate("window.__backupExport")))
+            return result(if (destination == null) 20_000 else 90_000)
         } finally {
             instrumentation.removeMonitor(monitor)
-            evaluate("window.Blob = window.__originalBlob; true")
         }
     }
 
@@ -145,8 +160,8 @@ internal class BackupDeviceFixture(
         }
     }
 
-    private fun result(): JSONObject {
-        compose.waitUntil(20_000) { evaluate("Boolean(window.__backupTestResult)") == "true" }
+    private fun result(timeoutMillis: Long = 20_000): JSONObject {
+        compose.waitUntil(timeoutMillis) { evaluate("Boolean(window.__backupTestResult)") == "true" }
         return JSONObject(evaluate("window.__backupTestResult"))
     }
 

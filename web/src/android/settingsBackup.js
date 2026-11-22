@@ -9,16 +9,20 @@ import { selectBackupContents } from '../utils/backupContents.js'
 
 import { checkBackupCompatibility, currentBackupAppVersion as appVersion } from '../utils/backupCompatibility.js'
 import { settingsText } from './settingsStrings.js'
+import { readBackupChunks } from './backupChunks.js'
 
 const calls = createNativeCalls('crticketBackupResult')
 
 export function exportSettingsBackup(records, user, contents) {
+  const snapshot = native?.backupSettingsChunk
+    ? readBackupChunks(offset => native.backupSettingsChunk(offset))
+    : native?.backupSettings?.()
   return buildAppBackup(records, user, {
     theme: useTheme().preference.value,
     storage: localStorage,
     contents,
     appVersion: appVersion(),
-    native: native?.backupSettings ? JSON.parse(native.backupSettings()) : undefined,
+    native: snapshot ? JSON.parse(snapshot) : undefined,
   })
 }
 

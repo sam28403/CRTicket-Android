@@ -4,6 +4,7 @@ import android.content.Context
 import cc.samlab.ticket.BuildConfig
 import cc.samlab.ticket.R
 import cc.samlab.ticket.ui.railfan.VehiclePhotoCache
+import cc.samlab.ticket.ui.travel.TravelCache
 import cc.samlab.ticket.diagnostics.ErrorReports
 import java.io.File
 
@@ -34,6 +35,7 @@ internal class StorageRepository(private val context: Context) {
             File(context.cacheDir, "WebView/Default/HTTP Cache"),
             File(context.cacheDir, "WebView/Default/Cache"),
             File(context.dataDir, "app_webview/Default/HTTP Cache"),
+            TravelCache.directory(context),
         )
         StorageKind.VEHICLE_PHOTOS -> listOf(VehiclePhotoCache.directory(context))
         StorageKind.LINES -> listOf(File(context.cacheDir, "railway-lines"))
@@ -72,7 +74,11 @@ internal class StorageRepository(private val context: Context) {
         StorageTestArtifacts.externalTargets(context, BuildConfig.CI_BUILD)
 
     fun clear(kind: StorageKind) {
-        require(kind != StorageKind.WEB && kind != StorageKind.TIMETABLE)
+        require(kind != StorageKind.TIMETABLE)
+        if (kind == StorageKind.WEB) {
+            TravelCache.clear(context)
+            return
+        }
         if (kind == StorageKind.VEHICLE_PHOTOS) {
             VehiclePhotoCache.clear(context)
             return

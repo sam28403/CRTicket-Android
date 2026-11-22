@@ -79,7 +79,7 @@ internal class StorageController(
         worker.execute {
             val result = runCatching {
                 webResult.getOrThrow()
-                kinds.filter { it != StorageKind.WEB && it != StorageKind.TIMETABLE }
+                kinds.filter { it != StorageKind.TIMETABLE }
                     .forEach(repository::clear)
                 repository.scan(archiveBytes)
             }

@@ -11,7 +11,7 @@ import org.junit.Test
 class TrainTimelineTest : StringResourceTest() {
     private fun time(value: String) = Instant.parse(value).toEpochMilli()
 
-    private fun journey() = TrainTimeline("1461", "2026-10-10", listOf(
+    private fun journey() = TrainTimeline("V6061", "2026-10-10", listOf(
         TrainStopSchedule("北京", null, "11:59", 0),
         TrainStopSchedule("天津西", "13:00", "13:05", 0),
         TrainStopSchedule("上海", "10:00", null, 1),

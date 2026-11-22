@@ -50,7 +50,7 @@ async function main() {
                     const url = new URL(rawUrl)
                     let data
                     if (url.pathname.includes('/train/search')) {
-                        data = { data: [{ station_train_code: '1461', train_no: 'fixture',
+                        data = { data: [{ station_train_code: 'V6061', train_no: 'fixture',
                             from_station: '北京', to_station: '上海' }] }
                     } else if (url.pathname.includes('/queryTrainInfo/query')) {
                         data = { data: { data: [
@@ -70,9 +70,9 @@ async function main() {
             }
         })
         const date = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10)
-        await page.goto(`${address}/#/train?train=1461&date=${date}`)
-        const start = () => page.getByRole('button', { name: '追踪 1461', exact: true })
-        const stop = () => page.getByRole('button', { name: '停止追踪 1461', exact: true })
+        await page.goto(`${address}/#/train?train=V6061&date=${date}`)
+        const start = () => page.getByRole('button', { name: '追踪 V6061', exact: true })
+        const stop = () => page.getByRole('button', { name: '停止追踪 V6061', exact: true })
         await start().waitFor()
         await page.waitForFunction(() => !document.querySelector('.result-title-row button')?.disabled)
         for (const width of [320, 390, 800, 1200]) {
@@ -123,7 +123,7 @@ async function main() {
         await start().waitFor()
         const historicalDate = new Date(Date.now() + 8 * 3600000 - 86400000)
             .toISOString().slice(0, 10)
-        await page.goto(`${address}/#/train?train=1461&date=${historicalDate}`)
+        await page.goto(`${address}/#/train?train=V6061&date=${historicalDate}`)
         await start().waitFor()
         await page.waitForFunction(() => !document.querySelector('.result-title-row button')?.disabled)
         await start().click()

@@ -41,11 +41,11 @@ class TravelDeviceTest {
             for ((location, contentTag) in pages) {
                 var connected = true
                 val page = TravelPageState(
-                    listArticles = {
+                    listArticles = { _, _ ->
                         if (!connected) throw IOException("Connection failed")
                         listOf(TravelArticle("test.md"))
                     },
-                    readArticle = {
+                    readArticle = { _, _, _ ->
                         if (!connected) throw IOException("Connection failed")
                         "# Test article"
                     },

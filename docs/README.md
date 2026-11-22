@@ -5,6 +5,7 @@
 应用内可从首页打开「帮助」，按功能查找常见问题。首次安装、更新或反馈问题时，可参考以下说明。
 
 - [帮助主题与内容维护](help.md)
+- [车票历史记录排序](ticket-history.md)
 - [日期与时间选择器](date-time-pickers.md)
 - [应用更新](app-updates.md)
 - [欢迎页与更新说明](welcome-release-notes.md)
@@ -36,6 +37,7 @@
 - [车速表与历史轨迹](speedometer.md)
 - [普速参考票价](ordinary-fare.md)
 - [每日小测验](quiz.md)
+- [铁路旅游与文章缓存](railway-travel.md)
 
 ## 备份与存储
 

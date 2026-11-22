@@ -1,12 +1,9 @@
 package cc.samlab.ticket.ui.travel
 
 import android.content.Context
-import android.util.AtomicFile
 import android.util.Base64
 import cc.samlab.ticket.network.NetworkFeatures
-import java.io.File
 import java.io.IOException
-import java.security.MessageDigest
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
@@ -42,7 +39,6 @@ internal object TravelRepository {
     private val indexUrl = contentsUrl.newBuilder().addQueryParameter("ref", BRANCH).build()
     private val commitsUrl = "https://api.github.com/repos/$REPOSITORY/commits".toHttpUrl()
     private val rawRoot = "https://raw.githubusercontent.com/$REPOSITORY/$BRANCH/travel/".toHttpUrl()
-    private val cacheLock = Any()
     private val client = OkHttpClient.Builder()
         .addInterceptor(NetworkFeatures.interceptor)
         .eventListenerFactory(NetworkFeatures.events)
@@ -58,30 +54,33 @@ internal object TravelRepository {
     fun articleUrl(article: TravelArticle): HttpUrl =
         rawRoot.newBuilder().addPathSegment(article.file).build()
 
-    suspend fun articles(context: Context): List<TravelArticle> = coroutineScope {
+    suspend fun articles(context: Context, refresh: Boolean): List<TravelArticle> = coroutineScope {
         val articles = withContext(Dispatchers.IO) {
-            val entries = JSONArray(downloadText(indexUrl))
-            (0 until entries.length()).mapNotNull { index ->
-                entries.getJSONObject(index).takeIf { it.optString("type") == "file" }
-                    ?.optString("name")?.let(::article)
+            cachedText(context, indexUrl, refresh) { body ->
+                val entries = JSONArray(body)
+                (0 until entries.length()).mapNotNull { index ->
+                    entries.getJSONObject(index).takeIf { it.optString("type") == "file" }
+                        ?.optString("name")?.let(::article)
+                }
             }
         }
         val requests = Semaphore(4)
         val dated = articles.map { article ->
-            async { requests.withPermit { article.copy(modifiedAt = lastModified(context, article)) } }
+            async { requests.withPermit { article.copy(modifiedAt = lastModified(context, article, refresh)) } }
         }.awaitAll()
         sortTravelArticles(dated)
     }
 
-    private suspend fun lastModified(context: Context, article: TravelArticle): Instant? {
+    private suspend fun lastModified(context: Context, article: TravelArticle, refresh: Boolean): Instant? {
         val url = commitsUrl.newBuilder()
             .addQueryParameter("sha", BRANCH)
             .addQueryParameter("path", "travel/${article.file}")
             .addQueryParameter("per_page", "1")
             .build()
         return try {
-            cached(context, url) { body ->
-                val commit = JSONArray(body).optJSONObject(0)?.optJSONObject("commit")
+            withContext(Dispatchers.IO) {
+                val entries = cachedText(context, url, refresh, ::JSONArray)
+                val commit = entries.optJSONObject(0)?.optJSONObject("commit")
                 commit?.optJSONObject("committer")?.getString("date")?.let(Instant::parse)
             }
         } catch (error: CancellationException) {
@@ -91,50 +90,24 @@ internal object TravelRepository {
         }
     }
 
-    suspend fun markdown(article: TravelArticle): String =
+    suspend fun markdown(context: Context, article: TravelArticle, refresh: Boolean): String =
         withContext(Dispatchers.IO) {
             val url = indexUrl.newBuilder().addPathSegment(article.file).build()
-            val file = JSONObject(downloadText(url))
-            if (file.optString("encoding") != "base64") throw IOException("Unsupported Markdown encoding")
-            Base64.decode(file.getString("content"), Base64.DEFAULT).toString(Charsets.UTF_8)
+            cachedText(context, url, refresh) { body ->
+                val file = JSONObject(body)
+                if (file.optString("encoding") != "base64") throw IOException("Unsupported Markdown encoding")
+                Base64.decode(file.getString("content"), Base64.DEFAULT).toString(Charsets.UTF_8)
+            }
         }
 
-    private fun downloadText(url: HttpUrl): String =
-        download(url, MAX_MARKDOWN_BYTES).toString(Charsets.UTF_8)
-
-    private suspend fun <T> cached(context: Context, url: HttpUrl, parse: (String) -> T): T =
-        withContext(Dispatchers.IO) {
-            val key = MessageDigest.getInstance("SHA-256").digest(url.toString().toByteArray())
-                .joinToString("") { "%02x".format(it) }
-            val directory = File(context.cacheDir, "travel")
-            val file = AtomicFile(File(directory, key))
-            val content: String
-            val result = try {
-                content = downloadText(url)
-                parse(content)
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
-                return@withContext runCatching {
-                    val saved = synchronized(cacheLock) { file.readFully().toString(Charsets.UTF_8) }
-                    parse(saved)
-                }.getOrElse { throw error }
-            }
-            runCatching {
-                synchronized(cacheLock) {
-                    directory.mkdirs()
-                    val stream = file.startWrite()
-                    try {
-                        stream.write(content.toByteArray())
-                        file.finishWrite(stream)
-                    } catch (error: IOException) {
-                        file.failWrite(stream)
-                        throw error
-                    }
-                }
-            }
-            result
-        }
+    private fun <T : Any> cachedText(
+        context: Context,
+        url: HttpUrl,
+        refresh: Boolean,
+        parse: (String) -> T,
+    ): T = TravelCache.get(context, url.toString(), refresh, { download(url, MAX_MARKDOWN_BYTES) }) {
+        parse(it.toString(Charsets.UTF_8))
+    }
 
     internal fun download(url: HttpUrl, limit: Long): ByteArray {
         val request = Request.Builder().url(url).header("User-Agent", "CRTicket-Android").build()

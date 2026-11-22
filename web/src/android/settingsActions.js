@@ -8,6 +8,7 @@ import {
   buildExcelRows, getExportFileStamp,
 } from '@/utils/ticketBackup.js'
 import { exportSettingsBackup, importSettingsBackup } from './settingsBackup.js'
+import { readBackupChunks } from './backupChunks.js'
 import { saveFile, native } from './platform.js'
 import { settingsText } from './settingsStrings.js'
 import { encryptBackup, decryptBackup, BackupEncryptionError } from '../utils/backupEncryption.js'
@@ -76,7 +77,7 @@ export async function performSettingsAction(action, payload = {}) {
   if (action === 'exportBackup') {
     const text = JSON.stringify(exportSettingsBackup(records, user, payload.contents), null, 2)
     const output = payload.encryption === 'none'
-      ? await decryptBackup(text) : await encryptBackup(text, payload.password)
+      ? text : await encryptBackup(text, payload.password)
     blob = new Blob([output], {
       type: 'application/json;charset=utf-8',
     })
@@ -96,11 +97,24 @@ export async function performSettingsAction(action, payload = {}) {
     throw new Error(settingsText('unknown_action'))
   }
   const saved = await saveFile(blob, filename, {
+    backup: action === 'exportBackup',
     sizeLimit: settingsText('export_size_limit'),
     readFailed: settingsText('export_read_failed'),
     saveFailed: settingsText('file_save_failed'),
   })
   return settingsText(saved ? 'file_saved' : 'file_cancelled')
+}
+
+function returnUnlockedBackup(id, text) {
+  const chunkSize = 64 * 1024
+  let offset = 0
+  do {
+    let end = Math.min(offset + chunkSize, text.length)
+    const lastChar = text.charCodeAt(end - 1)
+    if (end < text.length && lastChar >= 0xd800 && lastChar <= 0xdbff) end--
+    native.unlockedBackup(id, text.slice(offset, end), end === text.length)
+    offset = end
+  } while (offset < text.length)
 }
 
 export function initializeNativeSettings() {
@@ -119,6 +133,9 @@ export function initializeNativeSettings() {
     let success = true
     let backupText
     try {
+      if ((action === 'import' || action === 'unlockBackup') && payload.text === undefined) {
+        payload = { ...payload, text: readBackupChunks(offset => native.backupInputChunk(id, offset)) }
+      }
       if (action === 'unlockBackup') backupText = await decryptBackup(payload.text, payload.password)
       else message = await performSettingsAction(action, payload)
     } catch (error) {
@@ -128,7 +145,7 @@ export function initializeNativeSettings() {
     }
     if (action === 'unlockBackup') {
       const result = { id, success, message }
-      if (success) native.unlockedBackup(id, backupText)
+      if (success) returnUnlockedBackup(id, backupText)
       else native.settingsResult(JSON.stringify(result))
       return result
     }
