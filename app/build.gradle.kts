@@ -128,6 +128,10 @@ dependencies {
     implementation(libs.markwon.tables)
     implementation(libs.markwon.strikethrough)
     constraints {
+        implementation(libs.androidx.navigationevent.core) {
+            because("1.2.0 ignores late predictive back events after a navigation input is detached")
+        }
+        implementation(libs.androidx.navigationevent.compose)
         implementation(libs.androidx.fragment) {
             because("Play services brings Fragment 1.1.0; Activity Result requires 1.3.0 or newer")
         }
