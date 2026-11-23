@@ -12,6 +12,7 @@ fragment = "1.9.1"
 material3 = "1.5.0"
 window = "1.5.1"
 navigation = "2.10.2"
+navigationEvent = "1.2.0"
 markwon = "4.6.2"
 
 [libraries]
@@ -20,6 +21,8 @@ markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-tables = { module = "io.noties.markwon:ext-tables", version.ref = "markwon" }
 markwon-strikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "markwon" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+androidx-navigationevent-core = { module = "androidx.navigationevent:navigationevent", version.ref = "navigationEvent" }
+androidx-navigationevent-compose = { module = "androidx.navigationevent:navigationevent-compose", version.ref = "navigationEvent" }
 android-fastscroll = { module = "me.zhanghai.android.fastscroll:library", version = "1.3.0" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 androidx-window = { module = "androidx.window:window", version.ref = "window" }
