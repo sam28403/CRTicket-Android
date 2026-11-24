@@ -11,7 +11,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import cc.samlab.ticket.speedometer.*
+import org.junit.After
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,6 +24,78 @@ class SpeedometerDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
+    private lateinit var welcome: WelcomeTestState
+
+    @Before fun prepareWelcome() {
+        welcome = WelcomeTestState(context)
+    }
+
+    @After fun restoreWelcome() {
+        welcome.close()
+    }
+
+    @Test fun updatedTrainRulesAndOverRangeSpeed() {
+        instrumentation.runOnMainSync { SpeedometerStore.initialize(context) }
+        val previousRecord = SpeedometerStore.current
+        val previousSpeed = SpeedometerStore.speed
+        val previousSignal = SpeedometerStore.signal
+        assertNull("The test app must have no active recording", previousRecord)
+        val start = context.getString(R.string.speed_start)
+        val error = context.getString(R.string.train_error_invalid)
+        launch("/railfan/speedometer").use {
+            compose.onNodeWithTag("speed-station-${R.string.ticket_from}").performTextInput("北京南")
+            compose.onNodeWithTag("speed-station-${R.string.ticket_to}").performTextInput("天津")
+            val train = compose.onNodeWithTag("speed-train")
+            val invalidTrains = listOf("L1", "1234", "59999", "X0", "X0001", "X9999", "X10000", "Z1999")
+            for (value in invalidTrains) {
+                train.performTextReplacement(value)
+                androidx.test.espresso.Espresso.closeSoftKeyboard()
+                compose.onNodeWithText(start).performScrollTo().performClick()
+                compose.onNodeWithText(error).assertExists()
+            }
+            train.performTextReplacement("x9998")
+            train.assertTextContains("X9998")
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            compose.onNodeWithText(start).performScrollTo().performClick()
+            compose.onNodeWithText(context.getString(R.string.speed_guide_title)).assertExists()
+        }
+        launch("/railfan/speedometer").use {
+            compose.onNodeWithTag("speed-train").performTextInput("Z1998")
+            compose.onNodeWithTag("speed-station-${R.string.ticket_from}").performTextInput("北京南")
+            compose.onNodeWithTag("speed-station-${R.string.ticket_to}").performTextInput("天津")
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            compose.onNodeWithText(start).performScrollTo().performClick()
+            compose.onNodeWithText(context.getString(R.string.speed_guide_title)).assertExists()
+        }
+
+        try {
+            instrumentation.runOnMainSync {
+                SpeedometerStore.current = fixture().copy(train = "T1")
+                SpeedometerStore.speed = 300.0
+                SpeedometerStore.signal = true
+            }
+            launch("/railfan/speedometer/live").use {
+                compose.onNodeWithText("300").assertIsDisplayed()
+                instrumentation.runOnMainSync { SpeedometerStore.speed = 310.0 }
+                compose.onNodeWithText("310").assertIsDisplayed()
+                capture("t1-310-kmh")
+                for ((code, speed) in listOf("K1" to 250, "X9998" to 400)) {
+                    instrumentation.runOnMainSync {
+                        SpeedometerStore.current = fixture().copy(train = code)
+                        SpeedometerStore.speed = speed.toDouble()
+                    }
+                    compose.onNodeWithText(speed.toString()).assertIsDisplayed()
+                    capture("$code-$speed-kmh")
+                }
+            }
+        } finally {
+            instrumentation.runOnMainSync {
+                SpeedometerStore.current = previousRecord
+                SpeedometerStore.speed = previousSpeed
+                SpeedometerStore.signal = previousSignal
+            }
+        }
+    }
 
     @Test fun setupGuideLiveAndTrackScenes() {
         org.junit.Assume.assumeTrue(context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS))

@@ -78,6 +78,11 @@ vehicle-query.md、quiz.md、train-delay.md、background-monitor-verification.md
 车票历史记录的同日出发时间排序见[车票历史记录](ticket-history.md)。
 铁路旅游的更新、离线阅读与图片刷新方式见[铁路旅游](railway-travel.md)。
 
+## 0.11.1 车速表与轨迹
+
+应用内帮助同步新建记录的车次限制、T、K、X 车次量程及超量程时的读数显示，覆盖 26 个语言资源目录。
+完整范围和示例见[车速表](speedometer.md)。
+
 ## 历史验证
 
 2026-10-27题目质量更新：最接近题里程目标为100～5000 km、每100 km一档，候选严格采用±20%范围；

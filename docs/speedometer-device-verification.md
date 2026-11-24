@@ -75,3 +75,10 @@
 - 最终日志：`logs/archive/build/verification/speedometer/single-screen-layout-final.log`；
   截图：`build/verification/speedometer/single-screen-layout-final-scenes/`。
 - 手机和平板均已安装最终构建；平板仍依据 GPS 硬件能力隐藏测速入口。
+
+## 2026-11-24 车次规则与量程复查
+
+- Pixel 8 Pro 的两项 CI 版真机测试通过。检查首页入口、拒绝 L 开头和纯数字车次、拒绝超出范围的 X 车次，以及 `x9998` 转为大写后进入引导页。
+- 在手机上注入测试读数，验证 T1 从 300 到 310 km/h 时按输入值显示。截图确认 310 km/h 时 300 刻度处的圆弧满格，K1 和 X9998 的最高刻度分别为 250 与 400 km/h。
+- 本轮只在手机执行。测试截图保存在 CI 版应用专属目录的 `speedometer-scenes/` 下，本地副本在 `logs/speedometer-train-rules-scenes/`，结果见 `logs/speedometer-train-rules-phone-unlocked.log`。
+- 唤醒手机后复测 Z 车次边界，确认 Z1998 可进入引导、Z1999 被拒绝，见 `logs/speedometer-z-help-phone-wake.log`。应用内帮助导航回归通过，见 `logs/speedometer-z-help-phone.log`。

@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import cc.samlab.ticket.ui.ExpressiveEmptyState
 import cc.samlab.ticket.R
-import cc.samlab.ticket.railway.TrainNumberRules
 import cc.samlab.ticket.speedometer.*
 import cc.samlab.ticket.ui.history.HistoryStation
 import java.util.Locale
@@ -36,6 +35,7 @@ internal fun SpeedometerSetup(
     var from by rememberSaveable { mutableStateOf("") }
     var to by rememberSaveable { mutableStateOf("") }
     var validate by rememberSaveable { mutableStateOf(false) }
+    val validTrain = isSpeedometerTrainValid(train)
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var undoJob by remember { mutableStateOf<Job?>(null) }
@@ -54,8 +54,8 @@ internal fun SpeedometerSetup(
                             value = train,
                             onValueChange = { train = it.uppercase(Locale.ROOT).trim().take(6) },
                             label = { Text(stringResource(R.string.speed_train)) },
-                            isError = validate && !TrainNumberRules.isValid(train),
-                            supportingText = if (validate && !TrainNumberRules.isValid(train)) {
+                            isError = validate && !validTrain,
+                            supportingText = if (validate && !validTrain) {
                                 { Text(stringResource(R.string.train_error_invalid)) }
                             } else null,
                             singleLine = true, shape = MaterialTheme.shapes.large,
@@ -86,7 +86,7 @@ internal fun SpeedometerSetup(
                         }
                         Button(onClick = {
                             validate = true
-                            if (TrainNumberRules.isValid(train) && from.isNotBlank() && to.isNotBlank()) {
+                            if (validTrain && from.isNotBlank() && to.isNotBlank()) {
                                 navigate(
                                     "$SPEED_ROUTE/guide?train=${Uri.encode(train)}" +
                                         "&from=${Uri.encode(from.trim())}&to=${Uri.encode(to.trim())}" +
