@@ -8,8 +8,8 @@ const base = 'https://api.raillog.top/api/train-timetables'
 const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 100)
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
-const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
-const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? Math.max(2, Math.floor(workers / 2)))
+const workers = Number(process.env.RAILLOG_WORKERS ?? 16)
+const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? 4)
 const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, 64))
 const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
@@ -29,6 +29,10 @@ function noteTransientError() {
     transientErrors++
     errorsSinceRecovery++
     requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
+    if (targetWorkers > minWorkers) {
+        targetWorkers = Math.max(minWorkers, Math.floor(targetWorkers * 0.75))
+        console.warn(`请求发生错误，立即将并发降至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
+    }
 }
 
 function updateServerRetryAfter(response) {
