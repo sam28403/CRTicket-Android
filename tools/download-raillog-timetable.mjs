@@ -186,7 +186,8 @@ let next = 0
 let completed = 0
 const startedAt = Date.now()
 let lastProgressAt = startedAt
-let lastProgressCompleted = 0
+let downloadedCompleted = 0
+let lastProgressDownloaded = 0
 let activeWorkers = 0
 let failed
 async function downloadTrains() {
@@ -206,10 +207,13 @@ async function downloadTrains() {
             activeWorkers--
         }
         completed++
-        if (loaded.downloaded) successesSinceScale++
+        if (loaded.downloaded) {
+            downloadedCompleted++
+            successesSinceScale++
+        }
         if (successesSinceScale >= 200) {
             const elapsedSeconds = Math.max(1, (Date.now() - startedAt) / 1000)
-            const averageRate = completed / elapsedSeconds
+            const averageRate = downloadedCompleted / elapsedSeconds
             if (transientErrors >= 3 && targetWorkers > minWorkers) {
                 targetWorkers = Math.max(minWorkers, targetWorkers - 2)
                 console.warn(`RailLog 有请求错误，降低并发至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
@@ -223,11 +227,11 @@ async function downloadTrains() {
         const now = Date.now()
         if (completed % 100 === 0 || now - lastProgressAt >= 30000) {
             const intervalSeconds = Math.max(0.001, (now - lastProgressAt) / 1000)
-            const intervalRate = (completed - lastProgressCompleted) / intervalSeconds
-            const averageRate = completed / Math.max(0.001, (now - startedAt) / 1000)
-            console.log(`${version}：${completed}/${codes.length} 条，当前 ${intervalRate.toFixed(2)} 条/秒，均值 ${averageRate.toFixed(2)} 条/秒，并发 ${targetWorkers}，间隔 ${requestSpacingMs}ms`)
+            const intervalRate = (downloadedCompleted - lastProgressDownloaded) / intervalSeconds
+            const averageRate = downloadedCompleted / Math.max(0.001, (now - startedAt) / 1000)
+            console.log(`${version}：已核对 ${completed}/${codes.length} 条，本次新下 ${downloadedCompleted} 条；当前 ${intervalRate.toFixed(2)} 条/秒，均值 ${averageRate.toFixed(2)} 条/秒，并发 ${targetWorkers}，间隔 ${requestSpacingMs}ms`)
             lastProgressAt = now
-            lastProgressCompleted = completed
+            lastProgressDownloaded = downloadedCompleted
         }
     }
 }
