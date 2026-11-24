@@ -211,7 +211,7 @@ async function downloadTrains() {
             downloadedCompleted++
             successesSinceScale++
         }
-        if (successesSinceScale >= 200) {
+        if (successesSinceScale >= 20) {
             const elapsedSeconds = Math.max(1, (Date.now() - startedAt) / 1000)
             const averageRate = downloadedCompleted / elapsedSeconds
             if (transientErrors >= 3 && targetWorkers > minWorkers) {
