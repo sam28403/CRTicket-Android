@@ -2,21 +2,6 @@ package cc.samlab.ticket.speedometer
 
 import kotlin.math.*
 
-internal fun speedometerMaximum(train: String): Int {
-    val code = train.uppercase()
-    val number = code.drop(1).toIntOrNull() ?: 0
-    return when (code.firstOrNull()) {
-        'G' -> 350
-        'D' -> 250
-        'C' -> if (number in 1..1000 || number in 4001..4700) 160 else 350
-        'S' -> 200
-        'Z' -> 160
-        'T', 'N' -> 140
-        'V' -> 120
-        else -> 120
-    }
-}
-
 internal data class SpeedPoint(
     val latitude: Double,
     val longitude: Double,
