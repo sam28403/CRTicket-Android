@@ -8,7 +8,7 @@ const base = 'https://api.raillog.top/api/train-timetables'
 const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 100)
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
-const workers = Number(process.env.RAILLOG_WORKERS ?? 16)
+const workers = Number(process.env.RAILLOG_WORKERS ?? 12)
 const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? 4)
 const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, 64))
 const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
@@ -24,10 +24,12 @@ let transientErrors = 0
 let successesSinceRecovery = 0
 let errorsSinceRecovery = 0
 let targetWorkers = workers
+let successesSinceScale = 0
 
 function noteTransientError() {
     transientErrors++
     errorsSinceRecovery++
+    successesSinceScale = 0
     requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
     if (targetWorkers > minWorkers) {
         targetWorkers = Math.max(minWorkers, Math.floor(targetWorkers * 0.75))
@@ -186,7 +188,6 @@ const startedAt = Date.now()
 let lastProgressAt = startedAt
 let lastProgressCompleted = 0
 let activeWorkers = 0
-let successesSinceScale = 0
 let failed
 async function downloadTrains() {
     while (!failed) {
@@ -206,7 +207,7 @@ async function downloadTrains() {
         }
         completed++
         if (loaded.downloaded) successesSinceScale++
-        if (successesSinceScale >= 20) {
+        if (successesSinceScale >= 200) {
             const elapsedSeconds = Math.max(1, (Date.now() - startedAt) / 1000)
             const averageRate = completed / elapsedSeconds
             if (transientErrors >= 3 && targetWorkers > minWorkers) {
