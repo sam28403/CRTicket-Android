@@ -5,12 +5,12 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { validListDate } from '../web/src/android/railway/lltList.js'
 
 const base = 'https://api.raillog.top/api/train-timetables'
-const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20)
+const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 100)
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
-const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
+const workers = Number(process.env.RAILLOG_WORKERS ?? 8)
 const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? Math.max(2, Math.floor(workers / 2)))
-const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 12, 20)))
+const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, 20))
 const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(requestTimeoutMs) && requestTimeoutMs > 0, 'RAILLOG_REQUEST_TIMEOUT_MS 必须是正整数')
@@ -28,6 +28,7 @@ let targetWorkers = workers
 function noteTransientError() {
     transientErrors++
     errorsSinceRecovery++
+    requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.5))
 }
 
 function updateServerRetryAfter(response) {
@@ -177,6 +178,9 @@ console.log(`${version}：${codes.length} 个车次待核对`)
 const results = new Array(codes.length)
 let next = 0
 let completed = 0
+const startedAt = Date.now()
+let lastProgressAt = startedAt
+let lastProgressCompleted = 0
 let activeWorkers = 0
 let successesSinceScale = 0
 let failed
@@ -198,18 +202,28 @@ async function downloadTrains() {
         }
         completed++
         if (loaded.downloaded) successesSinceScale++
-        if (successesSinceScale >= 500) {
-            if (transientErrors <= 4 && targetWorkers < maxWorkers) {
-                targetWorkers++
-                console.log(`接口稳定，下载并发提升至 ${targetWorkers}/${maxWorkers}`)
-            } else if (transientErrors >= 12 && targetWorkers > minWorkers) {
-                targetWorkers--
-                console.warn(`近期接口错误率偏高，并发回调至 ${targetWorkers}/${maxWorkers}`)
+        if (successesSinceScale >= 100) {
+            const elapsedSeconds = Math.max(1, (Date.now() - startedAt) / 1000)
+            const averageRate = completed / elapsedSeconds
+            if (transientErrors >= 3 && targetWorkers > minWorkers) {
+                targetWorkers = Math.max(minWorkers, targetWorkers - 2)
+                console.warn(`RailLog 有请求错误，降低并发至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
+            } else if (averageRate < 5 && transientErrors === 0 && targetWorkers < maxWorkers) {
+                targetWorkers = Math.min(maxWorkers, targetWorkers + 2)
+                console.log(`当前 ${averageRate.toFixed(2)} 条/秒，低于 5 条/秒目标，并发提升至 ${targetWorkers}/${maxWorkers}`)
             }
             successesSinceScale = 0
             transientErrors = 0
         }
-        if (completed % 100 === 0) console.log(`已核对 ${completed}/${codes.length} 个车次`)
+        const now = Date.now()
+        if (completed % 100 === 0 || now - lastProgressAt >= 30000) {
+            const intervalSeconds = Math.max(0.001, (now - lastProgressAt) / 1000)
+            const intervalRate = (completed - lastProgressCompleted) / intervalSeconds
+            const averageRate = completed / Math.max(0.001, (now - startedAt) / 1000)
+            console.log(`${version}：${completed}/${codes.length} 条，当前 ${intervalRate.toFixed(2)} 条/秒，均值 ${averageRate.toFixed(2)} 条/秒，并发 ${targetWorkers}，间隔 ${requestSpacingMs}ms`)
+            lastProgressAt = now
+            lastProgressCompleted = completed
+        }
     }
 }
 await Promise.all(Array.from({ length: maxWorkers }, downloadTrains))
