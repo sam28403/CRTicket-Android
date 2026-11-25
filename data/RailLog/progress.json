@@ -1,6 +1,6 @@
 {
   "source": "https://api.raillog.top/api/train-timetables/versions",
-  "total": 264,
+  "total": 259,
   "completed": [
     "2003.11.25",
     "2004.10.03",
@@ -256,6 +256,13 @@
     "2026.02.15",
     "2026.03.20"
   ],
-  "current": null,
-  "updatedAt": "2026-11-24T20:23:41.990Z"
+  "current": "2026.04.10",
+  "updatedAt": "2026-11-25T01:24:38.322Z",
+  "checkpoint": {
+    "checked": 9101,
+    "totalForCurrent": 15236,
+    "cachePath": "build/research/raillog-all/cache-2026.04.10",
+    "archivePath": "data/RailLog/checkpoints/20260410-cache.tar.gz",
+    "endpoint": "2026.10.06"
+  }
 }
