@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { spawn } from 'node:child_process'
+import { execFileSync, spawn } from 'node:child_process'
 import { dirname, join, resolve } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
@@ -13,6 +13,9 @@ const progressPath = join(outputDirectory, 'progress.json')
 const limitArg = process.argv.find(value => value.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 assert(!limitArg || (Number.isInteger(limit) && limit > 0), 'limit 必须是正整数')
+const throughArg = process.argv.find(value => value.startsWith('--through='))
+const through = throughArg?.slice('--through='.length)
+assert(!throughArg || /^\d{4}\.\d{2}\.\d{2}$/.test(through), 'through 日期必须为 YYYY.MM.DD')
 
 await Promise.all([
     mkdir(outputDirectory, { recursive: true }),
@@ -58,6 +61,8 @@ for (let attempt = 0; ; attempt++) {
     await delay(waitMs)
 }
 assert(Array.isArray(versions) && versions.length, 'RailLog 版本列表为空')
+if (through) versions = versions.filter(version => version <= through)
+assert(versions.length > 0, '目标范围内没有 RailLog 快照')
 
 let progress = { source: 'https://api.raillog.top/api/train-timetables/versions', completed: [] }
 try {
@@ -65,7 +70,8 @@ try {
 } catch (error) {
     if (error.code !== 'ENOENT') throw error
 }
-const completed = new Set(progress.completed)
+const selectedVersions = new Set(versions)
+const completed = new Set(progress.completed.filter(version => selectedVersions.has(version)))
 const writeProgress = async (current, error = null) => {
     progress = {
         source: 'https://api.raillog.top/api/train-timetables/versions',
@@ -111,8 +117,33 @@ function runNode(args, logPath) {
     })
 }
 
+function git(args) {
+    return execFileSync('git', args, {
+        cwd: root,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim()
+}
+
+let monthVersions = []
+let activeMonth = null
+async function commitMonth() {
+    if (!monthVersions.length) return
+    git(['fetch', 'origin', 'master'])
+    git(['merge', '--no-edit', 'origin/master'])
+    await writeProgress(null)
+    const dbFiles = monthVersions.map(version => join(outputDirectory, `${version.replaceAll('.', '')}.db`))
+    git(['add', '--', ...dbFiles, progressPath])
+    git(['commit', '-m', `Add RailLog snapshots for ${activeMonth}`])
+    console.log(`已提交 ${activeMonth} 月度数据（${monthVersions.length} 个日期）：${git(['rev-parse', '--short', 'HEAD'])}`)
+    monthVersions = []
+}
+
 let converted = 0
 for (const version of versions) {
+    const month = version.slice(0, 7)
+    if (activeMonth && month !== activeMonth) await commitMonth()
+    activeMonth = month
     if (completed.has(version)) continue
     if (converted >= limit) break
     const compact = version.replaceAll('.', '')
@@ -131,12 +162,15 @@ for (const version of versions) {
         assert.equal(database.version, compact, '成品数据库版本不匹配')
         completed.add(version)
         converted++
+        monthVersions.push(version)
         await writeProgress(null)
-        console.log(`已完成 ${version}，${completed.size}/${versions.length}`)
+        const snapshot = JSON.parse(await readFile(source, 'utf8'))
+        console.log(`已完成 ${version}：${snapshot.trains.length} 条，日期进度 ${completed.size}/${versions.length}`)
     } catch (error) {
         await writeProgress(version, error.message)
         throw error
     }
 }
+await commitMonth()
 if (completed.size === versions.length) await writeProgress(null)
 console.log(JSON.stringify({ convertedThisRun: converted, completed: completed.size, total: versions.length }))

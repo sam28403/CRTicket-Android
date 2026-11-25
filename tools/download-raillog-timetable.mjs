@@ -5,29 +5,41 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { validListDate } from '../web/src/android/railway/lltList.js'
 
 const base = 'https://api.raillog.top/api/train-timetables'
-const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 20)
+const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 100)
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
-const workers = Number(process.env.RAILLOG_WORKERS ?? 32)
-const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? Math.max(2, Math.floor(workers / 2)))
-const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, Math.min(workers + 12, 20)))
+const workers = Number(process.env.RAILLOG_WORKERS ?? 12)
+const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? 4)
+const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, 64))
 const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
+const transientErrorThreshold = Number(process.env.RAILLOG_TRANSIENT_ERROR_THRESHOLD ?? 3)
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(requestTimeoutMs) && requestTimeoutMs > 0, 'RAILLOG_REQUEST_TIMEOUT_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
 assert(Number.isInteger(minWorkers) && minWorkers > 0 && minWorkers <= workers, 'RAILLOG_MIN_WORKERS 必须在 1 与 RAILLOG_WORKERS 之间')
 assert(Number.isInteger(maxWorkers) && maxWorkers >= workers, 'RAILLOG_MAX_WORKERS 必须不小于 RAILLOG_WORKERS')
 assert(Number.isInteger(maxRetries) && maxRetries >= 1, 'RAILLOG_MAX_RETRIES 必须是正整数')
+assert(Number.isInteger(transientErrorThreshold) && transientErrorThreshold >= 2, 'RAILLOG_TRANSIENT_ERROR_THRESHOLD 必须至少为 2')
 let nextRequestAt = 0
 let serverRetryAfterAt = 0
 let transientErrors = 0
 let successesSinceRecovery = 0
 let errorsSinceRecovery = 0
+let errorsAtLastThrottle = 0
 let targetWorkers = workers
+let successesSinceScale = 0
 
 function noteTransientError() {
     transientErrors++
     errorsSinceRecovery++
+    successesSinceScale = 0
+    if (errorsSinceRecovery - errorsAtLastThrottle < transientErrorThreshold) return false
+    errorsAtLastThrottle = errorsSinceRecovery
+    requestSpacingMs = Math.min(2000, Math.ceil(requestSpacingMs * 1.25))
+    const previousWorkers = targetWorkers
+    targetWorkers = Math.max(minWorkers, targetWorkers - 2)
+    console.warn(`连续出现 ${transientErrorThreshold} 次请求错误，并发由 ${previousWorkers} 调至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
+    return true
 }
 
 function updateServerRetryAfter(response) {
@@ -64,12 +76,12 @@ async function request(path, params) {
                     result = await response.json()
                 } catch (error) {
                     if (attempt >= maxRetries) throw error
-                    noteTransientError()
+                    const shouldBackoff = noteTransientError()
                     console.warn(
-                        `RailLog HTTP ${response.status} 返回无效 JSON，单请求退避重试`,
+                        `RailLog HTTP ${response.status} 返回无效 JSON，单请求${shouldBackoff ? '退避后重试' : '立即重试'}`,
                     )
                     updateServerRetryAfter(response)
-                    await delay(retryBackoffMs(attempt))
+                    if (shouldBackoff) await delay(retryBackoffMs(attempt))
                     continue
                 }
                 successesSinceRecovery++
@@ -83,31 +95,33 @@ async function request(path, params) {
                     }
                     successesSinceRecovery = 0
                     errorsSinceRecovery = 0
+                    errorsAtLastThrottle = 0
                 }
                 return result
             }
         } catch (error) {
             if (attempt >= maxRetries) throw error
-            noteTransientError()
+            const shouldBackoff = noteTransientError()
             console.warn(
-                `RailLog 网络错误 ${error.cause?.code || error.name}，单请求退避重试`,
+                `RailLog 网络错误 ${error.cause?.code || error.name}，单请求${shouldBackoff ? '退避后重试' : '立即重试'}`,
             )
-            await delay(retryBackoffMs(attempt))
+            if (shouldBackoff) await delay(retryBackoffMs(attempt))
             continue
         }
         const status = response?.status
         if ((status >= 400 && status < 500 && status !== 408 && status !== 429) || attempt >= maxRetries) {
             throw new Error(`RailLog HTTP ${status}：${url.pathname}?${url.searchParams}`)
         }
+        let shouldBackoff = false
         if (status) {
-            noteTransientError()
+            shouldBackoff = noteTransientError()
             console.warn(
-                `RailLog HTTP ${status}，单请求退避重试`,
+                `RailLog HTTP ${status}，单请求${shouldBackoff ? '退避后重试' : '立即重试'}`,
             )
         }
         updateServerRetryAfter(response)
         await response?.body?.cancel().catch(() => {})
-        await delay(retryBackoffMs(attempt))
+        if (shouldBackoff) await delay(retryBackoffMs(attempt))
     }
 }
 
@@ -177,8 +191,11 @@ console.log(`${version}：${codes.length} 个车次待核对`)
 const results = new Array(codes.length)
 let next = 0
 let completed = 0
+const startedAt = Date.now()
+let lastProgressAt = startedAt
+let downloadedCompleted = 0
+let lastProgressDownloaded = 0
 let activeWorkers = 0
-let successesSinceScale = 0
 let failed
 async function downloadTrains() {
     while (!failed) {
@@ -197,19 +214,32 @@ async function downloadTrains() {
             activeWorkers--
         }
         completed++
-        if (loaded.downloaded) successesSinceScale++
-        if (successesSinceScale >= 500) {
-            if (transientErrors <= 4 && targetWorkers < maxWorkers) {
-                targetWorkers++
-                console.log(`接口稳定，下载并发提升至 ${targetWorkers}/${maxWorkers}`)
-            } else if (transientErrors >= 12 && targetWorkers > minWorkers) {
-                targetWorkers--
-                console.warn(`近期接口错误率偏高，并发回调至 ${targetWorkers}/${maxWorkers}`)
+        if (loaded.downloaded) {
+            downloadedCompleted++
+            successesSinceScale++
+        }
+        if (successesSinceScale >= 20) {
+            const elapsedSeconds = Math.max(1, (Date.now() - startedAt) / 1000)
+            const averageRate = downloadedCompleted / elapsedSeconds
+            if (transientErrors >= 3 && targetWorkers > minWorkers) {
+                targetWorkers = Math.max(minWorkers, targetWorkers - 2)
+                console.warn(`RailLog 有请求错误，降低并发至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
+            } else if (averageRate < 5 && transientErrors === 0 && targetWorkers < maxWorkers) {
+                targetWorkers = Math.min(maxWorkers, targetWorkers + 2)
+                console.log(`当前 ${averageRate.toFixed(2)} 条/秒，低于 5 条/秒目标，并发提升至 ${targetWorkers}/${maxWorkers}`)
             }
             successesSinceScale = 0
             transientErrors = 0
         }
-        if (completed % 100 === 0) console.log(`已核对 ${completed}/${codes.length} 个车次`)
+        const now = Date.now()
+        if (completed % 100 === 0 || now - lastProgressAt >= 30000) {
+            const intervalSeconds = Math.max(0.001, (now - lastProgressAt) / 1000)
+            const intervalRate = (downloadedCompleted - lastProgressDownloaded) / intervalSeconds
+            const averageRate = downloadedCompleted / Math.max(0.001, (now - startedAt) / 1000)
+            console.log(`${version}：已核对 ${completed}/${codes.length} 条，本次新下 ${downloadedCompleted} 条；当前 ${intervalRate.toFixed(2)} 条/秒，均值 ${averageRate.toFixed(2)} 条/秒，并发 ${targetWorkers}，间隔 ${requestSpacingMs}ms`)
+            lastProgressAt = now
+            lastProgressDownloaded = downloadedCompleted
+        }
     }
 }
 await Promise.all(Array.from({ length: maxWorkers }, downloadTrains))
