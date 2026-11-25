@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { validListDate } from '../web/src/android/railway/lltList.js'
 
 const base = 'https://api.raillog.top/api/train-timetables'
-const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 100)
+const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 50)
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
 const workers = Number(process.env.RAILLOG_WORKERS ?? 12)
