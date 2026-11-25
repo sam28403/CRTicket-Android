@@ -254,15 +254,9 @@
     "2025.12.19",
     "2026.01.16",
     "2026.02.15",
-    "2026.03.20"
+    "2026.03.20",
+    "2026.04.10"
   ],
-  "current": "2026.04.10",
-  "updatedAt": "2026-11-25T01:24:38.322Z",
-  "checkpoint": {
-    "checked": 9101,
-    "totalForCurrent": 15236,
-    "cachePath": "build/research/raillog-all/cache-2026.04.10",
-    "archivePath": "data/RailLog/checkpoints/20260410-cache.tar.gz",
-    "endpoint": "2026.10.06"
-  }
+  "current": null,
+  "updatedAt": "2026-11-25T05:38:18.962Z"
 }
