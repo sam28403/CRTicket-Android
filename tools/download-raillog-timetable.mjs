@@ -13,6 +13,8 @@ const minWorkers = Number(process.env.RAILLOG_MIN_WORKERS ?? 4)
 const maxWorkers = Number(process.env.RAILLOG_MAX_WORKERS ?? Math.max(workers, 64))
 const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
 const transientErrorThreshold = Number(process.env.RAILLOG_TRANSIENT_ERROR_THRESHOLD ?? 3)
+const maxNormalRequestSpacingMs = 200
+const persistentFailureSpacingMs = 2000
 assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(requestTimeoutMs) && requestTimeoutMs > 0, 'RAILLOG_REQUEST_TIMEOUT_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
@@ -24,19 +26,27 @@ let nextRequestAt = 0
 let serverRetryAfterAt = 0
 let successesSinceRecovery = 0
 let errorsSinceRecovery = 0
+let consecutiveTransientErrors = 0
+let lastSuccessfulResponseAt = Date.now()
 let targetWorkers = workers
 
 function noteTransientError() {
     errorsSinceRecovery++
+    consecutiveTransientErrors++
     successesSinceRecovery = 0
     if (errorsSinceRecovery % transientErrorThreshold !== 0) return
+    const persistentFailure = consecutiveTransientErrors >= transientErrorThreshold * 3
+        || Date.now() - lastSuccessfulResponseAt >= 30000
+    const spacingLimit = persistentFailure
+        ? persistentFailureSpacingMs
+        : maxNormalRequestSpacingMs
     requestSpacingMs = Math.min(
-        2000,
+        spacingLimit,
         Math.ceil(Math.max(baseRequestSpacingMs, requestSpacingMs) * 1.5),
     )
     const previousWorkers = targetWorkers
     targetWorkers = Math.max(minWorkers, Math.floor(targetWorkers / 2))
-    console.warn(`连续出现 ${transientErrorThreshold} 次请求错误，并发由 ${previousWorkers} 调至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
+    console.warn(`累计 ${errorsSinceRecovery} 次请求错误，连续 ${consecutiveTransientErrors} 次未成功，并发由 ${previousWorkers} 调至 ${targetWorkers}/${maxWorkers}，间隔 ${requestSpacingMs}ms`)
 }
 
 function updateServerRetryAfter(response) {
@@ -48,7 +58,11 @@ function updateServerRetryAfter(response) {
 }
 
 function retryBackoffMs(attempt) {
-    const ceiling = Math.min(30000, 500 * 2 ** Math.min(attempt, 6))
+    const persistentFailure = consecutiveTransientErrors >= transientErrorThreshold * 3
+        || Date.now() - lastSuccessfulResponseAt >= 30000
+    const ceiling = persistentFailure
+        ? Math.min(30000, 500 * 2 ** Math.min(attempt, 6))
+        : maxNormalRequestSpacingMs
     return Math.floor(ceiling / 2 + Math.random() * ceiling / 2)
 }
 const [version, directory, ...requestedCodes] = process.argv.slice(2)
@@ -79,6 +93,12 @@ async function request(path, params) {
                     updateServerRetryAfter(response)
                     await delay(retryBackoffMs(attempt))
                     continue
+                }
+                lastSuccessfulResponseAt = Date.now()
+                consecutiveTransientErrors = 0
+                if (requestSpacingMs > maxNormalRequestSpacingMs) {
+                    requestSpacingMs = maxNormalRequestSpacingMs
+                    console.log(`RailLog 请求成功，间隔恢复至 ${requestSpacingMs}ms`)
                 }
                 successesSinceRecovery++
                 if (successesSinceRecovery >= 64) {
