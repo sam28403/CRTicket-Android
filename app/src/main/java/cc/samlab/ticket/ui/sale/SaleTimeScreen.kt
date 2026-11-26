@@ -54,13 +54,16 @@ internal fun SaleTimeScreen(
     val recommendationSlot = nextSaleSlot(now)
     val recommendationKey = if (submitted.isEmpty()) recommendationSlot else null
     val catalog = controller.saleCatalog
-    val stations = remember(catalog) {
+    val directory = remember(catalog) {
         val names = catalog.optJSONArray("names") ?: JSONArray()
         List(names.length()) { index ->
             val row = names.getJSONObject(index)
             SaleStation(row.getString("name"), row.optString("abbr"), row.optString("en"),
                 row.optString("bureau"), row.optString("city"))
         }
+    }
+    val stations = remember(directory, schedule) {
+        supplementSaleStations(directory, schedule.keys)
     }
     val stationMap = remember(stations) { stations.associateBy { it.name } }
     fun search(name: String) {
@@ -94,7 +97,7 @@ internal fun SaleTimeScreen(
         }
         loading = true
         error = false
-        if (!catalog.has("names") || schedule.isEmpty()) {
+        if (schedule.isEmpty() || (!catalog.has("names") && submitted !in schedule)) {
             error = catalog.optBoolean("error")
             loading = !error
             return@LaunchedEffect
