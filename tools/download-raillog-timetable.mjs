@@ -5,7 +5,8 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { validListDate } from '../web/src/android/railway/lltList.js'
 
 const base = 'https://api.raillog.top/api/train-timetables'
-const baseRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 50)
+const configuredRequestSpacingMs = Number(process.env.RAILLOG_REQUEST_SPACING_MS ?? 50)
+const baseRequestSpacingMs = Math.min(200, configuredRequestSpacingMs)
 const requestTimeoutMs = Number(process.env.RAILLOG_REQUEST_TIMEOUT_MS ?? 30000)
 let requestSpacingMs = baseRequestSpacingMs
 const workers = Number(process.env.RAILLOG_WORKERS ?? 12)
@@ -15,7 +16,7 @@ const maxRetries = Number(process.env.RAILLOG_MAX_RETRIES ?? 8)
 const transientErrorThreshold = Number(process.env.RAILLOG_TRANSIENT_ERROR_THRESHOLD ?? 3)
 const maxNormalRequestSpacingMs = 200
 const persistentFailureSpacingMs = 2000
-assert(Number.isInteger(baseRequestSpacingMs) && baseRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
+assert(Number.isInteger(configuredRequestSpacingMs) && configuredRequestSpacingMs > 0, 'RAILLOG_REQUEST_SPACING_MS 必须是正整数')
 assert(Number.isInteger(requestTimeoutMs) && requestTimeoutMs > 0, 'RAILLOG_REQUEST_TIMEOUT_MS 必须是正整数')
 assert(Number.isInteger(workers) && workers > 0, 'RAILLOG_WORKERS 必须是正整数')
 assert(Number.isInteger(minWorkers) && minWorkers > 0 && minWorkers <= workers, 'RAILLOG_MIN_WORKERS 必须在 1 与 RAILLOG_WORKERS 之间')
