@@ -7,12 +7,20 @@ import { parseSaleSchedule, updateSaleTimes } from './update-sale-times.mjs'
 
 const html = await readFile(new URL('../app/src/test/resources/sale-announcement.html', import.meta.url), 'utf8')
 
-test('the updated official announcement includes Nantong East at 17:00', () => {
+test('the official announcement includes the new stations in all three sale slots', () => {
     const stations = parseSaleSchedule(html)
     assert.equal(stations['南通东'], '17:00')
     assert.equal(stations['成都龙泉驿'], '08:30')
     assert.equal(stations['寿安'], '15:30')
-    assert.equal(Object.keys(stations).length, 3209)
+    const addedByTime = {
+        '10:00': ['马鞍山南', '郑蒲港', '含山'],
+        '13:00': ['利辛', '蒙城', '颍泉北'],
+        '18:00': ['固镇南', '宿州西', '双堆集', '淮北西'],
+    }
+    for (const [time, names] of Object.entries(addedByTime)) {
+        for (const name of names) assert.equal(stations[name], time, name)
+    }
+    assert.equal(Object.keys(stations).length, 3219)
 })
 
 test('the committed official snapshot can be packaged without downloading', async () => {
@@ -33,7 +41,7 @@ test('station file changes refresh the full schedule, unchanged files make no re
         await writeFile(station, 'version-one')
         let requests = 0
         const options = { workspace, fetchHtml: async () => { requests++; return html } }
-        assert.equal((await updateSaleTimes(options)).count, 3209)
+        assert.equal((await updateSaleTimes(options)).count, 3219)
         assert.equal((await updateSaleTimes(options)).updated, false)
         assert.equal(requests, 1)
         const before = await readFile(output, 'utf8')
