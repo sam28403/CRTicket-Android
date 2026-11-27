@@ -1,4 +1,4 @@
-# 自动构建与正式发布
+# 自动构建与发布
 
 ## 首次配置 GitHub
 
@@ -8,8 +8,8 @@
 Deployment branches and tags 选择 Selected branches and tags，仅添加标签规则 `v*`。
 公开仓库可使用此审批功能。
 
-必须手动启用 Required reviewers。仅在 YAML 中写 `environment: release`
-不会自动创建审批规则；缺少此配置时，工作流可能直接发布。
+必须手动启用 Required reviewers。发布任务会核对 `release` 环境的审批记录，
+缺少批准记录时会停止。正式版和预发布版共用这个环境。
 
 在该环境的 Secrets 中添加：
 
@@ -88,7 +88,15 @@ git push origin v0.9.3
 对应的 `changelogs/X.Y.Z.md` 必须存在且非空，Release 正文直接使用该文件的全部 Markdown 内容，
 不使用 GitHub 自动生成的提交记录。推送标签前先确认版本日志内容已经定稿。
 Android Release 先执行测试、Lint，构建未签名 APK、AAB 并保存混淆映射。
-构建成功后，进入 Actions 中对应的运行，点击 Review deployments，批准 `release`。
+构建成功后，进入 Actions 中对应的运行，点击 **Review deployments**，勾选 `release`。
+
+- 发布正式版时将备注留空，或填写 `release`，再点击 **Approve and deploy**。
+- 发布预发布版时在 **Leave a comment** 填写 `prerelease` 或 `pre-release`，再点击 **Approve and deploy**。
+  GitHub 会标记为 **Pre-release**，现有正式版继续作为 **Latest**。
+
+备注使用单个关键词，忽略大小写和首尾空白。工作流发现无法识别的备注或同一运行的批准记录指定了不同类型时会停止。
+重跑同一运行时沿用原发布类型。预发布版继续使用 `vX.Y.Z` 标签和同一份更新日志。
+
 获批后才读取签名密钥，签名 APK，并用固定版本 bundletool 从 AAB 生成 APKS。
 签名校验通过后自动创建 Release 草稿、上传附件，最后转为公开发布。
 

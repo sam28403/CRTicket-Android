@@ -33,6 +33,8 @@ jobs:
         run: npm run test:android --prefix web
       - name: Test signing certificate verification
         run: bash tools/ci/signing-certificates.test.sh
+      - name: Test deployment review selection
+        run: node --test tools/ci/release-review.test.mjs
       - name: Test and build release
         run: >-
           bash gradlew :app:testDebugUnitTest :app:lintRelease
@@ -64,11 +66,21 @@ jobs:
     timeout-minutes: 20
     environment: release
     permissions:
+      actions: read
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+      - name: Read release type from deployment review
+        id: review
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mode=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/approvals" \
+            | node tools/ci/release-review.mjs)
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -95,10 +107,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_MODE: ${{ steps.review.outputs.mode }}
         run: |
           notes="changelogs/${RELEASE_TAG#v}.md"
           test -s "$notes"
+          case "$RELEASE_MODE" in
+            release) flags=() ;;
+            prerelease) flags=(--prerelease --latest=false) ;;
+            *) echo 'Unknown release type' >&2; exit 1 ;;
+          esac
           gh release create "$RELEASE_TAG" dist/* \
             --verify-tag --title "CRTicket $RELEASE_TAG" \
-            --notes-file "$notes" --draft
-          gh release edit "$RELEASE_TAG" --draft=false
+            --notes-file "$notes" --draft "${flags[@]}"
+          gh release edit "$RELEASE_TAG" --draft=false "${flags[@]}"
