@@ -1,13 +1,11 @@
 package cc.samlab.ticket
 
-import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -15,34 +13,22 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class TrainListSortingDeviceTest {
     @get:Rule val compose = createEmptyComposeRule()
-    private val instrumentation = InstrumentationRegistry.getInstrumentation()
-    private lateinit var activity: MainActivity
+    private lateinit var fixture: TabletPageFixture
 
     @Before fun launch() {
-        activity = instrumentation.startActivitySync(
-            Intent(instrumentation.targetContext, MainActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        ) as MainActivity
-        instrumentation.runOnMainSync {
-            activity.setShowWhenLocked(true)
-            activity.setTurnScreenOn(true)
-            activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
-        compose.waitUntil(20_000) { evaluate("Boolean(window.crticketNavigate)") == "true" }
-        // Exercise the native page with fixed data, without waiting for a railway download.
-        evaluate("CRTicketAndroid.setNativePage('/list')")
+        fixture = TabletPageFixture(compose)
+        fixture.navigate("/list")
         compose.waitUntil(10_000) {
             runCatching {
                 compose.onNodeWithTag("train-list").fetchSemanticsNode()
                 true
             }.getOrDefault(false)
         }
+        // Supply a fixed snapshot to exercise the native list independently of live data.
         evaluate("""
             window.sortFixture = Array.from({length: 20000}, (_, i) => ({
                 train: 'G' + (i + 1), from: '北京南', to: '上海虹桥',
@@ -64,9 +50,7 @@ class TrainListSortingDeviceTest {
     }
 
     @After fun close() {
-        if (::activity.isInitialized) {
-            instrumentation.runOnMainSync { activity.finish() }
-        }
+        if (::fixture.isInitialized) fixture.close()
     }
 
     @Test fun allFiveSortModesAndDirectionsWorkWithTwentyThousandRows() {
@@ -151,20 +135,12 @@ class TrainListSortingDeviceTest {
         }
     }
 
-    private fun evaluate(script: String): String {
-        val done = CountDownLatch(1)
-        var value = "null"
-        instrumentation.runOnMainSync {
-            activity.webView.evaluateJavascript(script) { value = it; done.countDown() }
-        }
-        assertTrue(done.await(10, TimeUnit.SECONDS))
-        return value
-    }
+    private fun evaluate(script: String): String = fixture.evaluate(script)
 
     private fun capture(name: String) {
         compose.waitForIdle()
-        val folder = File(activity.getExternalFilesDir(null), "train-list-sorting").apply { mkdirs() }
-        val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
+        val folder = File(fixture.activity.getExternalFilesDir(null), "train-list-sorting").apply { mkdirs() }
+        val bitmap = checkNotNull(fixture.instrumentation.uiAutomation.takeScreenshot())
         File(folder, "$name.png").outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
         }

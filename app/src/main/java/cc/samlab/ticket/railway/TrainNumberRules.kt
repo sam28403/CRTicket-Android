@@ -3,9 +3,9 @@ package cc.samlab.ticket.railway
 import cc.samlab.ticket.R
 import cc.samlab.ticket.i18n.appString
 
-/** Mirrors the active N/V ranges in web/src/utils/trainNumberRules.js. */
+/** Mirrors the ticket validation in web/src/utils/trainNumberRules.js. */
 object TrainNumberRules {
-    private val currentRule = Regex("(?:\\d{4}|5\\d{4}|[GCDZTKLYS]\\d{1,4})", RegexOption.IGNORE_CASE)
+    private val currentRule = Regex("(?:\\d{4}|5\\d{4}|[GCDZTKYS]\\d{1,4})", RegexOption.IGNORE_CASE)
 
     private val additionalRule = Regex("([NV])([1-9]\\d{0,3})", RegexOption.IGNORE_CASE)
 

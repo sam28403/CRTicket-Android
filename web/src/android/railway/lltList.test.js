@@ -8,7 +8,7 @@ const stops = [
   { station: '终到站', arrival: '01:05', arrivalDay: 2, mileage: 1318 },
 ]
 
-test('列表按上游类别顺序排列，N、V 先于 T，四位数字先于 Y，其余类别最后', () => {
+test('列表优先按 G、D、C、S、Z、N、V、Y 分组，其余车次按编号数值排序', () => {
   const codes = [
     '1461', 'K10', 'T1', 'Z1', 'S1', 'C1', 'D1', 'G10', 'G2', 'L1',
     'G2B', 'G3/G4', 'Y10', 'Y2', 'N10', 'N2B', 'N2', 'N3/N4',
@@ -30,8 +30,8 @@ test('列表按上游类别顺序排列，N、V 先于 T，四位数字先于 Y�
   assert.deepEqual(result.trains.map(row => row.train), [
     'G2', 'G2B', 'G3/G4', 'G10', 'G100', 'D1', 'C1',
     'S1', 'Z1', 'N2', 'N2B', 'N3/N4', 'N10',
-    'V2', 'V3B', 'V4/V5', 'V10', 'T1', 'K10', 'L1',
-    '1461', '1462B', 'Y2', 'Y10', 'X1', '50001',
+    'V2', 'V3B', 'V4/V5', 'V10', 'Y2', 'Y10',
+    'L1', 'T1', 'X1', 'K10', '1461', '1462B', '50001',
   ])
   assert.equal(result.total, 26)
   assert.deepEqual(result.trains[0], {

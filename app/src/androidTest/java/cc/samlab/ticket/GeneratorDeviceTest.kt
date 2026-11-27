@@ -101,8 +101,8 @@ class GeneratorDeviceTest {
                         "\"CODEX_GENERATOR_DEVICE_TEST\""
                 }
             }
-            // Invalid input returns a native error and never opens the file picker.
-            compose.onNodeWithTag("history-field-trainNo").performScrollTo().performTextReplacement("invalid")
+            // The retired L prefix returns a native error without opening the file picker.
+            compose.onNodeWithTag("history-field-trainNo").performScrollTo().performTextReplacement("L1")
             closeSoftKeyboard()
             compose.onNodeWithTag("generator-pdf").performScrollTo().performClick()
             compose.waitUntil(10_000) {

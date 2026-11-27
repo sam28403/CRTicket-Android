@@ -24,7 +24,7 @@ class LcrTimeZoneDeviceTest {
             val fixture = TabletPageFixture(compose)
             try {
                 fixture.evaluate(
-                    "window.crticketNavigate('/train?train=K11&date=2026-11-22&source=llt&dataset=lcr')",
+                    "window.crticketNavigate('/train?train=K11&date=2026-11-25&source=llt&dataset=lcr')",
                 )
                 lateinit var controller: NativeTrainQueryController
                 instrumentation.runOnMainSync {
@@ -42,7 +42,8 @@ class LcrTimeZoneDeviceTest {
                     row.getString(0) to row.getString(1)
                 }
                 assertEquals("1", flags["20261121"])
-                assertEquals("0", flags["20261122"])
+                assertEquals("1", flags["20261122"])
+                assertEquals("1", flags["20261124"])
                 assertEquals(null, flags["20261125"])
             } finally {
                 fixture.close()

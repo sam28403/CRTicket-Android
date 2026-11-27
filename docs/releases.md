@@ -120,7 +120,7 @@ versionCode 根据完整 Git 历史计数，因此 checkout 使用 `fetch-depth:
 
 ## 工具和 IDE 配置
 
-网页构建使用 Node.js 24，JavaScript Actions 也使用 Node.js 24 运行时。
+网页构建要求 Node.js 24.11.0 或更新版本，CI 使用 Node.js 26。JavaScript Actions 使用 Node.js 24 运行时。
 `node-version` 控制项目构建版本，Action 自身的运行时由所引用的 Action 版本决定。
 
 `.idea` 仅跟踪 `codeStyles` 和 `inspectionProfiles`，其他 IDE 状态和本机 JDK 配置被忽略。

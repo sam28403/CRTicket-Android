@@ -5,6 +5,7 @@ import { useElementSize } from '@vueuse/core'
 import { onBeforeRouteLeave, RouterLink } from 'vue-router'
 import AppBrand from '@/components/AppBrand.vue'
 import api, { timetableTimeout } from '@/api.js'
+import { lcrText } from '@/utils/lcrText.js'
 import { trainQueryRange } from '@/utils/trainQueryDate.js'
 import { vNativeTableScroll } from '@/directives/nativeTableScroll.js'
 import { useNativeTrainList } from '@/composables/useNativeTrainList.js'
@@ -252,9 +253,10 @@ onBeforeUnmount(() => {
         </div>
         <div class="result-summary">
           <el-text v-if="result">
-            {{ result.date }} 始发；共 {{ result.total.toLocaleString() }} 趟。路路通版本： {{ result.version }}。
+            共 {{ result.total.toLocaleString() }} 趟。
+            <template v-if="result.version">路路通 {{ result.version }}。</template>
+            <template v-if="result.lcrVersion">{{ lcrText.offlineSource }}。</template>
           </el-text>
-          <el-text v-else>{{ date }} 始发；来源：路路通。</el-text>
         </div>
         <el-button :loading="loading" @click="query">刷新</el-button>
       </div>

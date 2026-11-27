@@ -1,4 +1,4 @@
-const currentRule = /^(\d{4}|5\d{4}|[GCDZTKLYS]\d{1,4})$/i
+const currentRule = /^(\d{4}|5\d{4}|[GCDZTKYS]\d{1,4})$/i
 
 // 新规则 1 已启用，后续规则仍保留在注释中。
 const rule1Ranges = {

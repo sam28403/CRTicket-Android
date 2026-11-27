@@ -1,10 +1,10 @@
 {
   "name": "crticket",
-  "version": "261122",
+  "version": "261126",
   "private": false,
   "type": "module",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24.11.0"
   },
   "scripts": {
     "test:android": "node --test src/android/*.test.js src/android/railway/*.test.js src/stores/user.test.js src/utils/stationBoard.test.js src/utils/stationBoardTime.test.js src/utils/stationNavigation.test.js src/utils/trainInfoPdf.test.js src/utils/trainTimeZoneDisplay.test.js src/utils/ticketExport.test.js src/utils/trainPdfFont.test.js src/utils/maps/trainRouteMap.test.js src/utils/maps/stationCoordinates.test.js ../tools/package-arrival-stations.test.mjs ../tools/update-sale-times.test.mjs src/utils/trainQuerySource.test.js src/utils/trainQueryDate.test.js src/utils/maps/stationLocationMap.test.js src/utils/maps/tileLayerHealth.test.js src/utils/maps/transportConnection.test.js src/utils/pullRefreshGesture.test.js src/utils/historyValidation.test.js src/utils/historySorting.test.js src/utils/ticketFacePrice.test.js src/utils/generatorSaveFlow.test.js src/utils/ticketShared.test.js src/utils/trainTypeRules.test.js src/utils/trainQueryValidation.test.js src/utils/trainQueryCache.test.js src/utils/ordinaryFare.test.js",
@@ -18,7 +18,7 @@
     "@element-plus/icons-vue": "^2.3.2",
     "@pdf-lib/fontkit": "^1.1.1",
     "@vue/devtools-api": "^8.2.1",
-    "@vueuse/core": "^15.0.0",
+    "@vueuse/core": "^15.1.0",
     "axios": "^1.21.1",
     "dayjs": "^1.11.23",
     "echarts": "^6.1.0",
@@ -31,12 +31,12 @@
     "pinia": "^4.1.0",
     "qrcode": "^1.5.4",
     "vue": "^3.5.46",
-    "vue-router": "^5.5.0",
+    "vue-router": "^5.5.3",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.11",
-    "vite": "8.3.8",
+    "vite": "8.4.0",
     "vite-plugin-vue-devtools": "^8.2.1"
   },
   "allowScripts": {

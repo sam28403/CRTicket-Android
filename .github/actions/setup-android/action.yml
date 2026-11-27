@@ -9,7 +9,7 @@ runs:
         java-version: '25'
     - uses: actions/setup-node@v5
       with:
-        node-version: '24'
+        node-version: '26'
         cache: npm
         cache-dependency-path: web/package-lock.json
     - uses: android-actions/setup-android@v4
@@ -19,4 +19,4 @@ runs:
     - shell: bash
       run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0'
     - shell: bash
-      run: npm ci --prefix web
+      run: npm ci --allow-remote=root --prefix web
