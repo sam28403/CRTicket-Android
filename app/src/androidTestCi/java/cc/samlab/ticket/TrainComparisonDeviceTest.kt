@@ -97,27 +97,31 @@ class TrainComparisonDeviceTest {
                     }
             }
             val field = compose.onNodeWithTag("train-comparison-query")
-            field.performTextReplacement("K3")
+            field.performTextReplacement("K117")
             compose.onNodeWithTag("train-comparison-search").performClick()
             compose.waitForIdle()
-            compose.onNodeWithTag("train-card:V3").assertIsDisplayed().assertIsSelected()
+            val updatedCard = hasTestTag("train-card:V7")
+            compose.onNode(updatedCard).assertIsDisplayed().assertIsSelected()
             compose.onNode(
-                hasText("K3") and hasAnyAncestor(hasTestTag("train-card:V3")),
+                hasText("K117") and hasAnyAncestor(updatedCard),
                 useUnmergedTree = true,
-            )
-                .assertIsDisplayed()
+            ).assertIsDisplayed()
+            compose.onNode(
+                hasText("成都龙泉驿") and hasAnyAncestor(updatedCard),
+                useUnmergedTree = true,
+            ).assertIsDisplayed()
             fixture.capture("train-comparison-old-query")
             field.performTextReplacement("Z3")
             compose.onNodeWithTag("train-comparison-search").performClick()
             compose.waitForIdle()
             compose.onNodeWithTag("train-card:Z3").assertIsDisplayed().assertIsSelected()
-            compose.onNodeWithTag("train-card:V3").assertDoesNotExist()
-            field.performTextReplacement("V3")
+            compose.onNode(updatedCard).assertDoesNotExist()
+            field.performTextReplacement("V7")
             compose.onNodeWithTag("train-comparison-search").performClick()
             compose.waitForIdle()
-            compose.onNodeWithTag("train-card:V3").assertIsDisplayed().assertIsSelected()
+            compose.onNode(updatedCard).assertIsDisplayed().assertIsSelected()
             field.performTextReplacement("G12345")
-            field.assertTextEquals("V3")
+            field.assertTextEquals("V7")
             fixture.capture("train-comparison-new-query")
         } finally {
             fixture.close()
